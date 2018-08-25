@@ -3,15 +3,20 @@
 <head>
   <title>Deezloader Remix</title>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <script type="text/javascript" src="js/socket.io.js"></script>
   <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
   <link rel="stylesheet" type="text/css" href="css/materialize.min.css"/>
   <link rel="stylesheet" type="text/css" href="css/animate.css">
   <link rel="stylesheet" type="text/css" href="css/style.css"/>
+  <link rel="stylesheet" type="text/css" href="css/darkMode.css" name="darkMode" disabled/>
+  <script type='text/javascript'>
+    if (eval(localStorage.darkMode)){
+      document.getElementsByName("darkMode")[0].removeAttribute("disabled");
+    }
+  </script>
   <meta charset="utf-8"/>
 </head>
 <body>
-<span id="appVersionFallback" hidden>4.1.0</span>
+<span id="appVersionFallback" hidden>4.1.1</span>
 
 <div id="title-bar" class="deezloader-black">
 	<div class="resize-padding" style="width: 100%; height: 3px;"></div>
@@ -35,11 +40,11 @@
 				<span class="card-title">Please login to your deezer account.</span>
 				<h6 class="red-text" id="login-res-text"></h6>
 				<div class="input-field col s12">
-					<input class="black-text" type="text" id="modal_login_input_username"/>
+					<input type="text" id="modal_login_input_username"/>
 					<label for="modal_login_input_username">Email</label>
 				</div>
 				<div class="input-field col s12">
-					<input class="black-text" type="password" id="modal_login_input_password"/>
+					<input type="password" id="modal_login_input_password"/>
 					<label for="modal_login_input_password">Password</label>
 				</div>
 			</div>
@@ -50,8 +55,8 @@
             <span>Remember me</span>
           </label>
 				</div>
-				<a href="#" class="deezloader-primary col s12 m2 modal-close waves-effect waves-light btn" id="modal_login_btn_login">Log in</a>
-				<a href="#" class="deezloader-secondary col s12 m2 modal-close waves-effect waves-light btn" id="modal_login_btn_signup">Sign up</a>
+				<a href="#" class="deezloader-primary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_login">Log in</a>
+				<a href="#" class="deezloader-secondary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_signup">Sign up</a>
 			</div>
 		</div>
 	</div>
@@ -95,31 +100,41 @@
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<select name="artworkSize" id="modal_settings_select_artworkSize">
-					<option value="/500x500.jpg">500x500</option>
-					<option value="/800x800.jpg">800x800</option>
-					<option value="/1000x1000.jpg">1000x1000</option>
-					<option value="/1200x1200.jpg">1200x1200</option>
-					<option value="/1400x1400.jpg">1400x1400</option>
+          <option value="1400">1400x1400</option>
+          <option value="1200">1200x1200</option>
+          <option value="1000">1000x1000</option>
+          <option value="800">800x800</option>
+          <option value="500">500x500</option>
+          <option value="250">250x250</option>
 				</select>
 				<label for="modal_settings_select_artworkSize">Artwork size</label>
 			</div>
       <div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<select name="artworkSize" id="modal_settings_select_multitagSeparator">
+				<select name="maxBitrate" id="modal_settings_select_maxBitrate">
+          <option value="9">FLAC 1411kbps</option>
+          <option value="3">MP3 320kbps</option>
+          <option value="1">MP3 128kbps</option>
+				</select>
+				<label for="modal_settings_select_maxBitrate">Downloaded bitrate</label>
+			</div>
+		</div>
+    <div class="row">
+			<div class="input-field col s12 m6">
+				<i class="material-icons prefix">label</i>
+				<select name="chartsCountry" id="modal_settings_select_chartsCounrty">
+				</select>
+				<label for="modal_settings_select_chartsCounrty">Default Country for Charts</label>
+			</div>
+      <div class="input-field col s12 m6">
+				<i class="material-icons prefix">label</i>
+				<select name="multitagSeparator" id="modal_settings_select_multitagSeparator">
 					<option value="null">Null Character</option>
 					<option value=",">,</option>
 					<option value="/">/</option>
 					<option value=";">;</option>
 				</select>
 				<label for="modal_settings_select_multitagSeparator">Multitag Separator</label>
-			</div>
-		</div>
-    <div class="row">
-			<div class="input-field col s12">
-				<i class="material-icons prefix">label</i>
-				<select name="chartsCountry" id="modal_settings_select_chartsCounrty">
-				</select>
-				<label for="modal_settings_select_chartsCounrty">Default Country for Charts</label>
 			</div>
 		</div>
 		<div class="row">
@@ -162,12 +177,6 @@
 			</p>
 			<p class="col s12 m4">
         <label>
-  				<input type="checkbox" id="modal_settings_cbox_hifi" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Downloads a FLAC file if it is available">Download FLACs</span>
-        </label>
-      </p>
-			<p class="col s12 m4">
-        <label>
   				<input type="checkbox" id="modal_settings_cbox_padtrck" class="filled-in"/>
   				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Adds 0s before %number% to have the same character length">Pad track numbers</span>
         </label>
@@ -208,6 +217,12 @@
   				<span>Create log file for Errors</span>
         </label>
       </p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_PNGcovers" class="filled-in"/>
+  				<span>Save covers as PNGs</span>
+        </label>
+			</p>
 		</div>
 		<div class="row">
 			<div class="col s12">
@@ -240,7 +255,7 @@
 							<b>Version:</b> <span id="application_version_about"></span><br/>
 							<b>Original Programmer:</b> <a href="https://boerse.to/members/zzmtv.3378614/">ZzMTV</a><br/>
 							<b>Former Maintainers:</b> <a href="https://www.reddit.com/user/ParadoxalManiak/">ParadoxalManiak</a>, <a href="https://www.reddit.com/user/_snwflake/">snwflake</a>, <a href="https://www.reddit.com/user/ExtendLord/">ExtendLord</a><br>
-              <b>Current Mantainer:</b> RemixDevs<br/>
+              <b>Current Maintainer:</b> RemixDevs<br/>
               <b>Repo: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix">Official Repo</a><br/>
               <b>Interface:</b> <a href="http://materializecss.com/">materializecss</a><br/>
               <b>Based on: </b>Deezloader Reborn</br>
@@ -285,6 +300,18 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
 					<div class="collapsible-body">
 						<p>
+              <b>Version 4.1.1</b><br/>
+              - Fixed Login Problem (again)<br/>
+              - Added Dark Mode<br/>
+              - Added smaller cover option<br/>
+              - Added support for lower bitrates<br/>
+              - Added "Stop All Downloads" button<br/>
+              - Added support for Spotify Playlist preview<br/>
+              - Added support for PNG covers<br/>
+              - Re-Added Date Tag<br/>
+              - Fixed same cover for same track in different albums bug<br/>
+              - Fixed login issue from repository build<br/>
+              <br/>
               <b>Version 4.1.0</b><br/>
               - New UI (not completly optimized for small screens)<br/>
               - Fixed login problems<br/>
@@ -293,257 +320,7 @@
               - Fixed playlist file not containing tracks<br/>
               - More precision in Spotify Playlist conversion<br/>
               <br/>
-              <b>Version 4.0.3</b><br/>
-              - Added concurrent download! (Default value is 3)<br/>
-              - Enhanced logs system (Now with colors!)<br/>
-              - Added argument -s and --server to start without GUI<br/>
-              - Slimmed down request number<br/>
-              - Fixed BPM tag<br/>
-              - Added placeholder for missing covers<br/>
-              - Improved login algorithm<br/>
-              - Fixed some problems with settings change during downloads<br/>
-              - Added option to save artworks<br/>
-              - Added option to save logs of failed downloads<br/>
-              - Changing default chart country in settings automaticaly updates the charts tab<br/>
-              - Changing search type will automaticaly do a search<br/>
-              - Added choice of separator on MP3 Files (FLAC uses native support)<br/>
-              - Added track preview in album and playlist tracklist modal<br/>
-              <br/>
-              <b>Version 4.0.2</b><br/>
-              - Changed API token retrive (some users were not able to login)<br/>
-              - Now the Artist modal will stay under the Album modal (you can browse artist albums without reopening the artist modal each time)<br/>
-              - Added Playlist Tab (Also with Spotify Support)<br/>
-              - Changed icon colors to diversify the App from the other branches<br/>
-              - Fixed Extended Tags option in settings<br/>
-              - Fixed Download Spotify Playlist with URI (previusly not working)<br/>
-              <br/>
-							<b>Version 4.0.1</b><br/>
-							- Updated all CSS and Javascript dependencies<br/>
-							- Rewrite of the UI<br/>
-							- Added audio preview for Singles (Click on the cover)<br/>
-							- Added support for Spotify Playlists (URL Download)<br/>
-							- Separated Album Track Name from Playlist Track Name<br/>
-              - Added option to change default charts country<br/>
-							<br/>
-							<b>Version 3.1.2</b><br/>
-							- Fixed Login Problem<br/>
-							- Removed comment on cover<br/>
-							- Fixed footer CSS<br/>
-							- Fixed downloading of Albums and Artists (Downgrade to previous method)<br/>
-							<br/>
-							<b>Version 3.1.1</b><br/>
-							- Fixed titlebar resizing<br/>
-							- Added disc number to album view<br/>
-							- Fixed track number to album view<br/>
-							- Added correct multiartist and multigenre support<br/>
-							- deezer-api.js and app.js cleanup<br/>
-							- Optionals tags are now optionals<br/>
-							- Added option to get total number of tracks on MP3s on TrackNumbers and Discs (ex. 1/16)<br/>
-							- Fixed Pubblisher tag<br/>
-							- feat. and ft. are now excluded from searches query<br/>
-							- Added tooltips to settings<br/>
-							<br/>
-							<b>Version 3.1.0</b><br/>
-							- Fixed Download Freeze<br/>
-							- Improved logs<br/>
-							- Improved UI<br/>
-							- Fixed album artwork size not being saved<br/>
-							- Fixed some typo<br/>
-							- Fixed synced lyrics for mp3<br/>
-							- Fixed Track fetching for unsupported countries<br/>
-							<br/>
-							<b>Version 3.0.15</b><br/>
-							- Added replaygain tag<br/>
-							- Added logout option<br/>
-							- Added signup option<br/>
-							- Added multi url support, seperated by ';'<br/>
-							- Fixed incomplete audio files<br/>
-							- Fixed track fallback(alternative property)(Deezer's API update)<br/>
-							- Improved logging system<br/>
-							- Improved pad numbers<br/>
-							- Removed init page since it is not used anymore<br/>
-							<br/>
-							<b>Version 3.0.14</b><br/>
-							- Login is required due to Deezer's patch(Crashes when downloading anything)<br/>
-							- Added BPM tag<br/>
-							<br/>
-							<b>Version 3.0.13</b><br/>
-							- Fixed timeout of the download system<br/>
-							- Fixed images for tracks<br/>
-							- Fixed and Improved MP3 tags<br/>
-							- Added %type%(Record type) for album name format<br/>
-							<br/>
-							<b>Version 3.0.12</b><br/>
-							- Added request retry, connections will retry if fail<br/>
-							- Added record type to the search section(Results of Albums and Artists albums)<br/>
-							- Fixed dots at end of playlists<br/>
-							- Fixed download freezes (metadata image issues)<br/>
-							- Removed the title bar from the web GUI<br/>
-							- Improved download speed and decryption system<br/>
-							<br/>
-							<b>Version 3.0.11</b><br/>
-							- Fixed artwork duplicate for two tracks with the same name<br/>
-							- Added tags: mixer, author, writer, engineer and producer<br/>
-							- Fixed copyright tag when it is not available<br/>
-							- Removed performer tag from FLAC<br/>
-							- Removed label tag and changed from track date to album/ep/single date tag<br/>
-							- Restored decrypting system due to mp3 being corrupt<br/>
-							- Fixed crash when downloading a track with album folder enabled<br/>
-							<br/>
-							<b>Version 3.0.10</b><br/>
-							- Improved downloading and decrypting system<br/>
-							- Improved update notifier<br/>
-							- Added 1400p artworks<br/>
-							- Alternative tracks will take the original tracks tag if possible<br/>
-							- Removed Disc folders, tracks of albums with discs will be combined into one<br/>
-							- Removed 'dev' from the update notifier<br/>
-							- Artist folders are now named by the artist of the albums<br/>
-							- Fixed album name option when artist option is checked<br/>
-							- Fixed android's home location(It had two slashes)<br/>
-							- Fixed default android path<br/>
-							- Fixed album's %year%<br/>
-							- Fixed downloading issues for non supported countries<br/>
-							- Fixed ENOENT crashes caused by queues<br/>
-							- Fixed a minor bug in the alternative track code<br/>
-							- Added a backup server for update notifier<br/>
-							<br/>
-							<b>Version 3.0.9</b><br/>
-							- Added synced and unsynced lyrics, album name option and number playlist by album option.<br/>
-							- Added pad track number(01,02)<br/>
-							- Fixed dots at end of folders when album/arist folder is enabled<br/>
-							- Fixed ENOENT when folder does not exists<br/>
-							- Fixed alternative track downloading, it will only download it if it will fail to download the non alternative one.<br/>
-							- Changed license to GNU GPL 3.0<br/>
-							- Changed all spaces in the JS code to tabs<br/>
-							- Improved update notifier, it will redirect you to the download page<br/>
-							<br/>
-							<b>Version 3.0.8</b><br/>
-							- Fixed initializing stuck<br/>
-							- Removed Diacritics remover<br/>
-							- Changed name fixer<br/>
-							- Added barcode for FLAC<br/>
-							- Added support for Android<br/>
-							- Added web server http://localhost:1730<br/>
-							- Updated libraries<br/>
-							<br/>
-							<b>Version 3.0.7</b><br/>
-							- Fixed crash when composer or publisher tag is not available<br/>
-							- Added version to the update notifier<br/>
-							<br/>
-							<b>Version 3.0.6</b><br/>
-							- Login page will only appear for those who need it<br/>
-							- Added composer, publisher and copyright tag<br/>
-							- Fixed the issue that only the first album would be clickable from an artist<br/>
-							- Fixed crash when no internet in the login page<br/>
-							<br/>
-							<b>Version 3.0.5</b><br/>
-							- Changed repo from github to gitlab<br/>
-							- Fixed Login error for Deezer Family Accounts<br/>
-							- Fixed composer tag<br/>
-							<br/>
-							<b>Version 3.0.4</b><br/>
-							- Fixed download crashes<br/>
-							- Fixed failed tracks when downloading some albums and playlists<br/>
-							- Fixed folder does not exists crash<br/>
-							- Improved tags<br/>
-							- Changed album cover dir to the albums folder<br/>
-							- Changed settings style<br/>
-							- Fixed login crash when there is no connection<br/>
-							<br/>
-							<b>Version 3.0.3</b><br/>
-							- Added auto login<br/>
-							- Added MP3 Fallback<br/>
-							- Added auto update<br/>
-							- Fixed login error not being triggered sometimes<br/>
-							<br/>
-							<b>Version 3.0.2</b><br/>
-							- Fixed crashes when songs could not be downloaded<br/>
-							- Added bpm tag<br/>
-							- Added logging system(Fixed same song downloading and some songs not being available)<br/>
-							- Fixed corruped FLAC's<br/>
-							- Added %year%<br/>
-							- Fixed dots at end<br/>
-							- Fixed undefined genre<br/>
-							<br/>
-							<b>Version 3.0.1</b><br/>
-							- Added a couple of tags<br/>
-							- Fixed minor bugs<br/>
-							- Removed tag libs, a moudle is used instead<br/>
-							<br/>
-							<b>Version 3.0.0</b><br/>
-							- Added Vorbis comments(To support FLAC tagging)<br/>
-							- Added HIFI(FLAC) quality (Opt-IN in settings)<br/>
-							- Updated http to https<br/>
-							- Updated all libraries to their latest version<br/>
-							- Fixed random crash when searching<br/>
-							- Fixed the track info grabber(Downloading was not possible)<br/>
-							- Fixed artist duplicate in tagging<br/>
-							- Changed the default artwork size to 1200p<br/>
-							- Changed config location to UserData folder(Appdata)<br/>
-							<br/>
-							<b>Version 2.3.1</b><br/>
-							- Fixed the %number% variable to only list the current track<br/>
-							- Fixed the resolution for users with a screensize less than 1400x900p<br/>
-							- Fixed folder/file creation name for windows (...again...)<br/>
-							- Fixed explicit tooltip<br/>
-							- Added more logging<br/>
-							- Added progress bar support for artists<br/>
-							- Added a checkbox to select everything in album/playlist-modal<br/>
-							- Added tooltip for supported naming patterns<br/>
-							- Added an option to select a different artwork size. (500p, 800p(default), 1000p, 1200p)<br/>
-							- Enhanced tagging, now all artists are written to the 'artist'-field<br/>
-							<br/>
-							<b>Version 2.3.0</b><br/>
-							- Fixed app refusing to start when some folders are missing<br/>
-							- Fixed playlist file not containing the correct file names<br/>
-							- Fixed folders with a dot at the end resulting in undeletable file<br/>
-							- Fixed the progress bar for albums and playlists<br/>
-							- Relocated explicit icon to the front of the filename<br/>
-							- Added more explicit icons in album-/playlist- and artist-modal<br/>
-							- Added a new feature which allows the user to only download selected songs from an album or playlist<br/>
-							<br/>
-							<b>Version 2.2.1</b><br/>
-							- Fixed settings module (sigh ... again)<br/>
-							- Fixed issue related to folders that have special chars<br/>
-							<br/>
-							<b>Version 2.2.0</b><br/>
-							- Fixed settings panel, all settings should work as expected now<br/>
-							- Fixed writing location of config.json<br/>
-							- Fixed crashing when searching for cyrillic characters, it should work fine now<br/>
-							- Moved the folder for cover arts to the temp folder of the system<br/>
-							- Added icon for explicit songs<br/>
-							- The window size and position are now remembered<br/>
-							- The "Scroll to top" button works again<br/>
-							- Fixed problem with folders that contain dots and other symbols<br/>
-							- A bunch of refactoring thanks to Blind-Mute<br/>
-							- Fixed cover art not embedding on OSX<br/>
-							- Minor performance improvements<br/>
-							<br/>
-							<b>Version 2.1.2</b><br/>
-							- Fixed Deezer API connection<br/>
-							- Fixed tracks metadata naming for diacritics text<br/>
-							- Added custom location for downloads settings<br/>
-							<br/>
-							<b>Version 2.1.1</b><br/>
-							- Added context menu<br/>
-							- Corrected some spelling mistakes<br/>
-							- Fixed crash when searching with special characters like Æ, Ø and Å.<br/>
-							<br/>
-							<b>Version 2.1.0</b><br/>
-							- Updated all libraries to their latest version (this should fix issues with newer node versions)<br/>
-							- Updated the design of the app, checked spelling and added responsive so it can be better used on a mobile browser.<br/>
-							- Fixed small bug with overlapping texts in settings modal<br/>
-							- Fixed clear button in the downloads section not working <br/>
-							- Added error logging <br>
-							<br>
-							<b>Version 2.0.3</b><br/>
-							- Removed the updater to stop spamming the domain of the original author<br/>
-							- Removed character fixing in metadata that would result in AC/DC being turned to AC_DC.<br/>
-							- Fixed the Artist's album list not being loaded. Now it loads and has the option to download the album.<br/>
-							- Changed the default country in top charts to UK instead of Germany (not a feature, just a thing I did when I was
-							tinkering with the code and forgot to change)<br/>
-							- Fixed compatibility issues with Node v6 (works on older versions too, but there might be problems with downloading
-							the cover art, so please update to v6 if you can)<br/>
+              <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Changelog">Full Changelog Here</a>
 						</p>
 					</div>
 				</li>
@@ -681,6 +458,17 @@
 <nav>
   <div class="nav-wrapper">
     <div class="brand-logo center hide-on-small-only">Deezloader <b>Remix</b></div>
+    <ul class="left hide-on-small-only">
+      <li>
+        <div class="switch">
+          <label>
+            <i class="material-icons left white-text" style="margin-right: 0px; margin-left: 15px;">brightness_2</i>
+            <input id="nightTimeSwitcher" type="checkbox">
+            <span class="lever"></span>
+          </label>
+        </div>
+      </li>
+    </ul>
     <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-med-and-up right"><i class="material-icons">menu</i></a>
     <ul id="nav-mobile" class="right hide-on-small-only">
       <li>
@@ -714,6 +502,8 @@
   <li><div class="divider"></div></li>
   <li><a href="#modal_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i>Settings</a></li>
   <li><a href="#modal_about" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">star</i>About</a></li>
+  <li><a href="#!" id="nightModeSwitch2"><i class="material-icons">brightness_2</i>Enable Night Mode</a>
+  </li>
 </ul>
 
 <main class="container">
@@ -826,6 +616,7 @@
         </select>
         <label>Country</label>
       </div>
+      <button id="downloadChartPlaylist" class="col s12 btn btn-input btn-flat deezloader-primary white-text" style="margin-bottom:8px;">Download Playlist</button>
       <table id="tab_charts_table_charts" class="striped">
         <thead class="hide-on-small-only">
           <tr>
@@ -886,14 +677,19 @@
 
     <div id="tab_downloads">
       <div class="row">
-        <div class="col s6">
-          <button id="openDownloadsFolder" style="width: 100%" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
+        <div class="col s12 m4">
+          <button id="openDownloadsFolder" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
             Open Downloads Folder
           </button>
         </div>
-        <div class="col s6">
-          <button id="clearTracksTable" style="width: 100%" class="btn btn-flat btn-input btn-block deezloader-secondary white-text">Clear
-            List
+        <div class="col s12 m4">
+          <button id="cancelAllTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-secondary white-text">
+            Cancel All Downloads
+          </button>
+        </div>
+        <div class="col s12 m4">
+          <button id="clearTracksTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-secondary white-text">
+            Clear List
           </button>
         </div>
       </div>
@@ -925,13 +721,14 @@
 </audio>
 
 <footer class="deezloader-black darken-1 left page-footer hide-on-med-and-down valign-wrapper">
-      <p><span style="position: relative;top: 1px;display: inline-block;transform: rotateY(180deg);">&copy;</span> Deezloader original code by <a class="white-text" href="https://boerse.to/members/zzmtv.3378614/">ZzMTV</a>.</p>
+      <p><span style="position: relative;display: inline-block;transform: rotateY(180deg);">&copy;</span> Deezloader original code by <a class="white-text" href="https://boerse.to/members/zzmtv.3378614/">ZzMTV</a>.</p>
 </footer>
 
 <script>if (typeof module === 'object') {
 	window.module = module;
 	module = undefined;
 }</script>
+<script type="text/javascript" src="js/socket.io.js"></script>
 <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="js/materialize.min.js"></script>
 <script type="text/javascript" src="js/vue.min.js"></script>

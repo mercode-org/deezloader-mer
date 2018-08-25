@@ -23,7 +23,11 @@
 		"productName": "Deezloader Remix",
 		"linux": {
 			"target": "AppImage",
-			"category": "Audio"
+			"category": "Audio",
+			"arch": [
+				"x64",
+				"ia32"
+			]
 		},
 		"mac": {
 			"category": "public.app-category.music"
@@ -31,10 +35,18 @@
 		"win": {
 			"target": [
 				{
-					"target": "nsis"
+					"target": "nsis",
+					"arch": [
+						"x64",
+						"ia32"
+					]
 				},
 				{
-					"target": "portable"
+					"target": "portable",
+					"arch": [
+						"x64",
+						"ia32"
+					]
 				}
 			]
 		},

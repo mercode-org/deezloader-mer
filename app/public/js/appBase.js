@@ -74,14 +74,17 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 			initTitleBar();
 			$('#application_version_about').text(version);
 			$('#application_version_logo').text(version.replace(/\.[^/.]+$/, ""));
-
-			$('#modal_settings_input_downloadTracksLocation').on('click', function () {
-				if(typeof require !== "undefined"){
+			if(typeof require !== "undefined"){
+				$('#modal_settings_input_downloadTracksLocation').on('click', function () {
 					$(this).val(dialog.showOpenDialog({
 						properties: ['openDirectory']
 					}));
-				}
-			});
+				});
+			}else{
+				$("#openDownloadsFolder").parent().hide();
+				$("#cancellAllTable").parent().removeClass("m4").addClass("m6");
+				$("#clearTracksTable").parent().removeClass("m4").addClass("m6");
+			}
 		}
 	};
 })(jQuery);

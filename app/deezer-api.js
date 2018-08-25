@@ -27,26 +27,56 @@ function Deezer() {
 
 Deezer.prototype.init = function(username, password, callback) {
 	var self = this;
-	request.post({url: "https://www.deezer.com/ajax/action.php", headers: this.httpHeaders, form: {type:'login',mail:username,password:password}, jar: true}, (function(err, res, body) {
-		if(err || res.statusCode != 200) {
-			callback(new Error("Unable to load deezer.com"));
-		}else if(body.indexOf("success") > -1){
-			request.get({url: "https://www.deezer.com/", headers: this.httpHeaders, jar: true}, (function(err, res, body) {
-				if(!err && res.statusCode == 200) {
-					const userRegex = new RegExp(/"type":"user","data":([^}]*})/g);
-					const user = JSON.parse(userRegex.exec(body)[1]);
-					self.userId = user.USER_ID;
-					self.userName = user.BLOG_NAME;
-					self.userPicture = `https:\/\/e-cdns-images.dzcdn.net\/images\/user\/${user.USER_PICTURE}\/250x250-000000-80-0-0.jpg`;
-					callback(null, null);
-				} else {
-					callback(new Error("Unable to load deezer.com "+err));
-				}
-			}).bind(self));
-		}else{
-			callback(new Error("Incorrect email or password. "+err));
-		}
-	}));
+	request.post({
+		url: self.apiUrl,
+		qs: {
+			...self.apiQueries,
+			method: 'deezer.getUserData'
+		},
+		headers: self.httpHeaders,
+		jar: true,
+		json:true,
+	}, function(err, res, body) {
+		self.apiQueries.api_token = body.results.checkForm;
+		request.post({
+			url: "https://www.deezer.com/ajax/action.php",
+			headers: this.httpHeaders,
+			form: {
+				type:'login',
+				mail:username,
+				password:password,
+				checkFormLogin: body.results.checkFormLogin
+			},
+			jar: true
+		}, function(err, res, body) {
+			if(err || res.statusCode != 200) {
+				callback(new Error("Unable to load deezer.com"));
+			}else if(body.indexOf("success") > -1){
+				request.post({
+					url: self.apiUrl,
+					qs: {
+						...self.apiQueries,
+						method: 'deezer.getUserData'
+					},
+					headers: self.httpHeaders,
+					jar: true,
+					json:true,
+				}, function(err, res, body) {
+					if(!err && res.statusCode == 200) {
+						const user = body.results.USER;
+						self.userId = user.USER_ID;
+						self.userName = user.BLOG_NAME;
+						self.userPicture = `https:\/\/e-cdns-images.dzcdn.net\/images\/user\/${user.USER_PICTURE}\/250x250-000000-80-0-0.jpg`;
+						callback(null, null);
+					} else {
+						callback(new Error("Unable to load deezer.com "+err));
+					}
+				});
+			}else{
+				callback(new Error("Incorrect email or password."));
+			}
+		});
+	})
 }
 
 
@@ -171,7 +201,7 @@ Deezer.prototype.getMePlaylists = function(callback) {
 	});
 }
 
-Deezer.prototype.getTrack = function(id, wantFlac, callback) {
+Deezer.prototype.getTrack = function(id, maxBitrate, callback) {
 	var scopedid = id;
 	var self = this;
 	request.get({url: "https://www.deezer.com/track/"+id, headers: this.httpHeaders, jar: true}, (function(err, res, body) {
@@ -200,17 +230,21 @@ Deezer.prototype.getTrack = function(id, wantFlac, callback) {
 			var id = json["SNG_ID"];
 			var md5Origin = json["MD5_ORIGIN"];
 			var format;
-			if(wantFlac && json["FILESIZE_FLAC"] > 0){
-				format = 9;
-			}else{
-				format = 3;
-				if(json["FILESIZE_MP3_320"] <= 0) {
-					if(json["FILESIZE_MP3_256"] > 0) {
-						format = 5;
-					} else {
-						format = 1;
-					}
-				}
+			switch(maxBitrate){
+				case "9":
+					format = 9;
+					if (json["FILESIZE_FLAC"]>0) break;
+				case "3":
+					format = 3;
+					if (json["FILESIZE_MP3_320"]>0) break;
+				case "5":
+					format = 5;
+					if (json["FILESIZE_MP3_256"]>0) break;
+				case "1":
+					format = 1;
+					if (json["FILESIZE_MP3_128"]>0) break;
+				case "8":
+					format = 8;
 			}
 			json.format = format;
 			var mediaVersion = parseInt(json["MEDIA_VERSION"]);
@@ -362,7 +396,6 @@ Deezer.prototype.hasTrackAlternative = function(id, callback) {
 }
 
 Deezer.prototype.getDownloadUrl = function(md5Origin, id, format, mediaVersion) {
-
 	var urlPart = md5Origin + "¤" + format + "¤" + id + "¤" + mediaVersion;
 	var md5sum = crypto.createHash('md5');
 	md5sum.update(new Buffer(urlPart, 'binary'));

@@ -138,6 +138,7 @@ io.sockets.on('connection', function (socket) {
 						}
 					});
 				}
+				logger.info("Logging in");
 				socket.emit("login", {username: Deezer.userName, picture: Deezer.userPicture});
 				logger.info("Logged in successfully");
 			}
@@ -220,7 +221,7 @@ io.sockets.on('connection', function (socket) {
 	}
 
 	function socketDownloadTrack(data){
-		Deezer.getTrack(data.id, data.settings.hifi, function (track, err) {
+		Deezer.getTrack(data.id, data.settings.maxBitrate, function (track, err) {
 			if (err) {
 				return;
 			}
@@ -316,7 +317,6 @@ io.sockets.on('connection', function (socket) {
 	}
 	socket.on("downloadartist", data=>{socketDownloadArtist(data)});
 
-
 	socket.on("downloadspotifyplaylist", function (data) {
 		spotifyApi.clientCredentialsGrant().then(function(creds) {
 			spotifyApi.setAccessToken(creds.body['access_token']);
@@ -336,7 +336,7 @@ io.sockets.on('connection', function (socket) {
 				tracks: resp.body["tracks"]["items"]
 			};
 			_playlist.settings = data.settings || {};
-			addToQueue(_playlist);
+			addToQueue(JSON.parse(JSON.stringify(_playlist)));
 		})
 	});
 
@@ -530,9 +530,9 @@ io.sockets.on('connection', function (socket) {
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-						let imgPath = filePath + "folder.jpg";
+						let imgPath = filePath + "folder"+(settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.cover){
-							downloading.cover = downloading.cover.replace("56x56",downloading.settings.artworkSize.split(".")[0].substr(1))
+							downloading.cover = downloading.cover.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
 							request.get(downloading.cover, {encoding: 'binary'}, function(error,response,body){
 								if(error){
 									logger.error(error.stack);
@@ -659,7 +659,7 @@ io.sockets.on('connection', function (socket) {
 						}
 						if (downloading.settings.saveArtwork){
 							if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-							let imgPath = filePath + "folder.jpg";
+							let imgPath = filePath + "folder"+(settings.PNGcovers ? ".png" : ".jpg");
 							if (downloading.cover){
 								request.get(downloading.cover, {encoding: 'binary'}, function(error,response,body){
 									if(error){
@@ -720,8 +720,8 @@ io.sockets.on('connection', function (socket) {
 		});
 	});
 
-	socket.on("getChartsTrackListByCountry", function (data) {
-		if (!data.country) {
+	function socketGetChartsTrackListByCountry(country){
+		if (!country) {
 			socket.emit("getChartsTrackListByCountry", {err: "No country passed"});
 			return;
 		}
@@ -737,25 +737,26 @@ io.sockets.on('connection', function (socket) {
 				countries.push(charts[i].title.replace("Top ", ""));
 			}
 
-			if (countries.indexOf(data.country) == -1) {
+			if (countries.indexOf(country) == -1) {
 				socket.emit("getChartsTrackListByCountry", {err: "Country not found"});
 				return;
 			}
-			let playlistId = charts[countries.indexOf(data.country)].id;
+			let playlistId = charts[countries.indexOf(country)].id;
 			Deezer.getPlaylistTracks(playlistId, function (tracks, err) {
 				if (err) {
 					socket.emit("getChartsTrackListByCountry", {err: err});
 					return;
 				}
 				socket.emit("getChartsTrackListByCountry", {
-					playlist: charts[countries.indexOf(data.country)],
+					playlist: charts[countries.indexOf(country)],
 					tracks: tracks.data
 				});
 			});
 		});
-	});
+	}
+	socket.on("getChartsTrackListByCountry", function (data) {socketGetChartsTrackListByCountry(data.country)});
 
-	socket.on("getMePlaylistList", function (d) {
+	function socketGetMePlaylistList(){
 		logger.info("Loading Personal Playlists")
 		Deezer.getMePlaylists(function (data, err) {
 			if(err){
@@ -792,7 +793,8 @@ io.sockets.on('connection', function (socket) {
 											title: playlist.name,
 											image: (playlist.images[0] ? playlist.images[0].url : ""),
 											songs: playlist.tracks.total,
-											link: playlist.uri
+											link: playlist.uri,
+											spotify: true
 										};
 									});
 									resolvePage();
@@ -815,7 +817,8 @@ io.sockets.on('connection', function (socket) {
 				socket.emit("getMePlaylistList", {playlists: playlists});
 			}
 		});
-	});
+	}
+	socket.on("getMePlaylistList", function (d) {socketGetMePlaylistList()});
 
 	socket.on("search", function (data) {
 		data.type = data.type || "track";
@@ -834,7 +837,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	socket.on("getTrackList", function (data) {
-		if (!data.type || (["playlist", "album", "artist"].indexOf(data.type) == -1) || !data.id) {
+		if (!data.type || (["playlist", "album", "artist", "spotifyplaylist"].indexOf(data.type) == -1) || !data.id) {
 			socket.emit("getTrackList", {err: -1, response: {}, id: data.id, reqType: data.type});
 			return;
 		}
@@ -846,7 +849,54 @@ io.sockets.on('connection', function (socket) {
 				}
 				socket.emit("getTrackList", {response: response, id: data.id, reqType: data.type});
 			});
-		} else {
+		}else if(data.type == "spotifyplaylist"){
+			spotyUser = data.id.slice(data.id.indexOf("user:")+5);
+			spotyUser = spotyUser.substring(0, spotyUser.indexOf(":"));
+			playlistID = data.id.slice(data.id.indexOf("playlist:")+9);
+
+			spotifyApi.clientCredentialsGrant().then(function(creds) {
+				spotifyApi.setAccessToken(creds.body['access_token']);
+				return spotifyApi.getPlaylistTracks(spotyUser, playlistID, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total"})
+			}).then(function(resp) {
+				numPages=Math.floor((resp.body["total"]-1)/100);
+				let pages = []
+				let response = new Array(resp.body["total"]);
+				resp.body["items"].map((t,i)=>{
+					response[i]={
+						explicit_lyrics: t.track.explicit,
+						preview: t.track.preview_url,
+						title: t.track.name,
+						artist: {
+							name: t.track.artists[0].name
+						},
+						duration: Math.floor(t.track.duration_ms/1000)
+					};
+				})
+				if (resp.body["total"]>100){
+					for (let offset = 1; offset<=numPages; offset++){
+						pages.push(new Promise(function(resolvePage) {
+							spotifyApi.getPlaylistTracks(spotyUser, playlistID, {fields: "items(track(artists,name,duration_ms,preview_url,explicit))", offset: offset*100}).then(function(resp){
+								resp.body['items'].forEach((t, index) => {
+									response[index+offset*100]={
+										explicit_lyrics: t.track.explicit,
+										preview: t.track.preview_url,
+										title: t.track.name,
+										artist: {
+											name: t.track.artists[0].name
+										},
+										duration: Math.floor(t.track.duration_ms/1000)
+									};
+								});
+								resolvePage();
+							});
+						}));
+					}
+				}
+				Promise.all(pages).then((val)=>{
+					socket.emit("getTrackList", {response: {'data': response}, id: data.id, reqType: data.type});
+				})
+			});
+		}else{
 			let reqType = data.type.charAt(0).toUpperCase() + data.type.slice(1);
 			Deezer["get" + reqType + "Tracks"](data.id, function (response, err) {
 				if (err) {
@@ -858,18 +908,18 @@ io.sockets.on('connection', function (socket) {
 		}
 	});
 
-	socket.on("cancelDownload", function (data) {
-		if (!data.queueId) {
+	function socketCancelDownload(queueId){
+		if (!queueId) {
 			return;
 		}
 		let cancel = false;
 		let cancelSuccess;
-		if (socket.downloadQueue[data.queueId]){
+		if (socket.downloadQueue[queueId]){
 			cancel = true;
-			delete socket.downloadQueue[data.queueId];
+			delete socket.downloadQueue[queueId];
 		}
-		if (socket.currentItem && socket.currentItem.queueId == data.queueId) {
-			cancelSuccess = Deezer.cancelDecryptTrack(data.queueId);
+		if (socket.currentItem && socket.currentItem.queueId == queueId) {
+			cancelSuccess = Deezer.cancelDecryptTrack(queueId);
 			socket.trackQueue = queue({
 				autostart: true,
 				concurrency: socket.trackQueue.concurrency
@@ -877,9 +927,16 @@ io.sockets.on('connection', function (socket) {
 			cancel = cancel || cancelSuccess;
 		}
 		if (cancel) {
-			socket.emit("cancelDownload", {queueId: data.queueId});
+			socket.emit("cancelDownload", {queueId: queueId});
 		}
-	});
+	}
+	socket.on("cancelDownload", function (data) {socketCancelDownload(data.queueId)});
+
+	socket.on("cancelAllDownloads", function(data){
+		data.queueList.forEach(x=>{
+			socketCancelDownload(x);
+		})
+	})
 
 	socket.on("downloadAlreadyInQueue", function (data) {
 		if (data.id) {
@@ -917,38 +974,11 @@ io.sockets.on('connection', function (socket) {
 
 		if (settings.userDefined.chartsCountry != configFile.userDefined.chartsCountry){
 			socket.emit("setChartsCountry", {selected: settings.userDefined.chartsCountry});
-			Deezer.getChartsTopCountry(function (charts, err) {
-				if(err){
-					return;
-				}
-				if(charts){
-					charts = charts.data || [];
-				}else{
-					charts = [];
-				}
-				let countries = [];
-				for (let i = 0; i < charts.length; i++) {
-					countries.push(charts[i].title.replace("Top ", ""));
-				}
+			socketGetChartsTrackListByCountry(settings.userDefined.chartsCountry);
+		}
 
-				if (countries.indexOf(settings.userDefined.chartsCountry) == -1) {
-					socket.emit("getChartsTrackListByCountry", {err: "Country not found"});
-					return;
-				}
-
-				let playlistId = charts[countries.indexOf(settings.userDefined.chartsCountry)].id;
-
-				Deezer.getPlaylistTracks(playlistId, function (tracks, err) {
-					if (err) {
-						socket.emit("getChartsTrackListByCountry", {err: err});
-						return;
-					}
-					socket.emit("getChartsTrackListByCountry", {
-						playlist: charts[countries.indexOf(settings.userDefined.chartsCountry)],
-						tracks: tracks.data
-					});
-				});
-			});
+		if (settings.userDefined.spotifyUser != configFile.userDefined.spotifyUser){
+			socketGetMePlaylistList(settings.userDefined.spotifyUser);
 		}
 
 		configFile.userDefined = settings.userDefined;
@@ -973,7 +1003,7 @@ io.sockets.on('connection', function (socket) {
 		let temp1 = new Promise((resolve, reject)=>{
 			if (!settings.trackInfo){
 				logger.info("Getting track data");
-				Deezer.getTrack(t.id, settings.hifi, function (trackInfo, err) {
+				Deezer.getTrack(t.id, settings.maxBitrate, function (trackInfo, err) {
 					if (err) {
 						if(t.fallback){
 							logger.warn("Failed to download track, falling on alternative");
@@ -1131,12 +1161,12 @@ io.sockets.on('connection', function (socket) {
 							let imgPath;
 							//If its not from an album but a playlist.
 							if(!(settings.albName || settings.createAlbumFolder)){
-								imgPath = coverArtFolder + fixName(metadata.ISRC) + ".jpg";
+								imgPath = coverArtFolder + fixName(metadata.BARCODE)+(settings.PNGcovers ? ".png" : ".jpg");
 							}else{
 								if (settings.saveArtwork)
-									imgPath = filepath + "folder.jpg";
+									imgPath = filepath + "folder"+(settings.PNGcovers ? ".png" : ".jpg");
 								else
-									imgPath = coverArtFolder + fixName(settings.artName+" - "+settings.albName) + ".jpg";
+									imgPath = coverArtFolder + fixName(metadata.BARCODE)+(settings.PNGcovers ? ".png" : ".jpg");
 							}
 							if(fs.existsSync(imgPath)){
 								metadata.imagePath = (imgPath).replace(/\\/g, "/");
@@ -1250,6 +1280,7 @@ io.sockets.on('connection', function (socket) {
 								}
 								if (0 < parseInt(metadata.year)) {
 									flacComments.push('YEAR=' + metadata.year);
+									flacComments.push('DATE=' + metadata.date);
 								}
 								if (0 < parseInt(metadata.bpm)) {
 									flacComments.push('BPM=' + metadata.bpm);
@@ -1296,18 +1327,7 @@ io.sockets.on('connection', function (socket) {
 										mdb.remove();
 									}
 									if (mdb.isLast) {
-										let res = 0;
-										if(settings.artworkSize.includes("1400")){
-											res = 1400;
-										}else if(settings.artworkSize.includes("1200")){
-											res = 1200;
-										}else if(settings.artworkSize.includes("1000")){
-											res = 1000;
-										}else if(settings.artworkSize.includes("800")){
-											res = 800;
-										}else if(settings.artworkSize.includes("500")){
-											res = 500;
-										}
+										res = settings.artworkSize;
 										if(cover){
 											mdbVorbisPicture = mflac.data.MetaDataBlockPicture.create(true, 3, 'image/jpeg', '', res, res, 24, 0, cover);
 										}
@@ -1368,6 +1388,7 @@ io.sockets.on('connection', function (socket) {
 									writer.setFrame('TCOP', metadata.copyright);
 								}
 								if (0 < parseInt(metadata.year)) {
+									writer.setFrame('TDAT', metadata.date);
 									writer.setFrame('TYER', metadata.year);
 								}
 								if (0 < parseInt(metadata.bpm)) {
@@ -1597,10 +1618,10 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 			explicit: track["EXPLICIT_LYRICS"],
 			ISRC: track["ISRC"],
 			rtype: ajson.record_type,
+			BARCODE: ajson.upc,
 		};
 		if (settings.extendedTags){
 			metadata.length = track["DURATION"];
-			metadata.BARCODE = ajson.upc;
 			if(track["COPYRIGHT"]){
 				metadata.copyright = track["COPYRIGHT"];
 			}
@@ -1686,12 +1707,14 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 			if (track.format != 9) metadata.genre = metadata.genre.join(separator);
 		}
 		if (track["ALB_PICTURE"]) {
-			metadata.image = Deezer.albumPicturesHost + track["ALB_PICTURE"] + settings.artworkSize;
+			metadata.image = Deezer.albumPicturesHost + track["ALB_PICTURE"]+"/"+settings.artworkSize+"x"+settings.artworkSize+"-000000-80-0-0"+(settings.PNGcovers ? ".png" : ".jpg");
 		}
 		if (ajson.release_date) {
 			metadata.year = ajson.release_date.slice(0, 4);
+			metadata.date = ajson.release_date;
 		} else if(track["PHYSICAL_RELEASE_DATE"]){
 			metadata.year = track["PHYSICAL_RELEASE_DATE"].slice(0, 4);
+			metadata.date = track["PHYSICAL_RELEASE_DATE"];
 		}
 		if(settings.plName && !(settings.createArtistFolder || settings.createAlbumFolder) && !settings.numplaylistbyalbum){
 			metadata.trackNumber = (position+1).toString() + "/" + settings.playlist.fullSize;

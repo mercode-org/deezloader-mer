@@ -24,6 +24,7 @@ $('#modal_login_btn_login').click(function () {
 	var username = $('#modal_login_input_username').val();
 	var password = $('#modal_login_input_password').val();
 	var autologin = $('#modal_login_input_autologin').prop("checked");
+	Username = username;
 	//Send to the software
 	socket.emit('login', username, password,autologin);
 });
@@ -123,6 +124,33 @@ $(document).ready(function () {
 		}
 	});
 
+	$('#nightTimeSwitcher').change(function(){
+		if(this.checked){
+			$('link[name=darkMode]').removeAttr("disabled")
+			$("#nightModeSwitch2").html(`<i class="material-icons">brightness_7</i>Disable Night Mode`)
+		}else{
+			$('link[name=darkMode]').attr("disabled","disabled")
+			$("#nightModeSwitch2").html(`<i class="material-icons">brightness_2</i>Enable Night Mode`)
+		}
+		localStorage.darkMode = this.checked;
+	});
+
+	$("#nightModeSwitch2").click(()=>{
+		$('#nightTimeSwitcher').prop('checked', !$('#nightTimeSwitcher').prop('checked'))
+		$('#nightTimeSwitcher').change();
+	})
+
+	if (eval(localStorage.darkMode)){
+		$('#nightTimeSwitcher').prop('checked', true);
+		$('#nightTimeSwitcher').change();
+	}else{
+		$('#nightTimeSwitcher').prop('checked', false);
+		$('#nightTimeSwitcher').change();
+	}
+	$("#downloadChartPlaylist").click(function(){
+		addToQueue(`https://www.deezer.com/playlist/${$(this).data("id")}`);
+	})
+
 	$('.modal').modal();
 	socket.emit("getUserSettings");
 });
@@ -164,7 +192,7 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		createArtistFolder: $('#modal_settings_cbox_createArtistFolder').is(':checked'),
 		createAlbumFolder: $('#modal_settings_cbox_createAlbumFolder').is(':checked'),
 		downloadLocation: $('#modal_settings_input_downloadTracksLocation').val(),
-		artworkSize: $('#modal_settings_select_artworkSize').val(),
+		artworkSize: parseInt($('#modal_settings_select_artworkSize').val()),
 		hifi: $('#modal_settings_cbox_hifi').is(':checked'),
 		padtrck: $('#modal_settings_cbox_padtrck').is(':checked'),
 		syncedlyrics: $('#modal_settings_cbox_syncedlyrics').is(':checked'),
@@ -176,7 +204,9 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		saveArtwork: $('#modal_settings_cbox_saveArtwork').is(':checked'),
 		logErrors: $('#modal_settings_cbox_logErrors').is(':checked'),
 		queueConcurrency: parseInt($('#modal_settings_number_queueConcurrency').val()),
-		multitagSeparator: $('#modal_settings_select_multitagSeparator').val()
+		multitagSeparator: $('#modal_settings_select_multitagSeparator').val(),
+		maxBitrate: $('#modal_settings_select_maxBitrate').val(),
+		PNGcovers: $('#modal_settings_cbox_PNGcovers').is(':checked')
 	};
 
 	// Send updated settings to be saved into config file
@@ -235,6 +265,8 @@ function fillSettingsModal(settings) {
 	$('#modal_settings_cbox_logErrors').prop('checked', settings.logErrors);
 	$('#modal_settings_number_queueConcurrency').val(settings.queueConcurrency);
 	$('#modal_settings_select_multitagSeparator').val(settings.multitagSeparator).formSelect();
+	$('#modal_settings_select_maxBitrate').val(settings.maxBitrate).formSelect();
+	$('#modal_settings_cbox_PNGcovers').prop('checked', settings.PNGcovers);
 
 	M.updateTextFields()
 }
@@ -495,9 +527,8 @@ socket.on("getTrackList", function (data) {
 			var tableBody = $('#modal_trackList_table_trackList_tbody_trackList');
 		}
 		$(tableBody).html('');
-
+		console.log(trackList)
 		//############################################
-
 		if (data.reqType == 'artist') {
 			trackListModalApp.title = 'Album List';
 			trackListModalApp.head = [
@@ -508,14 +539,11 @@ socket.on("getTrackList", function (data) {
 				{title: 'Record Type'},
 				{title: 'Download Album'}
 			];
-
 			for (var i = 0; i < trackList.length; i++) {
-
 				$(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
 						(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i></td>' : '<td></td>') +
 						'<td><a href="#" class="album_chip" data-link="' + trackList[i].link + '"><div class="chip"><img src="' + trackList[i].cover_small + '" />' + trackList[i].title + '</div></a></td>' +
 						'<td>' + trackList[i].release_date + '</td><td>' + trackList[i].record_type + '</td></tr>');
-
 				generateDownloadLink(trackList[i].link).appendTo(tableBody.children('tr:last')).wrap('<td>');
 			}
 			$('.album_chip').click(function(e){
@@ -523,7 +551,6 @@ socket.on("getTrackList", function (data) {
 			});
 		} else if(data.reqType == 'playlist') {
 			trackListSelectiveModalApp.title = 'Playlist';
-
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},
 				{title: '#'},
@@ -532,9 +559,7 @@ socket.on("getTrackList", function (data) {
 				{title: '<i class="material-icons">timer</i>'},
 				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
 			];
-
 			$('.selectAll').prop('checked', false);
-
 			for (var i = 0; i < trackList.length; i++) {
 				$(tableBody).append(
 					'<tr><td><i class="material-icons preview_playlist_controls" preview="'+trackList[i].preview+'">play_arrow</i></td>'+
@@ -576,7 +601,6 @@ socket.on("getTrackList", function (data) {
 			}
 		} else if(data.reqType == 'album') {
 			trackListSelectiveModalApp.title = 'Tracklist';
-
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},
 				{title: '#'},
@@ -585,15 +609,12 @@ socket.on("getTrackList", function (data) {
 				{title: '<i class="material-icons">timer</i>'},
 				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
 			];
-
 			$('.selectAll').prop('checked', false);
-
 			if (trackList[trackList.length-1].disk_number != 1){
 				baseDisc = 0
 			} else {
 				baseDisc =1
 			};
-
 			for (var i = 0; i < trackList.length; i++) {
 				discNum = trackList[i].disk_number
 				if (discNum != baseDisc){
@@ -647,14 +668,45 @@ socket.on("getTrackList", function (data) {
 				{title: 'Artist'},
 				{title: '<i class="material-icons">timer</i>'}
 			];
-
 			for (var i = 0; i < trackList.length; i++) {
-
-				$(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
-						(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') +
-						trackList[i].title + '</td>' +
-						'<td>' + trackList[i].artist.name + '</td>' +
-						'<td>' + convertDuration(trackList[i].duration) + '</td></tr>');
+				$(tableBody).append(
+					'<tr>'+
+					'<td><i class="material-icons preview_playlist_controls" preview="'+trackList[i].preview+'">play_arrow</i></td>'+
+					'<td>' + (i + 1) + '</td>' +
+					(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') +
+					trackList[i].title + '</td>' +
+					'<td>' + trackList[i].artist.name + '</td>' +
+					'<td>' + convertDuration(trackList[i].duration) + '</td></tr>'
+				);
+				tableBody.children('tr:last').find('.preview_playlist_controls').click(function (e) {
+					e.preventDefault();
+					if ($(this).prop("playing")){
+						if (preview_track.paused){
+							preview_track.play();
+							preview_stopped = false;
+							$(this).text("pause");
+							$(preview_track).animate({volume: 1}, 500);
+						}else{
+							preview_stopped = true;
+							$(this).text("play_arrow");
+							$(preview_track).animate({volume: 0}, 250, "swing", ()=>{ preview_track.pause() });
+						}
+					}else{
+						$("*").removeProp("playing");
+						$(this).prop("playing","playing");
+						$('.preview_controls').text("play_arrow");
+						$('.preview_playlist_controls').text("play_arrow");
+						$('.preview_controls').css({opacity:0});
+						$(this).text("pause");
+						$(this).css({opacity: 1});
+						preview_stopped = false;
+						$(preview_track).animate({volume: 0}, 250, "swing", ()=>{
+							preview_track.pause();
+							$('#preview-track_source').prop("src", $(this).attr("preview"));
+							preview_track.load();
+						});
+					}
+				});
 			}
 		}
 		if(data.reqType == 'album' || data.reqType == 'playlist'){
@@ -664,9 +716,7 @@ socket.on("getTrackList", function (data) {
 			$('#modal_trackList_table_trackList_tbody_loadingIndicator').addClass('hide');
 			$('#modal_trackList_table_trackList_tbody_trackList').removeClass('hide');
 		}
-
 		//$('#modal_trackList_table_trackList_tbody_trackList').html(content);
-
 	}
 });
 
@@ -675,15 +725,12 @@ socket.on("getChartsCountryList", function (data) {
 	//data.countries		-> Array
 	//data.countries[0].country -> String (country name)
 	//data.countries[0].picture_small/picture_medium/picture_big -> url to cover
-
 	for (var i = 0; i < data.countries.length; i++) {
 		$('#tab_charts_select_country').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left circle">' + data.countries[i]['country'] + '</option>');
 		$('#modal_settings_select_chartsCounrty').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left circle">' + data.countries[i]['country'] + '</option>');
 	}
-
 	$('#tab_charts_select_country').find('option[value="' + data.selected + '"]').attr("selected", true);
 	$('#modal_settings_select_chartsCounrty').find('option[value="' + data.selected + '"]').attr("selected", true);
-
 	$('select').formSelect();
 });
 
@@ -694,29 +741,21 @@ socket.on("setChartsCountry", function (data) {
 });
 
 $('#tab_charts_select_country').on('change', function () {
-
 	var country = $(this).find('option:selected').val();
-
 	$('#tab_charts_table_charts_tbody_charts').addClass('hide');
 	$('#tab_charts_table_charts_tbody_loadingIndicator').removeClass('hide');
-
 	socket.emit("getChartsTrackListByCountry", {country: country});
-
 });
 
 socket.on("getChartsTrackListByCountry", function (data) {
 	//data.playlist		-> Object with Playlist information
 	//data.tracks			-> Array
 	//data.tracks[0]	 -> Object of track 0
-
+	$("#downloadChartPlaylist").data("id", data.playlist.id)
 	var chartsTableBody = $('#tab_charts_table_charts_tbody_charts'), currentChartTrack;
-
 	chartsTableBody.html('');
-
 	for (var i = 0; i < data.tracks.length; i++) {
-
 		currentChartTrack = data.tracks[i];
-
 		$(chartsTableBody).append(
 				'<tr>' +
 				'<td>' + (i + 1) + '</td>' +
@@ -726,9 +765,7 @@ socket.on("getChartsTrackListByCountry", function (data) {
 				'<td>' + currentChartTrack['album']['title'] + '</td>' +
 				'<td>' + convertDuration(currentChartTrack['duration']) + '</td>' +
 				'</tr>');
-
 		generateDownloadLink(currentChartTrack['link']).appendTo(chartsTableBody.children('tr:last')).wrap('<td>');
-
 		chartsTableBody.children('tr:last').find('.preview_controls').hover( function () {
 			$(this).css({opacity: 1});
 		}, function () {
@@ -736,7 +773,6 @@ socket.on("getChartsTrackListByCountry", function (data) {
 				$(this).css({opacity: 0}, 200);
 			}
 		});
-
 		chartsTableBody.children('tr:last').find('.single-cover').click(function (e) {
 			e.preventDefault();
 			if ($(this).prop("playing")){
@@ -768,10 +804,8 @@ socket.on("getChartsTrackListByCountry", function (data) {
 		});
 
 	}
-
 	$('#tab_charts_table_charts_tbody_loadingIndicator').addClass('hide');
 	chartsTableBody.removeClass('hide');
-
 });
 
 //#############################################TAB_PLAYLISTS############################################\\
@@ -786,7 +820,11 @@ socket.on("getMePlaylistList", function (data) {
 				'<td>' + currentResultPlaylist['title'] + '</td>' +
 				'<td>' + currentResultPlaylist['songs'] + '</td>' +
 				'</tr>');
-		generateShowTracklistSelectiveButton(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
+		if (currentResultPlaylist.spotify)
+			generateShowTracklistButton(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>')
+		else
+			generateShowTracklistSelectiveButton(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>')
+
 		generateDownloadLink(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
 	}
 	$('.tooltipped').tooltip({delay: 100});
@@ -801,22 +839,18 @@ $('#tab_url_form_url').submit(function (ev) {
 	for(var i = 0; i < urls.length; i++){
 		var url = urls[i];
 		console.log(url);
-
 		if (url.length == 0) {
 			message('Blank URL Field', 'You need to insert an URL to download it!');
 			return false;
 		}
-
 		//Validate URL
 		if (url.indexOf('deezer.com/') < 0 && url.indexOf('open.spotify.com/') < 0 && url.indexOf('spotify:') < 0) {
 			message('Wrong URL', 'The URL seems to be wrong. Please check it and try it again.');
 			return false;
 		}
-
 		if (url.indexOf('?') > -1) {
 			url = url.substring(0, url.indexOf("?"));
 		}
-
 		if (url.indexOf('open.spotify.com/') >= 0 ||  url.indexOf('spotify:') >= 0){
 			if (url.indexOf('user') < 0 || url.indexOf('playlist') < 0){
 				message('Playlist not found', 'Spotify for now can only download playlists.');
@@ -830,12 +864,10 @@ $('#tab_url_form_url').submit(function (ev) {
 //############################################TAB_DOWNLOADS###########################################\\
 function addToQueue(url) {
 	var type = getTypeFromLink(url), id = getIDFromLink(url);
-
 	if (type == 'spotifyplaylist'){
 		[user, id] = getPlayUserFromURI(url)
 		userSettings.currentSpotifyUser = user;
 	}
-
 	if (type == 'track') {
 		userSettings.filename = userSettings.trackNameTemplate;
 		userSettings.foldername = userSettings.albumNameTemplate;
@@ -849,39 +881,27 @@ function addToQueue(url) {
 		$('#modal_wrongURL').modal('open');
 		return false;
 	}
-
 	if (alreadyInQueue(id)) {
 		M.toast({html: '<i class="material-icons left">playlist_add_check</i> Already in download-queue!', displayLength: 5000, classes: 'rounded'});
-
 		return false;
 	}
-
 	if (id.match(/^[0-9]+$/) == null && type != 'spotifyplaylist') {
 		$('#modal_wrongURL').modal('open');
 		return false;
 	}
 	socket.emit("download" + type, {id: id, settings: userSettings});
-
 	M.toast({html: '<i class="material-icons left">add</i>Added to download-queue', displayLength: 5000, classes: 'rounded'});
-
 }
 
 function alreadyInQueue(id) {
-
 	var alreadyInQueue = false;
-
 	$('#tab_downloads_table_downloads').find('tbody').find('tr').each(function () {
-
 		if ($(this).data('deezerid') == id) {
 			alreadyInQueue = true;
-
 			return false
 		}
-
 	});
-
 	return alreadyInQueue;
-
 }
 
 socket.on('addToQueue', function (data) {
@@ -965,10 +985,17 @@ socket.on("cancelDownload", function (data) {
 });
 
 $('#clearTracksTable').click(function (ev) {
-	$('#tab_downloads_table_downloads').find('tbody').find('.finished', '.error').addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+	$('#tab_downloads_table_downloads').find('tbody').find('.finished, .error').addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
 		$(this).remove();
 	});
 	return false;
+});
+
+$('#cancelAllTable').click(function (ev) {
+	let listOfIDs = $('#tab_downloads_table_downloads').find('tbody').find('tr').map((x,i)=>{
+		return $(i).attr('id')
+	}).get();
+	socket.emit('cancelAllDownloads', {queueList: listOfIDs})
 });
 
 //****************************************************************************************************\\

@@ -2,6 +2,13 @@ body {
 	background-color: white;
 }
 
+td{
+	text-align: left;
+}
+th{
+	text-align: left;
+}
+
 #initializing {
 	z-index: 98;
 	position: fixed;
@@ -124,6 +131,12 @@ nav {
 	background-color: #23232c;
 }
 
+@media only screen and (max-width: 992px) {
+	#nav-mobile .left{
+		margin-right: 0px;
+	}
+}
+
 @media only screen and (max-width: 600px) {
 	nav {
 		padding-top: 0px;
@@ -139,13 +152,13 @@ nav {
 		width: 50px;
 		height: 50px;
 	}
+	.btn{
+		padding-left: 16px;
+		padding-right: 16px;
+	}
 	#modal_login_btn_signup, #modal_login_btn_login{
 		margin-top: 8px;
 	}
-}
-
-th{
-	text-align: center;
 }
 
 nav .brand-logo{
@@ -303,4 +316,8 @@ a[href^="ftp://"] {
 
 .brand-logo{
 	margin-left: 0px !important;
+}
+
+.btn{
+	overflow: hidden;
 }

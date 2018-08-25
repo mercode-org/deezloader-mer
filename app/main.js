@@ -2,13 +2,11 @@
 let appConfig;
 const fs = require("fs-extra");
 const path = require('path');
-const electron = require('electron');
+const {app, BrowserWindow, ipcMain} = require('electron');
 const os = require('os');
-const app = electron.app;
 loadSettings();
 
 const theApp = require('./app');
-const BrowserWindow = electron.BrowserWindow;
 const WindowStateManager = require('electron-window-state-manager');
 
 const url = require('url');
