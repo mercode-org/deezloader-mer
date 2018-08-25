@@ -3,5 +3,5 @@
 @echo The software will be compiled to /dist folder
 
 :: Starting to compile
-npm install && npm run dist -w
+npm install && npm run dist:win64
 pause

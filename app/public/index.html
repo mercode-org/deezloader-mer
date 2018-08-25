@@ -16,7 +16,7 @@
   <meta charset="utf-8"/>
 </head>
 <body>
-<span id="appVersionFallback" hidden>4.1.2</span>
+<span id="appVersionFallback" hidden>4.1.3</span>
 
 <div id="title-bar" class="deezloader-black">
 	<div class="resize-padding" style="width: 100%; height: 3px;"></div>
@@ -73,13 +73,13 @@
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_trackNameTemplate"/>
 				<label for="modal_settings_input_trackNameTemplate">Track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album% and %label%">info_outline</i></label>
+          data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album%, %explicit% and %label%">info_outline</i></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_playlistTrackNameTemplate"/>
 				<label for="modal_settings_input_playlistTrackNameTemplate">Playlist track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album% and %label%">info_outline</i></label>
+          data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album%, %explicit% and %label%">info_outline</i></label>
 			</div>
 		</div>
     <div class="row">
@@ -87,13 +87,13 @@
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_albumTrackNameTemplate"/>
 				<label for="modal_settings_input_albumTrackNameTemplate">Album track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album% and %label%">info_outline</i></label>
+          data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album%, %explicit% and %label%">info_outline</i></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_albumNameTemplate"/>
 				<label for="modal_settings_input_albumNameTemplate">Album names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %year%, %artist%, %type%, %album% and %label%">info_outline</i></label>
+          data-tooltip="Supported variables are: %year%, %artist%, %type%, %album%, %explicit% and %label%">info_outline</i></label>
 			</div>
 		</div>
     <div class="row">
@@ -144,11 +144,34 @@
 				<i class="material-icons prefix">label</i>
 				<select name="multitagSeparator" id="modal_settings_select_multitagSeparator">
 					<option value="null">Null Character</option>
-					<option value=", ">,</option>
+          <option value=",">,</option>
+          <option value=", ">, with space</option>
 					<option value="/">/</option>
+          <option value=" / ">/ with space</option>
 					<option value=";">;</option>
+          <option value="; ">; with space</option>
 				</select>
 				<label for="modal_settings_select_multitagSeparator">Multitag Separator</label>
+			</div>
+		</div>
+    <div class="row">
+			<div class="input-field col s12 m6">
+				<i class="material-icons prefix">label</i>
+				<select name="dateFormat" id="modal_settings_select_dateFormat">
+          <option value="0">YMD</option>
+					<option value="1">DMY</option>
+					<option value="2">MDY</option>
+          <option value="3">YDM</option>
+				</select>
+				<label for="modal_settings_select_dateFormat">Date Format</label>
+			</div>
+      <div class="input-field col s12 m6">
+				<i class="material-icons prefix">label</i>
+				<select name="dateFormatYear" id="modal_settings_select_dateFormatYear">
+          <option value="2">2</option>
+					<option value="4">4</option>
+				</select>
+				<label for="modal_settings_select_dateFormatYear">Number of digits for the year (only in date tag)</label>
 			</div>
 		</div>
 		<div class="row">
@@ -244,6 +267,18 @@
         <label>
   				<input type="checkbox" id="modal_settings_cbox_PNGcovers" class="filled-in"/>
   				<span>Download images as PNGs</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_removeAlbumVersion" class="filled-in"/>
+  				<span>Remove "(Album Version)" from track title</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_fallbackBitrate" class="filled-in"/>
+  				<span>Fallback to lower bitrates</span>
         </label>
 			</p>
 		</div>
@@ -492,7 +527,7 @@
           <div class="collapsible-header waves-effect"><i class="material-icons">group</i>Contacts</div>
           <div class="collapsible-body">
             <p>
-              If you want to talk about the app and help you can do that in this <a href="https://t.me/joinchat/BJf2dUoyFbTi9HLUp0SWkw">Telegram Group</a>!
+              If you want to talk about the app and help you can do that in this <a href="https://t.me/joinchat/BJf2dUoyFbSZFV-kQIe_LQ">Telegram Group</a>!
             </p>
           </div>
         </li>
@@ -510,22 +545,33 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
 					<div class="collapsible-body">
 						<p>
-			  <b>Version 4.1.2</b><br/>
-			  - Fixed Login Problem (for real this time)<br/>
-			  - Fixed Login after refresh<br/>
-			  - Regionlock free download<br/>
-			  - Added support for download of User Uploaded tracks<br/>
-			  - Now you can select which tags your songs has<br/>
-			  - Fixed selecting problem<br/>
-			  - Tracks without preview will display a disabled play button<br/>
-			  - Previews inside modal will stop with modal close<br/>
-			  - New %label% field for tracks and albums<br/>
-			  - Added option to create folder for CDs<br/>
-			  - Added rename option for cover file<br/>
-			  - Added option to download Artist artwork<br/>
-			  - Added option do log downloaded alternative tracks<br/>
-			  - Fixed some minor bugs
-			  <br/>
+              <b>Version 4.1.3</b><br/>
+              - Playlist and Album tracks now have fallback support<br/>
+              - M3U files now works correctly<br/>
+              - Fixed problems with tags<br/>
+              - Added option %explicit% for Track and Album names (Will add "(Explicit)" in that position if it's explicit)<br/>
+              - Added option to remove "(Album Version)" from track title<br/>
+              - Added options to select which format should the date tag have<br/>
+              - Added option to not fallback if desired bitrate is not aviable<br/>
+              - Logging enhancements<br/>
+              - Other minor bug-fixing<br/>
+              <br/>
+        		  <b>Version 4.1.2</b><br/>
+        		  - Fixed Login Problem (for real this time)<br/>
+        		  - Fixed Login after refresh<br/>
+        		  - Regionlock free download<br/>
+        		  - Added support for download of User Uploaded tracks<br/>
+        		  - Now you can select which tags your songs has<br/>
+        		  - Fixed selecting problem<br/>
+        		  - Tracks without preview will display a disabled play button<br/>
+        		  - Previews inside modal will stop with modal close<br/>
+        		  - New %label% field for tracks and albums<br/>
+        		  - Added option to create folder for CDs<br/>
+        		  - Added rename option for cover file<br/>
+        		  - Added option to download Artist artwork<br/>
+        		  - Added option do log downloaded alternative tracks<br/>
+        		  - Fixed some minor bugs
+        		  <br/>
               <b>Version 4.1.1</b><br/>
               - Fixed Login Problem (again)<br/>
               - Added Dark Mode<br/>
@@ -553,7 +599,8 @@
 				<li>
 					<div class="collapsible-header waves-effect"><i class="material-icons">build</i>Contributors</div>
 					<div class="collapsible-body">
-						<p>Thanks to the following contributors for fixing bugs and improving this application. <br> <br>
+						<p>Thanks to the following contributors for fixing bugs and improving this application.<br>
+              <br>
 							<a href="https://www.reddit.com/user/Blind-Mute">Blind-Mute</a> <br>
 							<a href="https://gitlab.com/Persei08">Persei08</a> <br>
 							<a href="https://github.com/Uukrull">Uukrull</a> <br>

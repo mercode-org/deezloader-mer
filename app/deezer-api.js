@@ -24,6 +24,7 @@ Deezer.prototype.init = function(username, password, callback) {
 	var self = this;
 	request.post({
 		url: self.apiUrl,
+		strictSSL: false,
 		qs: {
 			api_version: "1.0",
 			api_token: "null",
@@ -42,6 +43,7 @@ Deezer.prototype.init = function(username, password, callback) {
 		request.post({
 			url: "https://www.deezer.com/ajax/action.php",
 			headers: this.httpHeaders,
+			strictSSL: false,
 			form: {
 				type:'login',
 				mail:username,
@@ -51,10 +53,11 @@ Deezer.prototype.init = function(username, password, callback) {
 			jar: true
 		}, function(err, res, body) {
 			if(err || res.statusCode != 200) {
-				callback(new Error("Unable to load deezer.com"));
+				callback(new Error(`Unable to load deezer.com: ${res ? (res.statusCode != 200 ? res.statusCode : "") : ""} ${err ? err.message : ""}`));
 			}else if(body.indexOf("success") > -1){
 				request.post({
 					url: self.apiUrl,
+					strictSSL: false,
 					qs: {
 						api_version: "1.0",
 						api_token: "null",
@@ -72,7 +75,7 @@ Deezer.prototype.init = function(username, password, callback) {
 						self.userPicture = `https:\/\/e-cdns-images.dzcdn.net\/images\/user\/${user.USER_PICTURE}\/250x250-000000-80-0-0.jpg`;
 						callback(null, null);
 					} else {
-						callback(new Error("Unable to load deezer.com "+err));
+						callback(new Error(`Unable to load deezer.com: ${res ? (res.statusCode != 200 ? res.statusCode : "") : ""} ${err ? err.message : ""}`));
 					}
 				});
 			}else{
@@ -102,6 +105,7 @@ Deezer.prototype.getAAlbum = function(id, callback) {
 		request.post({
 			url: self.apiUrl,
 			headers: self.httpHeaders,
+			strictSSL: false,
 			qs: {
 				api_version: "1.0",
 				input: "3",
@@ -142,22 +146,67 @@ Deezer.prototype.getArtist = function(id, callback) {
 }
 
 Deezer.prototype.getPlaylistTracks = function(id, callback) {
-	getJSON("https://api.deezer.com/playlist/" + id + "/tracks?limit=-1", function(res, err){
+	getJSON(`https://api.deezer.com/playlist/${id}/tracks?limit=-1`, function(res, err){
 		callback(res, err);
 	});
-}
-
-Deezer.prototype.getAlbumSize = function(id, callback) {
-	getJSON("https://api.deezer.com/album/" + id + "/tracks?limit=1", function(res, err){
-		callback(res, err);
-	});
-
 }
 
 Deezer.prototype.getAlbumTracks = function(id, callback) {
-	getJSON("https://api.deezer.com/album/" + id + "/tracks?limit=-1", function(res, err){
+	getJSON(`https://api.deezer.com/album/${id}/tracks?limit=-1`, function(res, err){
 		callback(res, err);
 	});
+}
+
+Deezer.prototype.getAdvancedPlaylistTracks = function(id, callback) {
+	var self = this;
+	self.getToken().then(data=>{
+		request.post({
+			url: self.apiUrl,
+			headers: self.httpHeaders,
+			strictSSL: false,
+			qs: {
+				api_version: "1.0",
+				input: "3",
+				api_token: data,
+				method: "playlist.getSongs"
+			},
+			body: {playlist_id:id, nb:-1},
+			jar: true,
+			json: true
+		}, (function (err, res, body) {
+			if(!err && res.statusCode == 200 && typeof body.results != 'undefined'){
+				callback(body.results);
+			} else {
+				callback(null, new Error("Unable to get Album" + id));
+			}
+		}).bind(self));
+	})
+}
+
+Deezer.prototype.getAdvancedAlbumTracks = function(id, callback) {
+	var self = this;
+	self.getToken().then(data=>{
+		request.post({
+			url: self.apiUrl,
+			headers: self.httpHeaders,
+			strictSSL: false,
+			qs: {
+				api_version: "1.0",
+				input: "3",
+				api_token: data,
+				method: "song.getListByAlbum"
+			},
+			body: {alb_id:id,nb:-1},
+			jar: true,
+			json: true
+		}, (function (err, res, body) {
+			if(!err && res.statusCode == 200 && typeof body.results != 'undefined'){
+				callback(body.results);
+			} else {
+				callback(null, new Error("Unable to get Album" + id));
+			}
+		}).bind(self));
+	})
 }
 
 Deezer.prototype.getArtistAlbums = function(id, callback) {
@@ -202,6 +251,7 @@ Deezer.prototype.getLocalTrack = function(id, callback) {
 		request.post({
 			url: self.apiUrl,
 			headers: self.httpHeaders,
+			strictSSL: false,
 			qs: {
 				api_version: "1.0",
 				input: "3",
@@ -224,13 +274,14 @@ Deezer.prototype.getLocalTrack = function(id, callback) {
 	})
 }
 
-Deezer.prototype.getTrack = function(id, maxBitrate, callback) {
+Deezer.prototype.getTrack = function(id, maxBitrate, fallbackBitrate, callback) {
 	var scopedid = id;
 	var self = this;
 	self.getToken().then(data=>{
 		request.post({
 			url: self.apiUrl,
 			headers: self.httpHeaders,
+			strictSSL: false,
 			qs: {
 				api_version: "1.0",
 				input: "3",
@@ -258,16 +309,20 @@ Deezer.prototype.getTrack = function(id, maxBitrate, callback) {
 					case "9":
 						format = 9;
 						if (json["FILESIZE_FLAC"]>0) break;
+						if (!fallbackBitrate) return callback(null, new Error("Song not found at desired bitrate."))
 					case "3":
 						format = 3;
 						if (json["FILESIZE_MP3_320"]>0) break;
+						if (!fallbackBitrate) return callback(null, new Error("Song not found at desired bitrate."))
 					case "5":
 						format = 5;
 						if (json["FILESIZE_MP3_256"]>0) break;
+						if (!fallbackBitrate) return callback(null, new Error("Song not found at desired bitrate."))
 					case "1":
 						format = 1;
 						if (json["FILESIZE_MP3_128"]>0) break;
-					case "8":
+						if (!fallbackBitrate) return callback(null, new Error("Song not found at desired bitrate."))
+					default:
 						format = 8;
 				}
 				json.format = format;
@@ -289,7 +344,7 @@ Deezer.prototype.search = function(text, type, callback) {
 		type += "?";
 	}
 
-	request.get({url: "https://api.deezer.com/search/" + type + "q=" + text, headers: this.httpHeaders, jar: true}, function(err, res, body) {
+	request.get({url: "https://api.deezer.com/search/" + type + "q=" + text, strictSSL: false, headers: this.httpHeaders, jar: true}, function(err, res, body) {
 		if(!err && res.statusCode == 200) {
 			var json = JSON.parse(body);
 			if(json.error) {
@@ -309,7 +364,7 @@ Deezer.prototype.track2ID = function(artist, track, album, callback, trim=false)
 	track = track.replace(/–/g,"-").replace(/’/g, "'");
 	if (album) album = album.replace(/–/g,"-").replace(/’/g, "'");
 	if (album){
-		request.get({url: 'https://api.deezer.com/search/?q=track:"'+encodeURIComponent(track)+'" artist:"'+encodeURIComponent(artist)+'" album:"'+encodeURIComponent(album)+'"&limit=1&strict=on', headers: this.httpHeaders, jar: true}, function(err, res, body) {
+		request.get({url: 'https://api.deezer.com/search/?q=track:"'+encodeURIComponent(track)+'" artist:"'+encodeURIComponent(artist)+'" album:"'+encodeURIComponent(album)+'"&limit=1&strict=on', strictSSL: false, headers: this.httpHeaders, jar: true}, function(err, res, body) {
 			if(!err && res.statusCode == 200) {
 				var json = JSON.parse(body);
 				if(json.error) {
@@ -347,7 +402,7 @@ Deezer.prototype.track2ID = function(artist, track, album, callback, trim=false)
 			}
 		});
 	}else{
-		request.get({url: 'https://api.deezer.com/search/?q=track:"'+encodeURIComponent(track)+'" artist:"'+encodeURIComponent(artist)+'"&limit=1&strict=on', headers: this.httpHeaders, jar: true}, function(err, res, body) {
+		request.get({url: 'https://api.deezer.com/search/?q=track:"'+encodeURIComponent(track)+'" artist:"'+encodeURIComponent(artist)+'"&limit=1&strict=on', strictSSL: false, headers: this.httpHeaders, jar: true}, function(err, res, body) {
 			if(!err && res.statusCode == 200) {
 				var json = JSON.parse(body);
 				if(json.error) {
@@ -392,7 +447,7 @@ Deezer.prototype.track2ID = function(artist, track, album, callback, trim=false)
 Deezer.prototype.hasTrackAlternative = function(id, callback) {
 	var scopedid = id;
 	var self = this;
-	request.get({url: "https://www.deezer.com/track/"+id, headers: this.httpHeaders, jar: true}, (function(err, res, body) {
+	request.get({url: "https://www.deezer.com/track/"+id,strictSSL: false, headers: this.httpHeaders, jar: true}, (function(err, res, body) {
 		var regex = new RegExp(/<script>window\.__DZR_APP_STATE__ = (.*)<\/script>/g);
 		var rexec = regex.exec(body);
 		var _data;
@@ -431,7 +486,7 @@ Deezer.prototype.decryptTrack = function(writePath, track, queueId, callback) {
 	if (self.delStream.indexOf(queueId) == -1){
 		if (typeof self.reqStream[queueId] != "object") self.reqStream[queueId] = [];
 		self.reqStream[queueId].push(
-			request.get({url: track.downloadUrl, headers: self.httpHeaders, encoding: 'binary'}, function(err, res, body) {
+			request.get({url: track.downloadUrl,strictSSL: false, headers: self.httpHeaders, encoding: 'binary'}, function(err, res, body) {
 				if(!err && res.statusCode == 200) {
 					var decryptedSource = decryptDownload(new Buffer(body, 'binary'), track);
 					fs.outputFile(writePath,decryptedSource,function(err){
@@ -532,6 +587,7 @@ Deezer.prototype.getToken = async function(){
 	const res = await request.get({
 		url: this.apiUrl,
 		headers: this.httpHeaders,
+		strictSSL: false,
 		qs: {
 			api_version: "1.0",
 			api_token: "null",
@@ -545,7 +601,7 @@ Deezer.prototype.getToken = async function(){
 }
 
 function getJSON(url, callback){
-	request.get({url: url, headers: this.httpHeaders, jar: true, json: true}, function(err, res, body) {
+	request.get({url: url, headers: this.httpHeaders, strictSSL: false, jar: true, json: true}, function(err, res, body) {
 		if(err || res.statusCode != 200 || !body) {
 			callback(null, new Error("Unable to initialize Deezer API"));
 		} else {

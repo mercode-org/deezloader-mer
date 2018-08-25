@@ -13,7 +13,10 @@
 		"electron-builder": "latest"
 	},
 	"scripts": {
-		"dist": "electron-builder",
+		"dist:win32": "electron-builder -w --ia32 --config.nsis.artifactName=\"${productName} ${version} Setup-x32.${ext}\" --config.portable.artifactName=\"${productName} ${version} x32.${ext}\"",
+		"dist:win64": "electron-builder -w --x64",
+		"dist:linux": "electron-builder -l",
+		"dist:macOS": "electron-builder -m",
 		"pack": "electron-builder --dir",
 		"start": "cross-env NODE_ENV=development electron ./app",
 		"postinstall": "electron-builder install-app-deps"
@@ -38,24 +41,12 @@
 		},
 		"win": {
 			"target": [
-				{
-					"target": "nsis",
-					"arch": [
-						"x64",
-						"ia32"
-					]
-				},
-				{
-					"target": "portable",
-					"arch": [
-						"x64",
-						"ia32"
-					]
-				}
+				"nsis",
+				"portable"
 			]
 		},
 		"nsis": {
-			"artifactName": "${productName} ${version} - Setup.${ext}",
+			"artifactName": "${productName} ${version} Setup.${ext}",
 			"oneClick": false,
 			"license": "LICENSE",
 			"allowToChangeInstallationDirectory": true,
@@ -63,7 +54,7 @@
 			"deleteAppDataOnUninstall": true
 		},
 		"portable": {
-			"artifactName": "${productName} ${version} - Portable.${ext}",
+			"artifactName": "${productName} ${version}.${ext}",
 			"requestExecutionLevel": "user"
 		}
 	}

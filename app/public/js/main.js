@@ -24,7 +24,6 @@ $('#modal_login_btn_login').click(function () {
 	var username = $('#modal_login_input_username').val();
 	var password = $('#modal_login_input_password').val();
 	var autologin = $('#modal_login_input_autologin').prop("checked");
-	Username = username;
 	//Send to the software
 	socket.emit('login', username, password,autologin);
 });
@@ -34,7 +33,6 @@ socket.on("autologin",function(username,password){
 	$('#modal_login_btn_login').attr("disabled", true);
 	$('#modal_login_btn_login').html("Logging in...");
 	$('#modal_login_input_username').val(username);
-	Username = username;
 	$('#modal_login_input_password').val(password);
 	M.updateTextFields();
 	socket.emit('login', username, password,false);
@@ -46,7 +44,7 @@ socket.on("login", function (data) {
 		$("#modal_settings_picture").attr("src",data.picture);
 		$("#side_user").text(data.username);
 		$("#side_avatar").attr("src",data.picture);
-		$("#side_email").text(Username);
+		$("#side_email").text(data.email);
 		$('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd', function () {
 			$(this).css('display', 'none');
 			$(this).removeClass('animated fadeOut');
@@ -226,6 +224,10 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		multitagSeparator: $('#modal_settings_select_multitagSeparator').val(),
 		maxBitrate: $('#modal_settings_select_maxBitrate').val(),
 		PNGcovers: $('#modal_settings_cbox_PNGcovers').is(':checked'),
+		removeAlbumVersion : $('#modal_settings_cbox_removeAlbumVersion').is(':checked'),
+		dateFormat: $('#modal_settings_select_dateFormat').val(),
+		dateFormatYear: $('#modal_settings_select_dateFormatYear').val(),
+		fallbackBitrate : $('#modal_settings_cbox_fallbackBitrate').is(':checked'),
 		tags: {
 			title: $('#modal_tags_title').is(':checked'),
 			artist: $('#modal_tags_artist').is(':checked'),
@@ -318,6 +320,11 @@ function fillSettingsModal(settings) {
 	$('#modal_settings_select_multitagSeparator').val(settings.multitagSeparator).formSelect();
 	$('#modal_settings_select_maxBitrate').val(settings.maxBitrate).formSelect();
 	$('#modal_settings_cbox_PNGcovers').prop('checked', settings.PNGcovers);
+	$('#modal_settings_cbox_removeAlbumVersion').prop('checked', settings.removeAlbumVersion);
+	$('#modal_settings_select_dateFormat').val(settings.dateFormat).formSelect();
+	$('#modal_settings_select_dateFormatYear').val(settings.dateFormatYear).formSelect();
+	$('#modal_settings_cbox_fallbackBitrate').prop('checked', settings.fallbackBitrate);
+
 	$('#modal_tags_title').prop('checked', settings.tags.title);
 	$('#modal_tags_artist').prop('checked', settings.tags.artist);
 	$('#modal_tags_album').prop('checked', settings.tags.album);
@@ -735,7 +742,7 @@ socket.on("getChartsTrackListByCountry", function (data) {
 				`<tr>
 				<td>${(i + 1)}</td>
 				<td><a href="#" class="circle ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="circle" /></a></td>
-				<td>${currentChartTrack.title}</td>
+				<td>${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '')}${currentChartTrack.title}</td>
 				<td>${currentChartTrack.artist.name}</td>
 				<td>${currentChartTrack.album.title}</td>
 				<td>${convertDuration(currentChartTrack.duration)}</td>
@@ -775,10 +782,8 @@ $('#tab_url_form_url').submit(function (ev) {
 
 	ev.preventDefault();
 	var urls = $("#song_url").val().split(";");
-	console.log(urls);
 	for(var i = 0; i < urls.length; i++){
 		var url = urls[i];
-		console.log(url);
 		if (url.length == 0) {
 			message('Blank URL Field', 'You need to insert an URL to download it!');
 			return false;
@@ -804,7 +809,6 @@ $('#tab_url_form_url').submit(function (ev) {
 //############################################TAB_DOWNLOADS###########################################\\
 function addToQueue(url) {
 	var type = getTypeFromLink(url), id = getIDFromLink(url);
-	console.log(type, id)
 	if (type == 'spotifyplaylist'){
 		[user, id] = getPlayUserFromURI(url)
 		userSettings.currentSpotifyUser = user;

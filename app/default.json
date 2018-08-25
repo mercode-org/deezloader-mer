@@ -27,6 +27,10 @@
 		"multitagSeparator": ";",
 		"maxBitrate": "3",
 		"PNGcovers": false,
+		"removeAlbumVersion": false,
+		"dateFormat": "0",
+		"dateFormatYear": "4",
+		"fallbackBitrate": true,
 		"tags": {
 			"title": true,
 			"artist": true,

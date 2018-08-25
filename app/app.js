@@ -126,7 +126,7 @@ io.sockets.on('connection', function (socket) {
 		Deezer.init(username, password, function (err) {
 			if(err){
 				socket.emit("login", {error: err.message});
-				logger.error("Failed to login, "+err.stack);
+				logger.error("Failed to login, "+err);
 			}else{
 				if(autologin){
 					let data = username + "\n" + password;
@@ -139,7 +139,7 @@ io.sockets.on('connection', function (socket) {
 					});
 				}
 				logger.info("Logging in");
-				socket.emit("login", {username: Deezer.userName, picture: Deezer.userPicture});
+				socket.emit("login", {username: Deezer.userName, picture: Deezer.userPicture, email: username});
 				logger.info("Logged in successfully");
 			}
 		});
@@ -224,7 +224,7 @@ io.sockets.on('connection', function (socket) {
 
 	function socketDownloadTrack(data){
 		if(parseInt(data.id)>0){
-			Deezer.getTrack(data.id, data.settings.maxBitrate, function (track, err) {
+			Deezer.getTrack(data.id, data.settings.maxBitrate, data.settings.fallbackBitrate, function (track, err) {
 				if (err) {
 					logger.error(err)
 					return;
@@ -288,22 +288,17 @@ io.sockets.on('connection', function (socket) {
 				id: playlist["id"],
 				type: "playlist",
 				cover: playlist["picture_small"],
-				tracks: playlist.tracks.data
 			};
 			_playlist.settings = data.settings || {};
-			if (_playlist.size>400){
-				Deezer.getPlaylistTracks(data.id, function (playlist, err) {
-					if (err){
-						logger.error(err)
-						return;
-					}
-					_playlist.size = playlist.data.length
-					_playlist.tracks = playlist.data
-					addToQueue(JSON.parse(JSON.stringify(_playlist)));
-				})
-			}else{
+			Deezer.getAdvancedPlaylistTracks(data.id, function (playlist, err) {
+				if (err){
+					logger.error(err)
+					return;
+				}
+				_playlist.size = playlist.data.length
+				_playlist.tracks = playlist.data
 				addToQueue(JSON.parse(JSON.stringify(_playlist)));
-			}
+			})
 		});
 	}
 	socket.on("downloadplaylist", data=>{socketDownloadPlaylist(data)});
@@ -325,11 +320,18 @@ io.sockets.on('connection', function (socket) {
 				queueId: queueId,
 				id: album["id"],
 				type: "album",
-				tracks: album.tracks.data
 			};
 			data.settings.albumInfo = slimDownAlbumInfo(album)
 			_album.settings = data.settings || {};
-			addToQueue(JSON.parse(JSON.stringify(_album)));
+			Deezer.getAdvancedAlbumTracks(data.id, function (playlist, err) {
+				if (err){
+					logger.error(err)
+					return;
+				}
+				_album.size = playlist.data.length
+				_album.tracks = playlist.data
+				addToQueue(JSON.parse(JSON.stringify(_album)));
+			})
 		});
 	}
 	socket.on("downloadalbum", data=>{socketDownloadAlbum(data)});
@@ -417,12 +419,12 @@ io.sockets.on('connection', function (socket) {
 				});
 				break;
 			case "album":
-				downloading.playlistContent = downloading.tracks.map((t) => {
+				downloading.playlistContent = downloading.tracks.map((t,i) => {
 					if (t.FALLBACK){
 						if (t.FALLBACK.SNG_ID)
-							return {id: t.id, fallback: t.FALLBACK.SNG_ID, name: t.title, artist: t.artist.name, queueId: downloading.queueId}
+							return {id: t.SNG_ID, fallback: t.FALLBACK.SNG_ID, name: (t.VERSION ? t.SNG_TITLE + " "+t.VERSION : t.SNG_TITLE), artist: t.ART_NAME, index: i+"", queueId: downloading.queueId}
 					}else{
-						return {id: t.id, name: t.title, artist: t.artist.name, queueId: downloading.queueId}
+						return {id: t.SNG_ID, name: (t.VERSION ? t.SNG_TITLE+" "+t.VERSION : t.SNG_TITLE), artist: t.ART_NAME, index: i+"", queueId: downloading.queueId}
 					}
 				})
 				downloading.settings.albName = downloading.name;
@@ -436,10 +438,10 @@ io.sockets.on('connection', function (socket) {
 						filePath += antiDot(fixName(downloading.settings.artName)) + path.sep;
 					}
 					if (downloading.settings.createAlbumFolder) {
-						filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.settings.albumInfo.release_date.slice(0, 4),downloading.settings.albumInfo.record_type,downloading.settings.albumInfo.label))) + path.sep;
+						filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.settings.albumInfo.release_date.slice(0, 4),downloading.settings.albumInfo.record_type,downloading.settings.albumInfo.explicit_lyrics,downloading.settings.albumInfo.label))) + path.sep;
 					}
 				} else if (downloading.settings.artName) {
-					filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.settings.albumInfo.release_date.slice(0, 4),downloading.settings.albumInfo.record_type,downloading.settings.albumInfo.label))) + path.sep;
+					filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.settings.albumInfo.release_date.slice(0, 4),downloading.settings.albumInfo.record_type,downloading.settings.albumInfo.explicit_lyrics,downloading.settings.albumInfo.label))) + path.sep;
 				}
 				downloading.finished = new Promise((resolve,reject)=>{
 					downloading.playlistContent.every(function (t) {
@@ -456,7 +458,7 @@ io.sockets.on('connection', function (socket) {
 									if (track.searched) downloading.searchedLog += `${t.artist} - ${t.name}\r\n`
 								} else {
 									downloading.failed++;
-									downloading.errorLog += `${t.id} | ${t.artist} - ${t.name}\r\n`;
+									downloading.errorLog += `${t.id} | ${t.artist} - ${t.name} | ${err}\r\n`;
 								}
 								socket.emit("downloadProgress", {
 									queueId: downloading.queueId,
@@ -517,9 +519,9 @@ io.sockets.on('connection', function (socket) {
 				downloading.playlistContent = downloading.tracks.map((t,i) => {
 					if (t.FALLBACK){
 						if (t.FALLBACK.SNG_ID)
-							return {id: t.id, fallback: t.FALLBACK.SNG_ID, name: t.title, artist: t.artist.name, index: i, queueId: downloading.queueId}
+							return {id: t.SNG_ID, fallback: t.FALLBACK.SNG_ID, name: (t.VERSION ? t.SNG_TITLE + " "+t.VERSION : t.SNG_TITLE), artist: t.ART_NAME, index: i+"", queueId: downloading.queueId}
 					}else{
-						return {id: t.id, name: t.title, artist: t.artist.name, index: i+"", queueId: downloading.queueId}
+						return {id: t.SNG_ID, name: (t.VERSION ? t.SNG_TITLE+" "+t.VERSION : t.SNG_TITLE), artist: t.ART_NAME, index: i+"", queueId: downloading.queueId}
 					}
 				})
 				downloading.settings.plName = downloading.name;
@@ -545,7 +547,7 @@ io.sockets.on('connection', function (socket) {
 									if (track.searched) downloading.searchedLog += `${t.artist} - ${t.name}\r\n`
 								} else {
 									downloading.failed++;
-									downloading.errorLog += `${t.id} | ${t.artist} - ${t.name}\r\n`
+									downloading.errorLog += `${t.id} | ${t.artist} - ${t.name} | ${err}\r\n`;
 								}
 								socket.emit("downloadProgress", {
 									queueId: downloading.queueId,
@@ -590,7 +592,7 @@ io.sockets.on('connection', function (socket) {
 						let imgPath = filePath + antiDot(fixName(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name)))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.cover){
 							downloading.cover = downloading.cover.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
-							request.get(downloading.cover, {encoding: 'binary'}, function(error,response,body){
+							request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
 								if(error){
 									logger.error(error.stack);
 									return;
@@ -684,7 +686,7 @@ io.sockets.on('connection', function (socket) {
 										if (track.searched) downloading.searchedLog += `${t.artist} - ${t.name}\r\n`
 									} else {
 										downloading.failed++;
-										downloading.errorLog += `${t.id} | ${t.artist} - ${t.name}\r\n`
+										downloading.errorLog += `${t.id} | ${t.artist} - ${t.name} | ${err}\r\n`;
 									}
 									socket.emit("downloadProgress", {
 										queueId: downloading.queueId,
@@ -728,7 +730,7 @@ io.sockets.on('connection', function (socket) {
 							if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
 							let imgPath = filePath + antiDot(fixName(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name)))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 							if (downloading.cover){
-								request.get(downloading.cover, {encoding: 'binary'}, function(error,response,body){
+								request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
 									if(error){
 										logger.error(error.stack);
 										return;
@@ -892,7 +894,13 @@ io.sockets.on('connection', function (socket) {
 		if (["track", "playlist", "album", "artist"].indexOf(data.type) == -1) data.type = "track";
 
 		// Remove "feat."  "ft." and "&" (causes only problems)
-		data.text = data.text.replace(/ feat[\.]? /g, " ").replace(/ ft[\.]? /g, " ").replace(/\(feat[\.]? /g, " ").replace(/\(ft[\.]? /g, " ").replace(/\&/g, "");
+		data.text = data.text
+			.replace(/ feat[\.]? /g, " ")
+			.replace(/ ft[\.]? /g, " ")
+			.replace(/\(feat[\.]? /g, " ")
+			.replace(/\(ft[\.]? /g, " ")
+			.replace(/\&/g, "")
+			.replace(/–/g, "-");
 
 		Deezer.search(encodeURIComponent(data.text), data.type, function (searchObject, err) {
 			try {
@@ -1058,13 +1066,13 @@ io.sockets.on('connection', function (socket) {
 
 	function downloadTrack(t, settings, altmetadata, callback) {
 		if (!socket.downloadQueue[t.queueId]) {
-			logger.error("Not in queue");
+			logger.error(`Failed to download ${t.artist} - ${t.name}: Not in queue`);
 			callback(new Error("Not in queue"));
 			return;
 		}
 		if (t.id == 0){
-			logger.error("Failed to download track: Wrong ID");
-			callback(new Error("Failed to download track: Wrong ID"));
+			logger.error(`Failed to download ${t.artist} - ${t.name}: Wrong ID`);
+			callback(new Error("Wrong ID"));
 			return;
 		}
 		settings = settings || {};
@@ -1078,22 +1086,27 @@ io.sockets.on('connection', function (socket) {
 							if(!t.searched){
 								logger.warn("Failed to download track, searching for alternative");
 								Deezer.track2ID(t.artist, t.name, null, data=>{
-									t.searched = true;
-									t.id = data.id;
-									t.artist = data.artist;
-									t.name = data.name;
-									downloadTrack(t, settings, null, callback);
+									if (t.id != 0){
+										t.searched = true;
+										t.id = data.id;
+										t.artist = data.artist;
+										t.name = data.name;
+										downloadTrack(t, settings, null, callback);
+									}else{
+										logger.error(`Failed to download ${t.artist} - ${t.name}: Searched alternative; Not found`);
+										callback(new Error("Searched alternative; Not found"));
+									}
 								});
 							}else{
-								logger.error("Failed to download track: "+ err);
-								callback(err, `${t.id} | ${t.artist} - ${t.name}`);
+								logger.error(`Failed to download ${t.artist} - ${t.name}: ${err}`);
+								callback(err);
 							}
 							return;
 						}
 						resolve(trackInfo);
 					});
 				}else{
-					Deezer.getTrack(t.id, settings.maxBitrate, function (trackInfo, err) {
+					Deezer.getTrack(t.id, settings.maxBitrate, settings.fallbackBitrate, function (trackInfo, err) {
 						if (err) {
 							if(t.fallback){
 								logger.warn("Failed to download track, falling on alternative");
@@ -1103,15 +1116,20 @@ io.sockets.on('connection', function (socket) {
 							}else if(!t.searched){
 								logger.warn("Failed to download track, searching for alternative");
 								Deezer.track2ID(t.artist, t.name, null, data=>{
-									t.searched = true;
-									t.id = data.id;
-									t.artist = data.artist;
-									t.name = data.name;
-									downloadTrack(t, settings, null, callback);
+									if (t.id != 0){
+										t.searched = true;
+										t.id = data.id;
+										t.artist = data.artist;
+										t.name = data.name;
+										downloadTrack(t, settings, null, callback);
+									}else{
+										logger.error(`Failed to download ${t.artist} - ${t.name}: Searched alternative; Not found`);
+										callback(new Error("Searched alternative; Not found"));
+									}
 								});
 							}else{
-								logger.error("Failed to download track: "+ err);
-								callback(err, `${t.id} | ${t.artist} - ${t.name}`);
+								logger.error(`Failed to download ${t.artist} - ${t.name}: ${err}`);
+								callback(err);
 							}
 							return;
 						}
@@ -1143,15 +1161,20 @@ io.sockets.on('connection', function (socket) {
 									}else if(!t.searched){
 										logger.warn("Failed to download track, searching for alternative");
 										Deezer.track2ID(t.artist, t.name, null, data=>{
-											t.searched = true;
-											t.id = data.id;
-											t.artist = data.artist;
-											t.name = data.name;
-											downloadTrack(t, settings, null, callback);
+											if (t.id != 0){
+												t.searched = true;
+												t.id = data.id;
+												t.artist = data.artist;
+												t.name = data.name;
+												downloadTrack(t, settings, null, callback);
+											}else{
+												logger.error(`Failed to download ${t.artist} - ${t.name}: Searched alternative album; Not found`);
+												callback(new Error("Searched alternative album; Not found"));
+											}
 										});
 									}else{
-										logger.error("Failed to download track: "+ err);
-										callback(new Error("Album does not exists."));
+										logger.error(`Failed to download ${t.artist} - ${t.name}: ${err}`);
+										callback(err);
 									}
 									return;
 								}
@@ -1167,7 +1190,6 @@ io.sockets.on('connection', function (socket) {
 			}else{
 				resolve({artist:{}})
 			}
-
 		});
 		temp.then(albumres=>{
 		let ajson = albumres;
@@ -1228,15 +1250,15 @@ io.sockets.on('connection', function (socket) {
 
 			if (settings.createAlbumFolder) {
 				if(settings.artName){
-					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,metadata.year,metadata.rtype,metadata.publisher))) + path.sep;
+					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,metadata.year,metadata.rtype,metadata.albumExplicit,metadata.publisher))) + path.sep;
 				}else{
-					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,metadata.albumArtist,metadata.album,metadata.year,metadata.rtype,metadata.publisher))) + path.sep;
+					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,metadata.albumArtist,metadata.album,metadata.year,metadata.rtype,metadata.albumExplicit,metadata.publisher))) + path.sep;
 				}
 			}
 		} else if (settings.plName) {
 			filepath += antiDot(fixName(settings.plName)) + path.sep;
 		} else if (settings.artName) {
-			filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,metadata.year,metadata.rtype,metadata.publisher))) + path.sep;
+			filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,metadata.year,metadata.rtype,metadata.albumExplicit,metadata.publisher))) + path.sep;
 		}
 		let coverpath = filepath;
 		if (metadata.discTotal > 1 && (settings.artName || settings.createAlbumFolder) && settings.createCDFolder){
@@ -1261,7 +1283,7 @@ io.sockets.on('connection', function (socket) {
 		}
 		let playlistData = [0,""]
 		if (settings.createM3UFile && (settings.plName || settings.albName)) {
-			if (settings.numplaylistbyalbum && t.index){
+			if (t.index){
 				playlistData = [parseInt(t.index), writePath];
 			}else{
 				playlistData = [metadata.trackNumber-1, writePath];
@@ -1280,20 +1302,19 @@ io.sockets.on('connection', function (socket) {
 				let imgPath;
 				//If its not from an album but a playlist.
 				if(!(settings.albName || settings.createAlbumFolder)){
-					imgPath = coverArtFolder + (metadata.barcode ? fixName(metadata.barcode) : fixName(`${metadata.albumArtist - metadata.album}`))+(settings.PNGcovers ? ".png" : ".jpg");
+					imgPath = coverArtFolder + (metadata.barcode ? fixName(metadata.barcode) : fixName(`${metadata.albumArtist} - ${metadata.album}`))+(settings.PNGcovers ? ".png" : ".jpg");
 				}else{
 					if (settings.saveArtwork)
-						imgPath = coverpath + antiDot(fixName(settingsRegexCover(settings.coverImageTemplate,settings.artName,settings.albName)))+(settings.PNGcovers ? ".png" : ".jpg");
+						imgPath = coverpath + fixName(settingsRegexCover(settings.coverImageTemplate,settings.artName,settings.albName))+(settings.PNGcovers ? ".png" : ".jpg");
 					else
-						imgPath = coverArtFolder + fixName(metadata.barcode)+(settings.PNGcovers ? ".png" : ".jpg");
+						imgPath = coverArtFolder + fixName(metadata.barcode ? fixName(metadata.barcode) : fixName(`${metadata.albumArtist} - ${metadata.album}`))+(settings.PNGcovers ? ".png" : ".jpg");
 				}
-
 				if(fs.existsSync(imgPath)){
 					metadata.imagePath = (imgPath).replace(/\\/g, "/");
 					logger.info("Starting the download process CODE:1");
 					resolve();
 				}else{
-					request.get(metadata.image, {encoding: 'binary'}, function(error,response,body){
+					request.get(metadata.image, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
 						if(error){
 							logger.error(error.stack);
 							metadata.image = undefined;
@@ -1328,11 +1349,12 @@ io.sockets.on('connection', function (socket) {
 					if(fs.existsSync(imgPath)){
 						resolve();
 					}else{
-						request.get(metadata.artistImage, {encoding: 'binary'}, function(error,response,body){
+						request.get(metadata.artistImage, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
 							if(error){
 								logger.error(error.stack);
 								return;
 							}
+							if (body.indexOf("unauthorized")>-1) return resolve();
 							fs.outputFile(imgPath,body,'binary',function(err){
 								if(err){
 									logger.error(err.stack);
@@ -1378,11 +1400,11 @@ io.sockets.on('connection', function (socket) {
 						t.id = data.id;
 						t.artist = data.artist;
 						t.name = data.name;
-						downloadTrack(t, settings, null, callback);
+						downloadTrack(t, settings, metadata, callback);
 					});
 				}else{
-					logger.error("Failed to download: " + metadata.artist + " - " + metadata.title);
-					callback(err, `${t.id} | ${t.artist} - ${t.name}`)
+					logger.error(`Failed to download ${t.artist} - ${t.name}: ${err}`);
+					callback(err)
 				}
 				return;
 			}
@@ -1406,7 +1428,7 @@ io.sockets.on('connection', function (socket) {
 						flacComments.push('ITUNESADVISORY=' + metadata.explicit);
 					if (settings.tags.isrc)
 						flacComments.push('ISRC=' + metadata.ISRC);
-					if (settings.tags.artist)
+					if (settings.tags.artist && metadata.artists)
 						metadata.artists.forEach(x=>{
 							flacComments.push('ARTIST=' + x);
 						});
@@ -1475,7 +1497,7 @@ io.sockets.on('connection', function (socket) {
 					}
 					let mdbVorbisPicture;
 					let mdbVorbisComment;
-					processor.on('preprocess', (mdb) => {
+					processor.on('preprocess', function(mdb){
 						// Remove existing VORBIS_COMMENT and PICTURE blocks, if any.
 						if (mflac.Processor.MDB_TYPE_VORBIS_COMMENT === mdb.type) {
 							mdb.remove();
@@ -1483,23 +1505,17 @@ io.sockets.on('connection', function (socket) {
 							mdb.remove();
 						}
 						if (mdb.isLast) {
-							res = settings.artworkSize;
-							if(cover){
-								mdbVorbisPicture = mflac.data.MetaDataBlockPicture.create(true, 3, `image/${(settings.PNGcovers) ? "png" : "jpeg"}`, '', res, res, 24, 0, cover);
-							}
 							mdbVorbisComment = mflac.data.MetaDataBlockVorbisComment.create(false, vendor, flacComments);
-							mdb.isLast = false;
+							processor.push(mdbVorbisComment.publish());
+							if(cover){
+								mdbVorbisPicture = mflac.data.MetaDataBlockPicture.create(false, 3, `image/${(settings.PNGcovers ? "png" : "jpeg")}`, '', settings.artworkSize, settings.artworkSize, 24, 0, cover);
+								processor.push(mdbVorbisPicture.publish());
+							}
 						}
 					});
 					processor.on('postprocess', (mdb) => {
 						if (mflac.Processor.MDB_TYPE_VORBIS_COMMENT === mdb.type && null !== mdb.vendor) {
 							vendor = mdb.vendor;
-						}
-						if (mdbVorbisPicture && mdbVorbisComment) {
-							processor.push(mdbVorbisComment.publish());
-							processor.push(mdbVorbisPicture.publish());
-						}else if(mdbVorbisComment){
-							processor.push(mdbVorbisComment.publish());
 						}
 					});
 					reader.on('end', () => {
@@ -1539,7 +1555,7 @@ io.sockets.on('connection', function (socket) {
 							description: ''
 						});
 					}
-					if(metadata.unsynchronisedLyrics && settings.tags.cover)
+					if(metadata.unsynchronisedLyrics && settings.tags.unsynchronisedLyrics)
 						writer.setFrame('USLT', metadata.unsynchronisedLyrics);
 					if(metadata.publisher && settings.tags.publisher)
 						writer.setFrame('TPUB', metadata.publisher);
@@ -1568,7 +1584,6 @@ io.sockets.on('connection', function (socket) {
 					fs.remove(tempPath);
 				}
 			}
-			t.trackSocket = null;
 			callback(null, {playlistData: playlistData, searched: t.searched});
 		})
 	})
@@ -1662,7 +1677,8 @@ function settingsRegex(metadata, filename, playlist) {
 	} else {
 		filename = filename.replace(/%number%/g, '');
 	}
-	return filename;
+	filename = filename.replace(/%explicit%/g, (metadata.explicit ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : ""));
+	return filename.trim();
 }
 
 /**
@@ -1671,7 +1687,7 @@ function settingsRegex(metadata, filename, playlist) {
  * @param foldername
  * @returns {XML|string|*}
  */
-function settingsRegexAlbum(foldername, artist, album, year, rtype, publisher) {
+function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, publisher) {
 	foldername = foldername.replace(/%album%/g, album);
 	foldername = foldername.replace(/%artist%/g, artist);
 	foldername = foldername.replace(/%year%/g, year);
@@ -1681,7 +1697,8 @@ function settingsRegexAlbum(foldername, artist, album, year, rtype, publisher) {
 		foldername = foldername.replace(/%type%/g, "");
 	}
 	foldername = foldername.replace(/%label%/g, publisher);
-	return foldername;
+	foldername = foldername.replace(/%explicit%/g, (explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : ""));
+	return foldername.trim();
 }
 
 function settingsRegexCover(foldername, artist, name) {
@@ -1770,6 +1787,7 @@ function slimDownAlbumInfo(ajsonOld){
 	ajson.record_type = ajsonOld.record_type
 	ajson.label = ajsonOld.label
 	ajson.genres = ajsonOld.genres
+	ajson.explicit_lyrics = ajsonOld.explicit_lyrics
 	ajson.release_date = ajsonOld.release_date
 	ajson.tracks = {
 		data: ajsonOld.tracks.data.map(x=>{
@@ -1796,6 +1814,12 @@ function swichReleaseType(id){
 function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmetadata){
 	let metadata;
 	if (track["VERSION"]) track["SNG_TITLE"] += " " + track["VERSION"];
+	if (settings.removeAlbumVersion){
+		if(track["SNG_TITLE"].indexOf("Album Version")>-1){
+			track["SNG_TITLE"] = track["SNG_TITLE"].replace(/\(Album Version\)/g,"")
+			track["SNG_TITLE"].trim()
+		}
+	}
 	if(altmetadata){
 		metadata = altmetadata;
 		if(track["LYRICS_TEXT"] && !metadata.unsynchronisedLyrics){
@@ -1824,6 +1848,9 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 		}
 		if (!metadata.rtype){
 			metadata.rtype = swichReleaseType(track["TYPE"])
+		}
+		if (ajson.explicit_lyrics){
+			metadata.albumExplicit = ajson.explicit_lyrics;
 		}
 		if(track["SNG_CONTRIBUTORS"]){
 			if(track["SNG_CONTRIBUTORS"].composer){
@@ -1946,10 +1973,29 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 		}
 		if (ajson.release_date) {
 			metadata.year = ajson.release_date.slice(0, 4);
-			metadata.date = ajson.release_date;
+			metadata.date = {
+				day: ajson.release_date.slice(5,7),
+				month:  ajson.release_date.slice(8,10),
+				year: (settings.dateFormatYear == "2" ? ajson.release_date.slice(2, 4) : ajson.release_date.slice(0, 4))
+			}
 		} else if(track["PHYSICAL_RELEASE_DATE"]){
 			metadata.year = track["PHYSICAL_RELEASE_DATE"].slice(0, 4);
-			metadata.date = track["PHYSICAL_RELEASE_DATE"];
+			metadata.date = {
+				day: track["PHYSICAL_RELEASE_DATE"].slice(5,7),
+				month:  track["PHYSICAL_RELEASE_DATE"].slice(8,10),
+				year: (settings.dateFormatYear == "2" ? track["PHYSICAL_RELEASE_DATE"].slice(2, 4) : track["PHYSICAL_RELEASE_DATE"].slice(0, 4))
+			}
+		}
+		if (metadata.date){
+			let date
+			switch (settings.dateFormat){
+				case "0": date = `${metadata.date.year}-${metadata.date.month}-${metadata.date.day}`; break;
+				case "1": date = `${metadata.date.day}-${metadata.date.month}-${metadata.date.year}`; break;
+				case "2": date = `${metadata.date.month}-${metadata.date.day}-${metadata.date.year}`; break;
+				case "3": date = `${metadata.date.year}-${metadata.date.day}-${metadata.date.month}`; break;
+				default: date = `${metadata.date.day}-${metadata.date.month}-${metadata.date.year}`; break;
+			}
+			metadata.date = date;
 		}
 		if(settings.plName && !(settings.createArtistFolder || settings.createAlbumFolder) && !settings.numplaylistbyalbum){
 			metadata.trackNumber = (position+1).toString();
