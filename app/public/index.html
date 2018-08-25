@@ -16,7 +16,7 @@
   <meta charset="utf-8"/>
 </head>
 <body>
-<span id="appVersionFallback" hidden>4.1.1</span>
+<span id="appVersionFallback" hidden>4.1.2</span>
 
 <div id="title-bar" class="deezloader-black">
 	<div class="resize-padding" style="width: 100%; height: 3px;"></div>
@@ -69,31 +69,45 @@
 			<h4 class="col s12">Settings</h4>
 		</div>
 		<div class="row">
-			<div class="input-field col s12">
+			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_trackNameTemplate"/>
-				<label for="modal_settings_input_trackNameTemplate">Track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %number%, %year%, %artist%, %title% and %album%">info_outline</i></label>
+				<label for="modal_settings_input_trackNameTemplate">Track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+          data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album% and %label%">info_outline</i></label>
 			</div>
-		</div>
-		<div class="row">
-			<div class="input-field col s12">
+			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_playlistTrackNameTemplate"/>
-				<label for="modal_settings_input_playlistTrackNameTemplate">Playlist track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %number%, %year%, %artist%, %title% and %album%">info_outline</i></label>
+				<label for="modal_settings_input_playlistTrackNameTemplate">Playlist track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+          data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album% and %label%">info_outline</i></label>
 			</div>
 		</div>
     <div class="row">
-			<div class="input-field col s12">
+			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_albumTrackNameTemplate"/>
-				<label for="modal_settings_input_albumTrackNameTemplate">Album track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %number%, %year%, %artist%, %title% and %album%">info_outline</i></label>
+				<label for="modal_settings_input_albumTrackNameTemplate">Album track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+          data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album% and %label%">info_outline</i></label>
 			</div>
-		</div>
-		<div class="row">
-			<div class="input-field col s12">
+			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_albumNameTemplate"/>
-				<label for="modal_settings_input_albumNameTemplate">Album names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %year%, %artist%, %type% and %album%">info_outline</i></label>
+				<label for="modal_settings_input_albumNameTemplate">Album names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+          data-tooltip="Supported variables are: %year%, %artist%, %type%, %album% and %label%">info_outline</i></label>
+			</div>
+		</div>
+    <div class="row">
+			<div class="input-field col s12 m6">
+				<i class="material-icons prefix">label</i>
+				<input type="text" id="modal_settings_input_coverImageTemplate"/>
+				<label for="modal_settings_input_albumTrackNameTemplate">Cover Image name <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+          data-tooltip="Supported variables are: %artist% and %name%">info_outline</i></label>
+			</div>
+			<div class="input-field col s12 m6">
+				<i class="material-icons prefix">label</i>
+				<input type="text" id="modal_settings_input_artistImageTemplate"/>
+				<label for="modal_settings_input_albumNameTemplate">Artist Image name <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+          data-tooltip="Supported variables are: %artist%">info_outline</i></label>
 			</div>
 		</div>
 		<div class="row">
@@ -130,7 +144,7 @@
 				<i class="material-icons prefix">label</i>
 				<select name="multitagSeparator" id="modal_settings_select_multitagSeparator">
 					<option value="null">Null Character</option>
-					<option value=",">,</option>
+					<option value=", ">,</option>
 					<option value="/">/</option>
 					<option value=";">;</option>
 				</select>
@@ -163,6 +177,20 @@
   				<span>Create M3U (Playlist) file</span>
         </label>
 			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_syncedlyrics" class="filled-in"/>
+  				<span class="tooltipped" data-position="top" data-delay="500"
+            data-tooltip="Downloads lyrics .lyr file">Download synced lyrics file</span>
+        </label>
+      </p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_numplaylistbyalbum" class="filled-in"/>
+  				<span class="tooltipped" data-position="top" data-delay="500"
+            data-tooltip="Track numbers when downloading a Playlist will be the original ones">Number playlist by album</span>
+        </label>
+      </p>
 			<p class="col s12 m4">
         <label>
   				<input type="checkbox" id="modal_settings_cbox_createArtistFolder" class="filled-in"/>
@@ -175,40 +203,17 @@
   				<span>Create folder for albums</span>
         </label>
 			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_createCDFolder" class="filled-in"/>
+  				<span>Create folder for CDs</span>
+        </label>
+      </p>
 			<p class="col s12 m4">
         <label>
   				<input type="checkbox" id="modal_settings_cbox_padtrck" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Adds 0s before %number% to have the same character length">Pad track numbers</span>
-        </label>
-      </p>
-			<p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_syncedlyrics" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Downloads lyrics .lyr file">Enable synced lyrics</span>
-        </label>
-      </p>
-			<p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_numplaylistbyalbum" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Track numbers when downloading a Playlist will be the original ones">Number playlists by album</span>
-        </label>
-      </p>
-			<p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_extendedTags" class="filled-in"/>
-  				<span>Enable Extended Tags</label>
-        </label>
-			</p>
-			<p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_partOfSet" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Track number and disc number will be formatted as 1/16 instead of just 1">Add "out of" tag</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_saveArtwork" class="filled-in"/>
-  				<span>Save Artwork</span>
+  				<span class="tooltipped" data-position="top" data-delay="500"
+            data-tooltip="Adds 0s before %number% to have the same character length">Pad track numbers</span>
         </label>
       </p>
       <p class="col s12 m4">
@@ -219,11 +224,34 @@
       </p>
       <p class="col s12 m4">
         <label>
+  				<input type="checkbox" id="modal_settings_cbox_logSearched" class="filled-in"/>
+  				<span>Create log file for alternatives</span>
+        </label>
+      </p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_saveArtwork" class="filled-in"/>
+  				<span>Save Album Artwork</span>
+        </label>
+      </p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_saveArtworkArtist" class="filled-in"/>
+  				<span>Save Artist Artwork</span>
+        </label>
+      </p>
+      <p class="col s12 m4">
+        <label>
   				<input type="checkbox" id="modal_settings_cbox_PNGcovers" class="filled-in"/>
-  				<span>Save covers as PNGs</span>
+  				<span>Download images as PNGs</span>
         </label>
 			</p>
 		</div>
+    <div class="row">
+      <div class="col s12">
+        <a href="#modal_tags" class="modal-trigger waves-effect waves-light btn btn-large" style="width:100%;">Choose which tags to Save</a>
+      </div>
+    </div>
 		<div class="row">
 			<div class="col s12">
         <img id="modal_settings_picture" src="" alt="Profile Picture" class="circle left" style="height:125px; margin-right: 12px;"/>
@@ -237,6 +265,188 @@
 						class="material-icons right">save</i>Save</a>
 		<a href="#" class="waves-effect btn-flat" id="modal_settings_btn_defaultSettings"><i
 						class="material-icons right">settings_backup_restore</i>Default Settings</a>
+		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+	</div>
+</div>
+
+<!--#############################################MODAL_TAGS############################################-->
+<div id="modal_tags" class="modal modal-fixed-footer">
+	<div class="modal-content">
+		<div class="row">
+			<h4 class="col s12">Saved Tags</h4>
+		</div>
+		<div class="row">
+			<p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_title" class="filled-in"/>
+  				<span>Title</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_artist" class="filled-in"/>
+  				<span>Artist</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_album" class="filled-in"/>
+  				<span>Album</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_cover" class="filled-in"/>
+  				<span>Cover</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_trackNumber" class="filled-in"/>
+  				<span>Track Number</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_trackTotal" class="filled-in"/>
+  				<span>Track Total</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_discNumber" class="filled-in"/>
+  				<span>Disc Number</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_discTotal" class="filled-in"/>
+  				<span>Disc Total</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_albumArtist" class="filled-in"/>
+  				<span>Album Artist</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_genre" class="filled-in"/>
+  				<span>Genre</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_year" class="filled-in"/>
+  				<span>Year</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_date" class="filled-in"/>
+  				<span>Date</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_explicit" class="filled-in"/>
+  				<span>Explicit</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_isrc" class="filled-in"/>
+  				<span>ISRC</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_length" class="filled-in"/>
+  				<span>Length</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_barcode" class="filled-in"/>
+  				<span>Barcode</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_bpm" class="filled-in"/>
+  				<span>BPM</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_replayGain" class="filled-in"/>
+  				<span>Replay Gain</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_publisher" class="filled-in"/>
+  				<span>Label</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_unsynchronisedLyrics" class="filled-in"/>
+  				<span>Unsynchronised Lyrics</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_copyright" class="filled-in"/>
+  				<span>Copyright</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_musicpublisher" class="filled-in"/>
+  				<span>Publisher</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_composer" class="filled-in"/>
+  				<span>Composer</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_mixer" class="filled-in"/>
+  				<span>Mixer</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_author" class="filled-in"/>
+  				<span>Author</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_writer" class="filled-in"/>
+  				<span>Writer</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_engineer" class="filled-in"/>
+  				<span>Engineer</span>
+        </label>
+			</p>
+      <p class="col s12 m4">
+        <label>
+  				<input type="checkbox" id="modal_tags_producer" class="filled-in"/>
+  				<span>Producer</span>
+        </label>
+			</p>
+		</div>
+	</div>
+	<div class="modal-footer">
 		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
 	</div>
 </div>
@@ -300,6 +510,22 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
 					<div class="collapsible-body">
 						<p>
+			  <b>Version 4.1.2</b><br/>
+			  - Fixed Login Problem (for real this time)<br/>
+			  - Fixed Login after refresh<br/>
+			  - Regionlock free download<br/>
+			  - Added support for download of User Uploaded tracks<br/>
+			  - Now you can select which tags your songs has<br/>
+			  - Fixed selecting problem<br/>
+			  - Tracks without preview will display a disabled play button<br/>
+			  - Previews inside modal will stop with modal close<br/>
+			  - New %label% field for tracks and albums<br/>
+			  - Added option to create folder for CDs<br/>
+			  - Added rename option for cover file<br/>
+			  - Added option to download Artist artwork<br/>
+			  - Added option do log downloaded alternative tracks<br/>
+			  - Fixed some minor bugs
+			  <br/>
               <b>Version 4.1.1</b><br/>
               - Fixed Login Problem (again)<br/>
               - Added Dark Mode<br/>

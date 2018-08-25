@@ -1,9 +1,9 @@
 # Deezloader Remix
-### Latest Version: 4.1.1
+### Latest Version: 4.1.2
 Deezloader Remix is an improved version of Deezloader based on the Reborn branch.<br/>
 With this app you can download songs, playlists and albums directly from Deezers Server in a single and well packaged app.
 
-![](https://i.imgur.com/GbouYCB.png)
+![](https://i.imgur.com/7Qbvu1f.png)
 ## Features
 ### Base Features
 * Download MP3s and FLACs directly from Deezer Servers

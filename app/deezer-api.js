@@ -7,18 +7,13 @@ module.exports = new Deezer();
 
 function Deezer() {
 	this.apiUrl = "http://www.deezer.com/ajax/gw-light.php";
-	this.apiQueries = {
-		api_version: "1.0",
-		api_token: "null",
-		input: "3"
-	};
 	this.httpHeaders = {
-		"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.75 Safari/537.36",
+		"User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/67.0.3396.99 Safari/537.36",
 		"Content-Language": "en-US",
 		"Cache-Control": "max-age=0",
 		"Accept": "*/*",
 		"Accept-Charset": "utf-8,ISO-8859-1;q=0.7,*;q=0.3",
-		"Accept-Language": "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"
+		"Accept-Language": "en-US,en;q=0.9,en-US;q=0.8,en;q=0.7"
 	}
 	this.albumPicturesHost = "https://e-cdns-images.dzcdn.net/images/cover/";
 	this.reqStream = {}
@@ -30,14 +25,20 @@ Deezer.prototype.init = function(username, password, callback) {
 	request.post({
 		url: self.apiUrl,
 		qs: {
-			...self.apiQueries,
+			api_version: "1.0",
+			api_token: "null",
+			input: "3",
 			method: 'deezer.getUserData'
 		},
 		headers: self.httpHeaders,
 		jar: true,
 		json:true,
 	}, function(err, res, body) {
-		self.apiQueries.api_token = body.results.checkForm;
+		if(body.results.USER.USER_ID !== 0){
+			// login already done
+			callback(null, null);
+			return;
+		}
 		request.post({
 			url: "https://www.deezer.com/ajax/action.php",
 			headers: this.httpHeaders,
@@ -55,7 +56,9 @@ Deezer.prototype.init = function(username, password, callback) {
 				request.post({
 					url: self.apiUrl,
 					qs: {
-						...self.apiQueries,
+						api_version: "1.0",
+						api_token: "null",
+						input: "3",
 						method: 'deezer.getUserData'
 					},
 					headers: self.httpHeaders,
@@ -82,88 +85,87 @@ Deezer.prototype.init = function(username, password, callback) {
 
 
 Deezer.prototype.getPlaylist = function(id, callback) {
-	getJSON("https://api.deezer.com/playlist/" + id, function(res){
-		if (!(res instanceof Error)){
-			callback(res);
-		} else {
-			callback(null, res)
-		}
+	getJSON("https://api.deezer.com/playlist/" + id, function(res, err){
+		callback(res, err);
 	});
 }
 
 Deezer.prototype.getAlbum = function(id, callback) {
-	getJSON("https://api.deezer.com/album/" + id, function(res){
-		if (!(res instanceof Error)){
-			callback(res);
-		} else {
-			callback(null, res)
-		}
+	getJSON("https://api.deezer.com/album/" + id, function(res, err){
+		callback(res, err);
 	});
 }
 
+Deezer.prototype.getAAlbum = function(id, callback) {
+	var self = this;
+	self.getToken().then(data=>{
+		request.post({
+			url: self.apiUrl,
+			headers: self.httpHeaders,
+			qs: {
+				api_version: "1.0",
+				input: "3",
+				api_token: data,
+				method: "album.getData"
+			},
+			body: {alb_id:id},
+			jar: true,
+			json: true
+		}, (function (err, res, body) {
+			if(!err && res.statusCode == 200 && typeof body.results != 'undefined'){
+				let ajson = {};
+				ajson.artist = {}
+				ajson.artist.name = body.results.ART_NAME
+				ajson.nb_tracks = body.results.NUMBER_TRACK
+				ajson.label = body.results.LABEL_NAME
+				ajson.release_date = body.results.PHYSICAL_RELEASE_DATE
+				ajson.totalDiskNumber = body.results.NUMBER_DISK
+				callback(ajson);
+			} else {
+				callback(null, new Error("Unable to get Album" + id));
+			}
+		}).bind(self));
+	})
+}
+
 Deezer.prototype.getATrack = function(id, callback) {
-	getJSON("https://api.deezer.com/track/" + id, function(res){
-		if (!(res instanceof Error)){
-			callback(res);
-		} else {
-			callback(null, res)
-		}
+	getJSON("https://api.deezer.com/track/" + id, function(res, err){
+		callback(res, err);
 	});
 }
 
 Deezer.prototype.getArtist = function(id, callback) {
-	getJSON("https://api.deezer.com/artist/" + id, function(res){
-		if (!(res instanceof Error)){
-			callback(res);
-		} else {
-			callback(null, res)
-		}
+	getJSON("https://api.deezer.com/artist/" + id, function(res, err){
+		callback(res, err);
 	});
 
 }
 
 Deezer.prototype.getPlaylistTracks = function(id, callback) {
-	getJSON("https://api.deezer.com/playlist/" + id + "/tracks?limit=-1", function(res){
-		if (!(res instanceof Error)){
-			callback(res)
-		} else {
-			callback(null, res)
-		}
+	getJSON("https://api.deezer.com/playlist/" + id + "/tracks?limit=-1", function(res, err){
+		callback(res, err);
 	});
 }
 
 Deezer.prototype.getAlbumSize = function(id, callback) {
-	getJSON("https://api.deezer.com/album/" + id + "/tracks?limit=1", function(res){
-		if (!(res instanceof Error)){
-			callback(res.total);
-		} else {
-			callback(null, res)
-		}
+	getJSON("https://api.deezer.com/album/" + id + "/tracks?limit=1", function(res, err){
+		callback(res, err);
 	});
 
 }
 
 Deezer.prototype.getAlbumTracks = function(id, callback) {
-	getJSON("https://api.deezer.com/album/" + id + "/tracks?limit=-1", function(res){
-		if (!(res instanceof Error)){
-			callback(res);
-		} else {
-			callback(null, res)
-		}
-
+	getJSON("https://api.deezer.com/album/" + id + "/tracks?limit=-1", function(res, err){
+		callback(res, err);
 	});
 }
 
 Deezer.prototype.getArtistAlbums = function(id, callback) {
-	getJSON("https://api.deezer.com/artist/" + id + "/albums?limit=-1", function(res){
-		if (!(res instanceof Error)){
-			if(!res.data) {
-				res.data = [];
-			}
-			callback(res);
-		} else {
-			callback(null, res)
+	getJSON("https://api.deezer.com/artist/" + id + "/albums?limit=-1", function(res, err){
+		if(!res.data) {
+			res.data = [];
 		}
+		callback(res, err);
 	});
 }
 
@@ -172,95 +174,111 @@ Deezer.prototype.getArtistAlbums = function(id, callback) {
 ** 	From user https://api.deezer.com/user/637006841/playlists?limit=-1
 */
 Deezer.prototype.getChartsTopCountry = function(callback) {
-	getJSON("https://api.deezer.com/user/637006841/playlists?limit=-1", function(res){
-		if (!(res instanceof Error)){
-			if(!res.data) {
-				res.data = [];
-			} else {
-				//Remove "Loved Tracks"
-				res.data.shift();
-			}
-			callback(res);
+	getJSON("https://api.deezer.com/user/637006841/playlists?limit=-1", function(res, err){
+		if(!res.data) {
+			res.data = [];
 		} else {
-			callback(null, res)
+			//Remove "Loved Tracks"
+			res.data.shift();
 		}
+		callback(res, err);
 	});
 
 }
 
 Deezer.prototype.getMePlaylists = function(callback) {
-	getJSON("https://api.deezer.com/user/"+this.userId+"/playlists?limit=-1", function(res){
-		if (!(res instanceof Error)){
-			if(!res.data) {
-				res.data = [];
-			}
-			callback(res);
-		} else {
-			callback(null, res)
+	getJSON("https://api.deezer.com/user/"+this.userId+"/playlists?limit=-1", function(res, err){
+		if(!res.data) {
+			res.data = [];
 		}
+		callback(res, err);
 	});
+}
+
+Deezer.prototype.getLocalTrack = function(id, callback) {
+	var scopedid = id;
+	var self = this;
+	self.getToken().then(data=>{
+		request.post({
+			url: self.apiUrl,
+			headers: self.httpHeaders,
+			qs: {
+				api_version: "1.0",
+				input: "3",
+				api_token: data,
+				method: "song.getData"
+			},
+			body: {sng_id:scopedid},
+			jar: true,
+			json: true
+		}, (function (err, res, body) {
+			if(!err && res.statusCode == 200 && typeof body.results != 'undefined'){
+				var json = body.results;
+				json.format = (json["MD5_ORIGIN"].split('.').pop() == "flac" ? "9" : "3");
+				json.downloadUrl = self.getDownloadUrl(json["MD5_ORIGIN"], json["SNG_ID"], 0 ,parseInt(json["MEDIA_VERSION"]));
+				callback(json);
+			} else {
+				callback(null, new Error("Unable to get Track " + id));
+			}
+		}).bind(self));
+	})
 }
 
 Deezer.prototype.getTrack = function(id, maxBitrate, callback) {
 	var scopedid = id;
 	var self = this;
-	request.get({url: "https://www.deezer.com/track/"+id, headers: this.httpHeaders, jar: true}, (function(err, res, body) {
-		var regex = new RegExp(/<script>window\.__DZR_APP_STATE__ = (.*)<\/script>/g);
-		var rexec = regex.exec(body);
-		var _data;
-		try{
-			_data = rexec[1];
-		}catch(e){
-			callback(null, new Error("Unable to get Track"));
-			return;
-		}
-		if(!err && res.statusCode == 200 && typeof JSON.parse(_data)["DATA"] != 'undefined') {
-			var json = JSON.parse(_data)["DATA"];
-			var lyrics = JSON.parse(_data)["LYRICS"];
-			if(lyrics){
-				json["LYRICS_TEXT"] = lyrics["LYRICS_TEXT"];
-				json["LYRICS_SYNC_JSON"] = lyrics["LYRICS_SYNC_JSON"];
-				json["LYRICS_COPYRIGHTS"] = lyrics["LYRICS_COPYRIGHTS"];
-				json["LYRICS_WRITERS"] = lyrics["LYRICS_WRITERS"];
-			}
-			if(json["TOKEN"]) {
-				callback(null, new Error("Uploaded Files are currently not supported"));
-				return;
-			}
-			var id = json["SNG_ID"];
-			var md5Origin = json["MD5_ORIGIN"];
-			var format;
-			switch(maxBitrate){
-				case "9":
-					format = 9;
-					if (json["FILESIZE_FLAC"]>0) break;
-				case "3":
-					format = 3;
-					if (json["FILESIZE_MP3_320"]>0) break;
-				case "5":
-					format = 5;
-					if (json["FILESIZE_MP3_256"]>0) break;
-				case "1":
-					format = 1;
-					if (json["FILESIZE_MP3_128"]>0) break;
-				case "8":
-					format = 8;
-			}
-			json.format = format;
-			var mediaVersion = parseInt(json["MEDIA_VERSION"]);
-			json.downloadUrl = self.getDownloadUrl(md5Origin, id, format, mediaVersion);
-
-			self.getATrack(id,function(trckjson, err){
-				if (err)
-					json["BPM"] = 0;
-				else
-					json["BPM"] = trckjson.bpm;
+	self.getToken().then(data=>{
+		request.post({
+			url: self.apiUrl,
+			headers: self.httpHeaders,
+			qs: {
+				api_version: "1.0",
+				input: "3",
+				api_token: data,
+				method: "deezer.pageTrack"
+			},
+			body: {sng_id:scopedid},
+			jar: true,
+			json: true
+		}, (function (err, res, body) {
+			if(!err && res.statusCode == 200 && typeof body.results != 'undefined'){
+				var json = body.results.DATA;
+				if (body.results.LYRICS){
+					json.LYRICS_SYNC_JSON = body.results.LYRICS.LYRICS_SYNC_JSON;
+					json.LYRICS_TEXT = body.results.LYRICS.LYRICS_TEXT;
+				}
+				if(json["TOKEN"]) {
+					callback(null, new Error("Uploaded Files are currently not supported"));
+					return;
+				}
+				var id = json["SNG_ID"];
+				var md5Origin = json["MD5_ORIGIN"];
+				var format;
+				switch(maxBitrate){
+					case "9":
+						format = 9;
+						if (json["FILESIZE_FLAC"]>0) break;
+					case "3":
+						format = 3;
+						if (json["FILESIZE_MP3_320"]>0) break;
+					case "5":
+						format = 5;
+						if (json["FILESIZE_MP3_256"]>0) break;
+					case "1":
+						format = 1;
+						if (json["FILESIZE_MP3_128"]>0) break;
+					case "8":
+						format = 8;
+				}
+				json.format = format;
+				var mediaVersion = parseInt(json["MEDIA_VERSION"]);
+				json.downloadUrl = self.getDownloadUrl(md5Origin, id, format, mediaVersion);
 				callback(json);
-			});
-		} else {
-			callback(null, new Error("Unable to get Track " + id));
-		}
-	}).bind(self));
+			} else {
+				callback(null, new Error("Unable to get Track " + id));
+			}
+		}).bind(self));
+	})
 }
 
 Deezer.prototype.search = function(text, type, callback) {
@@ -270,6 +288,7 @@ Deezer.prototype.search = function(text, type, callback) {
 	} else {
 		type += "?";
 	}
+
 	request.get({url: "https://api.deezer.com/search/" + type + "q=" + text, headers: this.httpHeaders, jar: true}, function(err, res, body) {
 		if(!err && res.statusCode == 200) {
 			var json = JSON.parse(body);
@@ -412,7 +431,7 @@ Deezer.prototype.decryptTrack = function(writePath, track, queueId, callback) {
 	if (self.delStream.indexOf(queueId) == -1){
 		if (typeof self.reqStream[queueId] != "object") self.reqStream[queueId] = [];
 		self.reqStream[queueId].push(
-			request.get({url: track.downloadUrl, headers: self.httpHeaders, encoding: null}, function(err, res, body) {
+			request.get({url: track.downloadUrl, headers: self.httpHeaders, encoding: 'binary'}, function(err, res, body) {
 				if(!err && res.statusCode == 200) {
 					var decryptedSource = decryptDownload(new Buffer(body, 'binary'), track);
 					fs.outputFile(writePath,decryptedSource,function(err){
@@ -509,23 +528,37 @@ Deezer.prototype.onDownloadProgress = function(track, progress) {
 	return;
 }
 
+Deezer.prototype.getToken = async function(){
+	const res = await request.get({
+		url: this.apiUrl,
+		headers: this.httpHeaders,
+		qs: {
+			api_version: "1.0",
+			api_token: "null",
+			input: "3",
+			method: 'deezer.getUserData'
+		},
+		json: true,
+		jar: true,
+	})
+	return res.body.results.checkForm;
+}
+
 function getJSON(url, callback){
-	request.get({url: url, headers: this.httpHeaders, jar: true}, function(err, res, body) {
+	request.get({url: url, headers: this.httpHeaders, jar: true, json: true}, function(err, res, body) {
 		if(err || res.statusCode != 200 || !body) {
-			logger.error("Unable to initialize Deezer API");
-			callback(new Error("Unable to initialize Deezer API"));
+			callback(null, new Error("Unable to initialize Deezer API"));
 		} else {
-			var json = JSON.parse(body);
-			if (json.error) {
-				if (json.error.message == "Quota limit exceeded"){
+			if (body.error) {
+				if (body.error.message == "Quota limit exceeded"){
 					logger.warn("Quota limit exceeded, retrying in 500ms");
 					setTimeout(function(){ getJSON(url, callback); }, 500);
 					return;
 				}
-				logger.error(json.error.message);
+				callback(null, new Error(body.error.message));
 				return;
 			}
-			callback(json);
+			callback(body);
 		}
 	});
 }

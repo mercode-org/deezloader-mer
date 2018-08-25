@@ -289,13 +289,6 @@ a.single-cover {
   right: 0;
 }
 
-:not(input):not(textarea),
-:not(input):not(textarea)::after,
-:not(input):not(textarea)::before {
-    -webkit-user-select: none;
-    user-select: none;
-    cursor: default;
-}
 input, button, textarea, :focus {
     outline: none; // You should add some other style for :focus to help UX/a11y
 }
@@ -309,6 +302,9 @@ a[href^="https://"],
 a[href^="ftp://"] {
     -webkit-user-drag: auto;
     user-drag: auto; /* Technically not supported in Electron yet */
+}
+.preview_playlist_controls{
+	cursor:pointer;
 }
 .toast{
 	justify-content: normal !important;

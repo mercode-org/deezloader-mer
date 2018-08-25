@@ -22,12 +22,16 @@
 		"appId": "deezloader-rmx",
 		"productName": "Deezloader Remix",
 		"linux": {
-			"target": "AppImage",
-			"category": "Audio",
-			"arch": [
-				"x64",
-				"ia32"
-			]
+			"target": [
+				{
+					"target": "AppImage",
+					"arch": [
+						"x64",
+						"ia32"
+					]
+				}
+			],
+			"category": "Audio"
 		},
 		"mac": {
 			"category": "public.app-category.music"
