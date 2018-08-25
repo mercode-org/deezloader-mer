@@ -42,7 +42,10 @@ socket.on("autologin",function(username,password){
 socket.on("login", function (data) {
 	if (!data.error) {
 		$("#modal_settings_username").html(data.username);
-		$("#modal_settings_picture").attr("src",data.picture)
+		$("#modal_settings_picture").attr("src",data.picture);
+		$("#side_user").text(data.username);
+		$("#side_avatar").attr("src",data.picture);
+		$("#side_email").text(Username);
 		$('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd', function () {
 			$(this).css('display', 'none');
 			$(this).removeClass('animated fadeOut');
@@ -72,6 +75,19 @@ $('#openDownloadsFolder').on('click', function () {
 $(document).ready(function () {
 	M.AutoInit();
 	preview_track.volume = 0;
+
+	$('.sidenav').sidenav({
+		edge: 'right'
+	});
+
+	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"));
+
+	$('.sidenav_tab').click((e)=>{
+		e.preventDefault;
+		$(e.currentTarget).addClass("active");
+		tabs.select($(e.currentTarget).attr('tab-id'));
+		tabs.updateTabIndicator();
+	})
 
 	$(window).scroll(function () {
 		if ($(this).scrollTop() > 100) {

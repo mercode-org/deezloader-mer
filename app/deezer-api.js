@@ -33,7 +33,7 @@ Deezer.prototype.init = function(username, password, callback) {
 		}else if(body.indexOf("success") > -1){
 			request.get({url: "https://www.deezer.com/", headers: this.httpHeaders, jar: true}, (function(err, res, body) {
 				if(!err && res.statusCode == 200) {
-					const userRegex = new RegExp(/var USER =([^(;\n)]*)/g);
+					const userRegex = new RegExp(/"type":"user","data":([^}]*})/g);
 					const user = JSON.parse(userRegex.exec(body)[1]);
 					self.userId = user.USER_ID;
 					self.userName = user.BLOG_NAME;
@@ -250,49 +250,90 @@ Deezer.prototype.search = function(text, type, callback) {
 	});
 }
 
-Deezer.prototype.track2ID = function(artist, track, callback, trim=false) {
+Deezer.prototype.track2ID = function(artist, track, album, callback, trim=false) {
 	var self = this;
 	artist = artist.replace(/–/g,"-").replace(/’/g, "'");
 	track = track.replace(/–/g,"-").replace(/’/g, "'");
-	request.get({url: 'https://api.deezer.com/search/?q=track:"'+encodeURIComponent(track)+'" artist:"'+encodeURIComponent(artist)+'"&limit=1&strict=on', headers: this.httpHeaders, jar: true}, function(err, res, body) {
-		if(!err && res.statusCode == 200) {
-			var json = JSON.parse(body);
-			if(json.error) {
-				if (json.error.code == 4){
-					self.track2ID(artist, track, callback, trim);
-					return;
-				}else{
-					callback({id:0, name: track, artist: artist}, new Error(json.error.code+" - "+json.error.message));
-					return;
+	if (album) album = album.replace(/–/g,"-").replace(/’/g, "'");
+	if (album){
+		request.get({url: 'https://api.deezer.com/search/?q=track:"'+encodeURIComponent(track)+'" artist:"'+encodeURIComponent(artist)+'" album:"'+encodeURIComponent(album)+'"&limit=1&strict=on', headers: this.httpHeaders, jar: true}, function(err, res, body) {
+			if(!err && res.statusCode == 200) {
+				var json = JSON.parse(body);
+				if(json.error) {
+					if (json.error.code == 4){
+						self.track2ID(artist, track, album, callback, trim);
+						return;
+					}else{
+						callback({id:0, name: track, artist: artist}, new Error(json.error.code+" - "+json.error.message));
+						return;
+					}
 				}
+				if (json.data && json.data[0]){
+					if (json.data[0].title_version && json.data[0].title.indexOf(json.data[0].title_version) == -1){
+						json.data[0].title += " "+json.data[0].title_version
+					}
+					callback({id:json.data[0].id, name: json.data[0].title, artist: json.data[0].artist.name});
+				}else {
+					if (!trim){
+						if (track.indexOf("(") < track.indexOf(")")){
+							self.track2ID(artist, track.split("(")[0], album, callback, true);
+							return;
+						}else if (track.indexOf(" - ")>0){
+							self.track2ID(artist, track.split(" - ")[0], album, callback, true);
+							return;
+						}else{
+							self.track2ID(artist, track, null, callback, true);
+						}
+					}else{
+						self.track2ID(artist, track, null, callback, true);
+					}
+				}
+			} else {
+				self.track2ID(artist, track, album, callback, trim);
+				return;
 			}
-			if (json.data && json.data[0]){
-				if (json.data[0].title_version && json.data[0].title.indexOf(json.data[0].title_version) == -1){
-					json.data[0].title += " "+json.data[0].title_version
+		});
+	}else{
+		request.get({url: 'https://api.deezer.com/search/?q=track:"'+encodeURIComponent(track)+'" artist:"'+encodeURIComponent(artist)+'"&limit=1&strict=on', headers: this.httpHeaders, jar: true}, function(err, res, body) {
+			if(!err && res.statusCode == 200) {
+				var json = JSON.parse(body);
+				if(json.error) {
+					if (json.error.code == 4){
+						self.track2ID(artist, track, null, callback, trim);
+						return;
+					}else{
+						callback({id:0, name: track, artist: artist}, new Error(json.error.code+" - "+json.error.message));
+						return;
+					}
 				}
-				callback({id:json.data[0].id, name: json.data[0].title, artist: json.data[0].artist.name});
-			}else {
-				if (!trim){
-					if (track.indexOf("(") < track.indexOf(")")){
-						self.track2ID(artist, track.split("(")[0], callback, true);
-						return;
-					}else if (track.indexOf(" - ")>0){
-						self.track2ID(artist, track.split(" - ")[0], callback, true);
-						return;
+				if (json.data && json.data[0]){
+					if (json.data[0].title_version && json.data[0].title.indexOf(json.data[0].title_version) == -1){
+						json.data[0].title += " "+json.data[0].title_version
+					}
+					callback({id:json.data[0].id, name: json.data[0].title, artist: json.data[0].artist.name});
+				}else {
+					if (!trim){
+						if (track.indexOf("(") < track.indexOf(")")){
+							self.track2ID(artist, track.split("(")[0], null, callback, true);
+							return;
+						}else if (track.indexOf(" - ")>0){
+							self.track2ID(artist, track.split(" - ")[0], null, callback, true);
+							return;
+						}else{
+							callback({id:0, name: track, artist: artist}, new Error("Track not Found"));
+							return;
+						}
 					}else{
 						callback({id:0, name: track, artist: artist}, new Error("Track not Found"));
 						return;
 					}
-				}else{
-					callback({id:0, name: track, artist: artist}, new Error("Track not Found"));
-					return;
 				}
+			} else {
+				self.track2ID(artist, track, null, callback, trim);
+				return;
 			}
-		} else {
-			self.track2ID(artist, track, callback, trim);
-			return;
-		}
-	});
+		});
+	}
 }
 
 Deezer.prototype.hasTrackAlternative = function(id, callback) {

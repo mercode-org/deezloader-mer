@@ -63,6 +63,7 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 			$mainEl.css('display','none');
 			$('nav').css('top','0');
 			$('nav').css('margin-top','0');
+			$('#main_icon').css('margin-top','0');
 		}
 		$mainEl.find('#application_version').text(version);
 	}

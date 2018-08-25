@@ -1,7 +1,12 @@
 {
 	"license": "GPL-3.0",
 	"description": "Download music from Deezer",
-	"private": true,
+	"homepage": "https://notabug.org/RemixDevs/DeezloaderRemix",
+	"bugs": "https://notabug.org/RemixDevs/DeezloaderRemix/issues",
+	"repository": {
+		"type": "git",
+		"url": "https://notabug.org/RemixDevs/DeezloaderRemix.git"
+	},
 	"devDependencies": {
 		"cross-env": "^5.1.6",
 		"electron": "latest",

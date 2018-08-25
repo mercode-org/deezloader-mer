@@ -8,7 +8,9 @@ body {
 	width: 100%;
 	height: 100%;
 }
-
+#modal_login_autologin{
+	line-height: 36px;
+}
 *:focus{
 	outline-color: #3f51b5;
 }
@@ -20,6 +22,14 @@ body {
 .resize-padding{
 	-webkit-app-region: no-drag !important;
 	margin:0px;
+}
+
+.btn-input{
+	height: 43px;
+	line-height: 43px;
+	font-size: 15px;
+	padding: 0 28px;
+	margin: 0px;
 }
 
 #title-bar {
@@ -34,7 +44,6 @@ body {
 	z-index: 99;
 	height: 32px;
 	line-height: 32px;
-	background-color: #3a3a3a;
 	padding: 0;
 	margin: 0;
 	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
@@ -82,16 +91,61 @@ body {
 	padding: 0 10px;
 }
 
+#slide-out .background{
+	background-image: url("../img/bg.png");
+	-webkit-background-size: cover;
+	background-size: cover;
+	overflow: hidden;
+}
+
+#main_icon{
+	position: absolute;
+	margin-top: 32px;
+	top: 58px;
+	left: calc(50% - 37.5px);
+	width: 75px;
+	height: 75px;
+}
+
 nav {
-	background-image: url("../img/bg.jpg");
-	height: 256px;
+	background-image: url("../img/bg.png");
 	-webkit-background-size: cover;
 	background-size: cover;
 	overflow: auto;
 	position: relative;
+	height: auto;
 	top: -1px;
 	margin-top: 32px;
-	padding-top: 12px;
+	padding-bottom: 60px;
+	-webkit-clip-path: polygon(0 0, 0 60%, 100% 100%, 100% 0);
+	width: 100%;
+}
+.deezloader-black{
+	background-color: #23232c;
+}
+
+@media only screen and (max-width: 600px) {
+	nav {
+		padding-top: 0px;
+		padding-bottom: 0px;
+	}
+	.modal{
+		width: 100%;
+		margin: 0px;
+	}
+	#main_icon{
+		top: 4px;
+		left: calc(50% - 25px);
+		width: 50px;
+		height: 50px;
+	}
+	#modal_login_btn_signup, #modal_login_btn_login{
+		margin-top: 8px;
+	}
+}
+
+th{
+	text-align: center;
 }
 
 nav .brand-logo{
@@ -117,6 +171,10 @@ nav .description:after {
 	margin: 0 auto;
 	top: 16px;
 	margin-bottom: 24px;
+}
+
+nav .brand-logo.left{
+	margin-left: 45px;
 }
 
 .nav-content{
@@ -171,7 +229,7 @@ nav .description:after {
 ::-webkit-scrollbar-thumb {
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
-	background: #7986CB;
+	background: #2692b7;
 }
 
 body::-webkit-scrollbar {
@@ -179,11 +237,11 @@ body::-webkit-scrollbar {
 }
 
 body::-webkit-scrollbar-track {
-	background: #3a3a3a;
+	background: #23232c;
 }
 
 body::-webkit-scrollbar-thumb {
-	background: #5C6BC0;
+	background: #2692b7;
 }
 
 footer.page-footer{
@@ -192,9 +250,11 @@ footer.page-footer{
 	position: fixed;
 	left: 0;
 	height: 50px;
+	padding-left: 12px;
 	z-index: 99;
 	padding-top: 0;
-	color: rgba(255,255,255,0.7)
+	color: rgba(255,255,255,0.7);
+	-webkit-clip-path: polygon(0 0, 0 100%, 100% 100%, 100% 75%);
 }
 
 a.single-cover {
@@ -239,4 +299,8 @@ a[href^="ftp://"] {
 }
 .toast{
 	justify-content: normal !important;
+}
+
+.brand-logo{
+	margin-left: 0px !important;
 }

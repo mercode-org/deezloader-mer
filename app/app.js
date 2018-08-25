@@ -238,7 +238,7 @@ io.sockets.on('connection', function (socket) {
 			data.settings.trackInfo= slimDownTrackInfo(track);
 			if (track["VERSION"]) _track.name = _track.name + " " + track["VERSION"];
 			_track.settings = data.settings || {};
-			addToQueue(_track);
+			addToQueue(JSON.parse(JSON.stringify(_track)));
 		});
 	}
 	socket.on("downloadtrack", data=>{socketDownloadTrack(data)});
@@ -266,10 +266,10 @@ io.sockets.on('connection', function (socket) {
 				Deezer.getPlaylistTracks(data.id, function (playlist, err) {
 					_playlist.size = playlist.data.length
 					_playlist.tracks = playlist.data
-					addToQueue(_playlist);
+					addToQueue(JSON.parse(JSON.stringify(_playlist)));
 				})
 			}else{
-				addToQueue(_playlist);
+				addToQueue(JSON.parse(JSON.stringify(_playlist)));
 			}
 		});
 	}
@@ -295,7 +295,7 @@ io.sockets.on('connection', function (socket) {
 			};
 			data.settings.albumInfo = slimDownAlbumInfo(album)
 			_album.settings = data.settings || {};
-			addToQueue(_album);
+			addToQueue(JSON.parse(JSON.stringify(_album)));
 		});
 	}
 	socket.on("downloadalbum", data=>{socketDownloadAlbum(data)});
@@ -320,7 +320,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on("downloadspotifyplaylist", function (data) {
 		spotifyApi.clientCredentialsGrant().then(function(creds) {
 			spotifyApi.setAccessToken(creds.body['access_token']);
-			return spotifyApi.getPlaylist(data.settings.currentSpotifyUser, data.id, {fields: "id,name,owner,images,tracks(total,items(track.artists,track.name))"})
+			return spotifyApi.getPlaylist(data.settings.currentSpotifyUser, data.id, {fields: "id,name,owner,images,tracks(total,items(track.artists,track.name,track.album))"})
 		}).then(function(resp) {
 			let queueId = "id" + Math.random().toString(36).substring(2);
 			let _playlist = {
@@ -391,7 +391,7 @@ io.sockets.on('connection', function (socket) {
 				downloading.settings.albName = downloading.name;
 				downloading.settings.artName = downloading.artist;
 				downloading.errorLog = "";
-				downloading.settings.playlistArr = Array(downloading.size);
+				downloading.playlistArr = Array(downloading.size);
 				downloading.finished = new Promise((resolve,reject)=>{
 					downloading.playlistContent.every(function (t) {
 						socket.trackQueue.push(cb=>{
@@ -403,7 +403,7 @@ io.sockets.on('connection', function (socket) {
 							downloadTrack(t, downloading.settings, null, function (err, track) {
 								if (!err) {
 									downloading.downloaded++;
-									downloading.settings.playlistArr[track[0]] = track[1];
+									downloading.playlistArr[track[0]] = track[1];
 								} else {
 									downloading.failed++;
 									downloading.errorLog += track+"\r\n";
@@ -453,7 +453,7 @@ io.sockets.on('connection', function (socket) {
 						}
 					}
 					if (downloading.settings.createM3UFile){
-						fs.writeFileSync(filePath + "playlist.m3u", downloading.settings.playlistArr.join("\r\n"));
+						fs.writeFileSync(filePath + "playlist.m3u", downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
 					socket.currentItem = null;
@@ -477,7 +477,7 @@ io.sockets.on('connection', function (socket) {
 				})
 				downloading.settings.plName = downloading.name;
 				downloading.errorLog = ""
-				downloading.settings.playlistArr = Array(downloading.size);
+				downloading.playlistArr = Array(downloading.size);
 				downloading.settings.playlist = {
 					fullSize: downloading.playlistContent.length
 				};
@@ -492,7 +492,7 @@ io.sockets.on('connection', function (socket) {
 							downloadTrack(t, downloading.settings, null, function (err, track) {
 								if (!err) {
 									downloading.downloaded++;
-									downloading.settings.playlistArr[track[0]] = track[1];
+									downloading.playlistArr[track[0]] = track[1];
 								} else {
 									downloading.failed++;
 									downloading.errorLog += track+"\r\n"
@@ -526,7 +526,7 @@ io.sockets.on('connection', function (socket) {
 						}
 					}
 					if (downloading.settings.createM3UFile){
-						fs.writeFileSync(filePath + "playlist.m3u", downloading.settings.playlistArr.join("\r\n"));
+						fs.writeFileSync(filePath + "playlist.m3u", downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
@@ -562,14 +562,14 @@ io.sockets.on('connection', function (socket) {
 			case "spotifyplaylist":
 			spotifyApi.clientCredentialsGrant().then(function(creds) {
 				downloading.settings.plName = downloading.name;
-				downloading.settings.playlistArr = Array(downloading.size);
+				downloading.playlistArr = Array(downloading.size);
 				spotifyApi.setAccessToken(creds.body['access_token']);
 				numPages=Math.floor((downloading.size-1)/100);
 				let pages = []
 				downloading.playlistContent = new Array(downloading.size);
 				downloading.tracks.map((t,i)=>{
 					downloading.playlistContent[i]=new Promise(function(resolve, reject) {
-						Deezer.track2ID(t.track.artists[0].name, t.track.name, function (response,err){
+						Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
 							resolve(response);
 						});
 					});
@@ -577,10 +577,10 @@ io.sockets.on('connection', function (socket) {
 				if (downloading.size>100){
 					for (let offset = 1; offset<=numPages; offset++){
 						pages.push(new Promise(function(resolvePage) {
-							spotifyApi.getPlaylistTracks(downloading.settings.currentSpotifyUser, downloading.id, {fields: "items(track.artists,track.name)", offset: offset*100}).then(function(resp) {
+							spotifyApi.getPlaylistTracks(downloading.settings.currentSpotifyUser, downloading.id, {fields: "items(track.artists,track.name,track.album)", offset: offset*100}).then(function(resp) {
 								resp.body['items'].forEach((t, index) => {
 									downloading.playlistContent[(offset*100)+index] = new Promise(function(resolve, reject) {
-										Deezer.track2ID(t.track.artists[0].name, t.track.name, function (response,err){
+										Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
 											resolve(response);
 										});
 									});
@@ -621,7 +621,7 @@ io.sockets.on('connection', function (socket) {
 								downloadTrack(t, downloading.settings, null, function (err, track) {
 									if (!err) {
 										downloading.downloaded++;
-										downloading.settings.playlistArr[track[0]] = track[1];
+										downloading.playlistArr[track[0]] = track[1];
 									} else {
 										downloading.failed++;
 										downloading.errorLog += track+"\r\n"
@@ -655,7 +655,7 @@ io.sockets.on('connection', function (socket) {
 							}
 						}
 						if (downloading.settings.createM3UFile){
-							fs.writeFileSync(filePath + "playlist.m3u", downloading.settings.playlistArr.join("\r\n"));
+							fs.writeFileSync(filePath + "playlist.m3u", downloading.playlistArr.join("\r\n"));
 						}
 						if (downloading.settings.saveArtwork){
 							if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
@@ -984,7 +984,7 @@ io.sockets.on('connection', function (socket) {
 							});
 						}else if(!t.searched){
 							logger.warn("Failed to download track, searching for alternative");
-							Deezer.track2ID(t.artist, t.name, data=>{
+							Deezer.track2ID(t.artist, t.name, null, data=>{
 								t.searched = true;
 								t.id = data.id;
 								t.artist = data.artist;
@@ -1022,7 +1022,7 @@ io.sockets.on('connection', function (socket) {
 								});
 							}else if(!t.searched){
 								logger.warn("Failed to download track, searching for alternative");
-								Deezer.track2ID(t.artist, t.name, data=>{
+								Deezer.track2ID(t.artist, t.name, null, data=>{
 									t.searched = true;
 									t.id = data.id;
 									t.artist = data.artist;
@@ -1110,10 +1110,10 @@ io.sockets.on('connection', function (socket) {
 						fs.outputFile(writePath.substring(0,writePath.lastIndexOf('.'))+".lrc",lyricsbuffer,function(){});
 					}
 					if (settings.createM3UFile && (settings.plName || settings.albName)) {
-						if (!settings.numplaylistbyalbum){
-							t.playlistData = [splitNumber(metadata.trackNumber,false)-1, filename + (track.format == 9 ? ".flac" : ".mp3")];
-						}else{
+						if (settings.numplaylistbyalbum && t.index){
 							t.playlistData = [t.index, filename + (track.format == 9 ? ".flac" : ".mp3")];
+						}else{
+							t.playlistData = [splitNumber(metadata.trackNumber,false)-1, filename + (track.format == 9 ? ".flac" : ".mp3")];
 						}
 					}else{
 						t.playlistData = [0,""];
@@ -1186,7 +1186,7 @@ io.sockets.on('connection', function (socket) {
 									downloadTrack(t, settings, metadata, callback);
 								}else if(!t.searched){
 									logger.warn("Failed to download track, searching for alternative");
-									Deezer.track2ID(t.artist, t.name, data=>{
+									Deezer.track2ID(t.artist, t.name, null, data=>{
 										t.searched = true;
 										t.id = data.id;
 										t.artist = data.artist;
@@ -1596,11 +1596,11 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 			partOfSet: track["DISK_NUMBER"],
 			explicit: track["EXPLICIT_LYRICS"],
 			ISRC: track["ISRC"],
+			rtype: ajson.record_type,
 		};
 		if (settings.extendedTags){
 			metadata.length = track["DURATION"];
 			metadata.BARCODE = ajson.upc;
-			metadata.rtype = ajson.record_type;
 			if(track["COPYRIGHT"]){
 				metadata.copyright = track["COPYRIGHT"];
 			}
@@ -1688,10 +1688,10 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 		if (track["ALB_PICTURE"]) {
 			metadata.image = Deezer.albumPicturesHost + track["ALB_PICTURE"] + settings.artworkSize;
 		}
-		if(track["PHYSICAL_RELEASE_DATE"]){
-			metadata.year = track["PHYSICAL_RELEASE_DATE"].slice(0, 4);
-		}else if (ajson.release_date) {
+		if (ajson.release_date) {
 			metadata.year = ajson.release_date.slice(0, 4);
+		} else if(track["PHYSICAL_RELEASE_DATE"]){
+			metadata.year = track["PHYSICAL_RELEASE_DATE"].slice(0, 4);
 		}
 		if(settings.plName && !(settings.createArtistFolder || settings.createAlbumFolder) && !settings.numplaylistbyalbum){
 			metadata.trackNumber = (position+1).toString() + "/" + settings.playlist.fullSize;
