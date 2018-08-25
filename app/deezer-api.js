@@ -19,7 +19,7 @@ function Deezer() {
 	this.reqStream = {}
 	this.delStream = []
 }
-console.log("hi");
+
 Deezer.prototype.init = function(username, password, callback) {
 	var self = this;
 	request.post({

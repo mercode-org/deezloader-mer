@@ -31,7 +31,7 @@ function removeColors(string){
 function debug(message){
 	var str = "[\x1b[32mDebug\x1b[0m] "+message;
 	console.log(str);
-	fs.appendFileSync(logsLocation, removeColors(str)+"\r\n");
+	//fs.appendFileSync(logsLocation, removeColors(str)+"\r\n");
 	return;
 }
 function info(message){

@@ -103,14 +103,14 @@ io.sockets.on('connection', function (socket) {
 		json: true
 	}, function(error, response, body) {
 		if (!error && response.statusCode === 200) {
-			console.log("Got response: " + JSON.stringify(body));
-			console.log("Current version: " + curVersion.replace('.', '') + "\nLatest Version: " + body.version);
+			logger.debug("Got response: " + JSON.stringify(body));
+			logger.debug("Current version: " + curVersion.replace('.', '') + "\nLatest Version: " + body.version);
 			if ((parseInt(body.version) > parseInt(curVersion.replace('.', '')))) {
-				console.log("\n\nUpdate Available\n\n");
+				logger.logs("\n\nUpdate Available\n\n");
 				socket.emit("message", {title: "Update Available", msg: body.changelog});
 			}
 		} else {
-			console.log("ERROR: " + error + " " + response.statusCode);
+			logger.error(error + " " + response.statusCode);
 		}
 	})
 	socket.downloadQueue = {};
