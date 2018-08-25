@@ -8,8 +8,8 @@
 		"createM3UFile": false,
 		"createArtistFolder": false,
 		"createAlbumFolder": false,
-		"downloadLocation": null,
-		"artworkSize": "/800x800.jpg",
+		"downloadLocation": "",
+		"artworkSize": "/1400x1400.jpg",
 		"hifi": false,
 		"padtrck": false,
 		"syncedlyrics": false,
@@ -17,6 +17,10 @@
 		"extendedTags": false,
 		"partOfSet": false,
 		"chartsCountry": "UK",
-		"spotifyUser": ""
+		"spotifyUser": "",
+		"saveArtwork": false,
+		"logErrors": false,
+		"queueConcurrency": 3,
+		"multitagSeparator": ";"
 	}
 }

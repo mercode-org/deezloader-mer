@@ -11,7 +11,7 @@
   <meta charset="utf-8"/>
 </head>
 <body>
-<span id="appVersionFallback" hidden>4.0.2</span>
+<span id="appVersionFallback" hidden>4.0.3</span>
 
 <div id="title-bar">
 	<div class="resize-padding" style="width: 100%; height: 3px;"></div>
@@ -91,24 +91,27 @@
 				<label for="modal_settings_input_albumNameTemplate">Album names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %year%, %artist%, %type% and %album%">info_outline</i></label>
 			</div>
 		</div>
-    <div class="row">
-			<div class="input-field col s12">
-				<i class="material-icons prefix">label</i>
-				<input type="text" id="modal_settings_input_spotifyUser"/>
-				<label for="modal_settings_input_spotifyUser">Spotify Username</label>
-			</div>
-		</div>
 		<div class="row">
-			<div class="input-field col s12">
+			<div class="input-field col s6">
 				<i class="material-icons prefix">label</i>
 				<select name="artworkSize" id="modal_settings_select_artworkSize">
 					<option value="/500x500.jpg">500x500</option>
-					<option value="/800x800.jpg" selected>800x800</option>
+					<option value="/800x800.jpg">800x800</option>
 					<option value="/1000x1000.jpg">1000x1000</option>
 					<option value="/1200x1200.jpg">1200x1200</option>
 					<option value="/1400x1400.jpg">1400x1400</option>
 				</select>
 				<label for="modal_settings_select_artworkSize">Artwork size</label>
+			</div>
+      <div class="input-field col s6">
+				<i class="material-icons prefix">label</i>
+				<select name="artworkSize" id="modal_settings_select_multitagSeparator">
+					<option value="null">Null Character</option>
+					<option value=",">,</option>
+					<option value="/">/</option>
+					<option value=";">;</option>
+				</select>
+				<label for="modal_settings_select_multitagSeparator">Multitag Separator</label>
 			</div>
 		</div>
     <div class="row">
@@ -124,6 +127,18 @@
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_downloadTracksLocation"/>
 				<label for="modal_settings_input_downloadTracksLocation">Download location</label>
+			</div>
+		</div>
+    <div class="row">
+			<div class="input-field col s6">
+				<i class="material-icons prefix">label</i>
+				<input type="number" id="modal_settings_number_queueConcurrency" min="1"/>
+				<label for="modal_settings_number_queueConcurrency">Queue Concurrency</label>
+			</div>
+			<div class="input-field col s6">
+				<i class="material-icons prefix">label</i>
+				<input type="text" id="modal_settings_input_spotifyUser"/>
+				<label for="modal_settings_input_spotifyUser">Spotify Username</label>
 			</div>
 		</div>
 		<div class="row">
@@ -148,7 +163,7 @@
 			<p class="col s4">
         <label>
   				<input type="checkbox" id="modal_settings_cbox_hifi" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Downloads a FLAC file if it is available">Enable HIFI</span>
+  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Downloads a FLAC file if it is available">Download FLACs</span>
         </label>
       </p>
 			<p class="col s4">
@@ -178,12 +193,25 @@
 			<p class="col s4">
         <label>
   				<input type="checkbox" id="modal_settings_cbox_partOfSet" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Track number and disc number will be formatted as 1/16 instead of just 1">Add part of set to tracks</span>
+  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Track number and disc number will be formatted as 1/16 instead of just 1">Add "out of" tag</span>
+        </label>
+      </p>
+      <p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_saveArtwork" class="filled-in"/>
+  				<span>Save Artwork</span>
+        </label>
+      </p>
+      <p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_logErrors" class="filled-in"/>
+  				<span>Create log file for Errors</span>
         </label>
       </p>
 		</div>
 		<div class="row">
-			<div class="center input-field col s12">
+			<div class="col s12">
+        <img id="modal_settings_picture" src="" alt="Profile Picture" class="circle left" style="height:125px; margin-right: 12px;"/>
 				<p>You are logged in as <b id="modal_settings_username"></b></p>
 				<a href="#" class="modal-close waves-effect waves-light btn" id="modal_settings_btn_logout">Logout</a>
 			</div>
@@ -212,7 +240,8 @@
 							<b>Version:</b> <span id="application_version_about"></span><br/>
 							<b>Original Programmer:</b> <a href="https://boerse.to/members/zzmtv.3378614/">ZzMTV</a><br/>
 							<b>Former Maintainers:</b> <a href="https://www.reddit.com/user/ParadoxalManiak/">ParadoxalManiak</a>, <a href="https://www.reddit.com/user/_snwflake/">snwflake</a>, <a href="https://www.reddit.com/user/ExtendLord/">ExtendLord</a><br>
-							<b>Interface:</b> <a href="http://materializecss.com/">materializecss</a><br/>
+              <b>Repo: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix">Official Repo</a>
+              <b>Interface:</b> <a href="http://materializecss.com/">materializecss</a><br/>
               <b>Based on: </b>Deezloader Reborn</br>
 						</p>
 					</div>
@@ -221,7 +250,7 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">feedback</i>Feedback</div>
 					<div class="collapsible-body">
 						<p>
-							Do you have some feedback or want to ask for some new features? Join the <a href="https://t.me/joinchat/BJf2dUoyFbTi9HLUp0SWkw">official group</a>.
+							Do you have some feedback or want to ask for some new features? Open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new">New Issue</a> and add the Feature label.
 						</p>
 					</div>
 				</li>
@@ -229,10 +258,18 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">bug_report</i>Bugs</div>
 					<div class="collapsible-body">
 						<p>
-							If you experience any bugs, please send a bug report to <a href="https://t.me/joinchat/BJf2dUoyFbTi9HLUp0SWkw">this group</a>.
+							If you experience any bugs, open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new">New Issue</a> and send the bug report there, thankyou.
 						</p>
 					</div>
 				</li>
+        <li>
+          <div class="collapsible-header waves-effect"><i class="material-icons">group</i>Contacts</div>
+          <div class="collapsible-body">
+            <p>
+              If you want to talk about the app and help you can do that in this <a href="https://t.me/joinchat/BJf2dUoyFbTi9HLUp0SWkw">Telegram Group</a>!
+            </p>
+          </div>
+        </li>
 				<li>
 					<div class="collapsible-header waves-effect"><i class="material-icons">warning</i>Attention!</div>
 					<div class="collapsible-body">
@@ -247,6 +284,22 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
 					<div class="collapsible-body">
 						<p>
+              <b>Version 4.0.3</b><br/>
+              - Added concurrent download! (Default value is 3)<br/>
+              - Enhanced logs system (Now with colors!)<br/>
+              - Added argument -s and --server to start without GUI<br/>
+              - Slimmed down request number<br/>
+              - Fixed BPM tag<br/>
+              - Added placeholder for missing covers<br/>
+              - Improved login algorithm<br/>
+              - Fixed some problems with settings change during downloads<br/>
+              - Added option to save artworks<br/>
+              - Added option to save logs of failed downloads<br/>
+              - Changing default chart country in settings automaticaly updates the charts tab<br/>
+              - Changing search type will automaticaly do a search<br/>
+              - Added choice of separator on MP3 Files (FLAC uses native support)<br/>
+              - Added track preview in album and playlist tracklist modal<br/>
+              <br/>
               <b>Version 4.0.2</b><br/>
               - Changed API token retrive (some users were not able to login)<br/>
               - Now the Artist modal will stay under the Album modal (you can browse artist albums without reopening the artist modal each time)<br/>
@@ -726,7 +779,7 @@
   						</td>
   					</tr>
 					</tbody>
-					<tbody id="tab_search_table_results_tbody_results"></tbody>
+					<tbody id="tab_search_table_results_tbody_results" class="animated fadeInUp"></tbody>
 					<tbody id="tab_search_table_results_tbody_noResults" class="animated fadeInUp hide">
   					<tr>
   						<td class="center">Nothing found!</td>

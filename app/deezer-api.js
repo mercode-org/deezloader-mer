@@ -1,4 +1,3 @@
-const NRrequest = require('request');
 const request = require('requestretry').defaults({maxAttempts: 2147483647, retryDelay: 1000, timeout: 8000});
 const crypto = require('crypto');
 const fs = require("fs-extra");
@@ -22,34 +21,23 @@ function Deezer() {
 		"Accept-Language": "de-DE,de;q=0.8,en-US;q=0.6,en;q=0.4"
 	}
 	this.albumPicturesHost = "https://e-cdns-images.dzcdn.net/images/cover/";
-	this.reqStream = null;
+	this.reqStream = {}
+	this.delStream = []
 }
 
 Deezer.prototype.init = function(username, password, callback) {
 	var self = this;
-	NRrequest.post({url: "https://www.deezer.com/ajax/action.php", headers: this.httpHeaders, form: {type:'login',mail:username,password:password}, jar: true}, (function(err, res, body) {
+	request.post({url: "https://www.deezer.com/ajax/action.php", headers: this.httpHeaders, form: {type:'login',mail:username,password:password}, jar: true}, (function(err, res, body) {
 		if(err || res.statusCode != 200) {
 			callback(new Error("Unable to load deezer.com"));
 		}else if(body.indexOf("success") > -1){
 			request.get({url: "https://www.deezer.com/", headers: this.httpHeaders, jar: true}, (function(err, res, body) {
 				if(!err && res.statusCode == 200) {
-					var regex = new RegExp(/"api_key":"([^",]*)/g);
-					var _token = regex.exec(body);
-					if(! (_token instanceof Array && _token[1])) {
-						var regex = new RegExp(/((?!"api_key\\":\\").*(?=\\"))/g);
-						var _token = regex.exec(body);
-						if(! (_token instanceof Array && _token[1])) {
-							var _token = ["", " "]
-							if(! (_token instanceof Array && _token[1])) {
-								callback(new Error("Unable to initialize Deezer API"));
-								return;
-							}
-						}
-					}
-					self.apiQueries.api_token = _token[1];
-					const userRegex = new RegExp(/{"USER_ID":"([^",]*)/g);
-					const userId = userRegex.exec(body)[1];
-					self.userId = userId;
+					const userRegex = new RegExp(/var USER =([^(;\n)]*)/g);
+					const user = JSON.parse(userRegex.exec(body)[1]);
+					self.userId = user.USER_ID;
+					self.userName = user.BLOG_NAME;
+					self.userPicture = `https:\/\/e-cdns-images.dzcdn.net\/images\/user\/${user.USER_PICTURE}\/250x250-000000-80-0-0.jpg`;
 					callback(null, null);
 				} else {
 					callback(new Error("Unable to load deezer.com "+err));
@@ -97,17 +85,6 @@ Deezer.prototype.getArtist = function(id, callback) {
 	getJSON("https://api.deezer.com/artist/" + id, function(res){
 		if (!(res instanceof Error)){
 			callback(res);
-		} else {
-			callback(null, res)
-		}
-	});
-
-}
-
-Deezer.prototype.getPlaylistSize = function(id, callback) {
-	getJSON("https://api.deezer.com/playlist/" + id + "/tracks?limit=1", function(res){
-		if (!(res instanceof Error)){
-			callback(res.total);
 		} else {
 			callback(null, res)
 		}
@@ -204,7 +181,7 @@ Deezer.prototype.getTrack = function(id, wantFlac, callback) {
 		try{
 			_data = rexec[1];
 		}catch(e){
-			callback(new Error("Unable to get Track"));
+			callback(null, new Error("Unable to get Track"));
 			return;
 		}
 		if(!err && res.statusCode == 200 && typeof JSON.parse(_data)["DATA"] != 'undefined') {
@@ -217,7 +194,7 @@ Deezer.prototype.getTrack = function(id, wantFlac, callback) {
 				json["LYRICS_WRITERS"] = lyrics["LYRICS_WRITERS"];
 			}
 			if(json["TOKEN"]) {
-				callback(new Error("Uploaded Files are currently not supported"));
+				callback(null, new Error("Uploaded Files are currently not supported"));
 				return;
 			}
 			var id = json["SNG_ID"];
@@ -238,15 +215,16 @@ Deezer.prototype.getTrack = function(id, wantFlac, callback) {
 			json.format = format;
 			var mediaVersion = parseInt(json["MEDIA_VERSION"]);
 			json.downloadUrl = self.getDownloadUrl(md5Origin, id, format, mediaVersion);
+
 			self.getATrack(id,function(trckjson, err){
 				if (err)
 					json["BPM"] = 0;
 				else
-					json["BPM"] = trckjson["bpm"];
+					json["BPM"] = trckjson.bpm;
 				callback(json);
 			});
 		} else {
-			callback(new Error("Unable to get Track " + id));
+			callback(null, new Error("Unable to get Track " + id));
 		}
 	}).bind(self));
 }
@@ -274,7 +252,9 @@ Deezer.prototype.search = function(text, type, callback) {
 
 Deezer.prototype.track2ID = function(artist, track, callback, trim=false) {
 	var self = this;
-	request.get({url: 'https://api.deezer.com/search/?q=track:"'+encodeURIComponent(track)+'" artist:"'+encodeURIComponent(artist)+'"&limit=1', headers: this.httpHeaders, jar: true}, function(err, res, body) {
+	artist = artist.replace(/–/g,"-").replace(/’/g, "'");
+	track = track.replace(/–/g,"-").replace(/’/g, "'");
+	request.get({url: 'https://api.deezer.com/search/?q=track:"'+encodeURIComponent(track)+'" artist:"'+encodeURIComponent(artist)+'"&limit=1&strict=on', headers: this.httpHeaders, jar: true}, function(err, res, body) {
 		if(!err && res.statusCode == 200) {
 			var json = JSON.parse(body);
 			if(json.error) {
@@ -282,12 +262,15 @@ Deezer.prototype.track2ID = function(artist, track, callback, trim=false) {
 					self.track2ID(artist, track, callback, trim);
 					return;
 				}else{
-					callback(0, new Error(json.error.code+" - "+json.error.message));
+					callback({id:0, name: track, artist: artist}, new Error(json.error.code+" - "+json.error.message));
 					return;
 				}
 			}
-			if (json.total>0){
-				callback(json.data[0].id);
+			if (json.data && json.data[0]){
+				if (json.data[0].title_version && json.data[0].title.indexOf(json.data[0].title_version) == -1){
+					json.data[0].title += " "+json.data[0].title_version
+				}
+				callback({id:json.data[0].id, name: json.data[0].title, artist: json.data[0].artist.name});
 			}else {
 				if (!trim){
 					if (track.indexOf("(") < track.indexOf(")")){
@@ -297,11 +280,11 @@ Deezer.prototype.track2ID = function(artist, track, callback, trim=false) {
 						self.track2ID(artist, track.split(" - ")[0], callback, true);
 						return;
 					}else{
-						callback(0, new Error("Track not Found"));
+						callback({id:0, name: track, artist: artist}, new Error("Track not Found"));
 						return;
 					}
 				}else{
-					callback(0, new Error("Track not Found"));
+					callback({id:0, name: track, artist: artist}, new Error("Track not Found"));
 					return;
 				}
 			}
@@ -349,27 +332,38 @@ Deezer.prototype.getDownloadUrl = function(md5Origin, id, format, mediaVersion) 
 	return "https://e-cdns-proxy-" + md5Origin.substring(0, 1) + ".dzcdn.net/mobile/1/" + buffer.toString("hex").toLowerCase();
 }
 
-Deezer.prototype.decryptTrack = function(writePath, track, callback) {
+Deezer.prototype.decryptTrack = function(writePath, track, queueId, callback) {
 	var self = this;
 	var chunkLength = 0;
-	this.reqStream = request.get({url: track.downloadUrl, headers: this.httpHeaders, jar: true, encoding: null}, function(err, res, body) {
-		if(!err && res.statusCode == 200) {
-			var decryptedSource = decryptDownload(new Buffer(body, 'binary'), track);
-			fs.outputFile(writePath,decryptedSource,function(err){
-				if(err){callback(err);return;}
-				callback();
-			});
-		} else {
-			logger.logs("Error","Decryption error");
-			callback(err || new Error("Can't download the track"));
-		}
-	}).on("data", function(data) {
-		chunkLength += data.length;
-		self.onDownloadProgress(track, chunkLength);
-	}).on("abort", function() {
-		logger.logs("Error","Decryption aborted");
+	if (self.delStream.indexOf(queueId) == -1){
+		if (typeof self.reqStream[queueId] != "object") self.reqStream[queueId] = [];
+		self.reqStream[queueId].push(
+			request.get({url: track.downloadUrl, headers: self.httpHeaders, encoding: null}, function(err, res, body) {
+				if(!err && res.statusCode == 200) {
+					var decryptedSource = decryptDownload(new Buffer(body, 'binary'), track);
+					fs.outputFile(writePath,decryptedSource,function(err){
+						if(err){callback(err);return;}
+						callback();
+					});
+					if (self.reqStream[queueId]) self.reqStream[queueId].splice(self.reqStream[queueId].indexOf(this),1);
+				} else {
+					logger.error("Decryption error"+(err ? " | "+err : "")+ (res ? ": "+res.statusCode : ""));
+					if (self.reqStream[queueId]) self.reqStream[queueId].splice(self.reqStream[queueId].indexOf(this),1);
+					callback(err || new Error("Can't download the track"));
+				}
+			}).on("data", function(data) {
+				chunkLength += data.length;
+				self.onDownloadProgress(track, chunkLength);
+			}).on("abort", function() {
+				logger.error("Decryption aborted");
+				if (self.reqStream[queueId]) self.reqStream[queueId].splice(self.reqStream[queueId].indexOf(this),1);
+				callback(new Error("aborted"));
+			})
+		);
+	}else{
+		logger.error("Decryption aborted");
 		callback(new Error("aborted"));
-	});
+	}
 }
 
 function decryptDownload(source, track) {
@@ -390,16 +384,17 @@ function decryptDownload(source, track) {
 			chunk_size = source.length - position;
 		}
 		chunk = new Buffer(chunk_size);
+		let chunkString
 		chunk.fill(0);
 		source.copy(chunk, 0, position, position + chunk_size);
 		if(i % 3 > 0 || chunk_size < 2048){
-			//Do nothing
+				chunkString = chunk.toString('binary')
 		}else{
 			var cipher = crypto.createDecipheriv('bf-cbc', blowFishKey, new Buffer([0, 1, 2, 3, 4, 5, 6, 7]));
 			cipher.setAutoPadding(false);
-			chunk = cipher.update(chunk, 'binary', 'binary') + cipher.final();
+			chunkString = cipher.update(chunk, 'binary', 'binary') + cipher.final();
 		}
-		destBuffer.write(chunk.toString("binary"), position, 'binary');
+		destBuffer.write(chunkString, position, chunkString.length, 'binary');
 		position += chunk_size
 		i++;
 	}
@@ -420,10 +415,16 @@ function getBlowfishKey(trackInfos) {
 	return bfKey;
 }
 
-Deezer.prototype.cancelDecryptTrack = function() {
-	if(this.reqStream) {
-		this.reqStream.abort();
-		this.reqStream = null;
+Deezer.prototype.cancelDecryptTrack = function(queueId) {
+	if(Object.keys(this.reqStream).length != 0) {
+		if (this.reqStream[queueId]){
+			while (this.reqStream[queueId][0]){
+				this.reqStream[queueId][0].abort();
+			}
+			delete this.reqStream[queueId];
+			this.delStream.push(queueId);
+			return true;
+		}
 		return true;
 	} else {
 		false;
@@ -437,13 +438,17 @@ Deezer.prototype.onDownloadProgress = function(track, progress) {
 function getJSON(url, callback){
 	request.get({url: url, headers: this.httpHeaders, jar: true}, function(err, res, body) {
 		if(err || res.statusCode != 200 || !body) {
-			logger.logs("Error","Unable to initialize Deezer API");
-			callback(new Error());
+			logger.error("Unable to initialize Deezer API");
+			callback(new Error("Unable to initialize Deezer API"));
 		} else {
 			var json = JSON.parse(body);
 			if (json.error) {
-				logger.logs("Error",json.error.message);
-				callback(new Error());
+				if (json.error.message == "Quota limit exceeded"){
+					logger.warn("Quota limit exceeded, retrying in 500ms");
+					setTimeout(function(){ getJSON(url, callback); }, 500);
+					return;
+				}
+				logger.error(json.error.message);
 				return;
 			}
 			callback(json);

@@ -3,13 +3,14 @@
 	"description": "Download music from Deezer",
 	"private": true,
 	"devDependencies": {
+		"cross-env": "^5.1.6",
 		"electron": "latest",
 		"electron-builder": "latest"
 	},
 	"scripts": {
 		"dist": "electron-builder",
 		"pack": "electron-builder --dir",
-		"start": "npm install && electron ./app",
+		"start": "cross-env NODE_ENV=development electron ./app",
 		"postinstall": "electron-builder install-app-deps"
 	},
 	"build": {
@@ -44,8 +45,5 @@
 			"artifactName": "${productName} ${version} - Portable.${ext}",
 			"requestExecutionLevel": "user"
 		}
-	},
-	"dependencies": {
-		"ajv": "^6.5.1"
 	}
 }

@@ -1,7 +1,7 @@
 {
 	"name": "deezloader-rmx",
 	"productName": "Deezloader Remix",
-	"version": "4.0.2",
+	"version": "4.0.3",
 	"description": "Download music from Deezer",
 	"main": "main.js",
 	"author": "RemixDevs",
@@ -11,12 +11,13 @@
 		"electron-context-menu": "latest",
 		"electron-window-state-manager": "latest",
 		"express": "latest",
-		"flac-metadata": "latest",
 		"fs-extra": "latest",
 		"package.json": "latest",
 		"request": "latest",
 		"requestretry": "latest",
 		"socket.io": "latest",
-		"spotify-web-api-node": "latest"
+		"spotify-web-api-node": "latest",
+		"dateformat": "latest",
+		"queue": "latest"
 	}
 }

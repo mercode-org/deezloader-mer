@@ -1,0 +1,28 @@
+{
+  "name": "flac-metadata",
+  "description": "FLAC metadata processor implemented as Transform stream",
+  "keywords": [
+    "flac",
+    "metadata",
+    "audio"
+  ],
+  "author": "Claus Wahlers <claus@codeazur.com.br> (http://wahlers.com.br/claus/)",
+  "homepage": "https://github.com/claus/flac-metadata",
+  "version": "0.1.1",
+  "license": "MIT",
+  "main": "index.js",
+  "directories": {
+    "lib": "./lib"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/claus/flac-metadata.git"
+  },
+  "bugs": {
+    "url": "https://github.com/claus/flac-metadata/issues",
+    "email": "claus@codeazur.com.br"
+  },
+  "engines": {
+    "node": ">=0.8"
+  }
+}

@@ -237,3 +237,6 @@ a[href^="ftp://"] {
     -webkit-user-drag: auto;
     user-drag: auto; /* Technically not supported in Electron yet */
 }
+.toast{
+	justify-content: normal !important;
+}

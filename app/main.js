@@ -29,9 +29,9 @@ require('electron-context-menu')({
 function loadSettings(){
 	var userdata = "";
 	if(process.platform == "android"){
-		userdata = os.homedir() + "/storage/shared/Deezloader/";
+		userdata = os.homedir() + "/storage/shared/Deezloader Remix/";
 	}else{
-		userdata = app.getPath("appData")+path.sep+"Deezloader"+path.sep;
+		userdata = app.getPath("appData")+path.sep+"Deezloader Remix"+path.sep;
 	}
 
 	if(!fs.existsSync(userdata+"config.json")){
@@ -51,41 +51,41 @@ function loadSettings(){
 }
 
 function createWindow () {
-	// Create the browser window.
-	mainWindow = new BrowserWindow({
-		width: mainWindowState.width,
-		height: mainWindowState.height,
-		x: mainWindowState.x,
-		y: mainWindowState.y,
-		alwaysOnTop: false,
-		frame: false,
-		icon: __dirname + "/icon.png",
-		minWidth: 415,
-		minHeight: 32,
-		show:false
-	});
 
-	mainWindow.setMenu(null);
-	mainWindow.once('ready-to-show', () => {
-    mainWindow.show()
-  })
+	if (!(process.argv.indexOf("-s")>-1 || process.argv.indexOf("--server")>-1)){
+		// Create the browser window.
+		mainWindow = new BrowserWindow({
+			width: mainWindowState.width,
+			height: mainWindowState.height,
+			x: mainWindowState.x,
+			y: mainWindowState.y,
+			alwaysOnTop: false,
+			frame: false,
+			icon: __dirname + "/icon.png",
+			minWidth: 415,
+			minHeight: 32,
+			backgroundColor: "#3F51B5"
+		});
 
-	// and load the index.html of the app.
-	mainWindow.loadURL('http://localhost:' + appConfig.serverPort);
+		mainWindow.setMenu(null);
 
-	mainWindow.on('closed', function () {
-		mainWindow = null;
-	});
+		// and load the index.html of the app.
+		mainWindow.loadURL('http://localhost:' + appConfig.serverPort);
 
-	// Check if window was closed maximized and restore it
-	if (mainWindowState.maximized) {
-		mainWindow.maximize();
+		mainWindow.on('closed', function () {
+			mainWindow = null;
+		});
+
+		// Check if window was closed maximized and restore it
+		if (mainWindowState.maximized) {
+			mainWindow.maximize();
+		}
+
+		// Save current window state
+		mainWindow.on('close', () => {
+			mainWindowState.saveState(mainWindow);
+		});
 	}
-
-	// Save current window state
-	mainWindow.on('close', () => {
-		mainWindowState.saveState(mainWindow);
-	});
 }
 
 app.on('ready', createWindow);
