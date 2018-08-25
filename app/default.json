@@ -1,0 +1,21 @@
+{
+	"serverPort": 1730,
+	"userDefined": {
+		"trackNameTemplate": "%artist% - %title%",
+		"playlistTrackNameTemplate": "%number% - %artist% - %title%",
+		"albumTrackNameTemplate": "%number% - %title%",
+		"albumNameTemplate": "%artist% - %album%",
+		"createM3UFile": false,
+		"createArtistFolder": false,
+		"createAlbumFolder": false,
+		"downloadLocation": null,
+		"artworkSize": "/800x800.jpg",
+		"hifi": false,
+		"padtrck": false,
+		"syncedlyrics": false,
+		"numplaylistbyalbum": false,
+		"extendedTags": false,
+		"partOfSet": false,
+		"chartsCountry": "UK"
+	}
+}

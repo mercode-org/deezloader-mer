@@ -1,0 +1,825 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Deezloader Remix</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <script type="text/javascript" src="js/socket.io.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
+  <link rel="stylesheet" type="text/css" href="css/materialize.min.css"/>
+  <link rel="stylesheet" type="text/css" href="css/animate.css">
+  <link rel="stylesheet" type="text/css" href="css/style.css"/>
+  <meta charset="utf-8"/>
+</head>
+<body>
+<span id="appVersionFallback" hidden>4.0.1</span>
+
+<div id="title-bar">
+	<div class="resize-padding" style="width: 100%; height: 3px;"></div>
+	<div class="resize-padding" style="width: 3px; height: 31px;"></div>
+	<div id="title">Deezloader Remix v<span id="application_version"></span></div>
+
+	<div id="title-bar-btns">
+		<button id="min-btn"><i class="material-icons">remove</i></button>
+		<button id="max-btn"><i class="material-icons">add</i></button>
+		<button id="close-btn"><i class="material-icons">close</i></button>
+	</div>
+
+	<div class="resize-padding" style="position: absolute; top:0; right:0px; width: 3px; height: 31px;"></div>
+</div>
+
+<!--#############################################INITIALIZING-SCREEN############################################-->
+<div id="initializing" class="indigo valign-wrapper">
+	<div class="modal-content container" id="login-page">
+		<div class="card">
+			<div class="card-content">
+				<span class="card-title">Please login to your deezer account.</span>
+				<h6 class="red-text" id="login-res-text"></h6>
+				<div class="input-field col s12">
+					<input class="black-text" type="text" id="modal_login_input_username"/>
+					<label for="modal_login_input_username">Email</label>
+				</div>
+				<div class="input-field col s12">
+					<input class="black-text" type="password" id="modal_login_input_password"/>
+					<label for="modal_login_input_password">Password</label>
+				</div>
+			</div>
+			<div class="card-action">
+				<a href="#" class="indigo modal-close waves-effect waves-light btn" id="modal_login_btn_login">Log in</a>
+				<a href="#" class="red modal-close waves-effect waves-light btn" id="modal_login_btn_signup">Sign up</a>
+				<div style="float: right; line-height: 36px;">
+          <label>
+            <input type="checkbox" class="filled-in" id="modal_login_input_autologin"/>
+            <span>Remember me</span>
+          </label>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<!--#############################################MODAL_SETTINGS############################################-->
+<div id="modal_settings" class="modal modal-fixed-footer">
+	<div class="modal-content">
+		<div class="row">
+			<h4 class="col s12">Settings</h4>
+		</div>
+		<div class="row">
+			<div class="input-field col s12">
+				<i class="material-icons prefix">label</i>
+				<input type="text" id="modal_settings_input_trackNameTemplate"/>
+				<label for="modal_settings_input_trackNameTemplate">Track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %number%, %year%, %artist%, %title% and %album%">info_outline</i></label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="input-field col s12">
+				<i class="material-icons prefix">label</i>
+				<input type="text" id="modal_settings_input_playlistTrackNameTemplate"/>
+				<label for="modal_settings_input_playlistTrackNameTemplate">Playlist track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %number%, %year%, %artist%, %title% and %album%">info_outline</i></label>
+			</div>
+		</div>
+    <div class="row">
+			<div class="input-field col s12">
+				<i class="material-icons prefix">label</i>
+				<input type="text" id="modal_settings_input_albumTrackNameTemplate"/>
+				<label for="modal_settings_input_albumTrackNameTemplate">Album track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %number%, %year%, %artist%, %title% and %album%">info_outline</i></label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="input-field col s12">
+				<i class="material-icons prefix">label</i>
+				<input type="text" id="modal_settings_input_albumNameTemplate"/>
+				<label for="modal_settings_input_albumNameTemplate">Album names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %year%, %artist%, %type% and %album%">info_outline</i></label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="input-field col s12">
+				<i class="material-icons prefix">label</i>
+				<select name="artworkSize" id="modal_settings_select_artworkSize">
+					<option value="/500x500.jpg">500x500</option>
+					<option value="/800x800.jpg" selected>800x800</option>
+					<option value="/1000x1000.jpg">1000x1000</option>
+					<option value="/1200x1200.jpg">1200x1200</option>
+					<option value="/1400x1400.jpg">1400x1400</option>
+				</select>
+				<label for="modal_settings_select_artworkSize">Artwork size</label>
+			</div>
+		</div>
+    <div class="row">
+			<div class="input-field col s12">
+				<i class="material-icons prefix">label</i>
+				<select name="chartsCountry" id="modal_settings_select_chartsCounrty">
+				</select>
+				<label for="modal_settings_select_chartsCounrty">Default Country for Charts</label>
+			</div>
+		</div>
+		<div class="row">
+			<div class="input-field col s12">
+				<i class="material-icons prefix">label</i>
+				<input type="text" id="modal_settings_input_downloadTracksLocation"/>
+				<label for="modal_settings_input_downloadTracksLocation">Download location</label>
+			</div>
+		</div>
+		<div class="row">
+			<p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_createM3UFile" class="filled-in"/>
+  				<span>Create M3U (Playlist) file</span>
+        </label>
+			</p>
+			<p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_createArtistFolder" class="filled-in"/>
+  				<span>Create folder for artists</span>
+        </label>
+			</p>
+			<p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_createAlbumFolder" class="filled-in"/>
+  				<span>Create folder for albums</span>
+        </label>
+			</p>
+			<p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_hifi" class="filled-in"/>
+  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Downloads a FLAC file if it is available">Enable HIFI</span>
+        </label>
+      </p>
+			<p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_padtrck" class="filled-in"/>
+  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Adds 0s before %number% to have the same character lenght">Pad track numbers</span>
+        </label>
+      </p>
+			<p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_syncedlyrics" class="filled-in"/>
+  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Downloads lyrics .lyr file">Enable synced lyrics</span>
+        </label>
+      </p>
+			<p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_numplaylistbyalbum" class="filled-in"/>
+  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Track numbers when downloading a Playlist will be the original ones">Number playlists by album</span>
+        </label>
+      </p>
+			<p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_extendedTags" class="filled-in"/>
+  				<span>Enable Extended Tags</label>
+        </label>
+			</p>
+			<p class="col s4">
+        <label>
+  				<input type="checkbox" id="modal_settings_cbox_partOfSet" class="filled-in"/>
+  				<span class="tooltipped" data-position="top" data-delay="500" data-tooltip="Track number and disc number will be formatted as 1/16 instead of just 1">Add part of set to tracks</span>
+        </label>
+      </p>
+		</div>
+		<div class="row">
+			<div class="center input-field col s12">
+				<p>You are logged in as <b id="modal_settings_username"></b></p>
+				<a href="#" class="modal-close waves-effect waves-light btn" id="modal_settings_btn_logout">Logout</a>
+			</div>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="modal-close waves-effect waves-light btn" id="modal_settings_btn_saveSettings"><i
+						class="material-icons right">save</i>Save</a>
+		<a href="#" class="waves-effect btn-flat" id="modal_settings_btn_defaultSettings"><i
+						class="material-icons right">settings_backup_restore</i>Default Settings</a>
+		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+	</div>
+</div>
+
+<!--#############################################MODAL_ABOUT############################################-->
+<div id="modal_about" class="modal modal-fixed-footer">
+	<div class="modal-content">
+		<h4>More</h4>
+		<div class="row">
+			<ul class="collapsible" data-collapsible="accordion">
+				<li>
+					<div class="collapsible-header waves-effect"><i class="material-icons">info</i>About</div>
+					<div class="collapsible-body">
+						<p>
+              <b>Branch: </b>Remix</br>
+							<b>Version:</b> <span id="application_version_about"></span><br/>
+							<b>Original Programmer:</b> <a href="https://boerse.to/members/zzmtv.3378614/">ZzMTV</a><br/>
+							<b>Former Maintainers:</b> <a href="https://www.reddit.com/user/ParadoxalManiak/">ParadoxalManiak</a>, <a href="https://www.reddit.com/user/_snwflake/">snwflake</a>, <a href="https://www.reddit.com/user/ExtendLord/">ExtendLord</a><br>
+							<b>Interface:</b> <a href="http://materializecss.com/">materializecss</a><br/>
+              <b>Based on: </b>Deezloader Reborn</br>
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header waves-effect"><i class="material-icons">feedback</i>Feedback</div>
+					<div class="collapsible-body">
+						<p>
+							Do you have some feedback or want to ask for some new features? Join the <a href="https://t.me/joinchat/BJf2dUoyFbTi9HLUp0SWkw">official group</a>.
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header waves-effect"><i class="material-icons">bug_report</i>Bugs</div>
+					<div class="collapsible-body">
+						<p>
+							If you experience any bugs, please send a bug report to <a href="https://t.me/joinchat/BJf2dUoyFbTi9HLUp0SWkw">this group</a>.
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header waves-effect"><i class="material-icons">warning</i>Attention!</div>
+					<div class="collapsible-body">
+						<p>
+							The authors don't call to commit crimes.<br/>
+							The usage of this tool may be illegal in your country! Please inform yourself.<br/>
+							The authors give no guarantee at all and aren't responsible for damages of all kinds!
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
+					<div class="collapsible-body">
+						<p>
+							<b>Version 4.0.1</b><br/>
+							- Updated all CSS and Javascript dependencies<br/>
+							- Rewrite of the UI<br/>
+							- Added audio preview for Singles (Click on the cover)<br/>
+							- Added support for Spotify Playlists (URL Download)<br/>
+							- Separated Album Track Name from Playlist Track Name<br/>
+              - Added option to change default charts country<br/>
+							<br/>
+							<b>Version 3.1.2</b><br/>
+							- Fixed Login Problem<br/>
+							- Removed comment on cover<br/>
+							- Fixed footer CSS<br/>
+							- Fixed downloading of Albums and Artists (Downgrade to previous method)<br/>
+							<br/>
+							<b>Version 3.1.1</b><br/>
+							- Fixed titlebar resizing<br/>
+							- Added disc number to album view<br/>
+							- Fixed track number to album view<br/>
+							- Added correct multiartist and multigenre support<br/>
+							- deezer-api.js and app.js cleanup<br/>
+							- Optionals tags are now optionals<br/>
+							- Added option to get total number of tracks on MP3s on TrackNumbers and Discs (ex. 1/16)<br/>
+							- Fixed Pubblisher tag<br/>
+							- feat. and ft. are now excluded from searches query<br/>
+							- Added tooltips to settings<br/>
+							<br/>
+							<b>Version 3.1.0</b><br/>
+							- Fixed Download Freeze<br/>
+							- Improved logs<br/>
+							- Improved UI<br/>
+							- Fixed album artwork size not being saved<br/>
+							- Fixed some typo<br/>
+							- Fixed synced lyrics for mp3<br/>
+							- Fixed Track fetching for unsupported countries<br/>
+							<br/>
+							<b>Version 3.0.15</b><br/>
+							- Added replaygain tag<br/>
+							- Added logout option<br/>
+							- Added signup option<br/>
+							- Added multi url support, seperated by ';'<br/>
+							- Fixed incomplete audio files<br/>
+							- Fixed track fallback(alternative property)(Deezer's API update)<br/>
+							- Improved logging system<br/>
+							- Improved pad numbers<br/>
+							- Removed init page since it is not used anymore<br/>
+							<br/>
+							<b>Version 3.0.14</b><br/>
+							- Login is required due to Deezer's patch(Crashes when downloading anything)<br/>
+							- Added BPM tag<br/>
+							<br/>
+							<b>Version 3.0.13</b><br/>
+							- Fixed timeout of the download system<br/>
+							- Fixed images for tracks<br/>
+							- Fixed and Improved MP3 tags<br/>
+							- Added %type%(Record type) for album name format<br/>
+							<br/>
+							<b>Version 3.0.12</b><br/>
+							- Added request retry, connections will retry if fail<br/>
+							- Added record type to the search section(Results of Albums and Artists albums)<br/>
+							- Fixed dots at end of playlists<br/>
+							- Fixed download freezes (metadata image issues)<br/>
+							- Removed the title bar from the web GUI<br/>
+							- Improved download speed and decryption system<br/>
+							<br/>
+							<b>Version 3.0.11</b><br/>
+							- Fixed artwork duplicate for two tracks with the same name<br/>
+							- Added tags: mixer, author, writer, engineer and producer<br/>
+							- Fixed copyright tag when it is not available<br/>
+							- Removed performer tag from FLAC<br/>
+							- Removed label tag and changed from track date to album/ep/single date tag<br/>
+							- Restored decrypting system due to mp3 being corrupt<br/>
+							- Fixed crash when downloading a track with album folder enabled<br/>
+							<br/>
+							<b>Version 3.0.10</b><br/>
+							- Improved downloading and decrypting system<br/>
+							- Improved update notifier<br/>
+							- Added 1400p artworks<br/>
+							- Alternative tracks will take the original tracks tag if possible<br/>
+							- Removed Disc folders, tracks of albums with discs will be combined into one<br/>
+							- Removed 'dev' from the update notifier<br/>
+							- Artist folders are now named by the artist of the albums<br/>
+							- Fixed album name option when artist option is checked<br/>
+							- Fixed android's home location(It had two slashes)<br/>
+							- Fixed default android path<br/>
+							- Fixed album's %year%<br/>
+							- Fixed downloading issues for non supported countries<br/>
+							- Fixed ENOENT crashes caused by queues<br/>
+							- Fixed a minor bug in the alternative track code<br/>
+							- Added a backup server for update notifier<br/>
+							<br/>
+							<b>Version 3.0.9</b><br/>
+							- Added synced and unsynced lyrics, album name option and number playlist by album option.<br/>
+							- Added pad track number(01,02)<br/>
+							- Fixed dots at end of folders when album/arist folder is enabled<br/>
+							- Fixed ENOENT when folder does not exists<br/>
+							- Fixed alternative track downloading, it will only download it if it will fail to download the non alternative one.<br/>
+							- Changed license to GNU GPL 3.0<br/>
+							- Changed all spaces in the JS code to tabs<br/>
+							- Improved update notifier, it will redirect you to the download page<br/>
+							<br/>
+							<b>Version 3.0.8</b><br/>
+							- Fixed initializing stuck<br/>
+							- Removed Diacritics remover<br/>
+							- Changed name fixer<br/>
+							- Added barcode for FLAC<br/>
+							- Added support for Android<br/>
+							- Added web server http://localhost:1730<br/>
+							- Updated libraries<br/>
+							<br/>
+							<b>Version 3.0.7</b><br/>
+							- Fixed crash when composer or publisher tag is not available<br/>
+							- Added version to the update notifier<br/>
+							<br/>
+							<b>Version 3.0.6</b><br/>
+							- Login page will only appear for those who need it<br/>
+							- Added composer, publisher and copyright tag<br/>
+							- Fixed the issue that only the first album would be clickable from an artist<br/>
+							- Fixed crash when no internet in the login page<br/>
+							<br/>
+							<b>Version 3.0.5</b><br/>
+							- Changed repo from github to gitlab<br/>
+							- Fixed Login error for Deezer Family Accounts<br/>
+							- Fixed composer tag<br/>
+							<br/>
+							<b>Version 3.0.4</b><br/>
+							- Fixed download crashes<br/>
+							- Fixed failed tracks when downloading some albums and playlists<br/>
+							- Fixed folder does not exists crash<br/>
+							- Improved tags<br/>
+							- Changed album cover dir to the albums folder<br/>
+							- Changed settings style<br/>
+							- Fixed login crash when there is no connection<br/>
+							<br/>
+							<b>Version 3.0.3</b><br/>
+							- Added auto login<br/>
+							- Added MP3 Fallback<br/>
+							- Added auto update<br/>
+							- Fixed login error not being triggered sometimes<br/>
+							<br/>
+							<b>Version 3.0.2</b><br/>
+							- Fixed crashes when songs could not be downloaded<br/>
+							- Added bpm tag<br/>
+							- Added logging system(Fixed same song downloading and some songs not being available)<br/>
+							- Fixed corruped FLAC's<br/>
+							- Added %year%<br/>
+							- Fixed dots at end<br/>
+							- Fixed undefined genre<br/>
+							<br/>
+							<b>Version 3.0.1</b><br/>
+							- Added a couple of tags<br/>
+							- Fixed minor bugs<br/>
+							- Removed tag libs, a moudle is used instead<br/>
+							<br/>
+							<b>Version 3.0.0</b><br/>
+							- Added Vorbis comments(To support FLAC tagging)<br/>
+							- Added HIFI(FLAC) quality (Opt-IN in settings)<br/>
+							- Updated http to https<br/>
+							- Updated all libraries to their latest version<br/>
+							- Fixed random crash when searching<br/>
+							- Fixed the track info grabber(Downloading was not possible)<br/>
+							- Fixed artist duplicate in tagging<br/>
+							- Changed the default artwork size to 1200p<br/>
+							- Changed config location to UserData folder(Appdata)<br/>
+							<br/>
+							<b>Version 2.3.1</b><br/>
+							- Fixed the %number% variable to only list the current track<br/>
+							- Fixed the resolution for users with a screensize less than 1400x900p<br/>
+							- Fixed folder/file creation name for windows (...again...)<br/>
+							- Fixed explicit tooltip<br/>
+							- Added more logging<br/>
+							- Added progress bar support for artists<br/>
+							- Added a checkbox to select everything in album/playlist-modal<br/>
+							- Added tooltip for supported naming patterns<br/>
+							- Added an option to select a different artwork size. (500p, 800p(default), 1000p, 1200p)<br/>
+							- Enhanced tagging, now all artists are written to the 'artist'-field<br/>
+							<br/>
+							<b>Version 2.3.0</b><br/>
+							- Fixed app refusing to start when some folders are missing<br/>
+							- Fixed playlist file not containing the correct file names<br/>
+							- Fixed folders with a dot at the end resulting in undeletable file<br/>
+							- Fixed the progress bar for albums and playlists<br/>
+							- Relocated explicit icon to the front of the filename<br/>
+							- Added more explicit icons in album-/playlist- and artist-modal<br/>
+							- Added a new feature which allows the user to only download selected songs from an album or playlist<br/>
+							<br/>
+							<b>Version 2.2.1</b><br/>
+							- Fixed settings module (sigh ... again)<br/>
+							- Fixed issue related to folders that have special chars<br/>
+							<br/>
+							<b>Version 2.2.0</b><br/>
+							- Fixed settings panel, all settings should work as expected now<br/>
+							- Fixed writing location of config.json<br/>
+							- Fixed crashing when searching for cyrillic characters, it should work fine now<br/>
+							- Moved the folder for cover arts to the temp folder of the system<br/>
+							- Added icon for explicit songs<br/>
+							- The window size and position are now remembered<br/>
+							- The "Scroll to top" button works again<br/>
+							- Fixed problem with folders that contain dots and other symbols<br/>
+							- A bunch of refactoring thanks to Blind-Mute<br/>
+							- Fixed cover art not embedding on OSX<br/>
+							- Minor performance improvements<br/>
+							<br/>
+							<b>Version 2.1.2</b><br/>
+							- Fixed Deezer API connection<br/>
+							- Fixed tracks metadata naming for diacritics text<br/>
+							- Added custom location for downloads settings<br/>
+							<br/>
+							<b>Version 2.1.1</b><br/>
+							- Added context menu<br/>
+							- Corrected some spelling mistakes<br/>
+							- Fixed crash when searching with special characters like Æ, Ø and Å.<br/>
+							<br/>
+							<b>Version 2.1.0</b><br/>
+							- Updated all libraries to their latest version (this should fix issues with newer node versions)<br/>
+							- Updated the design of the app, checked spelling and added responsive so it can be better used on a mobile browser.<br/>
+							- Fixed small bug with overlapping texts in settings modal<br/>
+							- Fixed clear button in the downloads section not working <br/>
+							- Added error logging <br>
+							<br>
+							<b>Version 2.0.3</b><br/>
+							- Removed the updater to stop spamming the domain of the original author<br/>
+							- Removed character fixing in metadata that would result in AC/DC being turned to AC_DC.<br/>
+							- Fixed the Artist's album list not being loaded. Now it loads and has the option to download the album.<br/>
+							- Changed the default country in top charts to UK instead of Germany (not a feature, just a thing I did when I was
+							tinkering with the code and forgot to change)<br/>
+							- Fixed compatibility issues with Node v6 (works on older versions too, but there might be problems with downloading
+							the cover art, so please update to v6 if you can)<br/>
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header waves-effect"><i class="material-icons">build</i>Contributors</div>
+					<div class="collapsible-body">
+						<p>Thanks to the following contributors for fixing bugs and improving this application. <br> <br>
+							<a href="https://www.reddit.com/user/Blind-Mute">Blind-Mute</a> <br>
+							<a href="https://gitlab.com/Persei08">Persei08</a> <br>
+							<a href="https://github.com/Uukrull">Uukrull</a> <br>
+						</p>
+					</div>
+				</li>
+				<li>
+					<div class="collapsible-header waves-effect"><i class="material-icons">copyright</i>License</div>
+					<div class="collapsible-body">
+						<p>
+							<a rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html">
+								<img alt="GNU General Public License" style="border-width:0"
+										 src="https://www.gnu.org/graphics/gplv3-127x51.png"/>
+							</a><br/>
+							This work is licensed under a <a rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html">GNU General Public License 3.0</a>.
+						</p>
+					</div>
+				</li>
+			</ul>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+	</div>
+</div>
+
+<!--##########################################MODAL_TRACKLIST###########################################-->
+<div id="modal_trackList" class="modal modal-fixed-footer">
+	<div class="modal-content">
+		<div class="row">
+			<h4 class="col s12">{{ title }}</h4>
+		</div>
+		<div class="row">
+			<table class="highlight col s12">
+				<thead>
+				<tr>
+					<td v-for="data in head" v-html="data.title"></td>
+				</tr>
+				</thead>
+				<tbody id="modal_trackList_table_trackList_tbody_loadingIndicator" class="hide">
+				<tr>
+					<td class="center" colspan="4">
+						<div class="preloader-wrapper big active">
+							<div class="spinner-layer">
+								<div class="circle-clipper left">
+									<div class="circle"></div>
+								</div>
+								<div class="gap-patch">
+									<div class="circle"></div>
+								</div>
+								<div class="circle-clipper right">
+									<div class="circle"></div>
+								</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+				</tbody>
+				<tbody id="modal_trackList_table_trackList_tbody_trackList" class="hide">
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+	</div>
+</div>
+
+<!--##########################################MODAL_TRACKLISTALBUM###########################################-->
+<div id="modal_trackListSelective" class="modal modal-fixed-footer">
+	<div class="modal-content">
+		<div class="row">
+			<h4 class="col s12">{{ title }}</h4>
+		</div>
+		<div class="row">
+			<table class="highlight col s12">
+				<thead>
+				<tr>
+					<td v-for="data in head" v-html="data.title"></td>
+				</tr>
+				</thead>
+				<tbody id="modal_trackListSelective_table_trackList_tbody_loadingIndicator" class="hide">
+				<tr>
+					<td class="center" colspan="4">
+						<div class="preloader-wrapper big active">
+							<div class="spinner-layer">
+								<div class="circle-clipper left">
+									<div class="circle"></div>
+								</div>
+								<div class="gap-patch">
+									<div class="circle"></div>
+								</div>
+								<div class="circle-clipper right">
+									<div class="circle"></div>
+								</div>
+							</div>
+						</div>
+					</td>
+				</tr>
+				</tbody>
+				<tbody id="modal_trackListSelective_table_trackListSelective_tbody_trackListSelective" class="hide">
+				</tbody>
+			</table>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light indigo white-text right">Download selection<i class="material-icons right">file_download</i></a>
+		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+	</div>
+</div>
+
+<!--##########################################MODAL_MSG###########################################-->
+<div id="modal_msg" class="modal">
+	<div class="modal-content">
+		<div class="row">
+			<h4 class="col s12" id="modal_msg_title"></h4>
+		</div>
+		<div class="row">
+			<p class="col s12" id="modal_msg_message"></p>
+		</div>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="modal-close waves-effect waves-light btn">I got it!</a>
+	</div>
+</div>
+
+<!--********************************************MAIN-CONTENT********************************************-->
+<nav class="nav-extended">
+  <div class="nav-wrapper">
+    <div class="brand-logo left">Deezloader <b>Remix</b> <sup id="application_version_logo"></sup></div>
+    <ul id="nav-mobile" class="right">
+      <li>
+				<a href="#modal_settings" id="nav_btn_openSettingsModal" class="waves-effect waves-light modal-trigger">
+					<i class="material-icons left">settings</i> <span class="hide-on-small-and-down">Settings</span>
+				</a>
+			</li>
+			<li>
+				<a href="#modal_about" class="waves-effect waves-light modal-trigger">
+					<i class="material-icons left">more_horiz</i> <span class="hide-on-small-and-down">More</span>
+				</a>
+			</li>
+    </ul>
+  </div>
+  <div class="nav-content hide-on-small-and-down">
+    <p class="description center white-text">Start enjoying your favourite music without limitations.</p>
+  </div>
+</nav>
+
+<main class="container">
+  <ul id="tab-nav" class="row tabs">
+    <li class="tab"><a class="active" href="#tab_search">Search</a></li>
+    <li class="tab"><a href="#tab_charts">Charts</a></li>
+    <li class="tab"><a href="#tab_url">Download from URL</a></li>
+    <li class="tab"><a href="#tab_downloads">Downloads</a></li>
+  </ul>
+
+  <div id="main-content" class="row">
+
+    <div id="tab_search">
+      <form id="tab_search_form_search">
+        <div class="inline-input-group col s12">
+          <input id="tab_search_form_search_input_searchString" type="text" class="input" placeholder="Start searching ...">
+          <button class="btn btn-large btn-flat indigo white-text"><i class="material-icons">search</i></button>
+        </div>
+        <p class="col s3 center">
+          <label>
+          <input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_song" value="track" checked/>
+          <span>Song</span>
+          </label>
+        </p>
+        <p class="col s3 center">
+          <label>
+          <input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_album" value="album"/>
+          <span>Album</span>
+          </label>
+        </p>
+        <p class="col s3 center">
+          <label>
+          <input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_artist" value="artist"/>
+          <span>Artist</span>
+          </label>
+        </p>
+        <p class="col s3 center">
+          <label>
+            <input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_playlist" value="playlist"/>
+            <span>Playlist</span>
+          </label>
+        </p>
+      </form>
+      <div id="tab_search_results">
+				<table id="tab_search_table_results" class="striped col s12">
+					<thead>
+  					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_track">
+  						<th><!--cover--></th>
+  						<th>Song</th>
+  						<th>Artist</th>
+  						<th>Album</th>
+  						<th><i class="material-icons">timer</i></th>
+  						<th><!--download_link--></th>
+  					</tr>
+  					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_album">
+  						<th><!--cover--></th>
+  						<th>Album</th>
+  						<th>Artist</th>
+  						<th>Songs</th>
+  						<th>Type</th>
+  						<th><!--space--></th>
+  						<th><!--download_link--></th>
+  					</tr>
+  					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_artist">
+  						<th><!--cover--></th>
+  						<th>Artist</th>
+  						<th>Albums</th>
+  						<th><!--space--></th>
+  						<th><!--download_link--></th>
+  					</tr>
+  					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_playlist">
+  						<th><!--cover--></th>
+  						<th>Name</th>
+  						<th>Songs</th>
+  						<th><!--download_link--></th>
+  					</tr>
+					</thead>
+					<tbody id="tab_search_table_results_tbody_loadingIndicator" class="hide loadingTab">
+  					<tr>
+  						<td class="center">
+							  <div class="preloader-wrapper big active">
+							    <div class="spinner-layer spinner-blue-only">
+							      <!-- Spinner Code -->
+							      <div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div>
+							    </div>
+							  </div>
+  						</td>
+  					</tr>
+					</tbody>
+					<tbody id="tab_search_table_results_tbody_results"></tbody>
+					<tbody id="tab_search_table_results_tbody_noResults" class="animated fadeInUp hide">
+  					<tr>
+  						<td class="center">Nothing found!</td>
+  					</tr>
+					</tbody>
+				</table>
+			</div>
+    </div>
+
+    <div id="tab_charts">
+      <div class="input-field col s12">
+        <select id="tab_charts_select_country" class="icons">
+          <!--All country selects have to be like the following example:
+          <option value="example" data-icon="images/sample.jpg" class="left circle">Example</option>
+          -->
+        </select>
+        <label>Country</label>
+      </div>
+      <table id="tab_charts_table_charts" class="striped">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th><!--cover--></th>
+            <th>Song</th>
+            <th>Artist</th>
+            <th>Album</th>
+            <th><i class="material-icons">timer</i></th>
+            <th><!--download_link--></th>
+          </tr>
+        </thead>
+        <tbody id="tab_charts_table_charts_tbody_loadingIndicator" class="loadingTab">
+          <tr>
+            <td colspan="7" class="center">
+							<div class="preloader-wrapper big active">
+							  <div class="spinner-layer spinner-blue-only">
+							    <!-- Spinner Code -->
+							    <div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div>
+							  </div>
+							</div>
+            </td>
+          </tr>
+        </tbody>
+        <tbody id="tab_charts_table_charts_tbody_charts"></tbody>
+      </table>
+    </div>
+
+    <div id="tab_url">
+      <form id="tab_url_form_url" class="row">
+        <div class="inline-input-group">
+          <input type="text" id="song_url" class="input" placeholder="Song/Playlist/Album/Artist URL, separated by ';'">
+          <button class="btn btn-large btn-flat indigo white-text">Download</button>
+        </div>
+      </form>
+    </div>
+
+    <div id="tab_downloads">
+      <div class="row">
+        <div class="col s6">
+          <button id="openDownloadsFolder" style="width: 100%" class="btn btn-flat btn-large btn-block indigo white-text">
+            Open Downloads Folder
+          </button>
+        </div>
+        <div class="col s6">
+          <button id="clearTracksTable" style="width: 100%" class="btn btn-flat btn-large btn-block red white-text">Clear
+            List
+          </button>
+        </div>
+      </div>
+      <table id="tab_downloads_table_downloads" class="row">
+        <thead>
+          <tr>
+            <th>Name</th>
+            <th>Size</th>
+            <th>Downloaded</th>
+            <th>Failed</th>
+            <th style="width: 25%;"><!--progress--></th>
+            <th><!--event buttons--></th>
+          </tr>
+        </thead>
+        <tbody></tbody>
+      </table>
+    </div>
+
+  </div>
+</main>
+
+<div class="fixed-action-btn" id="btn_scrollToTop" style="bottom: 45px; right: 24px;">
+  <a class="btn-floating btn-large red scale-transition scale-out">
+    <i class="large material-icons">keyboard_arrow_up</i>
+  </a>
+</div>
+<audio id="preview-track">
+  <source id="preview-track_source" src="" type="audio/mpeg">
+</audio>
+
+<footer class="indigo darken-1 center page-footer hide-on-med-and-down">
+    <div class="container">
+      &copy; Deezloader original code by <a class="white-text" href="https://boerse.to/members/zzmtv.3378614/">ZzMTV</a>.
+    </div>
+</footer>
+
+<script>if (typeof module === 'object') {
+	window.module = module;
+	module = undefined;
+}</script>
+<script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
+<script type="text/javascript" src="js/materialize.min.js"></script>
+<script type="text/javascript" src="js/vue.js"></script>
+<script type="text/javascript" src="js/appBase.js"></script>
+<script type="text/javascript" src="js/main.js"></script>
+<script>if (window.module) module = window.module;</script>
+</body>
+</html>

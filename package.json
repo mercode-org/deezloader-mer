@@ -1,0 +1,46 @@
+{
+	"license": "GPL-3.0-only",
+	"devDependencies": {
+		"electron": "latest",
+		"electron-builder": "latest"
+	},
+	"scripts": {
+		"dist": "electron-builder",
+		"pack": "electron-builder --dir",
+		"start": "npm install && electron ./app",
+		"postinstall": "electron-builder install-app-deps"
+	},
+	"build": {
+		"appId": "deezloader-rmx",
+		"productName": "Deezloader Remix",
+		"linux": {
+			"target": "AppImage",
+			"category": "Audio"
+		},
+		"mac": {
+			"category": "public.app-category.music"
+		},
+		"win": {
+			"target": [
+				{
+					"target": "nsis",
+					"artifactName": "${productName} ${version} - Setup.${ext}"
+				},
+				{
+					"target": "portable",
+					"artifactName": "${productName} ${version} - Portable.${ext}"
+				}
+			]
+		},
+		"nsis": {
+			"oneClick": false,
+			"license": "LICENSE",
+			"allowToChangeInstallationDirectory": true,
+			"uninstallDisplayName": "${productName} ${version}",
+			"deleteAppDataOnUninstall": true
+		},
+		"portable": {
+			"requestExecutionLevel": "user"
+	    }
+	}
+}
