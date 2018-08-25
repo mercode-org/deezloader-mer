@@ -1,6 +1,7 @@
 {
 	"serverPort": 1730,
 	"userDefined": {
+		"minimizeToTray": true,
 		"trackNameTemplate": "%artist% - %title%",
 		"playlistTrackNameTemplate": "%number% - %artist% - %title%",
 		"albumTrackNameTemplate": "%number% - %title%",
@@ -49,7 +50,7 @@
 			"length": false,
 			"barcode": false,
 			"bpm": true,
-			"replayGain": true,
+			"replayGain": false,
 			"publisher": true,
 			"unsynchronisedLyrics": false,
 			"copyright": false,

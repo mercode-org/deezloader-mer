@@ -162,6 +162,7 @@
 					<option value="1">DMY</option>
 					<option value="2">MDY</option>
           <option value="3">YDM</option>
+          <option value="4">ID3 Defaut</option>
 				</select>
 				<label for="modal_settings_select_dateFormat">Date Format</label>
 			</div>
@@ -200,6 +201,12 @@
   				<span>Create M3U (Playlist) file</span>
         </label>
 			</p>
+            <p class="col s12 m4">
+        <label>
+          <input type="checkbox" id="modal_settings_cbox_minimizeToTray" class="filled-in"/>
+          <span>Minimize to system tray</span>
+        </label>
+      </p>
       <p class="col s12 m4">
         <label>
   				<input type="checkbox" id="modal_settings_cbox_syncedlyrics" class="filled-in"/>
@@ -280,7 +287,7 @@
   				<input type="checkbox" id="modal_settings_cbox_fallbackBitrate" class="filled-in"/>
   				<span>Fallback to lower bitrates</span>
         </label>
-			</p>
+      </p>
 		</div>
     <div class="row">
       <div class="col s12">
@@ -719,7 +726,7 @@
 			<h4 class="col s12" id="modal_msg_title"></h4>
 		</div>
 		<div class="row">
-			<p class="col s12" id="modal_msg_message"></p>
+			<p style="white-space: pre-line" class="col s12" id="modal_msg_message"></p>
 		</div>
 	</div>
 	<div class="modal-footer">

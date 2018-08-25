@@ -4,16 +4,17 @@ const fs = require("fs-extra");
 const path = require('path');
 const {app, BrowserWindow, ipcMain} = require('electron');
 const os = require('os');
+const {Menu, Tray} = require('electron')
 loadSettings();
 
 const theApp = require('./app');
 const WindowStateManager = require('electron-window-state-manager');
-
 const url = require('url');
 
+let tray = null;
 let mainWindow;
-
-
+let trayIcon = __dirname + "/icon.png";
+let isTray = false;
 // Create a new instance of the WindowStateManager
 const mainWindowState = new WindowStateManager('mainWindow', {
 	defaultWidth: 1280,
@@ -78,15 +79,44 @@ function createWindow () {
 		if (mainWindowState.maximized) {
 			mainWindow.maximize();
 		}
-
+mainWindow.on('minimize',function(event){
+				if(appConfig.userDefined.minimizeToTray){
+    event.preventDefault();
+        mainWindow.hide();
+}
+});
+tray.on('click', function(e){
+    if (mainWindow.isVisible()) {
+      mainWindow.hide()
+    } else {
+      mainWindow.show()
+    }
+  });
 		// Save current window state
 		mainWindow.on('close', () => {
+			if(appConfig.userDefined.minimizeToTray){
+			    if(!app.isQuitting){
+        event.preventDefault();
+        mainWindow.hide();
+    } else {
 			mainWindowState.saveState(mainWindow);
+		}
+	} else {
+		mainWindowState.saveState(mainWindow);
+	}
 		});
 	}
-}
+	}
 
-app.on('ready', createWindow);
+app.on('ready', function(){
+	if(appConfig.userDefined.minimizeToTray){
+	            tray = new Tray(trayIcon);
+    const contextMenu = Menu.buildFromTemplate([]);
+    tray.setToolTip('Deezloader Remix');
+    tray.setContextMenu(contextMenu);
+	createWindow();
+}
+});
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {

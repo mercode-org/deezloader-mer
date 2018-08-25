@@ -10,7 +10,7 @@
  *
  *  Original work by ZzMTV <https://boerse.to/members/zzmtv.3378614/>
  * */
-
+//test
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
@@ -24,56 +24,39 @@ const ID3Writer = require('./lib/browser-id3-writer');
 const Deezer = require('./deezer-api');
 const path = require('path');
 const crypto = require('crypto');
-const logger = require('./logger.js');
+const logger = require('./utils/logger.js');
 const Spotify = require('spotify-web-api-node');
-const authCredentials = require('./authCredentials.js')
-const queue = require('queue')
+const authCredentials = require('./authCredentials.js');
+const queue = require('queue');
+const localpaths = require('./utils/localpaths.js');
+const package = require('./package.json');
 
-// Load Config File
-var userdata = "";
-var homedata = "";
-if(process.env.APPDATA){
-	homedata = os.homedir();
-	userdata = process.env.APPDATA + path.sep + "Deezloader Remix" + path.sep;
-}else if(process.platform == "darwin"){
-	homedata = os.homedir();
-	userdata = homedata + '/Library/Application Support/Deezloader Remix/';
-}else if(process.platform == "android"){
-	homedata = os.homedir() + "/storage/shared";
-	userdata = homedata + "/Deezloader Remix/";
-}else{
-	homedata = os.homedir();
-	userdata = homedata + '/.config/Deezloader Remix/';
-}
-
-if(!fs.existsSync(userdata+"config.json")){
-	fs.outputFileSync(userdata+"config.json",fs.readFileSync(__dirname+path.sep+"default.json",'utf8'));
+if(!fs.existsSync(localpaths.user+"config.json")){
+	fs.outputFileSync(localpaths.user+"config.json",fs.readFileSync(__dirname+path.sep+"default.json",'utf8'));
 }
 
 var spotifyApi = new Spotify(authCredentials);
 
 // Main Constants
-const configFileLocation = userdata+"config.json";
-const autologinLocation = userdata+"autologin";
+const configFileLocation = localpaths.user+"config.json";
+const autologinLocation = localpaths.user+"autologin";
 const coverArtFolder = os.tmpdir() + path.sep + 'deezloader-imgs' + path.sep;
-const defaultDownloadDir = homedata + path.sep + "Music" + path.sep + 'Deezloader' + path.sep;
+const defaultDownloadDir = localpaths.music + 'Deezloader' + path.sep;
 const defaultSettings = require('./default.json').userDefined;
 
 // Setup the folders START
 var mainFolder = defaultDownloadDir;
 
 // Settings update fix
-var configFile = require(userdata+path.sep+"config.json");
+var configFile = require(localpaths.user+path.sep+"config.json");
 for (let x in defaultSettings){
 	if (typeof configFile.userDefined[x] != typeof defaultSettings[x]){
 		configFile.userDefined[x] = defaultSettings[x]
 	}
 }
-
 if (configFile.userDefined.downloadLocation != "") {
 	mainFolder = configFile.userDefined.downloadLocation;
 }
-
 initFolders();
 // END
 
@@ -114,6 +97,22 @@ function aldecrypt(encoded) {
 
 // START sockets clusterfuck
 io.sockets.on('connection', function (socket) {
+	var curVersion = package.version.replace('.', '');
+	request({
+		url: "https://notabug.org/RemixDevs/DeezloaderRemix/raw/master/update",
+		json: true
+	}, function(error, response, body) {
+		if (!error && response.statusCode === 200) {
+			console.log("Got response: " + JSON.stringify(body));
+			console.log("Current version: " + curVersion.replace('.', '') + "\nLatest Version: " + body.version);
+			if ((parseInt(body.version) > parseInt(curVersion.replace('.', '')))) {
+				console.log("\n\nUpdate Available\n\n");
+				socket.emit("message", {title: "Update Available", msg: body.changelog});
+			}
+		} else {
+			console.log("ERROR: " + error + " " + response.statusCode);
+		}
+	})
 	socket.downloadQueue = {};
 	socket.currentItem = null;
 	socket.lastQueueId = null;
@@ -323,13 +322,13 @@ io.sockets.on('connection', function (socket) {
 			};
 			data.settings.albumInfo = slimDownAlbumInfo(album)
 			_album.settings = data.settings || {};
-			Deezer.getAdvancedAlbumTracks(data.id, function (playlist, err) {
+			Deezer.getAdvancedAlbumTracks(data.id, function (album, err) {
 				if (err){
 					logger.error(err)
 					return;
 				}
-				_album.size = playlist.data.length
-				_album.tracks = playlist.data
+				_album.size = album.data.length
+				_album.tracks = album.data
 				addToQueue(JSON.parse(JSON.stringify(_album)));
 			})
 		});
@@ -345,7 +344,7 @@ io.sockets.on('connection', function (socket) {
 			(function sendAllAlbums(i) {
 				setTimeout(function () {
 		      data.id = albums.data[albums.data.length-1-i].id;
-					socketDownloadAlbum(data);
+					socketDownloadAlbum(JSON.parse(JSON.stringify(data)));
 		      if (--i+1) sendAllAlbums(i);
 		   	}, 100)
 			})(albums.data.length-1);
@@ -1144,7 +1143,7 @@ io.sockets.on('connection', function (socket) {
 		let track = data;
 		track.trackSocket = socket;
 		temp = new Promise((resolve, reject)=>{
-			if (parseInt(t.id)>0){
+			if (parseInt(t.id)>0 && !altmetadata){
 				if (!settings.albumInfo){
 					logger.info("Getting album data");
 					Deezer.getAlbum(track["ALB_ID"], function(res, err){
@@ -1198,7 +1197,7 @@ io.sockets.on('connection', function (socket) {
 				resolve(ajson.totalDiskNumber)
 			})
 		}else{
-			if ((settings.tags.discTotal || settings.createCDFolder) && parseInt(t.id)>0){
+			if (((settings.tags.discTotal || settings.createCDFolder) && parseInt(t.id)>0) && !altmetadata){
 				logger.info("Getting total disc number");
 				temp = new Promise((resolve, reject) =>{
 					Deezer.getATrack(ajson.tracks.data[ajson.tracks.data.length-1].id, function(tres){
@@ -1213,7 +1212,7 @@ io.sockets.on('connection', function (socket) {
 		}
 		temp.then(discTotal=>{
 		let totalDiskNumber = discTotal;
-		if (settings.tags.bpm && parseInt(t.id)>0){
+		if ((settings.tags.bpm && parseInt(t.id)>0) && !altmetadata){
 			logger.info("Getting BPM");
 			temp = new Promise((resolve, reject) =>{
 				Deezer.getATrack(t.id, function(tres, err){
@@ -1392,7 +1391,7 @@ io.sockets.on('connection', function (socket) {
 					t.id = t.fallback
 					t.fallback = 0
 					settings.trackInfo = null;
-					downloadTrack(t, settings, metadata, callback);
+					downloadTrack(t, settings, JSON.parse(JSON.stringify(metadata)), callback);
 				}else if(!t.searched){
 					logger.warn("Failed to download track, searching for alternative");
 					Deezer.track2ID(t.artist, t.name, null, data=>{
@@ -1400,7 +1399,7 @@ io.sockets.on('connection', function (socket) {
 						t.id = data.id;
 						t.artist = data.artist;
 						t.name = data.name;
-						downloadTrack(t, settings, metadata, callback);
+						downloadTrack(t, settings, JSON.parse(JSON.stringify(metadata)), callback);
 					});
 				}else{
 					logger.error(`Failed to download ${t.artist} - ${t.name}: ${err}`);
@@ -1429,9 +1428,13 @@ io.sockets.on('connection', function (socket) {
 					if (settings.tags.isrc)
 						flacComments.push('ISRC=' + metadata.ISRC);
 					if (settings.tags.artist && metadata.artists)
-						metadata.artists.forEach(x=>{
-							flacComments.push('ARTIST=' + x);
-						});
+						if (Array.isArray(metadata.artists)){
+							metadata.artists.forEach(x=>{
+								flacComments.push('ARTIST=' + x);
+							});
+						}else{
+							flacComments.push('ARTIST=' + metadata.artists);
+						}
 					if (settings.tags.discTotal)
 						flacComments.push('DISCTOTAL='+splitNumber(metadata.discTotal,true));
 					if (settings.tags.length)
@@ -1441,9 +1444,13 @@ io.sockets.on('connection', function (socket) {
 					if (metadata.unsynchronisedLyrics && settings.tags.unsynchronisedLyrics)
 						flacComments.push('LYRICS='+metadata.unsynchronisedLyrics.lyrics);
 					if (metadata.genre && settings.tags.genre)
-						metadata.genre.forEach(x=>{
-							flacComments.push('GENRE=' + x);
-						});
+						if (Array.isArray(metadata.genre)){
+							metadata.genre.forEach(x=>{
+								flacComments.push('GENRE=' + x);
+							});
+						}else{
+							flacComments.push('GENRE=' + metadata.genre);
+						}
 					if (metadata.copyright && settings.tags.copyright)
 						flacComments.push('COPYRIGHT=' + metadata.copyright);
 					if (0 < parseInt(metadata.year)){
@@ -1457,33 +1464,61 @@ io.sockets.on('connection', function (socket) {
 					if(metadata.publisher && settings.tags.publisher)
 						flacComments.push('PUBLISHER=' + metadata.publisher);
 					if(metadata.composer && settings.tags.composer)
-						metadata.composer.forEach(x=>{
-							flacComments.push('COMPOSER=' + x);
-						});
+						if (Array.isArray(metadata.composer)){
+							metadata.composer.forEach(x=>{
+								flacComments.push('COMPOSER=' + x);
+							});
+						}else{
+							flacComments.push('COMPOSER=' + metadata.composer);
+						}
 					if(metadata.musicpublisher && settings.tags.musicpublisher)
-						metadata.musicpublisher.forEach(x=>{
-							flacComments.push('ORGANIZATION=' + x);
-						});
+						if (Array.isArray(metadata.musicpublisher)){
+							metadata.musicpublisher.forEach(x=>{
+								flacComments.push('ORGANIZATION=' + x);
+							});
+						}else{
+							flacComments.push('ORGANIZATION=' + metadata.musicpublisher);
+						}
 					if(metadata.mixer && settings.tags.mixer)
-						metadata.mixer.forEach(x=>{
-							flacComments.push('MIXER=' + x);
-						});
+						if (Array.isArray(metadata.mixer)){
+							metadata.mixer.forEach(x=>{
+								flacComments.push('MIXER=' + x);
+							});
+						}else{
+							flacComments.push('MIXER=' + metadata.mixer);
+						}
 					if(metadata.author && settings.tags.author)
-						metadata.author.forEach(x=>{
-							flacComments.push('AUTHOR=' + x);
-						});
+						if (Array.isArray(metadata.author)){
+							metadata.author.forEach(x=>{
+								flacComments.push('AUTHOR=' + x);
+							});
+						}else{
+							flacComments.push('AUTHOR=' + metadata.author);
+						}
 					if(metadata.writer && settings.tags.writer)
-						metadata.writer.forEach(x=>{
-							flacComments.push('WRITER=' + x);
-						});
+						if (Array.isArray(metadata.writer)){
+							metadata.writer.forEach(x=>{
+								flacComments.push('WRITER=' + x);
+							});
+						}else{
+							flacComments.push('WRITER=' + metadata.writer);
+						}
 					if(metadata.engineer && settings.tags.engineer)
-						metadata.engineer.forEach(x=>{
-							flacComments.push('ENGINEER=' + x);
-						});
+						if (Array.isArray(metadata.engineer)){
+							metadata.engineer.forEach(x=>{
+								flacComments.push('ENGINEER=' + x);
+							});
+						}else{
+							flacComments.push('ENGINEER=' + metadata.engineer);
+						}
 					if(metadata.producer && settings.tags.producer)
-						metadata.producer.forEach(x=>{
-							flacComments.push('PRODUCER=' + x);
-						});
+						if (Array.isArray(metadata.producer)){
+							metadata.producer.forEach(x=>{
+								flacComments.push('PRODUCER=' + x);
+							});
+						}else{
+							flacComments.push('PRODUCER=' + metadata.producer);
+						}
 					if(metadata.replayGain && settings.tags.replayGain)
 						flacComments.push('REPLAYGAIN_TRACK_GAIN=' + metadata.replayGain);
 
@@ -1497,7 +1532,7 @@ io.sockets.on('connection', function (socket) {
 					}
 					let mdbVorbisPicture;
 					let mdbVorbisComment;
-					processor.on('preprocess', function(mdb){
+					processor.on('preprocess', (mdb) => {
 						// Remove existing VORBIS_COMMENT and PICTURE blocks, if any.
 						if (mflac.Processor.MDB_TYPE_VORBIS_COMMENT === mdb.type) {
 							mdb.remove();
@@ -1505,17 +1540,22 @@ io.sockets.on('connection', function (socket) {
 							mdb.remove();
 						}
 						if (mdb.isLast) {
-							mdbVorbisComment = mflac.data.MetaDataBlockVorbisComment.create(false, vendor, flacComments);
-							processor.push(mdbVorbisComment.publish());
 							if(cover){
-								mdbVorbisPicture = mflac.data.MetaDataBlockPicture.create(false, 3, `image/${(settings.PNGcovers ? "png" : "jpeg")}`, '', settings.artworkSize, settings.artworkSize, 24, 0, cover);
-								processor.push(mdbVorbisPicture.publish());
+								mdbVorbisPicture = mflac.data.MetaDataBlockPicture.create(true, 3, `image/${(settings.PNGcovers ? "png" : "jpeg")}`, '', settings.artworkSize, settings.artworkSize, 24, 0, cover);
 							}
+							mdbVorbisComment = mflac.data.MetaDataBlockVorbisComment.create(!cover, vendor, flacComments);
+							mdb.isLast = false;
 						}
 					});
 					processor.on('postprocess', (mdb) => {
 						if (mflac.Processor.MDB_TYPE_VORBIS_COMMENT === mdb.type && null !== mdb.vendor) {
 							vendor = mdb.vendor;
+						}
+						if (mdbVorbisPicture && mdbVorbisComment) {
+								processor.push(mdbVorbisComment.publish());
+								processor.push(mdbVorbisPicture.publish());
+							}else if(mdbVorbisComment){
+								processor.push(mdbVorbisComment.publish());
 						}
 					});
 					reader.on('end', () => {
@@ -1974,15 +2014,15 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 		if (ajson.release_date) {
 			metadata.year = ajson.release_date.slice(0, 4);
 			metadata.date = {
-				day: ajson.release_date.slice(5,7),
-				month:  ajson.release_date.slice(8,10),
+				day: ajson.release_date.slice(8,10),
+				month: ajson.release_date.slice(5,7),
 				year: (settings.dateFormatYear == "2" ? ajson.release_date.slice(2, 4) : ajson.release_date.slice(0, 4))
 			}
 		} else if(track["PHYSICAL_RELEASE_DATE"]){
 			metadata.year = track["PHYSICAL_RELEASE_DATE"].slice(0, 4);
 			metadata.date = {
-				day: track["PHYSICAL_RELEASE_DATE"].slice(5,7),
-				month:  track["PHYSICAL_RELEASE_DATE"].slice(8,10),
+				day: track["PHYSICAL_RELEASE_DATE"].slice(8,10),
+				month: track["PHYSICAL_RELEASE_DATE"].slice(5,7),
 				year: (settings.dateFormatYear == "2" ? track["PHYSICAL_RELEASE_DATE"].slice(2, 4) : track["PHYSICAL_RELEASE_DATE"].slice(0, 4))
 			}
 		}
@@ -1993,7 +2033,8 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 				case "1": date = `${metadata.date.day}-${metadata.date.month}-${metadata.date.year}`; break;
 				case "2": date = `${metadata.date.month}-${metadata.date.day}-${metadata.date.year}`; break;
 				case "3": date = `${metadata.date.year}-${metadata.date.day}-${metadata.date.month}`; break;
-				default: date = `${metadata.date.day}-${metadata.date.month}-${metadata.date.year}`; break;
+				case "4": date = `${metadata.date.day}${metadata.date.month}`; break;
+				default: date = `${metadata.date.day}${metadata.date.month}`; break;
 			}
 			metadata.date = date;
 		}

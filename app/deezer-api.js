@@ -1,7 +1,7 @@
 const request = require('requestretry').defaults({maxAttempts: 2147483647, retryDelay: 1000, timeout: 8000});
 const crypto = require('crypto');
 const fs = require("fs-extra");
-const logger = require('./logger.js');
+const logger = require('./utils/logger.js');
 
 module.exports = new Deezer();
 
@@ -19,7 +19,7 @@ function Deezer() {
 	this.reqStream = {}
 	this.delStream = []
 }
-
+console.log("hi");
 Deezer.prototype.init = function(username, password, callback) {
 	var self = this;
 	request.post({

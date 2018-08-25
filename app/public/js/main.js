@@ -13,8 +13,9 @@ let preview_stopped = true;
 
 socket.emit("autologin");
 
-socket.on("message", function(title, msg){
-	message(title, msg);
+socket.on("message", function(desc){
+	message(desc.title, desc.msg);
+	console.log({desc});
 });
 
 //Login button
@@ -70,7 +71,11 @@ $('#openDownloadsFolder').on('click', function () {
 		alert("For security reasons, this button will do nothing.");
 	}
 });
-
+$('#modal_tags_replayGain').on('click', function() {
+	if ($(this).is(':checked')) {
+	message('Warning','Saving replay gain causes tracks to be quieter for some users.');
+}
+})
 // Do misc stuff on page load
 $(document).ready(function () {
 	M.AutoInit();
@@ -228,6 +233,7 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		dateFormat: $('#modal_settings_select_dateFormat').val(),
 		dateFormatYear: $('#modal_settings_select_dateFormatYear').val(),
 		fallbackBitrate : $('#modal_settings_cbox_fallbackBitrate').is(':checked'),
+		minimizeToTray : $('#modal_settings_cbox_minimizeToTray').is(':checked'),
 		tags: {
 			title: $('#modal_tags_title').is(':checked'),
 			artist: $('#modal_tags_artist').is(':checked'),
@@ -324,6 +330,7 @@ function fillSettingsModal(settings) {
 	$('#modal_settings_select_dateFormat').val(settings.dateFormat).formSelect();
 	$('#modal_settings_select_dateFormatYear').val(settings.dateFormatYear).formSelect();
 	$('#modal_settings_cbox_fallbackBitrate').prop('checked', settings.fallbackBitrate);
+	$('#modal_settings_cbox_minimizeToTray').prop('checked', settings.minimizeToTray);
 
 	$('#modal_tags_title').prop('checked', settings.tags.title);
 	$('#modal_tags_artist').prop('checked', settings.tags.artist);
