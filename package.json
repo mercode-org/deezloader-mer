@@ -1,5 +1,7 @@
 {
-	"license": "GPL-3.0-only",
+	"license": "GPL-3.0",
+	"description": "Download music from Deezer",
+	"private": true,
 	"devDependencies": {
 		"electron": "latest",
 		"electron-builder": "latest"
@@ -23,16 +25,15 @@
 		"win": {
 			"target": [
 				{
-					"target": "nsis",
-					"artifactName": "${productName} ${version} - Setup.${ext}"
+					"target": "nsis"
 				},
 				{
-					"target": "portable",
-					"artifactName": "${productName} ${version} - Portable.${ext}"
+					"target": "portable"
 				}
 			]
 		},
 		"nsis": {
+			"artifactName": "${productName} ${version} - Setup.${ext}",
 			"oneClick": false,
 			"license": "LICENSE",
 			"allowToChangeInstallationDirectory": true,
@@ -40,7 +41,11 @@
 			"deleteAppDataOnUninstall": true
 		},
 		"portable": {
+			"artifactName": "${productName} ${version} - Portable.${ext}",
 			"requestExecutionLevel": "user"
-	    }
+		}
+	},
+	"dependencies": {
+		"ajv": "^6.5.1"
 	}
 }

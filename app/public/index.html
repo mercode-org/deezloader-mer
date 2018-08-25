@@ -11,7 +11,7 @@
   <meta charset="utf-8"/>
 </head>
 <body>
-<span id="appVersionFallback" hidden>4.0.1</span>
+<span id="appVersionFallback" hidden>4.0.2</span>
 
 <div id="title-bar">
 	<div class="resize-padding" style="width: 100%; height: 3px;"></div>
@@ -89,6 +89,13 @@
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_albumNameTemplate"/>
 				<label for="modal_settings_input_albumNameTemplate">Album names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50" data-tooltip="Supported variables are: %year%, %artist%, %type% and %album%">info_outline</i></label>
+			</div>
+		</div>
+    <div class="row">
+			<div class="input-field col s12">
+				<i class="material-icons prefix">label</i>
+				<input type="text" id="modal_settings_input_spotifyUser"/>
+				<label for="modal_settings_input_spotifyUser">Spotify Username</label>
 			</div>
 		</div>
 		<div class="row">
@@ -240,6 +247,14 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
 					<div class="collapsible-body">
 						<p>
+              <b>Version 4.0.2</b><br/>
+              - Changed API token retrive (some users were not able to login)<br/>
+              - Now the Artist modal will stay under the Album modal (you can browse artist albums without reopening the artist modal each time)<br/>
+              - Added Playlist Tab (Also with Spotify Support)<br/>
+              - Changed icon colors to diversify the App from the other branches<br/>
+              - Fixed Extended Tags option in settings<br/>
+              - Fixed Download Spotify Playlist with URI (previusly not working)<br/>
+              <br/>
 							<b>Version 4.0.1</b><br/>
 							- Updated all CSS and Javascript dependencies<br/>
 							- Rewrite of the UI<br/>
@@ -626,6 +641,7 @@
   <ul id="tab-nav" class="row tabs">
     <li class="tab"><a class="active" href="#tab_search">Search</a></li>
     <li class="tab"><a href="#tab_charts">Charts</a></li>
+    <li class="tab"><a href="#tab_playlists">Playlists</a></li>
     <li class="tab"><a href="#tab_url">Download from URL</a></li>
     <li class="tab"><a href="#tab_downloads">Downloads</a></li>
   </ul>
@@ -667,34 +683,35 @@
 				<table id="tab_search_table_results" class="striped col s12">
 					<thead>
   					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_track">
-  						<th><!--cover--></th>
+  						<th style="width: 56px;"><!--cover--></th>
   						<th>Song</th>
   						<th>Artist</th>
   						<th>Album</th>
   						<th><i class="material-icons">timer</i></th>
-  						<th><!--download_link--></th>
+  						<th style="width: 56px;"><!--download_link--></th>
   					</tr>
   					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_album">
-  						<th><!--cover--></th>
+  						<th style="width: 56px;"><!--cover--></th>
   						<th>Album</th>
   						<th>Artist</th>
   						<th>Songs</th>
   						<th>Type</th>
   						<th><!--space--></th>
-  						<th><!--download_link--></th>
+  						<th style="width: 56px;"><!--download_link--></th>
   					</tr>
   					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_artist">
-  						<th><!--cover--></th>
+  						<th style="width: 56px;"><!--cover--></th>
   						<th>Artist</th>
   						<th>Albums</th>
   						<th><!--space--></th>
-  						<th><!--download_link--></th>
+  						<th style="width: 56px;"><!--download_link--></th>
   					</tr>
   					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_playlist">
-  						<th><!--cover--></th>
+  						<th style="width: 56px;"><!--cover--></th>
   						<th>Name</th>
   						<th>Songs</th>
-  						<th><!--download_link--></th>
+              <th style="width: 56px;"><!--space--></th>
+  						<th style="width: 56px;"><!--download_link--></th>
   					</tr>
 					</thead>
 					<tbody id="tab_search_table_results_tbody_loadingIndicator" class="hide loadingTab">
@@ -732,12 +749,12 @@
         <thead>
           <tr>
             <th>#</th>
-            <th><!--cover--></th>
+            <th style="width: 56px;"><!--cover--></th>
             <th>Song</th>
             <th>Artist</th>
             <th>Album</th>
             <th><i class="material-icons">timer</i></th>
-            <th><!--download_link--></th>
+            <th style="width: 56px;"><!--download_link--></th>
           </tr>
         </thead>
         <tbody id="tab_charts_table_charts_tbody_loadingIndicator" class="loadingTab">
@@ -765,6 +782,27 @@
       </form>
     </div>
 
+    <div id="tab_playlists" class="row">
+      <div class="col s12">
+        <button class="btn-flat waves-effect" id="button_refresh_playlist_tab" style="width:100%;">Refresh Playlist List</button>
+      </div>
+      <div class="col s12">
+        <table class="striped">
+          <thead>
+            <tr class="animated fadeInUp">
+              <th style="width: 56px;"><!--cover--></th>
+              <th>Name</th>
+              <th>Songs</th>
+              <th style="width: 56px;"><!--inspect_playlist--></th>
+              <th style="width: 56px;"><!--download_link--></th>
+            </tr>
+          </thead>
+          <tbody id="table_personal_playlists" class="animated fadeInUp">
+          </tbody>
+        </table>
+      </div>
+    </div>
+
     <div id="tab_downloads">
       <div class="row">
         <div class="col s6">
@@ -786,7 +824,7 @@
             <th>Downloaded</th>
             <th>Failed</th>
             <th style="width: 25%;"><!--progress--></th>
-            <th><!--event buttons--></th>
+            <th style="width: 56px;"><!--event buttons--></th>
           </tr>
         </thead>
         <tbody></tbody>

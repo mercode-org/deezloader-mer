@@ -16,6 +16,7 @@
 		"numplaylistbyalbum": false,
 		"extendedTags": false,
 		"partOfSet": false,
-		"chartsCountry": "UK"
+		"chartsCountry": "UK",
+		"spotifyUser": ""
 	}
 }

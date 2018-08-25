@@ -6,7 +6,7 @@ if(typeof require !== "undefined"){
 	var mainApp = remote.require('./app');
 	var path = remote.require('path');
 }
-const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").html() : packageFile.version;
+const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").text() : packageFile.version;
 
 (function () {
 	//open links externally by default
@@ -25,7 +25,7 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 
 	// Open DevTools when F12 is pressed
 	// Reload page when F5 is pressed
-	/*document.addEventListener("keydown", function (e) {
+	document.addEventListener("keydown", function (e) {
 		if (e.which === 123) {
 			if(typeof require !== "undefined"){
 				remote.getCurrentWindow().toggleDevTools();
@@ -37,7 +37,7 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 				remote.getCurrentWindow().reload();
 			}
 		}
-	});*/
+	});
 
 	// Function to make title-bar work
 	function initTitleBar() {

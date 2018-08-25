@@ -60,8 +60,9 @@ socket.on("login", function (errmsg) {
 	// Load top charts list for countries
 	socket.emit("getChartsCountryList", {selected: userSettings.chartsCountry});
 	socket.emit("getChartsTrackListByCountry", {country: userSettings.chartsCountry});
-	}
-	else{
+	socket.emit("getMePlaylistList", {});
+
+	}else{
 			$('#login-res-text').text(errmsg);
 			setTimeout(function(){$('#login-res-text').text("");},1000);
 	}
@@ -96,6 +97,11 @@ $(document).ready(function () {
 		return false;
 	});
 
+	$("#button_refresh_playlist_tab").click(function(){
+		$("table_personal_playlists").html("");
+		socket.emit("getMePlaylistList", {});
+	})
+
 	$(preview_track).on('canplay', ()=>{
 		preview_track.play();
 		preview_stopped = false;
@@ -109,7 +115,7 @@ $(document).ready(function () {
 			$("*").removeProp("playing");
 			$('.preview_controls').text("play_arrow");
 		}
-	})
+	});
 
 	$('.modal').modal();
 
@@ -160,7 +166,8 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		numplaylistbyalbum: $('#modal_settings_cbox_numplaylistbyalbum').is(':checked'),
 		extendedTags: $('#modal_settings_cbox_extendedTags').is(':checked'),
 		partOfSet: $('#modal_settings_cbox_partOfSet').is(':checked'),
-		chartsCountry: $('#modal_settings_select_chartsCounrty').val()
+		chartsCountry: $('#modal_settings_select_chartsCounrty').val(),
+		spotifyUser: $('#modal_settings_input_spotifyUser').val()
 	};
 
 	// Send updated settings to be saved into config file
@@ -214,6 +221,7 @@ function fillSettingsModal(settings) {
 	$('#modal_settings_cbox_extendedTags').prop('checked', settings.extendedTags);
 	$('#modal_settings_cbox_partOfSet').prop('checked', settings.partOfSet);
 	$('#modal_settings_select_chartsCounrty').val(settings.chartsCountry).formSelect();
+	$('#modal_settings_input_spotifyUser').val(settings.spotifyUser);
 
 	M.updateTextFields()
 }
@@ -245,8 +253,13 @@ $('#tab_url_form_url').submit(function (ev) {
 		var url = urls[i];
 		console.log(url);
 
+		if (url.length == 0) {
+			message('Blank URL Field', 'You need to insert an URL to download it!');
+			return false;
+		}
+
 		//Validate URL
-		if (url.indexOf('deezer.com/') < 0 && url.indexOf('open.spotify.com/') < 0 && url.indexOf('spotify:')) {
+		if (url.indexOf('deezer.com/') < 0 && url.indexOf('open.spotify.com/') < 0 && url.indexOf('spotify:') < 0) {
 			message('Wrong URL', 'The URL seems to be wrong. Please check it and try it again.');
 			return false;
 		}
@@ -255,15 +268,13 @@ $('#tab_url_form_url').submit(function (ev) {
 			url = url.substring(0, url.indexOf("?"));
 		}
 
-		if (url.indexOf('open.spotify.com/') >= 0){
+		if (url.indexOf('open.spotify.com/') >= 0 ||  url.indexOf('spotify:') >= 0){
 			if (url.indexOf('user') < 0 || url.indexOf('playlist') < 0){
-				message('Playlist not found', 'The URL seems to be wrong. Please check it and try it again.');
+				message('Playlist not found', 'Spotify for now can only download playlists.');
 				return false;
 			}
-			addToQueue(url, true);
-		}else{
-			addToQueue(url);
 		}
+		addToQueue(url);
 	}
 });
 
@@ -277,7 +288,6 @@ $('#tab_search_form_search').submit(function (ev) {
 
 	if (searchString.length == 0) {
 		message('Search can\'t be empty', 'You tried to search for nothing. But if you search nothing, you\'ll find nothing. So don\'t try it again.');
-
 		return;
 	}
 
@@ -285,7 +295,6 @@ $('#tab_search_form_search').submit(function (ev) {
 	$('#tab_search_table_results_tbody_results').addClass('hide');
 	$('#tab_search_table_results_tbody_noResults').addClass('hide');
 	$('#tab_search_table_results_tbody_loadingIndicator').removeClass('hide');
-
 
 	socket.emit("search", {type: mode, text: searchString});
 
@@ -301,200 +310,143 @@ socket.on('search', function (data) {
 	}
 
 	if (data.type == 'track') {
-
 		showResults_table_track(data.items);
-
 	} else if (data.type == 'album') {
-
 		showResults_table_album(data.items);
-
 	} else if (data.type == 'artist') {
-
 		showResults_table_artist(data.items);
-
 	} else if (data.type == 'playlist') {
-
 		showResults_table_playlist(data.items);
-
 	}
-
 	$('#tab_search_table_results_tbody_results').removeClass('hide');
-
 });
 
 function showResults_table_track(tracks) {
-
 	var tableBody = $('#tab_search_table_results_tbody_results');
-
 	$(tableBody).html('');
-
 	$('#tab_search_table_results_thead_track').removeClass('hide');
-
 	for (var i = 0; i < tracks.length; i++) {
-
 		var currentResultTrack = tracks[i];
-
 		$(tableBody).append(
-			'<tr class="animated fadeInUp">' +
+			'<tr>' +
 			'<td><a href="#" class="circle single-cover" preview="'+currentResultTrack['preview']+'"><i class="material-icons preview_controls white-text">play_arrow</i><img class="circle" src="' + currentResultTrack['album']['cover_small'] + '"/></a></td>' +
 			'<td>' + currentResultTrack['title'] + (currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">error_outline</i>' : '')+ '</td>' +
 			'<td>' + currentResultTrack['artist']['name'] + '</td>' +
 			'<td>' + currentResultTrack['album']['title'] + '</td>' +
 			'<td>' + convertDuration(currentResultTrack['duration']) + '</td>' +
 			'</tr>');
-
 		generateDownloadLink(currentResultTrack['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
 
-	}
-
-	reloadPreviewPlayers()
-}
-
-function reloadPreviewPlayers(){
-	$('.preview_controls').hover( function () {
-		$(this).css({opacity: 1});
-	}, function () {
-		if (($(this).parent().prop("playing") && preview_stopped) || !$(this).parent().prop("playing")){
-			$(this).css({opacity: 0}, 200);
-		}
-	});
-
-	$('.single-cover').click(function (e) {
-		e.preventDefault();
-		if ($(this).prop("playing")){
-			if (preview_track.paused){
-				preview_track.play();
-				preview_stopped = false;
-				$(this).children('i').text("pause");
-				$(preview_track).animate({volume: 1}, 500);
-			}else{
-				preview_stopped = true;
-				$(this).children('i').text("play_arrow");
-				$(preview_track).animate({volume: 0}, 250, "swing", ()=>{ preview_track.pause() });
+		tableBody.children('tr:last').find('.preview_controls').hover( function () {
+			$(this).css({opacity: 1});
+		}, function () {
+			if (($(this).parent().prop("playing") && preview_stopped) || !$(this).parent().prop("playing")){
+				$(this).css({opacity: 0}, 200);
 			}
-		}else{
-			$("*").removeProp("playing");
-			$(this).prop("playing","playing");
-			$('.preview_controls').text("play_arrow");
-			$('.preview_controls').css({opacity:0});
-			$(this).children('i').text("pause");
-			$(this).children('i').css({opacity: 1});
-			preview_stopped = false;
-			$(preview_track).animate({volume: 0}, 250, "swing", ()=>{
-				preview_track.pause();
-				$('#preview-track_source').prop("src", $(this).attr("preview"));
-				preview_track.load();
-			});
-		}
-	});
+		});
+
+		tableBody.children('tr:last').find('.single-cover').click(function (e) {
+			e.preventDefault();
+			if ($(this).prop("playing")){
+				if (preview_track.paused){
+					preview_track.play();
+					preview_stopped = false;
+					$(this).children('i').text("pause");
+					$(preview_track).animate({volume: 1}, 500);
+				}else{
+					preview_stopped = true;
+					$(this).children('i').text("play_arrow");
+					$(preview_track).animate({volume: 0}, 250, "swing", ()=>{ preview_track.pause() });
+				}
+			}else{
+				$("*").removeProp("playing");
+				$(this).prop("playing","playing");
+				$('.preview_controls').text("play_arrow");
+				$('.preview_controls').css({opacity:0});
+				$(this).children('i').text("pause");
+				$(this).children('i').css({opacity: 1});
+				preview_stopped = false;
+				$(preview_track).animate({volume: 0}, 250, "swing", ()=>{
+					preview_track.pause();
+					$('#preview-track_source').prop("src", $(this).attr("preview"));
+					preview_track.load();
+				});
+			}
+		});
+	}
 }
 
 function showResults_table_album(albums) {
-
 	var tableBody = $('#tab_search_table_results_tbody_results');
-
 	$(tableBody).html('');
 	$('#tab_search_table_results_thead_album').removeClass('hide');
-
 	for (var i = 0; i < albums.length; i++) {
-
 		var currentResultAlbum = albums[i];
-
 		$(tableBody).append(
-				'<tr class="animated fadeInUp">' +
+				'<tr>' +
 				'<td><img src="' + currentResultAlbum['cover_small'] + '" class="circle" /></td>' +
 				(currentResultAlbum.explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + currentResultAlbum['title'] + '</td>' +
 				'<td>' + currentResultAlbum['artist']['name'] + '</td>' +
 				'<td>' + currentResultAlbum['nb_tracks'] + '</td>' +
 				'<td>' + currentResultAlbum['record_type'] + '</td>' +
 				'</tr>');
-
 		generateShowTracklistSelectiveButton(currentResultAlbum['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
 		generateDownloadLink(currentResultAlbum['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
-
 	}
 	$('.tooltipped').tooltip({delay: 100});
 }
 
 function showResults_table_artist(artists) {
-
 	var tableBody = $('#tab_search_table_results_tbody_results');
-
 	$(tableBody).html('');
-
 	$('#tab_search_table_results_thead_artist').removeClass('hide');
-
 	for (var i = 0; i < artists.length; i++) {
-
 		var currentResultArtist = artists[i];
-
 		$(tableBody).append(
-				'<tr class="animated fadeInUp">' +
+				'<tr>' +
 				'<td><img src="' + currentResultArtist['picture_small'] + '" class="circle" /></td>' +
 				'<td>' + currentResultArtist['name'] + '</td>' +
 				'<td>' + currentResultArtist['nb_album'] + '</td>' +
 				'</tr>');
-
 		generateShowTracklistButton(currentResultArtist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
 		generateDownloadLink(currentResultArtist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
-
 	}
-
 }
 
 function showResults_table_playlist(playlists) {
-
 	var tableBody = $('#tab_search_table_results_tbody_results');
-
 	$(tableBody).html('');
-
 	$('#tab_search_table_results_thead_playlist').removeClass('hide');
-
 	for (var i = 0; i < playlists.length; i++) {
-
 		var currentResultPlaylist = playlists[i];
-
 		$(tableBody).append(
-				'<tr class="animated fadeInUp">' +
+				'<tr>' +
 				'<td><img src="' + currentResultPlaylist['picture_small'] + '" class="circle" /></td>' +
 				'<td>' + currentResultPlaylist['title'] + '</td>' +
 				'<td>' + currentResultPlaylist['nb_tracks'] + '</td>' +
 				'</tr>');
-
 		generateShowTracklistSelectiveButton(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
 		generateDownloadLink(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
-
 	}
 	$('.tooltipped').tooltip({delay: 100});
 }
 
 function generateShowTracklistSelectiveButton(link) {
-
 	var btn_showTrackListSelective = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>');
-
 	$(btn_showTrackListSelective).click(function (ev){
 		ev.preventDefault();
-
 		showTrackListSelective(link);
 	});
-
 	return btn_showTrackListSelective;
 }
 
 function generateShowTracklistButton(link) {
-
 	var btn_showTrackList = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>');
-
 	$(btn_showTrackList).click(function (ev) {
-
 		ev.preventDefault();
-
 		showTrackList(link);
-
 	});
-
 	return btn_showTrackList;
-
 }
 
 var trackListSelectiveModalApp = new Vue({
@@ -516,12 +468,9 @@ var trackListModalApp = new Vue({
 });
 
 function showTrackListSelective(link) {
-
 	$('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').addClass('hide');
 	$('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').removeClass('hide');
-
 	$('#modal_trackListSelective').modal('open');
-
 	socket.emit('getTrackList', {id: getIDFromLink(link), type: getTypeFromLink(link)});
 }
 
@@ -531,7 +480,6 @@ $('#download_track_selection').click(function(e){
 	$("input:checkbox.trackCheckbox:checked").each(function(){
 		urls.push($(this).val());
 	});
-
 	if(urls.length != 0){
 		for (var ia = 0; ia < urls.length; ia++) {
 			addToQueue(urls[ia]);
@@ -541,143 +489,141 @@ $('#download_track_selection').click(function(e){
 });
 
 function showTrackList(link) {
-
 	$('#modal_trackList_table_trackList_tbody_trackList').addClass('hide');
 	$('#modal_trackList_table_trackList_tbody_loadingIndicator').removeClass('hide');
-
 	$('#modal_trackList').modal('open');
-
 	socket.emit("getTrackList", {id: getIDFromLink(link), type: getTypeFromLink(link)});
-
 }
+
 socket.on("getTrackList", function (data) {
 	//data.err			-> undefined/err
 	//data.id			 -> passed id
 	//data.response -> API response
-
-	var trackList = data.response.data, content = '';
-	var trackListSelective = data.response.data, content = '';
-
-	if (typeof trackList == 'undefined') {
-		alert('Well, there seems to be a problem with this part of the app. Please notify the developer.');
+	if (data.err){
+		trackListSelectiveModalApp.title = "Can't get data"
 		return;
 	}
-
-	// ########################################
-	if(data.reqType == 'album' || data.reqType == 'playlist'){
-		var tableBody = $('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective');
-	} else {
-		var tableBody = $('#modal_trackList_table_trackList_tbody_trackList');
-	}
-
-	$(tableBody).html('');
-
-	//############################################
-
-	if (data.reqType == 'artist') {
-		trackListModalApp.title = 'Album List';
-		trackListModalApp.head = [
-			{title: '#'},
-			{title: ''},
-			{title: 'Album Title'},
-			{title: 'Release Date'},
-			{title: 'Record Type'},
-			{title: 'Download Album'}
-		];
-
-		for (var i = 0; i < trackList.length; i++) {
-
-			$(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
-					(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i></td>' : '<td></td>') +
-					'<td><a href="#" class="album_chip" data-link="' + trackList[i].link + '"><div class="chip"><img src="' + trackList[i].cover_small + '" />' + trackList[i].title + '</div></a></td>' +
-					'<td>' + trackList[i].release_date + '</td><td>' + trackList[i].record_type + '</td></tr>');
-
-			generateDownloadLink(trackList[i].link).appendTo(tableBody.children('tr:last')).wrap('<td>');
+	if (data.response){
+		var trackList = data.response.data, content = '';
+		var trackListSelective = data.response.data, content = '';
+		if (typeof trackList == 'undefined') {
+			alert('Well, there seems to be a problem with this part of the app. Please notify the developer.');
+			return;
 		}
-	} else if(data.reqType == 'playlist') {
-		trackListSelectiveModalApp.title = 'Playlist';
 
-		trackListSelectiveModalApp.head = [
-			{title: '#'},
-			{title: 'Song'},
-			{title: 'Artist'},
-			{title: '<i class="material-icons">timer</i>'},
-			{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
-		];
-
-		$('.selectAll').prop('checked', false);
-
-		for (var i = 0; i < trackList.length; i++) {
-			$(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
-					(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + trackList[i].title + '</td>' +
-					'<td>' + trackList[i].artist.name + '</td>' +
-					'<td>' + convertDuration(trackList[i].duration) + '</td>' +
-					'<td><div class="valign-wrapper"><label><input class="trackCheckbox valign" type="checkbox" id="trackChk'+ i +'" value="' + trackList[i].link + '"><span></span></label></div></tr>');
-		}
-	} else if(data.reqType == 'album') {
-		trackListSelectiveModalApp.title = 'Tracklist';
-
-		trackListSelectiveModalApp.head = [
-			{title: '#'},
-			{title: 'Song'},
-			{title: 'Artist'},
-			{title: '<i class="material-icons">timer</i>'},
-			{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
-		];
-
-		$('.selectAll').prop('checked', false);
-
-		if (trackList[trackList.length-1].disk_number != 1){
-			baseDisc = 0
+		// ########################################
+		if(data.reqType == 'album' || data.reqType == 'playlist'){
+			var tableBody = $('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective');
 		} else {
-			baseDisc =1
-		};
+			var tableBody = $('#modal_trackList_table_trackList_tbody_trackList');
+		}
+		$(tableBody).html('');
 
-		for (var i = 0; i < trackList.length; i++) {
-			discNum = trackList[i].disk_number
-			if (discNum != baseDisc){
-				$(tableBody).append('<tr><td colspan="4" style="opacity: 0.54;"><i class="material-icons valignicon tiny">album</i> '+discNum+'</td></tr>');
-				baseDisc = discNum;
+		//############################################
+
+		if (data.reqType == 'artist') {
+			trackListModalApp.title = 'Album List';
+			trackListModalApp.head = [
+				{title: '#'},
+				{title: ''},
+				{title: 'Album Title'},
+				{title: 'Release Date'},
+				{title: 'Record Type'},
+				{title: 'Download Album'}
+			];
+
+			for (var i = 0; i < trackList.length; i++) {
+
+				$(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
+						(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i></td>' : '<td></td>') +
+						'<td><a href="#" class="album_chip" data-link="' + trackList[i].link + '"><div class="chip"><img src="' + trackList[i].cover_small + '" />' + trackList[i].title + '</div></a></td>' +
+						'<td>' + trackList[i].release_date + '</td><td>' + trackList[i].record_type + '</td></tr>');
+
+				generateDownloadLink(trackList[i].link).appendTo(tableBody.children('tr:last')).wrap('<td>');
 			}
-			$(tableBody).append('<tr><td>' + trackList[i].track_position + '</td>' +
-					(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + trackList[i].title + '</td>' +
-					'<td>' + trackList[i].artist.name + '</td>' +
-					'<td>' + convertDuration(trackList[i].duration) + '</td>' +
-					'<td><div class="valign-wrapper"><label><input class="trackCheckbox valign" type="checkbox" id="trackChk'+ i +'" value="' + trackList[i].link + '"><span></span></label></div></tr>');
+			$('.album_chip').click(function(e){
+				showTrackListSelective($(this).data('link'), true);
+			});
+		} else if(data.reqType == 'playlist') {
+			trackListSelectiveModalApp.title = 'Playlist';
+
+			trackListSelectiveModalApp.head = [
+				{title: '#'},
+				{title: 'Song'},
+				{title: 'Artist'},
+				{title: '<i class="material-icons">timer</i>'},
+				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
+			];
+
+			$('.selectAll').prop('checked', false);
+
+			for (var i = 0; i < trackList.length; i++) {
+				$(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
+						(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + trackList[i].title + '</td>' +
+						'<td>' + trackList[i].artist.name + '</td>' +
+						'<td>' + convertDuration(trackList[i].duration) + '</td>' +
+						'<td><div class="valign-wrapper"><label><input class="trackCheckbox valign" type="checkbox" id="trackChk'+ i +'" value="' + trackList[i].link + '"><span></span></label></div></tr>');
+			}
+		} else if(data.reqType == 'album') {
+			trackListSelectiveModalApp.title = 'Tracklist';
+
+			trackListSelectiveModalApp.head = [
+				{title: '#'},
+				{title: 'Song'},
+				{title: 'Artist'},
+				{title: '<i class="material-icons">timer</i>'},
+				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
+			];
+
+			$('.selectAll').prop('checked', false);
+
+			if (trackList[trackList.length-1].disk_number != 1){
+				baseDisc = 0
+			} else {
+				baseDisc =1
+			};
+
+			for (var i = 0; i < trackList.length; i++) {
+				discNum = trackList[i].disk_number
+				if (discNum != baseDisc){
+					$(tableBody).append('<tr><td colspan="4" style="opacity: 0.54;"><i class="material-icons valignicon tiny">album</i> '+discNum+'</td></tr>');
+					baseDisc = discNum;
+				}
+				$(tableBody).append('<tr><td>' + trackList[i].track_position + '</td>' +
+						(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') + trackList[i].title + '</td>' +
+						'<td>' + trackList[i].artist.name + '</td>' +
+						'<td>' + convertDuration(trackList[i].duration) + '</td>' +
+						'<td><div class="valign-wrapper"><label><input class="trackCheckbox valign" type="checkbox" id="trackChk'+ i +'" value="' + trackList[i].link + '"><span></span></label></div></tr>');
+			}
+		} else {
+			trackListModalApp.title = 'Tracklist';
+			trackListModalApp.head = [
+				{title: '#'},
+				{title: 'Song'},
+				{title: 'Artist'},
+				{title: '<i class="material-icons">timer</i>'}
+			];
+
+			for (var i = 0; i < trackList.length; i++) {
+
+				$(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
+						(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') +
+						trackList[i].title + '</td>' +
+						'<td>' + trackList[i].artist.name + '</td>' +
+						'<td>' + convertDuration(trackList[i].duration) + '</td></tr>');
+			}
 		}
-	} else {
-		trackListModalApp.title = 'Tracklist';
-		trackListModalApp.head = [
-			{title: '#'},
-			{title: 'Song'},
-			{title: 'Artist'},
-			{title: '<i class="material-icons">timer</i>'}
-		];
-
-		for (var i = 0; i < trackList.length; i++) {
-
-			$(tableBody).append('<tr><td>' + (i + 1) + '</td>' +
-					(trackList[i].explicit_lyrics ? '<td><i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '<td> ') +
-					trackList[i].title + '</td>' +
-					'<td>' + trackList[i].artist.name + '</td>' +
-					'<td>' + convertDuration(trackList[i].duration) + '</td></tr>');
+		if(data.reqType == 'album' || data.reqType == 'playlist'){
+			$('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').addClass('hide');
+			$('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').removeClass('hide');
+		} else {
+			$('#modal_trackList_table_trackList_tbody_loadingIndicator').addClass('hide');
+			$('#modal_trackList_table_trackList_tbody_trackList').removeClass('hide');
 		}
+
+		//$('#modal_trackList_table_trackList_tbody_trackList').html(content);
+
 	}
-	if(data.reqType == 'album' || data.reqType == 'playlist'){
-		$('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').addClass('hide');
-		$('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').removeClass('hide');
-	} else {
-		$('#modal_trackList_table_trackList_tbody_loadingIndicator').addClass('hide');
-		$('#modal_trackList_table_trackList_tbody_trackList').removeClass('hide');
-	}
-
-	//$('#modal_trackList_table_trackList_tbody_trackList').html(content);
-
-	$('.album_chip').click(function(e){
-		$('#modal_trackList').modal('close');
-		showTrackListSelective($(this).data('link'));
-	});
-
 });
 
 //#############################################TAB_CHARTS#############################################\\
@@ -733,21 +679,74 @@ socket.on("getChartsTrackListByCountry", function (data) {
 
 		generateDownloadLink(currentChartTrack['link']).appendTo(chartsTableBody.children('tr:last')).wrap('<td>');
 
-	}
+		chartsTableBody.children('tr:last').find('.preview_controls').hover( function () {
+			$(this).css({opacity: 1});
+		}, function () {
+			if (($(this).parent().prop("playing") && preview_stopped) || !$(this).parent().prop("playing")){
+				$(this).css({opacity: 0}, 200);
+			}
+		});
 
-	reloadPreviewPlayers();
+		chartsTableBody.children('tr:last').find('.single-cover').click(function (e) {
+			e.preventDefault();
+			if ($(this).prop("playing")){
+				if (preview_track.paused){
+					preview_track.play();
+					preview_stopped = false;
+					$(this).children('i').text("pause");
+					$(preview_track).animate({volume: 1}, 500);
+				}else{
+					preview_stopped = true;
+					$(this).children('i').text("play_arrow");
+					$(preview_track).animate({volume: 0}, 250, "swing", ()=>{ preview_track.pause() });
+				}
+			}else{
+				$("*").removeProp("playing");
+				$(this).prop("playing","playing");
+				$('.preview_controls').text("play_arrow");
+				$('.preview_controls').css({opacity:0});
+				$(this).children('i').text("pause");
+				$(this).children('i').css({opacity: 1});
+				preview_stopped = false;
+				$(preview_track).animate({volume: 0}, 250, "swing", ()=>{
+					preview_track.pause();
+					$('#preview-track_source').prop("src", $(this).attr("preview"));
+					preview_track.load();
+				});
+			}
+		});
+
+	}
 
 	$('#tab_charts_table_charts_tbody_loadingIndicator').addClass('hide');
 	chartsTableBody.removeClass('hide');
 
 });
 
+//############################################
+socket.on("getMePlaylistList", function (data) {
+	var tableBody = $('#table_personal_playlists');
+	$(tableBody).html('');
+	for (var i = 0; i < data.playlists.length; i++) {
+		var currentResultPlaylist = data.playlists[i];
+		$(tableBody).append(
+				'<tr>' +
+				'<td><img src="' + currentResultPlaylist['image'] + '" class="circle" width="56px" /></td>' +
+				'<td>' + currentResultPlaylist['title'] + '</td>' +
+				'<td>' + currentResultPlaylist['songs'] + '</td>' +
+				'</tr>');
+		generateShowTracklistSelectiveButton(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
+		generateDownloadLink(currentResultPlaylist['link']).appendTo(tableBody.children('tr:last')).wrap('<td>');
+	}
+	$('.tooltipped').tooltip({delay: 100});
+});
+
 //############################################TAB_DOWNLOADS###########################################\\
-function addToQueue(url, spotify=false) {
-	if (!spotify){
-		var type = getTypeFromLink(url), id = getIDFromLink(url);
-	} else {
-		var type = 'spotifyplaylist', [user, id] = getPlayUserFromURI(url);
+function addToQueue(url) {
+	var type = getTypeFromLink(url), id = getIDFromLink(url);
+
+	if (type == 'spotifyplaylist'){
+		[user, id] = getPlayUserFromURI(url)
 		userSettings.spotifyUser = user;
 	}
 
@@ -771,9 +770,8 @@ function addToQueue(url, spotify=false) {
 		return false;
 	}
 
-	if (id.match(/^[0-9]+$/) == null && !spotify) {
+	if (id.match(/^[0-9]+$/) == null && type != 'spotifyplaylist') {
 		$('#modal_wrongURL').modal('open');
-
 		return false;
 	}
 	socket.emit("download" + type, {id: id, settings: userSettings});
@@ -867,9 +865,7 @@ socket.on("downloadProgress", function (data) {
 });
 
 socket.on("emptyDownloadQueue", function () {
-
 	M.toast({html: '<i class="material-icons">done_all</i>All downloads completed!', displayLength: 5000, classes: 'rounded'});
-
 });
 
 socket.on("cancelDownload", function (data) {
@@ -881,13 +877,10 @@ socket.on("cancelDownload", function (data) {
 });
 
 $('#clearTracksTable').click(function (ev) {
-
 	$('#tab_downloads_table_downloads').find('tbody').find('.finished', '.error').addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
 		$(this).remove();
 	});
-
 	return false;
-
 });
 
 //****************************************************************************************************\\
@@ -927,10 +920,10 @@ function getIDFromLink(link) {
 }
 
 function getTypeFromLink(link) {
-
 	var type;
-
-	if (link.indexOf('track') > -1) {
+	if (link.indexOf('spotify') > -1){
+		type = "spotifyplaylist";
+	} else	if (link.indexOf('track') > -1) {
 		type = "track";
 	} else if (link.indexOf('playlist') > -1) {
 		type = "playlist";
@@ -939,39 +932,26 @@ function getTypeFromLink(link) {
 	} else if (link.indexOf('artist')) {
 		type = "artist";
 	}
-
 	return type;
-
 }
 
 function generateDownloadLink(url) {
-
 	var btn_download = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">file_download</i></a>');
-
 	$(btn_download).click(function (ev) {
-
 		ev.preventDefault();
-
 		addToQueue(url);
-
 	});
-
 	return btn_download;
-
 }
 
 function convertDuration(duration) {
-
 	//convert from seconds only to mm:ss format
 	var mm, ss;
 	mm = Math.floor(duration / 60);
 	ss = duration - (mm * 60);
-
 	//add leading zero if ss < 0
 	if (ss < 10) {
 		ss = "0" + ss;
 	}
-
 	return mm + ":" + ss;
-
 }

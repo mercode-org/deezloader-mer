@@ -33,20 +33,30 @@ Deezer.prototype.init = function(username, password, callback) {
 		}else if(body.indexOf("success") > -1){
 			request.get({url: "https://www.deezer.com/", headers: this.httpHeaders, jar: true}, (function(err, res, body) {
 				if(!err && res.statusCode == 200) {
-					var regex = new RegExp(/((?!"api_key\\":\\").*(?=\\"))/g);
+					var regex = new RegExp(/"api_key":"([^",]*)/g);
 					var _token = regex.exec(body);
-					if(_token instanceof Array && _token[1]) {
-						self.apiQueries.api_token = _token[1];
-						callback(null, null);
-					} else {
-						callback(new Error("Unable to initialize Deezer API"));
+					if(! (_token instanceof Array && _token[1])) {
+						var regex = new RegExp(/((?!"api_key\\":\\").*(?=\\"))/g);
+						var _token = regex.exec(body);
+						if(! (_token instanceof Array && _token[1])) {
+							var _token = ["", " "]
+							if(! (_token instanceof Array && _token[1])) {
+								callback(new Error("Unable to initialize Deezer API"));
+								return;
+							}
+						}
 					}
+					self.apiQueries.api_token = _token[1];
+					const userRegex = new RegExp(/{"USER_ID":"([^",]*)/g);
+					const userId = userRegex.exec(body)[1];
+					self.userId = userId;
+					callback(null, null);
 				} else {
-					callback(new Error("Unable to load deezer.com"));
+					callback(new Error("Unable to load deezer.com "+err));
 				}
 			}).bind(self));
 		}else{
-			callback(new Error("Incorrect email or password."));
+			callback(new Error("Incorrect email or password. "+err));
 		}
 	}));
 }
@@ -171,6 +181,19 @@ Deezer.prototype.getChartsTopCountry = function(callback) {
 
 }
 
+Deezer.prototype.getMePlaylists = function(callback) {
+	getJSON("https://api.deezer.com/user/"+this.userId+"/playlists?limit=-1", function(res){
+		if (!(res instanceof Error)){
+			if(!res.data) {
+				res.data = [];
+			}
+			callback(res);
+		} else {
+			callback(null, res)
+		}
+	});
+}
+
 Deezer.prototype.getTrack = function(id, wantFlac, callback) {
 	var scopedid = id;
 	var self = this;
@@ -239,12 +262,12 @@ Deezer.prototype.search = function(text, type, callback) {
 		if(!err && res.statusCode == 200) {
 			var json = JSON.parse(body);
 			if(json.error) {
-				callback(null, new Error("Wrong search type/text: " + text));
+				callback(new Error("Wrong search type/text: " + text));
 				return;
 			}
 			callback(json);
 		} else {
-			callback(null, new Error("Unable to reach Deezer API"));
+			callback(new Error("Unable to reach Deezer API"));
 		}
 	});
 }
@@ -419,7 +442,7 @@ function getJSON(url, callback){
 		} else {
 			var json = JSON.parse(body);
 			if (json.error) {
-				logger.logs("Error","Wrong id");
+				logger.logs("Error",json.error.message);
 				callback(new Error());
 				return;
 			}

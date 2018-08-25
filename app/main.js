@@ -61,10 +61,14 @@ function createWindow () {
 		frame: false,
 		icon: __dirname + "/icon.png",
 		minWidth: 415,
-		minHeight: 32
+		minHeight: 32,
+		show:false
 	});
 
 	mainWindow.setMenu(null);
+	mainWindow.once('ready-to-show', () => {
+    mainWindow.show()
+  })
 
 	// and load the index.html of the app.
 	mainWindow.loadURL('http://localhost:' + appConfig.serverPort);
