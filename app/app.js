@@ -1869,6 +1869,8 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 			};
 		}
 	}else{
+		let separator = settings.multitagSeparator;
+		if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16));
 		metadata = {
 			title: track["SNG_TITLE"],
 			artist: track["ART_NAME"],
@@ -1899,9 +1901,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 					if(metadata.composer.indexOf(x) == -1)
 						metadata.composer.push(x);
 				});
-				let separator = settings.multitagSeparator;
-				if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16));
-				if (track.format != 9) metadata.composer = metadata.composer.join(separator);
+				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.composer = metadata.composer.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].musicpublisher){
 				metadata.musicpublisher = [];
@@ -1909,9 +1909,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 					if(metadata.musicpublisher.indexOf(x) == -1)
 						metadata.musicpublisher.push(x);
 				});
-				let separator = settings.multitagSeparator;
-				if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16));
-				if (track.format != 9) metadata.musicpublisher = metadata.musicpublisher.join(separator);
+				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.musicpublisher = metadata.musicpublisher.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].producer){
 				metadata.producer = [];
@@ -1919,9 +1917,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 					if(metadata.producer.indexOf(x) == -1)
 						metadata.producer.push(x);
 				});
-				let separator = settings.multitagSeparator;
-				if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16));
-				if (track.format != 9) metadata.producer = metadata.producer.join(separator);
+				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.producer = metadata.producer.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].engineer){
 				metadata.engineer = [];
@@ -1929,9 +1925,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 					if(metadata.engineer.indexOf(x) == -1)
 						metadata.engineer.push(x);
 				});
-				let separator = settings.multitagSeparator;
-				if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16));
-				if (track.format != 9) metadata.engineer = metadata.engineer.join(separator);
+				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.engineer = metadata.engineer.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].writer){
 				metadata.writer = [];
@@ -1939,9 +1933,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 					if(metadata.writer.indexOf(x) == -1)
 						metadata.writer.push(x);
 				});
-				let separator = settings.multitagSeparator;
-				if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16));
-				if (track.format != 9) metadata.writer = metadata.writer.join(separator);
+				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.writer = metadata.writer.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].author){
 				metadata.author = [];
@@ -1949,9 +1941,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 					if(metadata.author.indexOf(x) == -1)
 						metadata.author.push(x);
 				});
-				let separator = settings.multitagSeparator;
-				if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16));
-				if (track.format != 9) metadata.author = metadata.author.join(separator);
+				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.author = metadata.author.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].mixer){
 				metadata.mixer = [];
@@ -1959,9 +1949,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 					if(metadata.mixer.indexOf(x) == -1)
 						metadata.mixer.push(x);
 				});
-				let separator = settings.multitagSeparator;
-				if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16));
-				if (track.format != 9) metadata.mixer = metadata.mixer.join(separator);
+				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.mixer = metadata.mixer.join(separator);
 			}
 		}
 		if(track["LYRICS_TEXT"]){
@@ -1979,8 +1967,6 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 		if (0 < parseInt(track["BPM"])) {
 			metadata.bpm = track["BPM"];
 		}
-		let separator = settings.multitagSeparator;
-		if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16))
 		if(track['ARTISTS']){
 			metadata.artists = [];
 			artistArray = []
@@ -1991,7 +1977,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 				if(metadata.artists.indexOf(artist) == -1)
 					metadata.artists.push(artist);
 			});
-			if (track.format != 9) metadata.artists = metadata.artists.join(separator);
+			if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.artists = metadata.artists.join(separator);
 		}
 		if(ajson.genres && ajson.genres.data[0] && ajson.genres.data[0].name){
 			metadata.genre = [];
@@ -2003,7 +1989,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 				if(metadata.genre.indexOf(genre) == -1)
 					metadata.genre.push(genre);
 			});
-			if (track.format != 9) metadata.genre = metadata.genre.join(separator);
+			if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.genre = metadata.genre.join(separator);
 		}
 		if (track["ALB_PICTURE"]) {
 			metadata.image = Deezer.albumPicturesHost + track["ALB_PICTURE"]+"/"+settings.artworkSize+"x"+settings.artworkSize+"-000000-80-0-0"+(settings.PNGcovers ? ".png" : ".jpg");
