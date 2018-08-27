@@ -1,1 +1,4 @@
-{"version":"413", "changelog":"Version 4.1.3\r\n- Playlist and Album tracks now have fallback support\r\n- M3U files now works correctly\r\n- Fixed problems with tags\r\n- Added option %explicit% for Track and Album names (Will add \"(Explicit)\" in that position if it's explicit)\r\n- Added option to remove \"(Album Version)\" from track title\r\n- Added options to select which format should the date tag have\r\n- Added option to not fallback if desired bitrate is not aviable\r\n- Logging enhancements\r\n- Other minor bug-fixing"}
+{
+"version":"413",
+"changelog":"Version 4.1.3\r\n- Playlist and Album tracks now have fallback support\r\n- M3U files now works correctly\r\n- Fixed problems with tags\r\n- Added option %explicit% for Track and Album names (Will add \"(Explicit)\" in that position if it's explicit)\r\n- Added option to remove \"(Album Version)\" from track title\r\n- Added options to select which format should the date tag have\r\n- Added option to not fallback if desired bitrate is not aviable\r\n- Logging enhancements\r\n- Other minor bug-fixing"
+}
