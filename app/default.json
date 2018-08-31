@@ -1,7 +1,7 @@
 {
 	"serverPort": 1730,
 	"userDefined": {
-		"minimizeToTray": true,
+		"minimizeToTray": false,
 		"trackNameTemplate": "%artist% - %title%",
 		"playlistTrackNameTemplate": "%number% - %artist% - %title%",
 		"albumTrackNameTemplate": "%number% - %title%",

@@ -2,9 +2,8 @@
 let appConfig;
 const fs = require("fs-extra");
 const path = require('path');
-const {app, BrowserWindow, ipcMain} = require('electron');
+const {app, BrowserWindow, ipcMain, Menu, Tray, Notification} = require('electron');
 const os = require('os');
-const {Menu, Tray} = require('electron')
 loadSettings();
 
 const theApp = require('./app');
@@ -20,6 +19,10 @@ const mainWindowState = new WindowStateManager('mainWindow', {
 	defaultWidth: 1280,
 	defaultHeight: 800
 });
+
+app.isQuiting = false;
+
+app.serverMode = (process.argv.indexOf("-s")>-1 || process.argv.indexOf("--server")>-1);
 
 require('electron-context-menu')({
 	showInspectElement: false
@@ -49,82 +52,94 @@ function loadSettings(){
 	}
 }
 
-function createWindow () {
-	if (!(process.argv.indexOf("-s")>-1 || process.argv.indexOf("--server")>-1)){
-		// Create the browser window.
-		mainWindow = new BrowserWindow({
-			width: mainWindowState.width,
-			height: mainWindowState.height,
-			x: mainWindowState.x,
-			y: mainWindowState.y,
-			alwaysOnTop: false,
-			frame: false,
-			icon: __dirname + "/icon.png",
-			minWidth: 415,
-			minHeight: 32,
-			backgroundColor: "#23232c"
-		});
-
-		mainWindow.setMenu(null);
-
-		// and load the index.html of the app.
-		mainWindow.loadURL('http://localhost:' + appConfig.serverPort);
-
-		mainWindow.on('closed', function () {
-			mainWindow = null;
-		});
-
-		// Check if window was closed maximized and restore it
-		if (mainWindowState.maximized) {
-			mainWindow.maximize();
+function createTray(){
+	tray = new Tray(trayIcon);
+	const contextMenu = Menu.buildFromTemplate([
+		{
+			label: 'Show App',
+			click: function() {
+				if (mainWindow) mainWindow.show();
+			}
+		},
+		{
+			label: 'Quit',
+			click: function() {
+				app.isQuiting = true;
+				if (mainWindow){mainWindow.close()}else{app.quit()};
+			}
 		}
-		mainWindow.on('minimize',function(event){
-			if(appConfig.userDefined.minimizeToTray){
-    	event.preventDefault();
-    	mainWindow.hide();
-		}
-	});
+	]);
+	tray.setToolTip('Deezloader Remix');
+	tray.setContextMenu(contextMenu);
 
 	tray.on('click', function(e){
-    if (mainWindow.isVisible()) {
-      mainWindow.hide()
-    } else {
-      mainWindow.show()
-    }
-  });
-		// Save current window state
-		mainWindow.on('close', () => {
-			if(appConfig.userDefined.minimizeToTray){
-				if(!app.isQuitting){
-					event.preventDefault();
-					mainWindow.hide();
-				} else {
-					mainWindowState.saveState(mainWindow);
-				}
+		if (mainWindow){
+			if (mainWindow.isVisible()) {
+				mainWindow.hide()
 			} else {
-				mainWindowState.saveState(mainWindow);
+				mainWindow.show()
 			}
-		});
+		}
+	});
+}
+
+function createWindow () {
+	// Create the browser window.
+	mainWindow = new BrowserWindow({
+		width: mainWindowState.width,
+		height: mainWindowState.height,
+		x: mainWindowState.x,
+		y: mainWindowState.y,
+		alwaysOnTop: false,
+		frame: false,
+		icon: __dirname + "/icon.png",
+		minWidth: 415,
+		minHeight: 32,
+		backgroundColor: "#23232c"
+	});
+
+	mainWindow.setMenu(null);
+
+	// and load the index.html of the app.
+	mainWindow.loadURL('http://localhost:' + appConfig.serverPort);
+
+	mainWindow.on('closed', function () {
+		mainWindow = null;
+	});
+
+	// Check if window was closed maximized and restore it
+	if (mainWindowState.maximized) {
+		mainWindow.maximize();
 	}
+
+	// Save current window state
+	mainWindow.on('close', (event) => {
+		if(appConfig.userDefined.minimizeToTray && !app.isQuiting){
+			event.preventDefault()
+			mainWindow.hide();
+		} else {
+			console.log("close")
+			mainWindowState.saveState(mainWindow);
+		}
+	});
 }
 
 app.on('ready', function(){
-	if(appConfig.userDefined.minimizeToTray){
-		tray = new Tray(trayIcon);
-		const contextMenu = Menu.buildFromTemplate([]);
-		tray.setToolTip('Deezloader Remix');
-		tray.setContextMenu(contextMenu);
+	if (!app.serverMode){
 		createWindow();
 	}
+	createTray()
 });
 
 // Quit when all windows are closed.
 app.on('window-all-closed', function () {
-	app.quit();
+	if (!appConfig.userDefined.minimizeToTray || app.isQuiting){
+		app.quit();
+	}
 });
 
 app.on('activate', function () {
-	if (mainWindow === null) {
+	if (!app.serverMode && mainWindow === null) {
 		createWindow();
 	}
 });
