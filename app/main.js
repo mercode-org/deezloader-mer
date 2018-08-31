@@ -118,7 +118,6 @@ function createWindow () {
 			event.preventDefault()
 			mainWindow.hide();
 		} else {
-			console.log("close")
 			mainWindowState.saveState(mainWindow);
 		}
 	});
