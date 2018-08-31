@@ -50,7 +50,6 @@ function loadSettings(){
 }
 
 function createWindow () {
-
 	if (!(process.argv.indexOf("-s")>-1 || process.argv.indexOf("--server")>-1)){
 		// Create the browser window.
 		mainWindow = new BrowserWindow({
@@ -79,13 +78,14 @@ function createWindow () {
 		if (mainWindowState.maximized) {
 			mainWindow.maximize();
 		}
-mainWindow.on('minimize',function(event){
-				if(appConfig.userDefined.minimizeToTray){
-    event.preventDefault();
-        mainWindow.hide();
-}
-});
-tray.on('click', function(e){
+		mainWindow.on('minimize',function(event){
+			if(appConfig.userDefined.minimizeToTray){
+    	event.preventDefault();
+    	mainWindow.hide();
+		}
+	});
+
+	tray.on('click', function(e){
     if (mainWindow.isVisible()) {
       mainWindow.hide()
     } else {
@@ -95,27 +95,27 @@ tray.on('click', function(e){
 		// Save current window state
 		mainWindow.on('close', () => {
 			if(appConfig.userDefined.minimizeToTray){
-			    if(!app.isQuitting){
-        event.preventDefault();
-        mainWindow.hide();
-    } else {
-			mainWindowState.saveState(mainWindow);
-		}
-	} else {
-		mainWindowState.saveState(mainWindow);
-	}
+				if(!app.isQuitting){
+					event.preventDefault();
+					mainWindow.hide();
+				} else {
+					mainWindowState.saveState(mainWindow);
+				}
+			} else {
+				mainWindowState.saveState(mainWindow);
+			}
 		});
 	}
-	}
+}
 
 app.on('ready', function(){
 	if(appConfig.userDefined.minimizeToTray){
-	            tray = new Tray(trayIcon);
-    const contextMenu = Menu.buildFromTemplate([]);
-    tray.setToolTip('Deezloader Remix');
-    tray.setContextMenu(contextMenu);
-	createWindow();
-}
+		tray = new Tray(trayIcon);
+		const contextMenu = Menu.buildFromTemplate([]);
+		tray.setToolTip('Deezloader Remix');
+		tray.setContextMenu(contextMenu);
+		createWindow();
+	}
 });
 
 // Quit when all windows are closed.
