@@ -17,7 +17,6 @@ fs.readdir(path.join(localpaths.user, 'logs'), function (err, files) {
 		logs.sort()
 		if (logs.length>5){
 			for (let i=0; i<logs.length-5; i++){
-				console.log(logs[i])
 				fs.unlinkSync(path.join(localpaths.user, 'logs', logs[i]+".txt"));
 			}
 		}

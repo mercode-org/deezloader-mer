@@ -317,3 +317,8 @@ a[href^="ftp://"] {
 .btn{
 	overflow: hidden;
 }
+
+.resultLink{
+	cursor:pointer;
+	text-decoration: underline;
+}

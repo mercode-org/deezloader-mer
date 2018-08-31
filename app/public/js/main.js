@@ -15,7 +15,6 @@ socket.emit("autologin");
 
 socket.on("message", function(desc){
 	message(desc.title, desc.msg);
-	console.log({desc});
 });
 
 //Login button
@@ -428,13 +427,21 @@ function showResults_table_track(tracks) {
 			`<tr>
 			<td><a href="#" class="circle ${(currentResultTrack.preview ? `single-cover" preview="${currentResultTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px" class="circle" src="${(currentResultTrack.album.cover_small ? currentResultTrack.album.cover_small : "img/noCover.jpg" )}"/></a></td>
 			<td>${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">error_outline</i>' : '')} ${currentResultTrack.title}</td>
-			<td>${currentResultTrack.artist.name}</td>
-			<td>${currentResultTrack.album.title}</td>
+			<td><span class="resultArtist resultLink" data-link="${currentResultTrack.artist.link}">${currentResultTrack.artist.name}</span></td>
+			<td><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentResultTrack.album.id}">${currentResultTrack.album.title}</span></td>
 			<td>${convertDuration(currentResultTrack.duration)}</td>
 			</tr>`);
 		generateDownloadLink(currentResultTrack.link).appendTo(tableBody.children('tr:last')).wrap('<td>');
 		addPreviewControlsHover(tableBody.children('tr:last').find('.preview_controls'))
 		addPreviewControlsClick(tableBody.children('tr:last').find('.single-cover'))
+		tableBody.children('tr:last').find('.resultArtist').click(function (ev){
+			ev.preventDefault();
+			showTrackList($(this).data("link"));
+		});
+		tableBody.children('tr:last').find('.resultAlbum').click(function (ev){
+			ev.preventDefault();
+			showTrackListSelective($(this).data("link"));
+		});
 	}
 }
 
@@ -448,12 +455,16 @@ function showResults_table_album(albums) {
 				`<tr>
 				<td><img style="width:56px" src="${(currentResultAlbum.cover_small ? currentResultAlbum.cover_small : "img/noCover.jpg")}" class="circle" /></td>
 				<td>${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i>' : '')} ${currentResultAlbum.title}</td>
-				<td>${currentResultAlbum.artist.name}</td>
+				<td><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
 				<td>${currentResultAlbum.nb_tracks}</td>
 				<td>${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</td>
 				</tr>`);
 		generateShowTracklistSelectiveButton(currentResultAlbum.link).appendTo(tableBody.children('tr:last')).wrap('<td>');
 		generateDownloadLink(currentResultAlbum.link).appendTo(tableBody.children('tr:last')).wrap('<td>');
+		tableBody.children('tr:last').find('.resultArtist').click(function (ev){
+			ev.preventDefault();
+			showTrackList($(this).data("link"));
+		});
 	}
 	$('.tooltipped').tooltip({delay: 100});
 }
@@ -750,13 +761,21 @@ socket.on("getChartsTrackListByCountry", function (data) {
 				<td>${(i + 1)}</td>
 				<td><a href="#" class="circle ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="circle" /></a></td>
 				<td>${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '')}${currentChartTrack.title}</td>
-				<td>${currentChartTrack.artist.name}</td>
-				<td>${currentChartTrack.album.title}</td>
+				<td><span class="resultArtist resultLink" data-link="${currentChartTrack.artist.link}">${currentChartTrack.artist.name}</span></td>
+				<td><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentChartTrack.album.id}">${currentChartTrack.album.title}</span></td>
 				<td>${convertDuration(currentChartTrack.duration)}</td>
 				</tr>`);
 		generateDownloadLink(currentChartTrack.link).appendTo(chartsTableBody.children('tr:last')).wrap('<td>');
 		addPreviewControlsHover(chartsTableBody.children('tr:last').find('.preview_controls'))
 		addPreviewControlsClick(chartsTableBody.children('tr:last').find('.single-cover'))
+		chartsTableBody.children('tr:last').find('.resultArtist').click(function (ev){
+			ev.preventDefault();
+			showTrackList($(this).data("link"));
+		});
+		chartsTableBody.children('tr:last').find('.resultAlbum').click(function (ev){
+			ev.preventDefault();
+			showTrackListSelective($(this).data("link"));
+		});
 	}
 	$('#tab_charts_table_charts_tbody_loadingIndicator').addClass('hide');
 	chartsTableBody.removeClass('hide');
