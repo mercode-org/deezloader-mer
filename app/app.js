@@ -1228,9 +1228,13 @@ io.sockets.on('connection', function (socket) {
 		temp.then(bpm=>{
 		track.BPM = bpm;
 		let metadata = parseMetadata(track, ajson, totalDiskNumber, settings, parseInt(t.index), altmetadata);
-		let filename = fixName(`${metadata.artist} - ${metadata.title}`);
+		if (settings.saveFullArtists && settings.multitagSeparator != null){
+			let filename = fixName(`${metadata.artists} - ${metadata.title}`);
+		}else{
+			let filename = fixName(`${metadata.artist} - ${metadata.title}`);
+		}
 		if (settings.filename) {
-			filename = fixName(settingsRegex(metadata, settings.filename, settings.playlist));
+			filename = fixName(settingsRegex(metadata, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null));
 		}
 		let filepath = mainFolder;
 		let artistPath;
@@ -1702,10 +1706,10 @@ function initFolders() {
  * @param playlist
  * @returns {XML|string|*}
  */
-function settingsRegex(metadata, filename, playlist) {
+function settingsRegex(metadata, filename, playlist, saveFullArtists) {
 	filename = filename.replace(/%title%/g, metadata.title);
 	filename = filename.replace(/%album%/g, metadata.album);
-	filename = filename.replace(/%artist%/g, metadata.artist);
+	filename = filename.replace(/%artist%/g, (saveFullArtists ? metadata.artists : metadata.artist));
 	filename = filename.replace(/%year%/g, metadata.year);
 	filename = filename.replace(/%label%/g, metadata.publisher);
 	if(typeof metadata.trackNumber != 'undefined'){
@@ -1845,9 +1849,25 @@ function swichReleaseType(id){
 		case "1":
 			return "Single";
 		case "3":
-			return "Ep";
+			return "EP";
 		default:
 			return id;
+	}
+}
+
+function uniqueArray(origin, destination, removeDupes=true){
+	Array.from(new Set(origin)).forEach(function(x){
+		if(destination.indexOf(x) == -1)
+			destination.push(x);
+	});
+	if (removeDupes){
+		destination.forEach((name,index)=>{
+			destination.forEach((name2,index2)=>{
+				if(!(index===index2) && (name.indexOf(name2)!== -1)){
+					destination.splice(index, 1);
+				}
+			})
+		})
 	}
 }
 
@@ -1897,58 +1917,37 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 		if(track["SNG_CONTRIBUTORS"]){
 			if(track["SNG_CONTRIBUTORS"].composer){
 				metadata.composer = [];
-				Array.from(new Set(track["SNG_CONTRIBUTORS"].composer)).forEach(function(x){
-					if(metadata.composer.indexOf(x) == -1)
-						metadata.composer.push(x);
-				});
+				uniqueArray(track["SNG_CONTRIBUTORS"].composer, metadata.composer, settings.removeDupedTags)
 				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.composer = metadata.composer.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].musicpublisher){
 				metadata.musicpublisher = [];
-				Array.from(new Set(track["SNG_CONTRIBUTORS"].musicpublisher)).forEach(function(x){
-					if(metadata.musicpublisher.indexOf(x) == -1)
-						metadata.musicpublisher.push(x);
-				});
+				uniqueArray(track["SNG_CONTRIBUTORS"].musicpublisher, metadata.musicpublisher, settings.removeDupedTags)
 				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.musicpublisher = metadata.musicpublisher.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].producer){
 				metadata.producer = [];
-				Array.from(new Set(track["SNG_CONTRIBUTORS"].producer)).forEach(function(x){
-					if(metadata.producer.indexOf(x) == -1)
-						metadata.producer.push(x);
-				});
+				uniqueArray(track["SNG_CONTRIBUTORS"].producer, metadata.producer, settings.removeDupedTags)
 				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.producer = metadata.producer.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].engineer){
 				metadata.engineer = [];
-				Array.from(new Set(track["SNG_CONTRIBUTORS"].engineer)).forEach(function(x){
-					if(metadata.engineer.indexOf(x) == -1)
-						metadata.engineer.push(x);
-				});
+				uniqueArray(track["SNG_CONTRIBUTORS"].engineer, metadata.engineer, settings.removeDupedTags)
 				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.engineer = metadata.engineer.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].writer){
 				metadata.writer = [];
-				Array.from(new Set(track["SNG_CONTRIBUTORS"].writer)).forEach(function(x){
-					if(metadata.writer.indexOf(x) == -1)
-						metadata.writer.push(x);
-				});
+				uniqueArray(track["SNG_CONTRIBUTORS"].writer, metadata.writer, settings.removeDupedTags)
 				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.writer = metadata.writer.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].author){
 				metadata.author = [];
-				Array.from(new Set(track["SNG_CONTRIBUTORS"].author)).forEach(function(x){
-					if(metadata.author.indexOf(x) == -1)
-						metadata.author.push(x);
-				});
+				uniqueArray(track["SNG_CONTRIBUTORS"].author, metadata.author, settings.removeDupedTags)
 				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.author = metadata.author.join(separator);
 			}
 			if(track["SNG_CONTRIBUTORS"].mixer){
 				metadata.mixer = [];
-				Array.from(new Set(track["SNG_CONTRIBUTORS"].mixer)).forEach(function(x){
-					if(metadata.mixer.indexOf(x) == -1)
-						metadata.mixer.push(x);
-				});
+				uniqueArray(track["SNG_CONTRIBUTORS"].mixer, metadata.mixer, settings.removeDupedTags)
 				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.mixer = metadata.mixer.join(separator);
 			}
 		}
@@ -1973,10 +1972,13 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 			track['ARTISTS'].forEach(function(artist){
 				artistArray.push(artist['ART_NAME']);
 			});
-			Array.from(new Set(artistArray)).forEach(function(artist){
-				if(metadata.artists.indexOf(artist) == -1)
-					metadata.artists.push(artist);
-			});
+			uniqueArray(artistArray, metadata.artists, settings.removeDupedTags)
+			let posMainArtist = metadata.artists.indexOf(metadata.albumArtist)
+			if (posMainArtist !== -1 && posMainArtist !== 0 && settings.removeDupedTags){
+				let element = metadata.artists[posMainArtist];
+    		metadata.artists.splice(posMainArtist, 1);
+    		metadata.artists.splice(0, 0, element);
+			}
 			if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.artists = metadata.artists.join(separator);
 		}
 		if(ajson.genres && ajson.genres.data[0] && ajson.genres.data[0].name){
@@ -1985,10 +1987,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 			ajson.genres.data.forEach(function(genre){
 				genreArray.push(genre.name);
 			});
-			Array.from(new Set(genreArray)).forEach(function(genre){
-				if(metadata.genre.indexOf(genre) == -1)
-					metadata.genre.push(genre);
-			});
+			uniqueArray(genreArray, metadata.genre, false)
 			if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.genre = metadata.genre.join(separator);
 		}
 		if (track["ALB_PICTURE"]) {
