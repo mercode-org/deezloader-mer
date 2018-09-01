@@ -126,8 +126,8 @@ function createWindow () {
 app.on('ready', function(){
 	if (!app.serverMode){
 		createWindow();
+		createTray();
 	}
-	createTray()
 });
 
 // Quit when all windows are closed.
