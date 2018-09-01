@@ -1234,7 +1234,7 @@ io.sockets.on('connection', function (socket) {
 			let filename = fixName(`${metadata.artist} - ${metadata.title}`);
 		}
 		if (settings.filename) {
-			filename = fixName(settingsRegex(metadata, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null));
+			filename = fixName(settingsRegex(metadata, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize));
 		}
 		let filepath = mainFolder;
 		let artistPath;
@@ -1706,7 +1706,7 @@ function initFolders() {
  * @param playlist
  * @returns {XML|string|*}
  */
-function settingsRegex(metadata, filename, playlist, saveFullArtists) {
+function settingsRegex(metadata, filename, playlist, saveFullArtists, paddingSize) {
 	filename = filename.replace(/%title%/g, metadata.title);
 	filename = filename.replace(/%album%/g, metadata.album);
 	filename = filename.replace(/%artist%/g, (saveFullArtists ? metadata.artists : metadata.artist));
@@ -1714,7 +1714,7 @@ function settingsRegex(metadata, filename, playlist, saveFullArtists) {
 	filename = filename.replace(/%label%/g, metadata.publisher);
 	if(typeof metadata.trackNumber != 'undefined'){
 		if(configFile.userDefined.padtrck){
-			 filename = filename.replace(/%number%/g, pad(metadata.trackNumber, metadata.trackTotal));
+			 filename = filename.replace(/%number%/g, pad(metadata.trackNumber, (valueOf(paddingSize)>0 ? valueOf(paddingSize) : metadata.trackTotal)));
 		}else{
 			filename = filename.replace(/%number%/g, metadata.trackNumber);
 		}

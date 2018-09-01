@@ -225,6 +225,7 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		logErrors: $('#modal_settings_cbox_logErrors').is(':checked'),
 		logSearched: $('#modal_settings_cbox_logSearched').is(':checked'),
 		queueConcurrency: parseInt($('#modal_settings_number_queueConcurrency').val()),
+		paddingSize: $('#modal_settings_number_paddingSize').val(),
 		multitagSeparator: $('#modal_settings_select_multitagSeparator').val(),
 		maxBitrate: $('#modal_settings_select_maxBitrate').val(),
 		PNGcovers: $('#modal_settings_cbox_PNGcovers').is(':checked'),
@@ -324,6 +325,7 @@ function fillSettingsModal(settings) {
 	$('#modal_settings_cbox_logErrors').prop('checked', settings.logErrors);
 	$('#modal_settings_cbox_logSearched').prop('checked', settings.logSearched);
 	$('#modal_settings_number_queueConcurrency').val(settings.queueConcurrency);
+	$('#modal_settings_number_paddingSize').val(settings.paddingSize);
 	$('#modal_settings_select_multitagSeparator').val(settings.multitagSeparator).formSelect();
 	$('#modal_settings_select_maxBitrate').val(settings.maxBitrate).formSelect();
 	$('#modal_settings_cbox_PNGcovers').prop('checked', settings.PNGcovers);

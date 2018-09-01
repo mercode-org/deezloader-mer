@@ -30,6 +30,7 @@
 		"PNGcovers": false,
 		"removeAlbumVersion": false,
 		"dateFormat": "0",
+		"paddingSize": "0",
 		"dateFormatYear": "4",
 		"fallbackBitrate": true,
 		"saveFullArtists": false,
