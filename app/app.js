@@ -1721,7 +1721,6 @@ function settingsRegex(metadata, filename, playlist, saveFullArtists, paddingSiz
 	} else {
 		filename = filename.replace(/%number%/g, '');
 	}
-	console.log(metadata.explicit)
 	filename = filename.replace(/%explicit%/g, (metadata.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : ""));
 	return filename.trim();
 }
@@ -1742,7 +1741,7 @@ function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, pu
 		foldername = foldername.replace(/%type%/g, "");
 	}
 	foldername = foldername.replace(/%label%/g, publisher);
-	foldername = foldername.replace(/%explicit%/g, (explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : ""));
+	foldername = foldername.replace(/%explicit%/g, (explicit==="1" ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : ""));
 	return foldername.trim();
 }
 
