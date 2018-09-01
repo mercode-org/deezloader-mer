@@ -1714,14 +1714,15 @@ function settingsRegex(metadata, filename, playlist, saveFullArtists, paddingSiz
 	filename = filename.replace(/%label%/g, metadata.publisher);
 	if(typeof metadata.trackNumber != 'undefined'){
 		if(configFile.userDefined.padtrck){
-			 filename = filename.replace(/%number%/g, pad(metadata.trackNumber, (valueOf(paddingSize)>0 ? valueOf(paddingSize) : metadata.trackTotal)));
+			 filename = filename.replace(/%number%/g, pad(metadata.trackNumber, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : metadata.trackTotal)));
 		}else{
 			filename = filename.replace(/%number%/g, metadata.trackNumber);
 		}
 	} else {
 		filename = filename.replace(/%number%/g, '');
 	}
-	filename = filename.replace(/%explicit%/g, (metadata.explicit ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : ""));
+	console.log(metadata.explicit)
+	filename = filename.replace(/%explicit%/g, (metadata.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : ""));
 	return filename.trim();
 }
 
