@@ -99,15 +99,16 @@ function aldecrypt(encoded) {
 io.sockets.on('connection', function (socket) {
 	var curVersion = package.version.replace(/\./g, '');
 	request({
-		url: "https://notabug.org/RemixDevs/DeezloaderRemix/raw/master/update",
-		json:true
+		url: "https://notabug.org/RemixDevs/DeezloaderRemix/raw/master/update.json",
+		json: true
 	}, function(error, response, body) {
 		if (!error && response.statusCode === 200) {
 			logger.info("Checking for updates")
+			body = JSON.parse(body)
 			logger.debug(body.version + " " +curVersion)
 			if (parseInt(body.version) > parseInt(curVersion)) {
 				logger.info("\n\nUpdate Available\n\n");
-				socket.emit("message", {title: "Update Available", msg: body.changelog});
+				socket.emit("message", {title: `New Version Aviable`, msg: body.changelog});
 			}
 		} else {
 			logger.error(error + " " + response.statusCode);
