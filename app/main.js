@@ -20,6 +20,20 @@ const mainWindowState = new WindowStateManager('mainWindow', {
 	defaultHeight: 800
 });
 
+var shouldQuit = app.makeSingleInstance(function(commandLine, workingDirectory) {
+  // Someone tried to run a second instance, we should focus our window.
+  if (mainWindow) {
+    if (mainWindow.isMinimized()) mainWindow.restore();
+		if (!mainWindow.isVisible()) mainWindow.show();
+    mainWindow.focus();
+  }
+});
+
+if (shouldQuit) {
+  app.quit();
+  return;
+}
+
 app.isQuiting = false;
 
 app.serverMode = (process.argv.indexOf("-s")>-1 || process.argv.indexOf("--server")>-1);
