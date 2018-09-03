@@ -899,7 +899,8 @@ io.sockets.on('connection', function (socket) {
 			.replace(/\(feat[\.]? /g, " ")
 			.replace(/\(ft[\.]? /g, " ")
 			.replace(/\&/g, "")
-			.replace(/–/g, "-");
+			.replace(/–/g, "-")
+			.replace(/—/g, "-");
 
 		Deezer.search(encodeURIComponent(data.text), data.type, function (searchObject, err) {
 			try {
