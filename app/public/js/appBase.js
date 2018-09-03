@@ -80,7 +80,6 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 					let newValue = dialog.showOpenDialog({
 						properties: ['openDirectory']
 					})
-					console.log(newValue)
 					if (typeof newValue !== 'undefined'){
 						$(this).val(newValue);
 					}
@@ -89,6 +88,7 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 				$("#openDownloadsFolder").parent().hide();
 				$("#cancellAllTable").parent().removeClass("m4").addClass("m6");
 				$("#clearTracksTable").parent().removeClass("m4").addClass("m6");
+				$("#modal_settings_cbox_minimizeToTray").parent().parent().hide()
 			}
 		}
 	};
