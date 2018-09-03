@@ -1,5 +1,4 @@
 {
-  "version":"414",
-  "title": "Version 4.1.4 is now here!",
+  "version":"4.1.4",
   "changelog":"- Fixed Day Month position in DATE tag\r\n- Fixed %explicit% in name templates\r\n- Added default ID3 DATE tag format\r\n- Fixed artist download\r\n- Fixed FLAC Problems (not all of them)\r\n- Cleaned up some files\r\n- Added Update Notification\r\n- Improved Privacy in Server Mode\r\n- Removed ReplayGain as default setting\r\n- Added minimize to system tray\r\n- Added multitag separator for FLACS\r\n- Added hyperlinks to artist & album\r\n- Added option to remove duplicates in the artist tag\r\n- Added option to save the track with the full list of artist in the filename\r\n- Added option to overwrite padding size"
 }

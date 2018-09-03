@@ -97,18 +97,19 @@ function aldecrypt(encoded) {
 
 // START sockets clusterfuck
 io.sockets.on('connection', function (socket) {
-	var curVersion = package.version.replace(/\./g, '');
+	var currentVersion = {}
+	[currentVersion.MAJOR, currentVersion.MINOR, currentVersion.PATCH] = package.version.split(".");
 	request({
 		url: "https://notabug.org/RemixDevs/DeezloaderRemix/raw/master/update.json",
 		json: true
 	}, function(error, response, body) {
 		if (!error && response.statusCode === 200) {
 			logger.info("Checking for updates")
-			body = JSON.parse(body)
-			logger.debug(body.version + " " +curVersion)
-			if (parseInt(body.version) > parseInt(curVersion)) {
-				logger.info("\n\nUpdate Available\n\n");
-				socket.emit("message", {title: `New Version Aviable`, msg: body.changelog});
+			var lastVersion = {}
+			[lastVersion.MAJOR, lastVersion.MINOR, lastVersion.PATCH] = body.version.split(".");
+			if (parseInt(lastVersion.MAJOR) > parseInt(currentVersion.MAJOR) || parseInt(lastVersion.MINOR) > parseInt(currentVersion.MINOR) || parseInt(lastVersion.PATCH) > parseInt(currentVersion.PATCH)) {
+				logger.info("Update Available");
+				socket.emit("message", {title: `Version ${lastVersion.MAJOR}.${lastVersion.MINOR}.${lastVersion.PATCH} is aviable!`, msg: body.changelog});
 			}
 		} else {
 			logger.error(error + " " + response.statusCode);
