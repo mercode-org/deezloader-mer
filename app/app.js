@@ -97,14 +97,16 @@ function aldecrypt(encoded) {
 
 // START sockets clusterfuck
 io.sockets.on('connection', function (socket) {
-	var curVersion = package.version.replace('.', '');
+	var curVersion = package.version.replace(/\./g, '');
 	request({
 		url: "https://notabug.org/RemixDevs/DeezloaderRemix/raw/master/update",
-		json: true
+		json:true
 	}, function(error, response, body) {
 		if (!error && response.statusCode === 200) {
-			if ((parseInt(body.version) > parseInt(curVersion.replace('.', '')))) {
-				logger.logs("\n\nUpdate Available\n\n");
+			logger.info("Checking for updates")
+			logger.debug(body.version + " " +curVersion)
+			if (parseInt(body.version) > parseInt(curVersion)) {
+				logger.info("\n\nUpdate Available\n\n");
 				socket.emit("message", {title: "Update Available", msg: body.changelog});
 			}
 		} else {
