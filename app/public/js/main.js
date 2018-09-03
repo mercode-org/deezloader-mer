@@ -172,6 +172,10 @@ $(document).ready(function () {
 	$('input[name=searchMode][type=radio]').change(()=>{
 		$('#tab_search_form_search').submit();
 	})
+
+	$('#download_all_tracks_selective, #download_all_tracks').click(function(){
+		addToQueue($(this).attr("data-link"));
+	})
 });
 
 // Load settings
@@ -532,6 +536,8 @@ var trackListSelectiveModalApp = new Vue({
 	el: '#modal_trackListSelective',
 	data: {
 		title: null,
+		type: null,
+		link: null,
 		head: null,
 		body: []
 	}
@@ -541,6 +547,8 @@ var trackListModalApp = new Vue({
 	el: '#modal_trackList',
 	data: {
 		title: null,
+		type: null,
+		link: null,
 		head: null,
 		body: []
 	}
@@ -599,6 +607,8 @@ socket.on("getTrackList", function (data) {
 		$(tableBody).html('');
 		//############################################
 		if (data.reqType == 'artist') {
+			trackListModalApp.type = data.reqType;
+			trackListModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListModalApp.title = 'Album List';
 			trackListModalApp.head = [
 				{title: '#'},
@@ -624,6 +634,8 @@ socket.on("getTrackList", function (data) {
 				showTrackListSelective($(this).data('link'), true);
 			});
 		} else if(data.reqType == 'playlist') {
+			trackListSelectiveModalApp.type = data.reqType;
+			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListSelectiveModalApp.title = 'Playlist';
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},
@@ -654,6 +666,8 @@ socket.on("getTrackList", function (data) {
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'));
 			}
 		} else if(data.reqType == 'album') {
+			trackListSelectiveModalApp.type = data.reqType;
+			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListSelectiveModalApp.title = 'Tracklist';
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},
@@ -693,7 +707,31 @@ socket.on("getTrackList", function (data) {
 				);
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'));
 			}
+		} else if(data.reqType == 'spotifyplaylist') {
+			trackListModalApp.type = "Spotify Playlist";
+			trackListModalApp.link = data.id;
+			trackListModalApp.title = 'Tracklist';
+			trackListModalApp.head = [
+				{title: '<i class="material-icons">music_note</i>'},
+				{title: '#'},
+				{title: 'Song'},
+				{title: 'Artist'},
+				{title: '<i class="material-icons">timer</i>'}
+			];
+			for (var i = 0; i < trackList.length; i++) {
+				$(tableBody).append(
+					`<tr>
+					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
+					<td>${(i + 1)}</td>
+					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">error_outline</i> ' : '')}${trackList[i].title}</td>
+					<td>${trackList[i].artist.name}</td>
+					<td>${convertDuration(trackList[i].duration)}</td>
+					</tr>`
+				);
+				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'));
+			}
 		} else {
+			trackListModalApp.type = null;
 			trackListModalApp.title = 'Tracklist';
 			trackListModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},
