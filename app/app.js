@@ -103,8 +103,6 @@ io.sockets.on('connection', function (socket) {
 		json: true
 	}, function(error, response, body) {
 		if (!error && response.statusCode === 200) {
-			logger.debug("Got response: " + JSON.stringify(body));
-			logger.debug("Current version: " + curVersion.replace('.', '') + "\nLatest Version: " + body.version);
 			if ((parseInt(body.version) > parseInt(curVersion.replace('.', '')))) {
 				logger.logs("\n\nUpdate Available\n\n");
 				socket.emit("message", {title: "Update Available", msg: body.changelog});
