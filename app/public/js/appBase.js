@@ -76,9 +76,14 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 			$('#application_version_logo').text(version.replace(/\.[^/.]+$/, ""));
 			if(typeof require !== "undefined"){
 				$('#modal_settings_input_downloadTracksLocation').on('click', function () {
-					$(this).val(dialog.showOpenDialog({
+					let originalValue = $(this).val();
+					let newValue = dialog.showOpenDialog({
 						properties: ['openDirectory']
-					}));
+					})
+					console.log(newValue)
+					if (typeof newValue !== 'undefined'){
+						$(this).val(newValue);
+					}
 				});
 			}else{
 				$("#openDownloadsFolder").parent().hide();
