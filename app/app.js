@@ -97,19 +97,17 @@ function aldecrypt(encoded) {
 
 // START sockets clusterfuck
 io.sockets.on('connection', function (socket) {
-	var currentVersion = {}
-	[currentVersion.MAJOR, currentVersion.MINOR, currentVersion.PATCH] = package.version.split(".");
 	request({
 		url: "https://notabug.org/RemixDevs/DeezloaderRemix/raw/master/update.json",
 		json: true
 	}, function(error, response, body) {
 		if (!error && response.statusCode === 200) {
 			logger.info("Checking for updates")
-			var lastVersion = {}
-			[lastVersion.MAJOR, lastVersion.MINOR, lastVersion.PATCH] = body.version.split(".");
-			if (parseInt(lastVersion.MAJOR) > parseInt(currentVersion.MAJOR) || parseInt(lastVersion.MINOR) > parseInt(currentVersion.MINOR) || parseInt(lastVersion.PATCH) > parseInt(currentVersion.PATCH)) {
+			let [currentVersion_MAJOR, currentVersion_MINOR, currentVersion_PATCH] = package.version.split(".");
+			let [lastVersion_MAJOR, lastVersion_MINOR, lastVersion_PATCH] = body.version.split(".");
+			if (parseInt(lastVersion_MAJOR) > parseInt(currentVersion_MAJOR) || parseInt(lastVersion_MINOR) > parseInt(currentVersion_MINOR) || parseInt(lastVersion_PATCH) > parseInt(currentVersion_PATCH)) {
 				logger.info("Update Available");
-				socket.emit("message", {title: `Version ${lastVersion.MAJOR}.${lastVersion.MINOR}.${lastVersion.PATCH} is aviable!`, msg: body.changelog});
+				socket.emit("message", {title: `Version ${lastVersion_MAJOR}.${lastVersion_MINOR}.${lastVersion_PATCH} is available!`, msg: body.changelog});
 			}
 		} else {
 			logger.error(error + " " + response.statusCode);
