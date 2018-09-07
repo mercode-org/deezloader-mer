@@ -24,7 +24,7 @@ With this app you can download songs, playlists and albums directly from Deezers
 ## Download
 All compiled downloads are in a private Telegram Channel, the link is in this repo. It's """hidden"" for dumb-people protection.<br>
 Here are listed the MD5 chechsums:<br>
-<br>
+
 | Filename                             | Checksum MD5                     |
 | ------------------------------------ | -------------------------------- |
 | Deezloader Remix 4.1.4 Setup.exe     | 4C34CDD6770D94927D86FB6D7C86C4F0 |
