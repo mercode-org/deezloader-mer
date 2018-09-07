@@ -21,6 +21,20 @@ With this app you can download songs, playlists and albums directly from Deezers
 * Server mode to launch the app headless
 * MOAR Optimizations
 
+## Download
+All compiled downloads are in a private Telegram Channel, the link is in this repo. It's """hidden"" for dumb-people protection.<br>
+Here are listed the MD5 chechsums:<br>
+<br>
+| Filename                             | Checksum MD5                     |
+| ------------------------------------ | -------------------------------- |
+| Deezloader Remix 4.1.4 Setup.exe     | 4C34CDD6770D94927D86FB6D7C86C4F0 |
+| Deezloader Remix 4.1.4.exe           | 032F3FC78564751D22F09B7B2021345F |
+| Deezloader Remix 4.1.4 Setup x32.exe | BE9BFF7675EEB2373B210BB42D16E7FB |
+| Deezloader Remix 4.1.4 x32.exe       | 5094FFDFF1B2C0423B3B530EEAF9A1C2 |
+| deezloader-rmx-4.1.4-x86_64.AppImage | 0454E49014121B9F58629CEDE43FCB1C |
+| deezloader-rmx-4.1.4-i386.AppImage   | F8729870FA5CAFF3C499D466AC951538 |
+| Deezloader Remix-4.1.4.dmg           | 570547B51B2AD8D458F2EA4348E0EA05 |
+
 ## Build
 If you want to buid it yourself you will need Node.js installed and npm or yarn.<br/>
 There is a missing file containing the clientSecret e clientId of my SpotifyApp (for spotify integration).<br/>
