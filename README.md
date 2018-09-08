@@ -22,8 +22,8 @@ With this app you can download songs, playlists and albums directly from Deezers
 * MOAR Optimizations
 
 ## Download
-All compiled downloads are in a private Telegram Channel, the link is in this repo. It's """hidden"" for dumb-people protection.<br>
-Here are listed the MD5 chechsums:<br>
+All compiled downloads are in a private Telegram Channel, the link is in this repo. It's """hidden""" for dumb-people protection.<br>
+Here are listed the MD5 chechsums (Not related to where the download link is):<br>
 
 | Filename                             | Checksum MD5                     |
 | ------------------------------------ | -------------------------------- |
