@@ -13,7 +13,7 @@
 		"electron-builder": "latest"
 	},
 	"scripts": {
-		"dist:win32": "electron-builder -w --ia32 --config.nsis.artifactName=\"${productName} ${version} Setup-x32.${ext}\" --config.portable.artifactName=\"${productName} ${version} x32.${ext}\"",
+		"dist:win32": "electron-builder -w --ia32 --config.nsis.artifactName=\"${productName} ${version} Setup x32.${ext}\" --config.portable.artifactName=\"${productName} ${version} x32.${ext}\"",
 		"dist:win64": "electron-builder -w --x64",
 		"dist:linux": "electron-builder -l",
 		"dist:macOS": "electron-builder -m",
