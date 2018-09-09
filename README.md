@@ -24,18 +24,18 @@ With this app you can download songs, playlists and albums directly from Deezers
 ## Download
 All compiled downloads are in a private Telegram Channel.<br>
 This might help you out:<br>
-`LS0tREVFWkVSIEtFWSBOTyBCTE9XLS0tCkQxODM3MDEyRTlDRkY3M0YyMzdCNjE3MDlERTVDRjI5REFFNzlEMjc5MjUyMURDMzMwRTVEQzc5QUJCMTA5NDM5QUMyRDJGRTZDNjk2OUVBNkQ2NjhEQkMxOEZCQkMyQjQ1QjBEMDIxRTc4MkQzQ0M4MDE3NjZFNEI2NEMzMjE3QjI3RDZGNDRFQjAwOTRDQzI4NENDMDFFN0FGMzIwQkQyRTMwQ0M5RjU2OUFDODdFQ0VENzcyNzBBQjcwNzEzNg==`<br>
-If you find the binaries, here are listed the MD5 chechsums (So you can be sure):<br>
+`LS0tVVNFIERFRVpFUiBLRVkgTk8gQkxPVy0tLQpDNTlEOTA4RkY1MDA3Q0NCNDk4OTIxM0M4QjM2RkM0MTg1NjFEMERFNTkyNEJCNkQwMTE0QzlFRjBCMjlFQUY3OUFDMkQyRkU2QzY5NjlFQTZENjY4REJDMThGQkJDMkI0NUIwRDAyMUU3ODJEM0NDODAxNzY2RTRCNjRDMzIxN0IyN0Q2RjQ0RUIwMDk0Q0MyODRDQzAxRTdBRjMyMEJEMkUzMENDOUY1NjlBQzg3RUNFRDc3MjcwQUI3MDcxMzY=`<br>
+If you find the binaries, here are listed the MD5 chechsums (so you can be sure):<br>
 
 | Filename                             | Checksum MD5                     |
 | ------------------------------------ | -------------------------------- |
-| Deezloader Remix 4.1.4 Setup.exe     | 4C34CDD6770D94927D86FB6D7C86C4F0 |
-| Deezloader Remix 4.1.4.exe           | 032F3FC78564751D22F09B7B2021345F |
-| Deezloader Remix 4.1.4 Setup x32.exe | BE9BFF7675EEB2373B210BB42D16E7FB |
-| Deezloader Remix 4.1.4 x32.exe       | 5094FFDFF1B2C0423B3B530EEAF9A1C2 |
-| deezloader-rmx-4.1.4-x86_64.AppImage | 0454E49014121B9F58629CEDE43FCB1C |
-| deezloader-rmx-4.1.4-i386.AppImage   | F8729870FA5CAFF3C499D466AC951538 |
-| Deezloader Remix-4.1.4.dmg           | 570547B51B2AD8D458F2EA4348E0EA05 |
+| Deezloader Remix 4.1.5 Setup.exe     | 346B1EDFB23E973BFF5BD90C7CE7AAB3 |
+| Deezloader Remix 4.1.5.exe           | C4781220FBB53C4FFA0985B8E10183C5 |
+| Deezloader Remix 4.1.5 Setup x32.exe | 4F1537DC8C30ADF1AC24302FEF5DBACC |
+| Deezloader Remix 4.1.5 x32.exe       | F49B242C9A35AEB2152F461E842E2328 |
+| deezloader-rmx-4.1.5-x86_64.AppImage | 7E990191BB5EE93EE9CBE441F804D4C8 |
+| deezloader-rmx-4.1.5-i386.AppImage   | CB7FD0412B3F2AB3A1B01E327CBF4DCB |
+| Deezloader Remix-4.1.5.dmg           | E1E0ADA65815B2E4A05F233BFB0186EF |
 
 ## Build
 If you want to buid it yourself you will need Node.js installed and npm or yarn.<br/>
