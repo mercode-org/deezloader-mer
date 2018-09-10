@@ -3,7 +3,7 @@
 Deezloader Remix is an improved version of Deezloader based on the Reborn branch.<br/>
 With this app you can download songs, playlists and albums directly from Deezers Server in a single and well packaged app.
 
-![](https://i.imgur.com/vQdbtbx.png)
+![](https://i.imgur.com/7Qbvu1f.png)
 ## Features
 ### Base Features
 * Download MP3s and FLACs directly from Deezer Servers
@@ -24,7 +24,7 @@ With this app you can download songs, playlists and albums directly from Deezers
 ## Download
 All compiled downloads are in a private Telegram Channel.<br>
 This might help you out:<br>
-`LS0tVVNFIERFRVpFUiBLRVkgTk8gQkxPVy0tLQpDNTlEOTA4RkY1MDA3Q0NCNDk4OTIxM0M4QjM2RkM0MTg1NjFEMERFNTkyNEJCNkQwMTE0QzlFRjBCMjlFQUY3OUFDMkQyRkU2QzY5NjlFQTZENjY4REJDMThGQkJDMkI0NUIwRDAyMUU3ODJEM0NDODAxNzY2RTRCNjRDMzIxN0IyN0Q2RjQ0RUIwMDk0Q0MyODRDQzAxRTdBRjMyMEJEMkUzMENDOUY1NjlBQzg3RUNFRDc3MjcwQUI3MDcxMzY=`<br>
+`NzZBNTU1NTQyM0E1MjM3NDg0NTY5NzEzNTUzNTI3MzM1NDE0MTQxNDE0MTRGMjQ3MTY4NjM2RTY5NkY2QTZGMjU2RDZFMjQ3RjJGMkEzMzcwNzQ3NDc4Ng==`<br>
 If you find the binaries, here are listed the MD5 chechsums (so you can be sure):<br>
 
 | Filename                             | Checksum MD5                     |
@@ -52,5 +52,3 @@ Then to build it you just need to run `npm install` or `yarn install` and after 
 I am not responsible for the usage of this program by other people.<br/>
 I do not recommend you doing this illegally or against Deezer's terms of service.<br/>
 This project is licensed under [GNU GPL v3](https://www.gnu.org/licenses/gpl-3.0.html)
-
-The password is secret.
