@@ -24,7 +24,7 @@ With this app you can download songs, playlists and albums directly from Deezers
 ## Download
 All compiled downloads are in a private Telegram Channel.<br>
 This might help you out:<br>
-`NzZBNTU1NTQyMTRCZXhaTW9QMWdxdlNiTFpTZllpZ2pVdmZjWGtyb1NjS0YyNDcxNjg2MzZFNjk2RjZBNkYyNTZENkUyNDdGMkYyQTMzNzA3NDc0Nzg2==`<br>
+`NzZBNTU1NTQyM0E1MjM3NDg0NTY5NzEzNTUzNTI3MzM1NDE0MTQxNDE0MTRGMjQ3MTY4NjM2RTY5NkY2QTZGMjU2RDZFMjQ3RjJGMkEzMzcwNzQ3NDc4Ng==`<br>
 If you find the binaries, here are listed the MD5 chechsums (so you can be sure):<br>
 
 | Filename                             | Checksum MD5                     |
