@@ -22,10 +22,10 @@ With this app you can download songs, playlists and albums directly from Deezers
 * MOAR Optimizations
 
 ## Download
-All compiled downloads are in a private Telegram Channel.<br>
-This might help you out:<br>
-`NzZBNTU1NTQyM0E1MjM3NDg0NTY5NzEzNTUzNTI3MzM1NDE0MTQxNDE0MTRGMjQ3MTY4NjM2RTY5NkY2QTZGMjU2RDZFMjQ3RjJGMkEzMzcwNzQ3NDc4Ng==`<br>
-If you find the binaries, here are listed the MD5 chechsums (so you can be sure):<br>
+All compiled downloads are on Telegram.<br>
+@DeezloaderRemix<br>
+@DeezloaderRMX<br>
+Here are listed the MD5 chechsums (so you can be sure the files were not tampered):<br>
 
 | Filename                             | Checksum MD5                     |
 | ------------------------------------ | -------------------------------- |
@@ -35,7 +35,7 @@ If you find the binaries, here are listed the MD5 chechsums (so you can be sure)
 | Deezloader Remix 4.1.5 x32.exe       | F49B242C9A35AEB2152F461E842E2328 |
 | deezloader-rmx-4.1.5-x86_64.AppImage | 7E990191BB5EE93EE9CBE441F804D4C8 |
 | deezloader-rmx-4.1.5-i386.AppImage   | CB7FD0412B3F2AB3A1B01E327CBF4DCB |
-| Deezloader Remix-4.1.5.dmg           | E1E0ADA65815B2E4A05F233BFB0186EF |
+| Deezloader Remix-4.1.5.dmg           | 7F2EA0F5BDCA174D0005055023BF29B3 |
 
 ## Build
 If you want to buid it yourself you will need Node.js installed and npm or yarn.<br/>
