@@ -355,7 +355,7 @@ io.sockets.on('connection', function (socket) {
 	socket.on("downloadspotifyplaylist", function (data) {
 		spotifyApi.clientCredentialsGrant().then(function(creds) {
 			spotifyApi.setAccessToken(creds.body['access_token']);
-			return spotifyApi.getPlaylist(data.settings.currentSpotifyUser, data.id, {fields: "id,name,owner,images,tracks(total,items(track.artists,track.name,track.album))"})
+			return spotifyApi.getPlaylist(data.id, {fields: "id,name,owner,images,tracks(total,items(track.artists,track.name,track.album))"})
 		}).then(function(resp) {
 			let queueId = "id" + Math.random().toString(36).substring(2);
 			let _playlist = {
@@ -635,7 +635,7 @@ io.sockets.on('connection', function (socket) {
 				if (downloading.size>100){
 					for (let offset = 1; offset<=numPages; offset++){
 						pages.push(new Promise(function(resolvePage) {
-							spotifyApi.getPlaylistTracks(downloading.settings.currentSpotifyUser, downloading.id, {fields: "items(track.artists,track.name,track.album)", offset: offset*100}).then(function(resp) {
+							spotifyApi.getPlaylistTracks(downloading.id, {fields: "items(track.artists,track.name,track.album)", offset: offset*100}).then(function(resp) {
 								resp.body['items'].forEach((t, index) => {
 									downloading.playlistContent[(offset*100)+index] = new Promise(function(resolve, reject) {
 										Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
@@ -925,13 +925,9 @@ io.sockets.on('connection', function (socket) {
 				socket.emit("getTrackList", {response: response, id: data.id, reqType: data.type});
 			});
 		}else if(data.type == "spotifyplaylist"){
-			spotyUser = data.id.slice(data.id.indexOf("user:")+5);
-			spotyUser = spotyUser.substring(0, spotyUser.indexOf(":"));
-			playlistID = data.id.slice(data.id.indexOf("playlist:")+9);
-
 			spotifyApi.clientCredentialsGrant().then(function(creds) {
 				spotifyApi.setAccessToken(creds.body['access_token']);
-				return spotifyApi.getPlaylistTracks(spotyUser, playlistID, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total"})
+				return spotifyApi.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total"})
 			}).then(function(resp) {
 				numPages=Math.floor((resp.body["total"]-1)/100);
 				let pages = []
@@ -950,7 +946,7 @@ io.sockets.on('connection', function (socket) {
 				if (resp.body["total"]>100){
 					for (let offset = 1; offset<=numPages; offset++){
 						pages.push(new Promise(function(resolvePage) {
-							spotifyApi.getPlaylistTracks(spotyUser, playlistID, {fields: "items(track(artists,name,duration_ms,preview_url,explicit))", offset: offset*100}).then(function(resp){
+							spotifyApi.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit))", offset: offset*100}).then(function(resp){
 								resp.body['items'].forEach((t, index) => {
 									response[index+offset*100]={
 										explicit_lyrics: t.track.explicit,
@@ -970,7 +966,7 @@ io.sockets.on('connection', function (socket) {
 				Promise.all(pages).then((val)=>{
 					socket.emit("getTrackList", {response: {'data': response}, id: data.id, reqType: data.type});
 				})
-			});
+			})
 		}else{
 			let reqType = data.type.charAt(0).toUpperCase() + data.type.slice(1);
 			Deezer["get" + reqType + "Tracks"](data.id, function (response, err) {

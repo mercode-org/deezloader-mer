@@ -867,7 +867,7 @@ $('#tab_url_form_url').submit(function (ev) {
 			url = url.substring(0, url.indexOf("?"));
 		}
 		if (url.indexOf('open.spotify.com/') >= 0 ||  url.indexOf('spotify:') >= 0){
-			if (url.indexOf('user') < 0 || url.indexOf('playlist') < 0){
+			if (url.indexOf('playlist') < 0){
 				message('Playlist not found', 'Deezloader for now can only download Spotify playlists.');
 				return false;
 			}
@@ -879,10 +879,6 @@ $('#tab_url_form_url').submit(function (ev) {
 //############################################TAB_DOWNLOADS###########################################\\
 function addToQueue(url) {
 	var type = getTypeFromLink(url), id = getIDFromLink(url);
-	if (type == 'spotifyplaylist'){
-		[user, id] = getPlayUserFromURI(url)
-		userSettings.currentSpotifyUser = user;
-	}
 	if (type == 'track') {
 		userSettings.filename = userSettings.trackNameTemplate;
 		userSettings.foldername = userSettings.albumNameTemplate;
@@ -1039,36 +1035,18 @@ function quoteattr(s, preserveCR) {
     .replace(/[\r\n]/g, preserveCR);
     ;
 }
-/**
- * Given a spotify playlist URL or URI it returns the username of the owner of the playlist and the ID of the playlist
- * @param url URL or URI
- * @return string[] Array containing user and playlist id
- */
-function getPlayUserFromURI(url){
-	var spotyUser, playlistID;
-	if ((url.startsWith("http") && url.indexOf('open.spotify.com/') >= 0)){
-		if (url.indexOf('user') < 0 || url.indexOf('playlist') < 0){
-			message('Playlist not found', 'The URL seems to be wrong. Please check it and try it again.');
-			return [false,false];
-		}
-		if (url.indexOf('?') > -1) {
-			url = url.substring(0, url.indexOf("?"));
-		}
-		spotyUser = url.slice(url.indexOf("/user/")+6);
-		spotyUser = spotyUser.substring(0, spotyUser.indexOf("/"));
-		playlistID = url.slice(url.indexOf("/playlist/")+10);
-	} else if (url.startsWith("spotify:")){
-		spotyUser = url.slice(url.indexOf("user:")+5);
-		spotyUser = spotyUser.substring(0, spotyUser.indexOf(":"));
-		playlistID = url.slice(url.indexOf("playlist:")+9);
-	} else {
-		return [false,false];
-	}
-	return [spotyUser, playlistID]
-}
 
 function getIDFromLink(link) {
-	return link.substring(link.lastIndexOf("/") + 1);
+	if (link.indexOf('?') > -1) {
+		link = link.substring(0, link.indexOf("?"))
+	}
+	if ((link.startsWith("http") && link.indexOf('open.spotify.com/') >= 0)){
+		return link.slice(link.indexOf("/playlist/")+10)
+	} else if (link.startsWith("spotify:")){
+		return link.slice(link.indexOf("playlist:")+9)
+	} else {
+		return link.substring(link.lastIndexOf("/") + 1);
+	}
 }
 
 function getTypeFromLink(link) {

@@ -18,6 +18,6 @@
 		"request": "2.87.0",
 		"requestretry": "latest",
 		"socket.io": "latest",
-		"spotify-web-api-node": "latest"
+		"spotify-web-api-node": "4.0.0"
 	}
 }
