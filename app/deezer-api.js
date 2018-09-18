@@ -146,13 +146,13 @@ Deezer.prototype.getArtist = function(id, callback) {
 }
 
 Deezer.prototype.getPlaylistTracks = function(id, callback) {
-	getJSON(`https://api.deezer.com/playlist/${id}/tracks?limit=-1`, function(res, err){
+	getJSON("https://api.deezer.com/playlist/" + id + "/tracks?limit=-1", function(res, err){
 		callback(res, err);
 	});
 }
 
 Deezer.prototype.getAlbumTracks = function(id, callback) {
-	getJSON(`https://api.deezer.com/album/${id}/tracks?limit=-1`, function(res, err){
+	getJSON("https://api.deezer.com/album/" + id + "tracks?limit=-1", function(res, err){
 		callback(res, err);
 	});
 }
