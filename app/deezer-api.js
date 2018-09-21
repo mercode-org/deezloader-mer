@@ -152,7 +152,7 @@ Deezer.prototype.getPlaylistTracks = function(id, callback) {
 }
 
 Deezer.prototype.getAlbumTracks = function(id, callback) {
-	getJSON("https://api.deezer.com/album/" + id + "tracks?limit=-1", function(res, err){
+	getJSON("https://api.deezer.com/album/" + id + "/tracks?limit=-1", function(res, err){
 		callback(res, err);
 	});
 }
