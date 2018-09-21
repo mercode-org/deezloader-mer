@@ -71,21 +71,21 @@ var ekey = "62I9smDurjvfOdn2JhUdi99yeoAhxikw";
 
 function alencrypt(input) {
 	let iv = crypto.randomBytes(16);
-	let data = new Buffer(input).toString('binary');
-	key = new Buffer(ekey, "utf8");
+	let data = Buffer.from(input).toString('binary');
+	key = Buffer.from(ekey, "utf8");
 	let cipher = crypto.createCipheriv('aes-256-cbc', key, iv);
 	let encrypted;
 	encrypted =  cipher.update(data, 'utf8', 'binary') +  cipher.final('binary');
-	let encoded = new Buffer(iv, 'binary').toString('hex') + new Buffer(encrypted, 'binary').toString('hex');
+	let encoded = Buffer.from(iv, 'binary').toString('hex') + Buffer.from(encrypted, 'binary').toString('hex');
 
 	return encoded;
 }
 
 function aldecrypt(encoded) {
-	let combined = new Buffer(encoded, 'hex');
-	key = new Buffer(ekey, "utf8");
+	let combined = Buffer.from(encoded, 'hex');
+	key = Buffer.from(ekey, "utf8");
 	// Create iv
-	let iv = new Buffer(16);
+	let iv = Buffer.alloc(16);
 	combined.copy(iv, 0, 0, 16);
 	edata = combined.slice(16).toString('binary');
 	// Decipher encrypted data

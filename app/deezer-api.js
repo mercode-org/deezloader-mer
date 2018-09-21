@@ -472,10 +472,10 @@ Deezer.prototype.hasTrackAlternative = function(id, callback) {
 Deezer.prototype.getDownloadUrl = function(md5Origin, id, format, mediaVersion) {
 	var urlPart = md5Origin + "¤" + format + "¤" + id + "¤" + mediaVersion;
 	var md5sum = crypto.createHash('md5');
-	md5sum.update(new Buffer(urlPart, 'binary'));
+	md5sum.update(Buffer.from(urlPart, 'binary'));
 	md5val = md5sum.digest('hex');
 	urlPart = md5val + "¤" + urlPart + "¤";
-	var cipher = crypto.createCipheriv("aes-128-ecb", new Buffer("jo6aey6haid2Teih"), new Buffer(""));
+	var cipher = crypto.createCipheriv("aes-128-ecb", Buffer.from("jo6aey6haid2Teih"), Buffer.from(""));
 	var buffer = Buffer.concat([cipher.update(urlPart, 'binary'), cipher.final()]);
 	return "https://e-cdns-proxy-" + md5Origin.substring(0, 1) + ".dzcdn.net/mobile/1/" + buffer.toString("hex").toLowerCase();
 }
@@ -488,7 +488,7 @@ Deezer.prototype.decryptTrack = function(writePath, track, queueId, callback) {
 		self.reqStream[queueId].push(
 			request.get({url: track.downloadUrl,strictSSL: false, headers: self.httpHeaders, encoding: 'binary'}, function(err, res, body) {
 				if(!err && res.statusCode == 200) {
-					var decryptedSource = decryptDownload(new Buffer(body, 'binary'), track);
+					var decryptedSource = decryptDownload(Buffer.from(body, 'binary'), track);
 					fs.outputFile(writePath,decryptedSource,function(err){
 						if(err){callback(err);return;}
 						callback();
@@ -521,7 +521,7 @@ function decryptDownload(source, track) {
 	var i = 0;
 	var position = 0;
 
-	var destBuffer = new Buffer(source.length);
+	var destBuffer = Buffer.alloc(source.length);
 	destBuffer.fill(0);
 
 	while(position < source.length) {
@@ -531,14 +531,14 @@ function decryptDownload(source, track) {
 		} else {
 			chunk_size = source.length - position;
 		}
-		chunk = new Buffer(chunk_size);
+		chunk = Buffer.alloc(chunk_size);
 		let chunkString
 		chunk.fill(0);
 		source.copy(chunk, 0, position, position + chunk_size);
 		if(i % 3 > 0 || chunk_size < 2048){
 				chunkString = chunk.toString('binary')
 		}else{
-			var cipher = crypto.createDecipheriv('bf-cbc', blowFishKey, new Buffer([0, 1, 2, 3, 4, 5, 6, 7]));
+			var cipher = crypto.createDecipheriv('bf-cbc', blowFishKey, Buffer.from([0, 1, 2, 3, 4, 5, 6, 7]));
 			cipher.setAutoPadding(false);
 			chunkString = cipher.update(chunk, 'binary', 'binary') + cipher.final();
 		}

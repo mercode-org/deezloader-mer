@@ -8,7 +8,7 @@
 		"url": "https://notabug.org/RemixDevs/DeezloaderRemix.git"
 	},
 	"devDependencies": {
-		"cross-env": "^5.1.6",
+		"cross-env": "latest",
 		"electron": "latest",
 		"electron-builder": "latest"
 	},

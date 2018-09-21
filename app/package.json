@@ -15,9 +15,9 @@
 		"fs-extra": "latest",
 		"package.json": "latest",
 		"queue": "latest",
-		"request": "2.87.0",
+		"request": "latest",
 		"requestretry": "latest",
 		"socket.io": "latest",
-		"spotify-web-api-node": "4.0.0"
+		"spotify-web-api-node": "latest"
 	}
 }
