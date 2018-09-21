@@ -26,7 +26,6 @@ const path = require('path');
 const crypto = require('crypto');
 const logger = require('./utils/logger.js');
 const Spotify = require('spotify-web-api-node');
-const authCredentials = require('./authCredentials.js');
 const queue = require('queue');
 const localpaths = require('./utils/localpaths.js');
 const package = require('./package.json');
@@ -35,14 +34,16 @@ if(!fs.existsSync(localpaths.user+"config.json")){
 	fs.outputFileSync(localpaths.user+"config.json",fs.readFileSync(__dirname+path.sep+"default.json",'utf8'));
 }
 
-var spotifyApi = new Spotify(authCredentials);
-
 // Main Constants
 const configFileLocation = localpaths.user+"config.json";
 const autologinLocation = localpaths.user+"autologin";
+const spotifySupport = fs.existsSync(localpaths.user+"authCredentials.js");
+const authCredentials = spotifySupport ? require(localpaths.user+'authCredentials.js') : null;
 const coverArtFolder = os.tmpdir() + path.sep + 'deezloader-imgs' + path.sep;
 const defaultDownloadDir = localpaths.music + 'Deezloader' + path.sep;
 const defaultSettings = require('./default.json').userDefined;
+
+if (spotifySupport) var spotifyApi = new Spotify(authCredentials);
 
 // Setup the folders START
 var mainFolder = defaultDownloadDir;
@@ -353,29 +354,33 @@ io.sockets.on('connection', function (socket) {
 	socket.on("downloadartist", data=>{socketDownloadArtist(data)});
 
 	socket.on("downloadspotifyplaylist", function (data) {
-		spotifyApi.clientCredentialsGrant().then(function(creds) {
-			spotifyApi.setAccessToken(creds.body['access_token']);
-			return spotifyApi.getPlaylist(data.id, {fields: "id,name,owner,images,tracks(total,items(track.artists,track.name,track.album))"})
-		}).then(function(resp) {
-			let queueId = "id" + Math.random().toString(36).substring(2);
-			let _playlist = {
-				name: resp.body["name"],
-				artist: (resp.body["owner"]["display_name"] ? resp.body["owner"]["display_name"] : resp.body["owner"]["id"]),
-				size: resp.body["tracks"]["total"],
-				downloaded: 0,
-				failed: 0,
-				queueId: queueId,
-				id: resp.body["id"],
-				type: "spotifyplaylist",
-				cover: (resp.body["images"] ? resp.body["images"][0]["url"] : null),
-				tracks: resp.body["tracks"]["items"]
-			};
-			_playlist.settings = data.settings || {};
-			addToQueue(JSON.parse(JSON.stringify(_playlist)));
-		}).catch(err=>{
-			logger.error(err)
-			return;
-		})
+		if (spotifySupport){
+			spotifyApi.clientCredentialsGrant().then(function(creds) {
+				spotifyApi.setAccessToken(creds.body['access_token']);
+				return spotifyApi.getPlaylist(data.id, {fields: "id,name,owner,images,tracks(total,items(track.artists,track.name,track.album))"})
+			}).then(function(resp) {
+				let queueId = "id" + Math.random().toString(36).substring(2);
+				let _playlist = {
+					name: resp.body["name"],
+					artist: (resp.body["owner"]["display_name"] ? resp.body["owner"]["display_name"] : resp.body["owner"]["id"]),
+					size: resp.body["tracks"]["total"],
+					downloaded: 0,
+					failed: 0,
+					queueId: queueId,
+					id: resp.body["id"],
+					type: "spotifyplaylist",
+					cover: (resp.body["images"] ? resp.body["images"][0]["url"] : null),
+					tracks: resp.body["tracks"]["items"]
+				};
+				_playlist.settings = data.settings || {};
+				addToQueue(JSON.parse(JSON.stringify(_playlist)));
+			}).catch(err=>{
+				logger.error(err)
+				return;
+			})
+		}else{
+			socket.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+		}
 	});
 
 	//currentItem: the current item being downloaded at that moment such as a track or an album
@@ -618,148 +623,152 @@ io.sockets.on('connection', function (socket) {
 				});
 				break;
 			case "spotifyplaylist":
-			spotifyApi.clientCredentialsGrant().then(function(creds) {
-				downloading.settings.plName = downloading.name;
-				downloading.playlistArr = Array(downloading.size);
-				spotifyApi.setAccessToken(creds.body['access_token']);
-				numPages=Math.floor((downloading.size-1)/100);
-				let pages = []
-				downloading.playlistContent = new Array(downloading.size);
-				downloading.tracks.map((t,i)=>{
-					downloading.playlistContent[i]=new Promise(function(resolve, reject) {
-						Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
-							resolve(response);
+			if (spotifySupport){
+				spotifyApi.clientCredentialsGrant().then(function(creds) {
+					downloading.settings.plName = downloading.name;
+					downloading.playlistArr = Array(downloading.size);
+					spotifyApi.setAccessToken(creds.body['access_token']);
+					numPages=Math.floor((downloading.size-1)/100);
+					let pages = []
+					downloading.playlistContent = new Array(downloading.size);
+					downloading.tracks.map((t,i)=>{
+						downloading.playlistContent[i]=new Promise(function(resolve, reject) {
+							Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
+								resolve(response);
+							});
 						});
-					});
-				})
-				if (downloading.size>100){
-					for (let offset = 1; offset<=numPages; offset++){
-						pages.push(new Promise(function(resolvePage) {
-							spotifyApi.getPlaylistTracks(downloading.id, {fields: "items(track.artists,track.name,track.album)", offset: offset*100}).then(function(resp) {
-								resp.body['items'].forEach((t, index) => {
-									downloading.playlistContent[(offset*100)+index] = new Promise(function(resolve, reject) {
-										Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
-											resolve(response);
+					})
+					if (downloading.size>100){
+						for (let offset = 1; offset<=numPages; offset++){
+							pages.push(new Promise(function(resolvePage) {
+								spotifyApi.getPlaylistTracks(downloading.id, {fields: "items(track.artists,track.name,track.album)", offset: offset*100}).then(function(resp) {
+									resp.body['items'].forEach((t, index) => {
+										downloading.playlistContent[(offset*100)+index] = new Promise(function(resolve, reject) {
+											Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
+												resolve(response);
+											});
 										});
 									});
+									resolvePage();
 								});
-								resolvePage();
-							});
-						}));
+							}));
+						}
 					}
-				}
-				logger.info("Waiting for all pages");
-				Promise.all(pages).then((val)=>{
-					logger.info("Waiting for all tracks to be converted");
-					return Promise.all(downloading.playlistContent)
-				}).then((values)=>{
-					if (!socket.downloadQueue[downloading.queueId]) {
-						logger.info("Stopping the playlist queue");
-						if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-						socket.currentItem = null;
-						queueDownload(getNextDownload());
-						return;
-					}
-					logger.info("All tracks converted, starting download");
-					socket.emit("downloadStarted", {queueId: downloading.queueId});
-					downloading.errorLog = "";
-					downloading.searchedLog = "";
-					downloading.settings.playlist = {
-						fullSize: values.length
-					};
-					filePath = mainFolder+antiDot(fixName(downloading.settings.plName)) + path.sep
-					downloading.finished = new Promise((resolve,reject)=>{
-						values.every(function (t) {
-							t.index = values.indexOf(t)+""
-							t.queueId = downloading.queueId
-							socket.trackQueue.push(cb=>{
-								if (!socket.downloadQueue[downloading.queueId]) {
-									reject();
-									return false;
-								}
-								logger.info(`Now downloading: ${t.artist} - ${t.name}`)
-								downloadTrack(t, downloading.settings, null, function (err, track) {
-									if (!err) {
-										downloading.downloaded++;
-										downloading.playlistArr[track.playlistData[0]] = track.playlistData[1].split(filePath)[1];
-										if (track.searched) downloading.searchedLog += `${t.artist} - ${t.name}\r\n`
-									} else {
-										downloading.failed++;
-										downloading.errorLog += `${t.id} | ${t.artist} - ${t.name} | ${err}\r\n`;
+					logger.info("Waiting for all pages");
+					Promise.all(pages).then((val)=>{
+						logger.info("Waiting for all tracks to be converted");
+						return Promise.all(downloading.playlistContent)
+					}).then((values)=>{
+						if (!socket.downloadQueue[downloading.queueId]) {
+							logger.info("Stopping the playlist queue");
+							if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
+							socket.currentItem = null;
+							queueDownload(getNextDownload());
+							return;
+						}
+						logger.info("All tracks converted, starting download");
+						socket.emit("downloadStarted", {queueId: downloading.queueId});
+						downloading.errorLog = "";
+						downloading.searchedLog = "";
+						downloading.settings.playlist = {
+							fullSize: values.length
+						};
+						filePath = mainFolder+antiDot(fixName(downloading.settings.plName)) + path.sep
+						downloading.finished = new Promise((resolve,reject)=>{
+							values.every(function (t) {
+								t.index = values.indexOf(t)+""
+								t.queueId = downloading.queueId
+								socket.trackQueue.push(cb=>{
+									if (!socket.downloadQueue[downloading.queueId]) {
+										reject();
+										return false;
 									}
-									socket.emit("downloadProgress", {
-										queueId: downloading.queueId,
-										percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
+									logger.info(`Now downloading: ${t.artist} - ${t.name}`)
+									downloadTrack(t, downloading.settings, null, function (err, track) {
+										if (!err) {
+											downloading.downloaded++;
+											downloading.playlistArr[track.playlistData[0]] = track.playlistData[1].split(filePath)[1];
+											if (track.searched) downloading.searchedLog += `${t.artist} - ${t.name}\r\n`
+										} else {
+											downloading.failed++;
+											downloading.errorLog += `${t.id} | ${t.artist} - ${t.name} | ${err}\r\n`;
+										}
+										socket.emit("downloadProgress", {
+											queueId: downloading.queueId,
+											percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
+										});
+										if (downloading.downloaded + downloading.failed == downloading.size)
+											resolve();
+										socket.emit("updateQueue", downloading);
+										cb();
 									});
-									if (downloading.downloaded + downloading.failed == downloading.size)
-										resolve();
-									socket.emit("updateQueue", downloading);
-									cb();
 								});
+								return true;
 							});
-							return true;
 						});
-					});
-					downloading.finished.then(()=>{
-						logger.info("Playlist finished "+downloading.name);
-						socket.emit("downloadProgress", {
-							queueId: downloading.queueId,
-							percentage: 100
-						});
-						if (downloading.settings.logErrors){
-							if (downloading.errorLog != ""){
-								if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-								fs.writeFileSync(filePath+"notFound.txt",downloading.errorLog)
-							}else{
-								if (fs.existsSync(filePath+"notFound.txt")) fs.unlinkSync(filePath+"notFound.txt");
+						downloading.finished.then(()=>{
+							logger.info("Playlist finished "+downloading.name);
+							socket.emit("downloadProgress", {
+								queueId: downloading.queueId,
+								percentage: 100
+							});
+							if (downloading.settings.logErrors){
+								if (downloading.errorLog != ""){
+									if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
+									fs.writeFileSync(filePath+"notFound.txt",downloading.errorLog)
+								}else{
+									if (fs.existsSync(filePath+"notFound.txt")) fs.unlinkSync(filePath+"notFound.txt");
+								}
 							}
-						}
-						if (downloading.settings.logSearched){
-							if (downloading.searchedLog != ""){
-								if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-								fs.writeFileSync(filePath+"alternativeSongs.txt",downloading.searchedLog)
-							}else{
-								if (fs.existsSync(filePath+"alternativeSongs.txt")) fs.unlinkSync(filePath+"alternativeSongs.txt");
+							if (downloading.settings.logSearched){
+								if (downloading.searchedLog != ""){
+									if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
+									fs.writeFileSync(filePath+"alternativeSongs.txt",downloading.searchedLog)
+								}else{
+									if (fs.existsSync(filePath+"alternativeSongs.txt")) fs.unlinkSync(filePath+"alternativeSongs.txt");
+								}
 							}
-						}
-						if (downloading.settings.createM3UFile){
-							fs.writeFileSync(filePath + "playlist.m3u", downloading.playlistArr.join("\r\n"));
-						}
-						if (downloading.settings.saveArtwork){
-							if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-							let imgPath = filePath + antiDot(fixName(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name)))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
-							if (downloading.cover){
-								request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
-									if(error){
-										logger.error(error.stack);
-										return;
-									}
-									fs.outputFile(imgPath,body,'binary',function(err){
-										if(err){
-											logger.error(err.stack);
+							if (downloading.settings.createM3UFile){
+								fs.writeFileSync(filePath + "playlist.m3u", downloading.playlistArr.join("\r\n"));
+							}
+							if (downloading.settings.saveArtwork){
+								if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
+								let imgPath = filePath + antiDot(fixName(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name)))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
+								if (downloading.cover){
+									request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
+										if(error){
+											logger.error(error.stack);
 											return;
 										}
-										logger.info(`Cover downloaded for: ${downloading.settings.plName}`)
-									})
-								});
+										fs.outputFile(imgPath,body,'binary',function(err){
+											if(err){
+												logger.error(err.stack);
+												return;
+											}
+											logger.info(`Cover downloaded for: ${downloading.settings.plName}`)
+										})
+									});
+								}
 							}
-						}
-						if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-						socket.currentItem = null;
-						queueDownload(getNextDownload());
+							if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
+							socket.currentItem = null;
+							queueDownload(getNextDownload());
+						}).catch((err)=>{
+							if (err) return logger.error(err.stack);
+							logger.info("Stopping the playlist queue");
+							if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
+							socket.currentItem = null;
+							queueDownload(getNextDownload());
+						});
 					}).catch((err)=>{
-						if (err) return logger.error(err.stack);
-						logger.info("Stopping the playlist queue");
-						if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-						socket.currentItem = null;
-						queueDownload(getNextDownload());
+						logger.error('Something went wrong!'+err.stack);
 					});
 				}).catch((err)=>{
 					logger.error('Something went wrong!'+err.stack);
 				});
-			}).catch((err)=>{
-				logger.error('Something went wrong!'+err.stack);
-			});
+			}else{
+				socket.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+			}
 			break;
 		}
 	}
@@ -845,7 +854,7 @@ io.sockets.on('connection', function (socket) {
 				};
 				playlists.push(obj);
 			}
-			if (configFile.userDefined.spotifyUser){
+			if (configFile.userDefined.spotifyUser && spotifySupport){
 				spotifyApi.clientCredentialsGrant().then(function(creds) {
 					spotifyApi.setAccessToken(creds.body['access_token']);
 					spotifyApi.getUserPlaylists(configFile.userDefined.spotifyUser, {fields: "total"}).then(data=>{
@@ -924,7 +933,7 @@ io.sockets.on('connection', function (socket) {
 				}
 				socket.emit("getTrackList", {response: response, id: data.id, reqType: data.type});
 			});
-		}else if(data.type == "spotifyplaylist"){
+		}else if(data.type == "spotifyplaylist" && spotifySupport){
 			spotifyApi.clientCredentialsGrant().then(function(creds) {
 				spotifyApi.setAccessToken(creds.body['access_token']);
 				return spotifyApi.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total"})
