@@ -30,13 +30,13 @@ Here are listed the MD5 chechsums (so you can be sure the files were not tampere
 
 | Filename                             | Checksum MD5                     |
 | ------------------------------------ | -------------------------------- |
-| Deezloader Remix 4.1.5 Setup.exe     | 346B1EDFB23E973BFF5BD90C7CE7AAB3 |
-| Deezloader Remix 4.1.5.exe           | C4781220FBB53C4FFA0985B8E10183C5 |
-| Deezloader Remix 4.1.5 Setup x32.exe | 4F1537DC8C30ADF1AC24302FEF5DBACC |
-| Deezloader Remix 4.1.5 x32.exe       | F49B242C9A35AEB2152F461E842E2328 |
-| deezloader-rmx-4.1.5-x86_64.AppImage | 7E990191BB5EE93EE9CBE441F804D4C8 |
-| deezloader-rmx-4.1.5-i386.AppImage   | CB7FD0412B3F2AB3A1B01E327CBF4DCB |
-| Deezloader Remix-4.1.5.dmg           | 7F2EA0F5BDCA174D0005055023BF29B3 |
+| Deezloader Remix 4.1.6 Setup.exe     | 209420D0CA70E5CE6879FA7CA13B2AF0 |
+| Deezloader Remix 4.1.6.exe           | 195110821791F95C14104A1DFC44E2D1 |
+| Deezloader Remix 4.1.6 Setup x32.exe | D69FFA68FF83A046E30F8E43471101DD |
+| Deezloader Remix 4.1.6 x32.exe       | 95FF1390BFE87EFD6AF44F3FF231EE1D |
+| deezloader-rmx-4.1.6-x86_64.AppImage | 089D4A033F847E20C91D8341676A894E |
+| deezloader-rmx-4.1.6-i386.AppImage   | 9F4FDD38A82F19F6448EF4942B2C2DD6 |
+| Deezloader Remix-4.1.6.dmg           | 2F3DE5DC47EED87C25112309CE967ACD |
 
 ## Build
 If you want to buid it yourself you will need Node.js installed and npm or yarn.<br/>

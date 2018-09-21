@@ -1,4 +1,4 @@
 {
-  "version":"4.1.5",
-  "changelog":"- Fixed %explicit% for album names\r\n- Added Contributions page\r\n- Fixed some spelling issues"
+  "version":"4.1.6",
+  "changelog":"- Fixed Spotify Playlist problem\r\n- Fixed security issue where Client Secret is exposed in Compiled binaries\r\n- Now to use Spotify Features you need to follow a guide first (Link in the changelog)\r\n- Minor bugfixes and improvments\r\n"
 }
