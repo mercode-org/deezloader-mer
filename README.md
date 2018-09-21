@@ -1,9 +1,9 @@
 # Deezloader Remix
-### Latest Version: 4.1.5
+### Latest Version: 4.1.6
 Deezloader Remix is an improved version of Deezloader based on the Reborn branch.<br/>
 With this app you can download songs, playlists and albums directly from Deezers Server in a single and well packaged app.
 
-![](https://i.imgur.com/7Qbvu1f.png)
+![](https://i.imgur.com/NeOg9YU.png)
 ## Features
 ### Base Features
 * Download MP3s and FLACs directly from Deezer Servers
@@ -23,8 +23,9 @@ With this app you can download songs, playlists and albums directly from Deezers
 
 ## Download
 All compiled downloads are on Telegram.<br>
-@DeezloaderRemix<br>
-@DeezloaderRMX<br>
+[@DeezloaderRemix](https://t.me/DeezloaderRemix)<br>
+[@DeezloaderRMX](https://t.me/DeezloaderRMX)<br>
+[@DeezloaderRemixCommunity](https://t.me/DeezloaderRemixCommunity)<br>
 Here are listed the MD5 chechsums (so you can be sure the files were not tampered):<br>
 
 | Filename                             | Checksum MD5                     |
@@ -39,13 +40,6 @@ Here are listed the MD5 chechsums (so you can be sure the files were not tampere
 
 ## Build
 If you want to buid it yourself you will need Node.js installed and npm or yarn.<br/>
-There is a missing file containing the clientSecret e clientId of my SpotifyApp (for spotify integration).<br/>
-You need to get them [here](https://developer.spotify.com/dashboard/applications) and change the values from here.<br/>
-```module.exports = {
-  clientId: 'CLIENTID_HERE',
-  clientSecret: 'CLIENTSECRET_HERE'
-}```<br/>
-The file should be put into `./app/authCredentials.js` (the same folder where `deezer-api.js` is).<br/>
 Then to build it you just need to run `npm install` or `yarn install` and after that `compile<OS>.sh` or `.bat`.<br/>
 
 ## Disclaimer
