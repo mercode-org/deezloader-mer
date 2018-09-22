@@ -130,7 +130,7 @@
           <option value="3">MP3 320kbps</option>
           <option value="1">MP3 128kbps</option>
 				</select>
-				<label for="modal_settings_select_maxBitrate">Downloaded bitrate</label>
+				<label for="modal_settings_select_maxBitrate">Preferred bitrate</label>
 			</div>
 		</div>
     <div class="row">
@@ -140,16 +140,16 @@
 				</select>
 				<label for="modal_settings_select_chartsCounrty">Default Country for Charts</label>
 			</div>
-      <div class="input-field col s12 m6">
+    	<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<select name="multitagSeparator" id="modal_settings_select_multitagSeparator">
 					<option value="null">Null Character</option>
-          <option value=",">,</option>
-          <option value=", ">, with space</option>
+					<option value=",">,</option>
+					<option value=", ">, with space</option>
 					<option value="/">/</option>
-          <option value=" / ">/ with space</option>
+					<option value=" / ">/ with space</option>
 					<option value=";">;</option>
-          <option value="; ">; with space</option>
+					<option value="; ">; with space</option>
 				</select>
 				<label for="modal_settings_select_multitagSeparator">Multitag Separator</label>
 			</div>
@@ -158,21 +158,21 @@
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<select name="dateFormat" id="modal_settings_select_dateFormat">
-          <option value="0">YMD</option>
+					<option value="0">YMD</option>
 					<option value="1">DMY</option>
 					<option value="2">MDY</option>
-          <option value="3">YDM</option>
-          <option value="4">ID3 Default</option>
+					<option value="3">YDM</option>
+					<option value="4">ID3 Default</option>
 				</select>
 				<label for="modal_settings_select_dateFormat">Date Format</label>
 			</div>
-      <div class="input-field col s12 m6">
+    	<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<select name="dateFormatYear" id="modal_settings_select_dateFormatYear">
-          <option value="2">2</option>
-					<option value="4">4</option>
+					<option value="2">2 digit</option>
+					<option value="4">4 digit</option>
 				</select>
-				<label for="modal_settings_select_dateFormatYear">Number of digits for the year (only in date tag)</label>
+				<label for="modal_settings_select_dateFormatYear">Date Tag Year Format</label>
 			</div>
 		</div>
 		<div class="row">
@@ -183,16 +183,18 @@
 			</div>
 		</div>
     <div class="row">
-			<div class="input-field col s12 m3">
+			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<input type="number" id="modal_settings_number_queueConcurrency" min="1"/>
-				<label for="modal_settings_number_queueConcurrency">Queue Concurrency</label>
+				<label for="modal_settings_number_queueConcurrency">Concurrent Download Limit</label>
 			</div>
-      <div class="input-field col s12 m3">
+			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<input type="number" id="modal_settings_number_paddingSize" min="0"/>
 				<label for="modal_settings_number_paddingSize">Padding Size Overwrite</label>
 			</div>
+		</div>
+		<div class="row">
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
 				<input type="text" id="modal_settings_input_spotifyUser"/>
@@ -321,9 +323,9 @@
 	</div>
 	<div class="modal-footer">
 		<a href="#" class="modal-close waves-effect waves-light deezloader-primary btn" id="modal_settings_btn_saveSettings"><i
-						class="material-icons right">save</i>Save</a>
+			class="material-icons right">save</i>Save</a>
 		<a href="#" class="waves-effect btn-flat" id="modal_settings_btn_defaultSettings"><i
-						class="material-icons right">settings_backup_restore</i>Default Settings</a>
+			class="material-icons right">settings_backup_restore</i>Default Settings</a>
 		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
 	</div>
 </div>
@@ -513,7 +515,9 @@
 <!--#############################################MODAL_ABOUT############################################-->
 <div id="modal_about" class="modal modal-fixed-footer">
 	<div class="modal-content">
-		<h4>More</h4>
+		<div class="row">
+			<h4 class="col s12">More</h4>
+		</div>
 		<div class="row">
 			<ul class="collapsible" data-collapsible="accordion">
 				<li>
@@ -525,7 +529,7 @@
               <b>Based on: </b>Deezloader Reborn</br>
               <b>Maintainers:</b> RemixDevs Group<br/>
               <b>Repo: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix">Official Repo</a><br/>
-              <b>Interface:</b> <a href="http://materializecss.com/">materializecss</a><br/>
+              <b>Interface:</b> <a href="http://materializecss.com/">Materialize CSS</a><br/>
               <br>
               <b>Special Thanks to:</b><br>
               ZzMTV, ParadoxalManiak, snwflake, ExtendLord<br>
@@ -536,15 +540,15 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">feedback</i>Feedback</div>
 					<div class="collapsible-body">
 						<p>
-							Do you have some feedback or want to ask for some new features? Open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new">New Issue</a> and add the Feature label.
+							Do you have some feedback or want to ask for some new features? Open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new">new Issue</a> and add the 'Feature' label.
 						</p>
 					</div>
 				</li>
 				<li>
-					<div class="collapsible-header waves-effect"><i class="material-icons">bug_report</i>Bugs</div>
+					<div class="collapsible-header waves-effect"><i class="material-icons">bug_report</i>Reporting Bugs</div>
 					<div class="collapsible-body">
 						<p>
-							If you experience any bugs, open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new">New Issue</a> and send the bug report there, thankyou.
+							If you experience any bugs, open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new">new issue</a> and send the bug report there, thank you.
 						</p>
 					</div>
 				</li>
@@ -552,7 +556,7 @@
           <div class="collapsible-header waves-effect"><i class="material-icons">group</i>Contacts</div>
           <div class="collapsible-body">
             <p>
-              If you want to talk about the app and help you can do that in this <a href="https://t.me/joinchat/BJf2dUoyFbTomvUGaslmCA">Telegram Group</a>!
+              If you want to discuss or help with the app you can do so in the <a href="https://t.me/joinchat/BJf2dUoyFbTomvUGaslmCA">Telegram group</a>!
             </p>
           </div>
         </li>
@@ -560,9 +564,9 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">warning</i>Attention!</div>
 					<div class="collapsible-body">
 						<p>
-							The authors don't call to commit crimes.<br/>
-							The usage of this tool may be illegal in your country! Please inform yourself.<br/>
-							The authors give no guarantee at all and aren't responsible for damages of all kinds!
+							The authors do not call to commit crimes!<br/>
+							The usage of this tool may be illegal in your country, please inform yourself!<br/>
+							The authors give no guarantees at all and aren't responsible for any damage or harm of any kind resulting from the use of this software!
 						</p>
 					</div>
 				</li>
@@ -570,84 +574,84 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
 					<div class="collapsible-body">
 						<p>
-              <b>Version 4.1.6</b><br/>
-              - Fixed Spotify Playlist problem<br/>
-              - Fixed security issue where Client Secret is exposed in Compiled binaries<br/>
-              - Now to use Spotify Features you need to follow <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features">this guide</a> first<br/>
-              - Minor bugfixes and improvments<br/>
-              <br/>
-              <b>Version 4.1.5</b><br/>
-              - Fixed %explicit% for album names<br/>
-              - Added Contributions page<br/>
-              - Fixed some spelling issues<br/>
-              <br/>
-              <b>Version 4.1.4</b><br/>
-              - Improved Privacy in Server Mode<br/>
-              - Cleaned up some files<br/>
-              - Fixed Day Month position in DATE tag<br/>
-              - Fixed %explicit% in name templates<br/>
-              - Fixed artist download<br/>
-              - Fixed FLAC Problems (not all of them)<br/>
-              - Fixed select folder cancel bug<br/>
-              - Added Update Notification<br/>
-              - Added default ID3 DATE tag format<br/>
-              - Added minimize to system tray<br/>
-              - Added multitag separator for FLACS<br/>
-              - Added hyperlinks to artist & album<br/>
-              - Added option to better remove duplicates in the artist tag (Still in BETA)<br/>
-              - Added option to save the track with the full list of artist in the filename<br/>
-              - Added option to overwrite padding size<br/>
-              - Added "Download All" button in modals<br/>
-              - Removed ReplayGain as default setting<br/>
-              <br/>
-              <b>Version 4.1.3</b><br/>
-              - Playlist and Album tracks now have fallback support<br/>
-              - M3U files now works correctly<br/>
-              - Fixed problems with tags<br/>
-              - Added option %explicit% for Track and Album names (Will add "(Explicit)" in that position if it's explicit)<br/>
-              - Added option to remove "(Album Version)" from track title<br/>
-              - Added options to select which format should the date tag have<br/>
-              - Added option to not fallback if desired bitrate is not aviable<br/>
-              - Logging enhancements<br/>
-              - Other minor bug-fixing<br/>
-              <br/>
-        		  <b>Version 4.1.2</b><br/>
-        		  - Fixed Login Problem (for real this time)<br/>
-        		  - Fixed Login after refresh<br/>
-        		  - Regionlock free download<br/>
-        		  - Added support for download of User Uploaded tracks<br/>
-        		  - Now you can select which tags your songs has<br/>
-        		  - Fixed selecting problem<br/>
-        		  - Tracks without preview will display a disabled play button<br/>
-        		  - Previews inside modal will stop with modal close<br/>
-        		  - New %label% field for tracks and albums<br/>
-        		  - Added option to create folder for CDs<br/>
-        		  - Added rename option for cover file<br/>
-        		  - Added option to download Artist artwork<br/>
-        		  - Added option do log downloaded alternative tracks<br/>
-        		  - Fixed some minor bugs
-        		  <br/>
-              <b>Version 4.1.1</b><br/>
-              - Fixed Login Problem (again)<br/>
-              - Added Dark Mode<br/>
-              - Added smaller cover option<br/>
-              - Added support for lower bitrates<br/>
-              - Added "Stop All Downloads" button<br/>
-              - Added support for Spotify Playlist preview<br/>
-              - Added support for PNG covers<br/>
-              - Re-Added Date Tag<br/>
-              - Fixed same cover for same track in different albums bug<br/>
-              - Fixed login issue from repository build<br/>
-              <br/>
-              <b>Version 4.1.0</b><br/>
-              - New UI (not completly optimized for small screens)<br/>
-              - Fixed login problems<br/>
-              - Fixed %type% parameter not working<br/>
-              - Fixed year tagging problem<br/>
-              - Fixed playlist file not containing tracks<br/>
-              - More precision in Spotify Playlist conversion<br/>
-              <br/>
-              <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Changelog">Full Changelog Here</a>
+							<b>Version 4.1.6</b><br/>
+							- Fixed Spotify Playlist problem<br/>
+							- Fixed security issue where Client Secret is exposed in Compiled binaries<br/>
+							- Now to use Spotify Features you need to follow <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features">this guide</a> first<br/>
+							- Minor bugfixes and improvments<br/>
+							<br/>
+							<b>Version 4.1.5</b><br/>
+							- Fixed %explicit% for album names<br/>
+							- Added Contributions page<br/>
+							- Fixed some spelling issues<br/>
+							<br/>
+							<b>Version 4.1.4</b><br/>
+							- Improved Privacy in Server Mode<br/>
+							- Cleaned up some files<br/>
+							- Fixed Day Month position in DATE tag<br/>
+							- Fixed %explicit% in name templates<br/>
+							- Fixed artist download<br/>
+							- Fixed FLAC Problems (not all of them)<br/>
+							- Fixed select folder cancel bug<br/>
+							- Added Update Notification<br/>
+							- Added default ID3 DATE tag format<br/>
+							- Added minimize to system tray<br/>
+							- Added multitag separator for FLACS<br/>
+							- Added hyperlinks to artist & album<br/>
+							- Added option to better remove duplicates in the artist tag (Still in BETA)<br/>
+							- Added option to save the track with the full list of artist in the filename<br/>
+							- Added option to overwrite padding size<br/>
+							- Added "Download All" button in modals<br/>
+							- Removed ReplayGain as default setting<br/>
+							<br/>
+							<b>Version 4.1.3</b><br/>
+							- Playlist and Album tracks now have fallback support<br/>
+							- M3U files now works correctly<br/>
+							- Fixed problems with tags<br/>
+							- Added option %explicit% for Track and Album names (Will add "(Explicit)" in that position if it's explicit)<br/>
+							- Added option to remove "(Album Version)" from track title<br/>
+							- Added options to select which format should the date tag have<br/>
+							- Added option to not fallback if desired bitrate is not aviable<br/>
+							- Logging enhancements<br/>
+							- Other minor bug-fixing<br/>
+							<br/>
+							<b>Version 4.1.2</b><br/>
+							- Fixed Login Problem (for real this time)<br/>
+							- Fixed Login after refresh<br/>
+							- Regionlock free download<br/>
+							- Added support for download of User Uploaded tracks<br/>
+							- Now you can select which tags your songs has<br/>
+							- Fixed selecting problem<br/>
+							- Tracks without preview will display a disabled play button<br/>
+							- Previews inside modal will stop with modal close<br/>
+							- New %label% field for tracks and albums<br/>
+							- Added option to create folder for CDs<br/>
+							- Added rename option for cover file<br/>
+							- Added option to download Artist artwork<br/>
+							- Added option do log downloaded alternative tracks<br/>
+							- Fixed some minor bugs<br/>
+							<br/>
+							<b>Version 4.1.1</b><br/>
+							- Fixed Login Problem (again)<br/>
+							- Added Dark Mode<br/>
+							- Added smaller cover option<br/>
+							- Added support for lower bitrates<br/>
+							- Added "Stop All Downloads" button<br/>
+							- Added support for Spotify Playlist preview<br/>
+							- Added support for PNG covers<br/>
+							- Re-Added Date Tag<br/>
+							- Fixed same cover for same track in different albums bug<br/>
+							- Fixed login issue from repository build<br/>
+							<br/>
+							<b>Version 4.1.0</b><br/>
+							- New UI (not completly optimized for small screens)<br/>
+							- Fixed login problems<br/>
+							- Fixed %type% parameter not working<br/>
+							- Fixed year tagging problem<br/>
+							- Fixed playlist file not containing tracks<br/>
+							- More precision in Spotify Playlist conversion<br/>
+							<br/>
+							<a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Changelog">Full Changelog Here</a>
 						</p>
 					</div>
 				</li>
@@ -669,9 +673,9 @@
             <h5>You want to contribute to this project? You can do that <b>in different ways!</b></h5>
             <p>If you know JavaScript, HTML, CSS or Node.js you could contribute writing code, fixing bugs and adding features using the <a href="https://notabug.org/RemixDevs/DeezloaderRemix">Official Repo</a>.</p>
             <p>If you are good at graphics and design you could help by submitting a new design, you can open a new issue with some design <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new">here</a>.<br>
-            Keep in mind that we are (sorta) following the <a href="https://material.io/">Material Desing Principles</a>.</p>
-            <p>If you are good at finding bugs you can help Beta Test the app before release.<br>
-              Join our <a href="https://t.me/joinchat/BJf2dUoyFbTomvUGaslmCA">Telegram Group</a> to be notified when betas come out!</p>
+            	<p>Keep in mind that we are (sorta) following the <a href="https://material.io/">Material Desing Principles</a>.</p>
+            	If you are good at finding bugs you can help Beta Test the app before release.<br>
+            	Join our <a href="https://t.me/joinchat/BJf2dUoyFbTomvUGaslmCA">Telegram Group</a> to be notified when betas come out!</p>
             <hr>
             <h5>You want to contribute monetarily? You could make a donation!</h5>
             <p>If you can donate you can do that with this links.<br>
@@ -987,7 +991,7 @@
 
     <div id="tab_playlists" class="row">
       <div class="col s12">
-        <button class="btn-flat btn-large waves-effect" id="button_refresh_playlist_tab" style="width:100%;">Refresh Playlist List</button>
+        <button class="btn-flat btn-large waves-effect deezloader-primary white-text" id="button_refresh_playlist_tab" style="width:100%;">Refresh Playlists</button>
       </div>
       <div class="col s12">
         <table class="striped">
@@ -1023,12 +1027,12 @@
           </button>
         </div>
         <div class="col s12 m4">
-          <button id="cancelAllTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-secondary white-text">
+          <button id="cancelAllTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
             Cancel All Downloads
           </button>
         </div>
         <div class="col s12 m4">
-          <button id="clearTracksTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-secondary white-text">
+          <button id="clearTracksTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
             Clear List
           </button>
         </div>
