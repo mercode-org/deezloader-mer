@@ -226,9 +226,6 @@ Deezer.prototype.getChartsTopCountry = function(callback) {
 	getJSON("https://api.deezer.com/user/637006841/playlists?limit=-1", function(res, err){
 		if(!res.data) {
 			res.data = [];
-		} else {
-			//Remove "Loved Tracks"
-			res.data.shift();
 		}
 		callback(res, err);
 	});
