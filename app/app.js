@@ -11,21 +11,24 @@
  *  Original work by ZzMTV <https://boerse.to/members/zzmtv.3378614/>
  * */
 
+// Server stuff
 const express = require('express');
 const app = express();
 const server = require('http').createServer(app);
-const mflac = require('./lib/flac-metadata');
 const io = require('socket.io').listen(server, {log: false, wsEngine: 'ws'});
+// Music tagging stuff
+const mflac = require('./lib/flac-metadata');
+const ID3Writer = require('./lib/browser-id3-writer');
+const Deezer = require('./deezer-api');
+const Spotify = require('spotify-web-api-node');
+// App stuff
 const fs = require('fs-extra');
 const async = require('async');
 const request = require('requestretry').defaults({maxAttempts: 2147483647, retryDelay: 1000, timeout: 8000});
 const os = require('os');
-const ID3Writer = require('./lib/browser-id3-writer');
-const Deezer = require('./deezer-api');
 const path = require('path');
 const crypto = require('crypto');
 const logger = require('./utils/logger.js');
-const Spotify = require('spotify-web-api-node');
 const queue = require('queue');
 const localpaths = require('./utils/localpaths.js');
 const package = require('./package.json');
