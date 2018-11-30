@@ -2,6 +2,7 @@
 
 // Variables & constants
 const socket = io.connect(window.location.href);
+const localStorage = window.localStorage;
 if(typeof mainApp !== "undefined"){
 	var defaultUserSettings = mainApp.defaultSettings;
 	var defaultDownloadLocation = mainApp.defaultDownloadDir;
@@ -10,8 +11,6 @@ let userSettings = [];
 
 let preview_track = document.getElementById('preview-track');
 let preview_stopped = true;
-
-socket.emit("autologin");
 
 socket.on("message", function(desc){
 	message(desc.title, desc.msg);
@@ -24,27 +23,24 @@ $('#modal_login_btn_login').click(function () {
 	var username = $('#modal_login_input_username').val();
 	var password = $('#modal_login_input_password').val();
 	var autologin = $('#modal_login_input_autologin').prop("checked");
+	if (autologin){
+		localStorage.setItem('autologin_email', username)
+	}
 	//Send to the software
-	socket.emit('login', username, password,autologin);
+	socket.emit('login', username, password, autologin);
 });
 
-socket.on("autologin",function(username,password){
-	$('#modal_login_input_autologin').prop('checked', true);
-	$('#modal_login_btn_login').attr("disabled", true);
-	$('#modal_login_btn_login').html("Logging in...");
-	$('#modal_login_input_username').val(username);
-	$('#modal_login_input_password').val(password);
-	M.updateTextFields();
-	socket.emit('login', username, password,false);
-});
+socket.on('getCookies', function(jar){
+	localStorage.setItem('autologin', JSON.stringify(jar))
+})
 
 socket.on("login", function (data) {
 	if (!data.error) {
-		$("#modal_settings_username").html(data.username);
-		$("#modal_settings_picture").attr("src",data.picture);
-		$("#side_user").text(data.username);
-		$("#side_avatar").attr("src",data.picture);
-		$("#side_email").text(data.email);
+		$("#modal_settings_username").html(data.user.name);
+		$("#modal_settings_picture").attr("src",data.user.picture);
+		$("#side_user").text(data.user.name);
+		$("#side_avatar").attr("src",data.user.picture);
+		$("#side_email").text(data.user.email);
 		$('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd', function () {
 			$(this).css('display', 'none');
 			$(this).removeClass('animated fadeOut');
@@ -53,7 +49,7 @@ socket.on("login", function (data) {
 		socket.emit("getChartsCountryList", {selected: userSettings.chartsCountry});
 		socket.emit("getChartsTrackListByCountry", {country: userSettings.chartsCountry});
 		// Load personal pubblic playlists
-		socket.emit("getMePlaylistList", {});
+		socket.emit("getMyPlaylistList", {});
 	}else{
 			$('#login-res-text').text(data.error);
 			setTimeout(function(){$('#login-res-text').text("");},3000);
@@ -70,6 +66,7 @@ $('#openDownloadsFolder').on('click', function () {
 		alert("For security reasons, this button will do nothing.");
 	}
 });
+
 $('#modal_tags_replayGain').on('click', function() {
 	if ($(this).is(':checked')) {
 	message('Warning','Saving replay gain causes tracks to be quieter for some users.');
@@ -79,6 +76,17 @@ $('#modal_tags_replayGain').on('click', function() {
 $(document).ready(function () {
 	M.AutoInit();
 	preview_track.volume = 0;
+
+	socket.emit("getUserSettings");
+	if (localStorage.getItem('autologin')){
+		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
+		$('#modal_login_input_autologin').prop('checked', true)
+		$('#modal_login_btn_login').attr("disabled", true)
+		$('#modal_login_btn_login').html("Logging in...")
+		$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
+		$('#modal_login_input_password').val("password")
+		M.updateTextFields()
+	}
 
 	$('.sidenav').sidenav({
 		edge: 'right'
@@ -108,7 +116,7 @@ $(document).ready(function () {
 
 	$("#button_refresh_playlist_tab").click(function(){
 		$("table_personal_playlists").html("");
-		socket.emit("getMePlaylistList", {});
+		socket.emit("getMyPlaylistList", {});
 	})
 
 	$(preview_track).on('canplay', ()=>{
@@ -156,7 +164,6 @@ $(document).ready(function () {
 	})
 
 	$('.modal').modal();
-	socket.emit("getUserSettings");
 
 	$('#modal_trackList, #modal_trackListSelective').modal({
 		onCloseStart: ()=>{
@@ -293,15 +300,17 @@ $('#modal_login_btn_signup').click(function(){
 });
 
 $('#modal_settings_btn_logout').click(function () {
-	$('#initializing').css('display', '');
+	$('#modal_login_input_username').val("")
+	$('#modal_login_input_password').val("")
+	$('#modal_login_input_autologin').prop("checked",false)
+	$('#initializing').css('display', '')
 	$('#initializing').addClass('animated fadeIn').on('webkitAnimationEnd', function () {
-		$(this).removeClass('animated fadeIn');
-		$(this).css('display', '');
+		$(this).removeClass('animated fadeIn')
+		$(this).css('display', '')
 	});
-	socket.emit('logout');
-	$('#modal_login_input_username').val("");
-	$('#modal_login_input_password').val("");
-	$('#modal_login_input_autologin').prop("checked",false);
+	localStorage.removeItem("autologin")
+	localStorage.removeItem("autologin_email")
+	socket.emit('logout')
 });
 
 // Populate settings fields
@@ -795,7 +804,7 @@ socket.on("getChartsTrackListByCountry", function (data) {
 	//data.playlist		-> Object with Playlist information
 	//data.tracks			-> Array
 	//data.tracks[0]	 -> Object of track 0
-	$("#downloadChartPlaylist").data("id", data.playlist.id)
+	$("#downloadChartPlaylist").data("id", data.playlistId)
 	var chartsTableBody = $('#tab_charts_table_charts_tbody_charts'), currentChartTrack;
 	chartsTableBody.html('');
 	for (var i = 0; i < data.tracks.length; i++) {
@@ -826,7 +835,7 @@ socket.on("getChartsTrackListByCountry", function (data) {
 });
 
 //#############################################TAB_PLAYLISTS############################################\\
-socket.on("getMePlaylistList", function (data) {
+socket.on("getMyPlaylistList", function (data) {
 	var tableBody = $('#table_personal_playlists');
 	$(tableBody).html('');
 	for (var i = 0; i < data.playlists.length; i++) {

@@ -27,7 +27,6 @@ const async = require('async')
 const request = require('requestretry').defaults({maxAttempts: 2147483647, retryDelay: 1000, timeout: 8000})
 const os = require('os')
 const path = require('path')
-const crypto = require('crypto')
 const logger = require('./utils/logger.js')
 const queue = require('queue')
 const localpaths = require('./utils/localpaths.js')
@@ -41,7 +40,6 @@ if(!fs.existsSync(localpaths.user+"config.json")){
 // Main Constants
 // Files
 const configFileLocation = localpaths.user+"config.json"
-const autologinLocation = localpaths.user+"autologin"
 // Folders
 const coverArtFolder = os.tmpdir() + path.sep + 'deezloader-imgs' + path.sep
 const defaultDownloadFolder = localpaths.user + 'Deezloader Music' + path.sep
@@ -53,8 +51,6 @@ if (spotifySupport){
 	var authCredentials = require(localpaths.user+'authCredentials.js')
 	var Spotify = new spotifyApi(authCredentials)
 }
-// Deezer API
-var Deezer = new deezerApi()
 
 // Setup the folders START
 var mainFolder = defaultDownloadFolder
@@ -78,36 +74,9 @@ app.use('/', express.static(__dirname + '/public/'))
 server.listen(configFile.serverPort)
 logger.info('Server is running @ localhost:' + configFile.serverPort)
 
-// TODO: Replace this part with cookie login
-//Autologin encryption/decryption
-var ekey = "62I9smDurjvfOdn2JhUdi99yeoAhxikw"
-
-function alencrypt(input) {
-	let iv = crypto.randomBytes(16)
-	let data = Buffer.from(input).toString('binary')
-	key = Buffer.from(ekey, "utf8")
-	let cipher = crypto.createCipheriv('aes-256-cbc', key, iv)
-	let encrypted
-	encrypted =  cipher.update(data, 'utf8', 'binary') +  cipher.final('binary')
-	let encoded = Buffer.from(iv, 'binary').toString('hex') + Buffer.from(encrypted, 'binary').toString('hex')
-	return encoded
-}
-function aldecrypt(encoded) {
-	let combined = Buffer.from(encoded, 'hex')
-	key = Buffer.from(ekey, "utf8")
-	// Create iv
-	let iv = Buffer.alloc(16)
-	combined.copy(iv, 0, 0, 16)
-	edata = combined.slice(16).toString('binary')
-	// Decipher encrypted data
-	let decipher = crypto.createDecipheriv('aes-256-cbc', key, iv)
-	let decrypted, plaintext
-	plaintext = (decipher.update(edata, 'binary', 'utf8') + decipher.final('utf8'))
-	return plaintext
-}
-
 // START sockets clusterfuck
-io.sockets.on('connection', function (socket) {
+io.sockets.on('connection', function (s) {
+	logger.info("Connection recived!")
 
 	// Check for updates
 	request({
@@ -124,7 +93,7 @@ io.sockets.on('connection', function (socket) {
 				parseInt(lastVersion_PATCH) > parseInt(currentVersion_PATCH))
 			{
 				logger.info("Update Available");
-				socket.emit("message", {title: `Version ${lastVersion_MAJOR}.${lastVersion_MINOR}.${lastVersion_PATCH} is available!`, msg: body.changelog});
+				s.emit("message", {title: `Version ${lastVersion_MAJOR}.${lastVersion_MINOR}.${lastVersion_PATCH} is available!`, msg: body.changelog});
 			}
 		} else {
 			logger.error(error + " " + response.statusCode);
@@ -132,58 +101,52 @@ io.sockets.on('connection', function (socket) {
 	})
 
 	// Connection dependet variables
-	socket.downloadQueue = {}
-	socket.currentItem = null
-	socket.lastQueueId = null
-	socket.trackQueue = queue({
+	// TODO: Change queue system
+	s.downloadQueue = {}
+	s.currentItem = null
+	s.lastQueueId = null
+	s.trackQueue = queue({
 		autostart: true
 	})
-	socket.trackQueue.concurrency = configFile.userDefined.queueConcurrency
+	s.trackQueue.concurrency = configFile.userDefined.queueConcurrency
+	s.Deezer = new deezerApi()
 
 	// Function for logging in
-	socket.on("login", async function (username, password, autologin) {
+	s.on("login", async function (username, password, autologin) {
 		try{
 			logger.info("Logging in");
-			socket.user = await Deezer.login(username, password)
-			socket.emit("login", {user: socket.user})
+			await s.Deezer.login(username, password)
+			s.emit("login", {user: s.Deezer.user})
 			logger.info("Logged in successfully")
+			if (autologin){
+				s.emit('getCookies', s.Deezer.getCookies())
+			}
 		}catch(err){
-			socket.emit("login", {error: err.message})
+			s.emit("login", {error: err.message})
 			logger.error("Failed to login, "+err)
 		}
 	});
 
-	// TODO: Change autologin with cookie method
-	socket.on("autologin", function(){
-		fs.readFile(autologinLocation, function(err, data){
-			if(err){
-				logger.info("No auto login found");
-				return;
-			}
-			try{
-				var fdata = aldecrypt(data.toString('utf8'));
 
-			}catch(e){
-				logger.warn("Invalid autologin file, deleting");
-				fs.unlink(autologinLocation,function(){
-				});
-				return;
-			}
-			fdata = fdata.split('\n');
-			socket.emit("autologin",fdata[0],fdata[1]);
-		});
-	});
+	s.on("autologin", async function(jar, email){
+		try{
+      await s.Deezer.loginViaCookies(jar, email)
+			s.emit('login', {user: s.Deezer.user})
+    }catch(err){
+      s.emit('login', {error: err.message})
+      return
+    }
+	})
 
-	// TODO: Change autologin with cookie method
-	socket.on("logout", function(){
-		logger.info("Logged out");
-		fs.unlink(autologinLocation,function(){
-		});
+	s.on("logout", function(){
+		logger.info("Logged out")
+		s.Deezer = new deezerApi()
 		return;
 	});
 
+	/*
 	// TODO: Make download progress not depend from the API
-	Deezer.onDownloadProgress = function (track, progress) {
+	s.Deezer.onDownloadProgress = function (track, progress) {
 		if (!track.trackSocket) {
 			return;
 		}
@@ -218,27 +181,27 @@ io.sockets.on('connection', function (socket) {
 
 	// TODO: Change queue system
 	function addToQueue(object) {
-		socket.downloadQueue[object.queueId] = object;
-		socket.emit('addToQueue', object);
+		s.downloadQueue[object.queueId] = object;
+		s.emit('addToQueue', object);
 		queueDownload(getNextDownload());
 	}
 
 	// TODO: Change queue system
 	function getNextDownload() {
-		if (socket.currentItem != null || Object.keys(socket.downloadQueue).length == 0) {
-			if (Object.keys(socket.downloadQueue).length == 0 && socket.currentItem == null) {
-				socket.emit("emptyDownloadQueue", {});
+		if (s.currentItem != null || Object.keys(s.downloadQueue).length == 0) {
+			if (Object.keys(s.downloadQueue).length == 0 && s.currentItem == null) {
+				s.emit("emptyDownloadQueue", {});
 			}
 			return null;
 		}
-		socket.currentItem = socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-		return socket.currentItem;
+		s.currentItem = s.downloadQueue[Object.keys(s.downloadQueue)[0]];
+		return s.currentItem;
 	}
 
 	// TODO: Change queue system
 	function socketDownloadTrack(data){
 		if(parseInt(data.id)>0){
-			Deezer.getTrack(data.id, data.settings.maxBitrate, data.settings.fallbackBitrate, function (track, err) {
+			s.Deezer.getTrack(data.id, data.settings.maxBitrate, data.settings.fallbackBitrate, function (track, err) {
 				if (err) {
 					logger.error(err)
 					return;
@@ -260,7 +223,7 @@ io.sockets.on('connection', function (socket) {
 				addToQueue(JSON.parse(JSON.stringify(_track)));
 			});
 		}else{
-			Deezer.getLocalTrack(data.id, function (track, err) {
+			s.Deezer.getLocalTrack(data.id, function (track, err) {
 				if (err) {
 					logger.error(err)
 					return;
@@ -283,11 +246,11 @@ io.sockets.on('connection', function (socket) {
 			});
 		}
 	}
-	socket.on("downloadtrack", data=>{socketDownloadTrack(data)});
+	s.on("downloadtrack", data=>{socketDownloadTrack(data)});
 
 	// TODO: Change queue system
 	function socketDownloadPlaylist(data){
-		Deezer.getPlaylist(data.id, function (playlist, err) {
+		s.Deezer.getPlaylist(data.id, function (playlist, err) {
 			if (err) {
 				logger.error(err)
 				return;
@@ -305,7 +268,7 @@ io.sockets.on('connection', function (socket) {
 				cover: playlist["picture_small"],
 			};
 			_playlist.settings = data.settings || {};
-			Deezer.getAdvancedPlaylistTracks(data.id, function (playlist, err) {
+			s.Deezer.getAdvancedPlaylistTracks(data.id, function (playlist, err) {
 				if (err){
 					logger.error(err)
 					return;
@@ -316,11 +279,11 @@ io.sockets.on('connection', function (socket) {
 			})
 		});
 	}
-	socket.on("downloadplaylist", data=>{socketDownloadPlaylist(data)});
+	s.on("downloadplaylist", data=>{socketDownloadPlaylist(data)});
 
 	// TODO: Change queue system
 	function socketDownloadAlbum(data){
-		Deezer.getAlbum(data.id, function (album, err) {
+		s.Deezer.getAlbum(data.id, function (album, err) {
 			if (err) {
 				logger.error(err)
 				return;
@@ -339,7 +302,7 @@ io.sockets.on('connection', function (socket) {
 			};
 			data.settings.albumInfo = slimDownAlbumInfo(album)
 			_album.settings = data.settings || {};
-			Deezer.getAdvancedAlbumTracks(data.id, function (album, err) {
+			s.Deezer.getAdvancedAlbumTracks(data.id, function (album, err) {
 				if (err){
 					logger.error(err)
 					return;
@@ -350,11 +313,11 @@ io.sockets.on('connection', function (socket) {
 			})
 		});
 	}
-	socket.on("downloadalbum", data=>{socketDownloadAlbum(data)});
+	s.on("downloadalbum", data=>{socketDownloadAlbum(data)});
 
 	// TODO: Change queue system
 	function socketDownloadArtist(data){
-		Deezer.getArtistAlbums(data.id, function (albums, err) {
+		s.Deezer.getArtistAlbums(data.id, function (albums, err) {
 			if (err) {
 				logger.error(err)
 				return;
@@ -368,10 +331,10 @@ io.sockets.on('connection', function (socket) {
 			})(albums.data.length-1);
 		});
 	}
-	socket.on("downloadartist", data=>{socketDownloadArtist(data)});
+	s.on("downloadartist", data=>{socketDownloadArtist(data)});
 
 	// TODO: Change queue system
-	socket.on("downloadspotifyplaylist", function (data) {
+	s.on("downloadspotifyplaylist", function (data) {
 		if (spotifySupport){
 			Spotify.clientCredentialsGrant().then(function(creds) {
 				Spotify.setAccessToken(creds.body['access_token']);
@@ -397,7 +360,7 @@ io.sockets.on('connection', function (socket) {
 				return;
 			})
 		}else{
-			socket.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
 		}
 	});
 
@@ -410,11 +373,11 @@ io.sockets.on('connection', function (socket) {
 		if (!downloading) return;
 
 		// New batch emits new message
-		if (socket.lastQueueId != downloading.queueId) {
+		if (s.lastQueueId != downloading.queueId) {
 			if (downloading.type != "spotifyplaylist"){
-				socket.emit("downloadStarted", {queueId: downloading.queueId});
+				s.emit("downloadStarted", {queueId: downloading.queueId});
 			}
-			socket.lastQueueId = downloading.queueId;
+			s.lastQueueId = downloading.queueId;
 		}
 		let filePath;
 		logger.info(`Registered ${downloading.type}: ${downloading.id} | ${downloading.artist} - ${downloading.name}`);
@@ -431,13 +394,13 @@ io.sockets.on('connection', function (socket) {
 						downloading.downloaded++;
 					}
 					downloading.settings = null;
-					socket.emit("updateQueue", downloading);
-					socket.emit("downloadProgress", {
+					s.emit("updateQueue", downloading);
+					s.emit("downloadProgress", {
 						queueId: downloading.queueId,
 						percentage: 100
 					});
-					if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-					socket.currentItem = null;
+					if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
+					s.currentItem = null;
 					queueDownload(getNextDownload());
 				});
 				break;
@@ -468,8 +431,8 @@ io.sockets.on('connection', function (socket) {
 				}
 				downloading.finished = new Promise((resolve,reject)=>{
 					downloading.playlistContent.every(function (t) {
-						socket.trackQueue.push(cb=>{
-							if (!socket.downloadQueue[downloading.queueId]) {
+						s.trackQueue.push(cb=>{
+							if (!s.downloadQueue[downloading.queueId]) {
 								reject();
 								return false;
 							}
@@ -483,11 +446,11 @@ io.sockets.on('connection', function (socket) {
 									downloading.failed++;
 									downloading.errorLog += `${t.id} | ${t.artist} - ${t.name} | ${err}\r\n`;
 								}
-								socket.emit("downloadProgress", {
+								s.emit("downloadProgress", {
 									queueId: downloading.queueId,
 									percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
 								});
-								socket.emit("updateQueue", downloading);
+								s.emit("updateQueue", downloading);
 								if (downloading.downloaded + downloading.failed == downloading.size)
 									resolve();
 								cb();
@@ -498,13 +461,13 @@ io.sockets.on('connection', function (socket) {
 				})
 				downloading.finished.then(()=>{
 					if (downloading.countPerAlbum) {
-						if (Object.keys(socket.downloadQueue).length > 1 && Object.keys(socket.downloadQueue)[1] == downloading.queueId) {
-							socket.downloadQueue[downloading.queueId].download = downloading.downloaded;
+						if (Object.keys(s.downloadQueue).length > 1 && Object.keys(s.downloadQueue)[1] == downloading.queueId) {
+							s.downloadQueue[downloading.queueId].download = downloading.downloaded;
 						}
-						socket.emit("updateQueue", downloading);
+						s.emit("updateQueue", downloading);
 					}
 					logger.info("Album finished "+downloading.name);
-					socket.emit("downloadProgress", {
+					s.emit("downloadProgress", {
 						queueId: downloading.queueId,
 						percentage: 100
 					});
@@ -527,14 +490,14 @@ io.sockets.on('connection', function (socket) {
 					if (downloading.settings.createM3UFile){
 						fs.writeFileSync(filePath + "playlist.m3u", downloading.playlistArr.join("\r\n"));
 					}
-					if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-					socket.currentItem = null;
+					if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
+					s.currentItem = null;
 					queueDownload(getNextDownload());
 				}).catch((err)=>{
 					if (err) return logger.error(err.stack);
 					logger.info("Stopping the album queue");
-					if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-					socket.currentItem = null;
+					if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
+					s.currentItem = null;
 					queueDownload(getNextDownload());
 				});
 				break;
@@ -557,8 +520,8 @@ io.sockets.on('connection', function (socket) {
 				filePath = mainFolder+antiDot(fixName(downloading.settings.plName)) + path.sep
 				downloading.finished = new Promise((resolve,reject)=>{
 					downloading.playlistContent.every(function (t) {
-						socket.trackQueue.push(cb=>{
-							if (!socket.downloadQueue[downloading.queueId]) {
+						s.trackQueue.push(cb=>{
+							if (!s.downloadQueue[downloading.queueId]) {
 								reject();
 								return false;
 							}
@@ -572,11 +535,11 @@ io.sockets.on('connection', function (socket) {
 									downloading.failed++;
 									downloading.errorLog += `${t.id} | ${t.artist} - ${t.name} | ${err}\r\n`;
 								}
-								socket.emit("downloadProgress", {
+								s.emit("downloadProgress", {
 									queueId: downloading.queueId,
 									percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
 								});
-								socket.emit("updateQueue", downloading);
+								s.emit("updateQueue", downloading);
 								if (downloading.downloaded + downloading.failed == downloading.size)
 									resolve();
 								cb();
@@ -587,7 +550,7 @@ io.sockets.on('connection', function (socket) {
 				});
 				downloading.finished.then(()=>{
 					logger.info("Playlist finished "+downloading.name);
-					socket.emit("downloadProgress", {
+					s.emit("downloadProgress", {
 						queueId: downloading.queueId,
 						percentage: 100
 					});
@@ -630,14 +593,14 @@ io.sockets.on('connection', function (socket) {
 							});
 						}
 					}
-					if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-					socket.currentItem = null;
+					if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
+					s.currentItem = null;
 					queueDownload(getNextDownload());
 				}).catch((err)=>{
 					if (err) return logger.error(err.stack);
 					logger.info("Stopping the playlist queue");
-					if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-					socket.currentItem = null;
+					if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
+					s.currentItem = null;
 					queueDownload(getNextDownload());
 				});
 				break;
@@ -652,7 +615,7 @@ io.sockets.on('connection', function (socket) {
 					downloading.playlistContent = new Array(downloading.size);
 					downloading.tracks.map((t,i)=>{
 						downloading.playlistContent[i]=new Promise(function(resolve, reject) {
-							Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
+							s.Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
 								resolve(response);
 							});
 						});
@@ -663,7 +626,7 @@ io.sockets.on('connection', function (socket) {
 								Spotify.getPlaylistTracks(downloading.id, {fields: "items(track.artists,track.name,track.album)", offset: offset*100}).then(function(resp) {
 									resp.body['items'].forEach((t, index) => {
 										downloading.playlistContent[(offset*100)+index] = new Promise(function(resolve, reject) {
-											Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
+											s.Deezer.track2ID(t.track.artists[0].name, t.track.name, t.track.album.name, function (response,err){
 												resolve(response);
 											});
 										});
@@ -678,15 +641,15 @@ io.sockets.on('connection', function (socket) {
 						logger.info("Waiting for all tracks to be converted");
 						return Promise.all(downloading.playlistContent)
 					}).then((values)=>{
-						if (!socket.downloadQueue[downloading.queueId]) {
+						if (!s.downloadQueue[downloading.queueId]) {
 							logger.info("Stopping the playlist queue");
-							if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-							socket.currentItem = null;
+							if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
+							s.currentItem = null;
 							queueDownload(getNextDownload());
 							return;
 						}
 						logger.info("All tracks converted, starting download");
-						socket.emit("downloadStarted", {queueId: downloading.queueId});
+						s.emit("downloadStarted", {queueId: downloading.queueId});
 						downloading.errorLog = "";
 						downloading.searchedLog = "";
 						downloading.settings.playlist = {
@@ -697,8 +660,8 @@ io.sockets.on('connection', function (socket) {
 							values.every(function (t) {
 								t.index = values.indexOf(t)+""
 								t.queueId = downloading.queueId
-								socket.trackQueue.push(cb=>{
-									if (!socket.downloadQueue[downloading.queueId]) {
+								s.trackQueue.push(cb=>{
+									if (!s.downloadQueue[downloading.queueId]) {
 										reject();
 										return false;
 									}
@@ -712,13 +675,13 @@ io.sockets.on('connection', function (socket) {
 											downloading.failed++;
 											downloading.errorLog += `${t.id} | ${t.artist} - ${t.name} | ${err}\r\n`;
 										}
-										socket.emit("downloadProgress", {
+										s.emit("downloadProgress", {
 											queueId: downloading.queueId,
 											percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
 										});
 										if (downloading.downloaded + downloading.failed == downloading.size)
 											resolve();
-										socket.emit("updateQueue", downloading);
+										s.emit("updateQueue", downloading);
 										cb();
 									});
 								});
@@ -727,7 +690,7 @@ io.sockets.on('connection', function (socket) {
 						});
 						downloading.finished.then(()=>{
 							logger.info("Playlist finished "+downloading.name);
-							socket.emit("downloadProgress", {
+							s.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: 100
 							});
@@ -769,14 +732,14 @@ io.sockets.on('connection', function (socket) {
 									});
 								}
 							}
-							if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-							socket.currentItem = null;
+							if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
+							s.currentItem = null;
 							queueDownload(getNextDownload());
 						}).catch((err)=>{
 							if (err) return logger.error(err.stack);
 							logger.info("Stopping the playlist queue");
-							if (downloading && socket.downloadQueue[Object.keys(socket.downloadQueue)[0]] && (Object.keys(socket.downloadQueue)[0] == downloading.queueId)) delete socket.downloadQueue[Object.keys(socket.downloadQueue)[0]];
-							socket.currentItem = null;
+							if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
+							s.currentItem = null;
 							queueDownload(getNextDownload());
 						});
 					}).catch((err)=>{
@@ -786,16 +749,16 @@ io.sockets.on('connection', function (socket) {
 					logger.error('Something went wrong!'+err.stack);
 				});
 			}else{
-				socket.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+				s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
 			}
 			break;
 		}
-	}
+	}*/
 
 	// Returns list of charts available
-	socket.on("getChartsCountryList", async function (data) {
+	s.on("getChartsCountryList", async function (data) {
 		try{
-			let charts = await Deezer.getChartsTopCountry()
+			let charts = await s.Deezer.legacyGetChartsTopCountry()
 			if(charts){
 				charts = charts.data || []
 			}else{
@@ -812,8 +775,9 @@ io.sockets.on('connection', function (socket) {
 				}
 				countries.push(obj)
 			}
-			socket.emit("getChartsCountryList", {countries: countries, selected: data.selected})
+			s.emit("getChartsCountryList", {countries: countries, selected: data.selected})
 		}catch(err){
+			logger.error(err.stack)
 			return
 		}
 	})
@@ -821,17 +785,18 @@ io.sockets.on('connection', function (socket) {
 	// Returns chart tracks from Playlist ID
 	async function getChartsTrackListById(playlistId){
 		if (typeof playlistId === 'undefined') {
-			socket.emit("getChartsTrackListByCountry", {err: "Can't find that playlist"})
+			s.emit("getChartsTrackListByCountry", {err: "Can't find that playlist"})
 			return
 		}
 		try{
-			let tracks = await Deezer.getPlaylistTracks(playlistId)
-			socket.emit("getChartsTrackListByCountry", {
-				playlist: charts[countries.indexOf(country)],
+			let tracks = await s.Deezer.legacyGetPlaylistTracks(playlistId)
+			s.emit("getChartsTrackListByCountry", {
+				playlistId: playlistId,
 				tracks: tracks.data
 			})
 		}catch(err){
-			socket.emit("getChartsTrackListByCountry", {err: err})
+			s.emit("getChartsTrackListByCountry", {err: err})
+			logger.error(err.stack)
 			return
 		}
 	}
@@ -839,11 +804,11 @@ io.sockets.on('connection', function (socket) {
 	// Returns chart tracks from country name
 	async function getChartsTrackListByCountry(country){
 		if (typeof country === 'undefined') {
-			socket.emit("getChartsTrackListByCountry", {err: "No country passed"})
+			s.emit("getChartsTrackListByCountry", {err: "No country passed"})
 			return
 		}
 		try{
-			let charts = await Deezer.getChartsTopCountry()
+			let charts = await s.Deezer.legacyGetChartsTopCountry()
 			if(charts){
 				charts = charts.data || []
 			}else{
@@ -854,21 +819,23 @@ io.sockets.on('connection', function (socket) {
 				countries.push(charts[i].title.replace("Top ", ""))
 			}
 			if (countries.indexOf(country) == -1) {
-				socket.emit("getChartsTrackListByCountry", {err: "Country not found"});
+				s.emit("getChartsTrackListByCountry", {err: "Country not found"});
 				return
 			}
 			let playlistId = charts[countries.indexOf(country)].id;
-			getChartsTrackListById(playlistId)
+			await getChartsTrackListById(playlistId)
 		}catch(err){
+			logger.error(err.stack)
 			return
 		}
 	}
-	socket.on("getChartsTrackListByCountry", function (data) {getChartsTrackListById(data.country)})
+	s.on("getChartsTrackListByCountry", function (data) {getChartsTrackListByCountry(data.country)})
 
+	// Returns list of playlists
 	async function getMyPlaylistList(){
 		try{
 			logger.info("Loading Personal Playlists")
-			let data = await Deezer.getUserPlaylists(this.user.id)
+			let data = await s.Deezer.legacyGetUserPlaylists(s.Deezer.user.id)
 			if(data){
 				data = data.data || []
 			}else{
@@ -893,7 +860,7 @@ io.sockets.on('connection', function (socket) {
 				let pages = []
 				let playlistList = new Array(total)
 				for (let offset = 0; offset<=numPages; offset++){
-					pages.push(new Promise(function(resolvePage) {
+					pages.push(new Promise(async function(resolvePage) {
 						data = await Spotify.getUserPlaylists(configFile.userDefined.spotifyUser, {fields: "items(images,name,owner.id,tracks.total,uri)", offset: offset*20})
 						playlistList[(offset*20)+i] = {
 							title: playlist.name,
@@ -903,20 +870,22 @@ io.sockets.on('connection', function (socket) {
 							spotify: true
 						}
 						resolvePage()
-					})
+					}))
 				}
 				await Promise.all(pages)
 				playlists = playlists.concat(playlistList)
 			}
 			logger.info(`Loaded ${playlists.length} Playlist${playlists.length>1 ? "s" : ""}`)
-			socket.emit("getMyPlaylistList", {playlists: playlists})
+			s.emit("getMyPlaylistList", {playlists: playlists})
 		}catch(err){
 			logger.error(err.stack)
+			return
 		}
 	}
-	socket.on("getMyPlaylistList", function (d) {getMyPlaylistList()})
+	s.on("getMyPlaylistList", function (d) {getMyPlaylistList()})
 
-	socket.on("search", async function (data) {
+	// Returns search results from a query
+	s.on("search", async function (data) {
 		data.type = data.type || "track"
 		if (["track", "playlist", "album", "artist"].indexOf(data.type) == -1) data.type = "track"
 
@@ -931,25 +900,29 @@ io.sockets.on('connection', function (socket) {
 			.replace(/—/g, "-")
 
 		try {
-			let searchObject = await Deezer.search(encodeURIComponent(data.text), data.type)
-			socket.emit("search", {type: data.type, items: searchObject.data})
+			let searchObject = await s.Deezer.legacySearch(encodeURIComponent(data.text), data.type)
+			s.emit("search", {type: data.type, items: searchObject.data})
 		} catch (e) {
-			socket.emit("search", {type: data.type, items: []})
+			s.emit("search", {type: data.type, items: []})
+			logger.error(e.stack)
+			return
 		}
 	})
 
-	socket.on("getTrackList", function (data) {
+	// TODO: Fix this
+	/*
+	s.on("getTrackList", function (data) {
 		if (!data.type || (["playlist", "album", "artist", "spotifyplaylist"].indexOf(data.type) == -1) || !data.id) {
-			socket.emit("getTrackList", {err: -1, response: {}, id: data.id, reqType: data.type});
+			s.emit("getTrackList", {err: -1, response: {}, id: data.id, reqType: data.type});
 			return;
 		}
 		if (data.type == 'artist') {
-			Deezer.getArtistAlbums(data.id, function (response, err) {
+			s.Deezer.getArtistAlbums(data.id, function (response, err) {
 				if (err) {
-					socket.emit("getTrackList", {err: "wrong id artist", response: {}, id: data.id, reqType: data.type});
+					s.emit("getTrackList", {err: "wrong id artist", response: {}, id: data.id, reqType: data.type});
 					return;
 				}
-				socket.emit("getTrackList", {response: response, id: data.id, reqType: data.type});
+				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type});
 			});
 		}else if(data.type == "spotifyplaylist" && spotifySupport){
 			Spotify.clientCredentialsGrant().then(function(creds) {
@@ -991,17 +964,17 @@ io.sockets.on('connection', function (socket) {
 					}
 				}
 				Promise.all(pages).then((val)=>{
-					socket.emit("getTrackList", {response: {'data': response}, id: data.id, reqType: data.type});
+					s.emit("getTrackList", {response: {'data': response}, id: data.id, reqType: data.type});
 				})
 			})
 		}else{
 			let reqType = data.type.charAt(0).toUpperCase() + data.type.slice(1);
 			Deezer["get" + reqType + "Tracks"](data.id, function (response, err) {
 				if (err) {
-					socket.emit("getTrackList", {err: "wrong id "+reqType, response: {}, id: data.id, reqType: data.type});
+					s.emit("getTrackList", {err: "wrong id "+reqType, response: {}, id: data.id, reqType: data.type});
 					return;
 				}
-				socket.emit("getTrackList", {response: response, id: data.id, reqType: data.type});
+				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type});
 			});
 		}
 	});
@@ -1013,51 +986,52 @@ io.sockets.on('connection', function (socket) {
 		}
 		let cancel = false;
 		let cancelSuccess;
-		if (socket.downloadQueue[queueId]){
+		if (s.downloadQueue[queueId]){
 			cancel = true;
-			delete socket.downloadQueue[queueId];
+			delete s.downloadQueue[queueId];
 		}
-		if (socket.currentItem && socket.currentItem.queueId == queueId) {
-			cancelSuccess = Deezer.cancelDecryptTrack(queueId);
-			socket.trackQueue = queue({
+		if (s.currentItem && s.currentItem.queueId == queueId) {
+			cancelSuccess = s.Deezer.cancelDecryptTrack(queueId);
+			s.trackQueue = queue({
 				autostart: true,
-				concurrency: socket.trackQueue.concurrency
+				concurrency: s.trackQueue.concurrency
 			})
 			cancel = cancel || cancelSuccess;
 		}
 		if (cancel) {
-			socket.emit("cancelDownload", {queueId: queueId});
+			s.emit("cancelDownload", {queueId: queueId});
 		}
 	}
-	socket.on("cancelDownload", function (data) {socketCancelDownload(data.queueId)});
+	s.on("cancelDownload", function (data) {socketCancelDownload(data.queueId)});
 
-	socket.on("cancelAllDownloads", function(data){
+	s.on("cancelAllDownloads", function(data){
 		data.queueList.forEach(x=>{
 			socketCancelDownload(x);
 		})
 	})
 
-	socket.on("downloadAlreadyInQueue", function (data) {
+	s.on("downloadAlreadyInQueue", function (data) {
 		if (data.id) {
 			return;
 		}
 		let isInQueue = checkIfAlreadyInQueue(data.id);
 		if (isInQueue) {
-			socket.emit("downloadAlreadyInQueue", {alreadyInQueue: true, id: data.id, queueId: isInQueue});
+			s.emit("downloadAlreadyInQueue", {alreadyInQueue: true, id: data.id, queueId: isInQueue});
 		} else {
-			socket.emit("downloadAlreadyInQueue", {alreadyInQueue: false, id: data.id});
+			s.emit("downloadAlreadyInQueue", {alreadyInQueue: false, id: data.id});
 		}
 	});
+	*/
 
-	socket.on("getUserSettings", function () {
+	s.on("getUserSettings", function () {
 		let settings = configFile.userDefined;
 		if (!settings.downloadLocation) {
 			settings.downloadLocation = mainFolder;
 		}
-		socket.emit('getUserSettings', {settings: settings});
+		s.emit('getUserSettings', {settings: settings});
 	});
 
-	socket.on("saveSettings", function (settings) {
+	s.on("saveSettings", function (settings) {
 		if (settings.userDefined.downloadLocation == defaultDownloadFolder) {
 			settings.userDefined.downloadLocation = "";
 		} else {
@@ -1067,17 +1041,17 @@ io.sockets.on('connection', function (socket) {
 
 		if (settings.userDefined.queueConcurrency < 1) settings.userDefined.queueConcurrency = 1;
 
-		if (settings.userDefined.queueConcurrency != socket.trackQueue.concurrency){
-			socket.trackQueue.concurrency = settings.userDefined.queueConcurrency;
+		if (settings.userDefined.queueConcurrency != s.trackQueue.concurrency){
+			s.trackQueue.concurrency = settings.userDefined.queueConcurrency;
 		}
 
 		if (settings.userDefined.chartsCountry != configFile.userDefined.chartsCountry){
-			socket.emit("setChartsCountry", {selected: settings.userDefined.chartsCountry});
-			socketGetChartsTrackListByCountry(settings.userDefined.chartsCountry);
+			s.emit("setChartsCountry", {selected: settings.userDefined.chartsCountry});
+			getChartsTrackListByCountry(settings.userDefined.chartsCountry);
 		}
 
 		if (settings.userDefined.spotifyUser != configFile.userDefined.spotifyUser){
-			socketGetMePlaylistList(settings.userDefined.spotifyUser);
+			getMyPlaylistList(settings.userDefined.spotifyUser);
 		}
 
 		configFile.userDefined = settings.userDefined;
@@ -1088,9 +1062,10 @@ io.sockets.on('connection', function (socket) {
 		});
 	});
 
+	/*
 	// TODO: Rewrite this entire function with awaits
 	function downloadTrack(t, settings, altmetadata, callback) {
-		if (!socket.downloadQueue[t.queueId]) {
+		if (!s.downloadQueue[t.queueId]) {
 			logger.error(`Failed to download ${t.artist} - ${t.name}: Not in queue`);
 			callback(new Error("Not in queue"));
 			return;
@@ -1106,11 +1081,11 @@ io.sockets.on('connection', function (socket) {
 			if (!settings.trackInfo){
 				logger.info("Getting track data");
 				if (parseInt(t.id)<0){
-					Deezer.getLocalTrack(t.id, function (trackInfo, err) {
+					s.Deezer.getLocalTrack(t.id, function (trackInfo, err) {
 						if (err) {
 							if(!t.searched){
 								logger.warn("Failed to download track, searching for alternative");
-								Deezer.track2ID(t.artist, t.name, null, data=>{
+								s.Deezer.track2ID(t.artist, t.name, null, data=>{
 									if (t.id != 0){
 										t.searched = true;
 										t.id = data.id;
@@ -1131,7 +1106,7 @@ io.sockets.on('connection', function (socket) {
 						resolve(trackInfo);
 					});
 				}else{
-					Deezer.getTrack(t.id, settings.maxBitrate, settings.fallbackBitrate, function (trackInfo, err) {
+					s.Deezer.getTrack(t.id, settings.maxBitrate, settings.fallbackBitrate, function (trackInfo, err) {
 						if (err) {
 							if(t.fallback){
 								logger.warn("Failed to download track, falling on alternative");
@@ -1140,7 +1115,7 @@ io.sockets.on('connection', function (socket) {
 								downloadTrack(t, settings, null, callback);
 							}else if(!t.searched){
 								logger.warn("Failed to download track, searching for alternative");
-								Deezer.track2ID(t.artist, t.name, null, data=>{
+								s.Deezer.track2ID(t.artist, t.name, null, data=>{
 									if (t.id != 0){
 										t.searched = true;
 										t.id = data.id;
@@ -1172,10 +1147,10 @@ io.sockets.on('connection', function (socket) {
 			if (parseInt(t.id)>0 && !altmetadata){
 				if (!settings.albumInfo){
 					logger.info("Getting album data");
-					Deezer.getAlbum(track["ALB_ID"], function(res, err){
+					s.Deezer.getAlbum(track["ALB_ID"], function(res, err){
 						if(err){
 							logger.warn("Album not found, trying to reach deeper");
-							Deezer.getAAlbum(track["ALB_ID"], function(res, err){
+							s.Deezer.getAAlbum(track["ALB_ID"], function(res, err){
 								if(err){
 									if(t.fallback){
 										logger.warn("Failed to download track, falling on alternative");
@@ -1185,7 +1160,7 @@ io.sockets.on('connection', function (socket) {
 										downloadTrack(t, settings, null, callback);
 									}else if(!t.searched){
 										logger.warn("Failed to download track, searching for alternative");
-										Deezer.track2ID(t.artist, t.name, null, data=>{
+										s.Deezer.track2ID(t.artist, t.name, null, data=>{
 											if (t.id != 0){
 												t.searched = true;
 												t.id = data.id;
@@ -1226,7 +1201,7 @@ io.sockets.on('connection', function (socket) {
 			if (((settings.tags.discTotal || settings.createCDFolder) && parseInt(t.id)>0) && !altmetadata){
 				logger.info("Getting total disc number");
 				temp = new Promise((resolve, reject) =>{
-					Deezer.getATrack(ajson.tracks.data[ajson.tracks.data.length-1].id, function(tres){
+					s.Deezer.getATrack(ajson.tracks.data[ajson.tracks.data.length-1].id, function(tres){
 						resolve(tres.disk_number);
 					});
 				})
@@ -1241,7 +1216,7 @@ io.sockets.on('connection', function (socket) {
 		if ((settings.tags.bpm && parseInt(t.id)>0) && !altmetadata){
 			logger.info("Getting BPM");
 			temp = new Promise((resolve, reject) =>{
-				Deezer.getATrack(t.id, function(tres, err){
+				s.Deezer.getATrack(t.id, function(tres, err){
 					if (err) resolve(0);
 					resolve(tres.bpm);
 				});
@@ -1408,7 +1383,7 @@ io.sockets.on('connection', function (socket) {
 		else
 			tempPath = writePath;
 		logger.info("Downloading and decrypting");
-		Deezer.decryptTrack(tempPath, track, t.queueId, function (err) {
+		s.Deezer.decryptTrack(tempPath, track, t.queueId, function (err) {
 			if (err && err.message == "aborted") {
 				logger.info("Track got aborted");
 				t.trackSocket = null
@@ -1424,7 +1399,7 @@ io.sockets.on('connection', function (socket) {
 					downloadTrack(t, settings, JSON.parse(JSON.stringify(metadata)), callback);
 				}else if(!t.searched){
 					logger.warn("Failed to download track, searching for alternative");
-					Deezer.track2ID(t.artist, t.name, null, data=>{
+					s.Deezer.track2ID(t.artist, t.name, null, data=>{
 						t.searched = true;
 						t.id = data.id;
 						t.artist = data.artist;
@@ -1668,16 +1643,17 @@ io.sockets.on('connection', function (socket) {
 	// TODO: Change queue system
 	function checkIfAlreadyInQueue(id) {
 		let exists = false;
-		Object.keys(socket.downloadQueue).forEach(x=>{
-			if (socket.downloadQueue[x].id == id) {
-				exists = socket.downloadQueue[i].queueId;
+		Object.keys(s.downloadQueue).forEach(x=>{
+			if (s.downloadQueue[x].id == id) {
+				exists = s.downloadQueue[i].queueId;
 			}
 		});
-		if (socket.currentItem && (socket.currentItem.id == id)) {
-			exists = socket.currentItem.queueId;
+		if (s.currentItem && (s.currentItem.id == id)) {
+			exists = s.currentItem.queueId;
 		}
 		return exists;
 	}
+*/
 });
 
 // Helper functions
@@ -1724,7 +1700,7 @@ function initFolders() {
 		updateSettingsFile('downloadLocation', defaultDownloadFolder);
 	}
 	//fs.removeSync(coverArtFolder);
-	fs.ensureFolderSync(coverArtFolder);
+	//fs.ensureFolderSync(coverArtFolder);
 }
 
 /**
@@ -1814,6 +1790,36 @@ function splitNumber(str,total){
 	return i > 0 ? str.slice(0, i) : str;
 }
 
+function swichReleaseType(id){
+	switch (id) {
+		case "0":
+			return "Album";
+		case "1":
+			return "Single";
+		case "3":
+			return "EP";
+		default:
+			return id;
+	}
+}
+
+function uniqueArray(origin, destination, removeDupes=true){
+	Array.from(new Set(origin)).forEach(function(x){
+		if(destination.indexOf(x) == -1)
+			destination.push(x);
+	});
+	if (removeDupes){
+		destination.forEach((name,index)=>{
+			destination.forEach((name2,index2)=>{
+				if(!(index===index2) && (name.indexOf(name2)!== -1)){
+					destination.splice(index, 1);
+				}
+			})
+		})
+	}
+}
+
+/*
 // TODO: Make the API do this
 function slimDownTrackInfo(trackOld){
 	let track = {};
@@ -1869,35 +1875,6 @@ function slimDownAlbumInfo(ajsonOld){
 	}
 	ajson.tracks.total = ajsonOld.tracks.total
 	return ajson
-}
-
-function swichReleaseType(id){
-	switch (id) {
-		case "0":
-			return "Album";
-		case "1":
-			return "Single";
-		case "3":
-			return "EP";
-		default:
-			return id;
-	}
-}
-
-function uniqueArray(origin, destination, removeDupes=true){
-	Array.from(new Set(origin)).forEach(function(x){
-		if(destination.indexOf(x) == -1)
-			destination.push(x);
-	});
-	if (removeDupes){
-		destination.forEach((name,index)=>{
-			destination.forEach((name2,index2)=>{
-				if(!(index===index2) && (name.indexOf(name2)!== -1)){
-					destination.splice(index, 1);
-				}
-			})
-		})
-	}
 }
 
 // TODO: Make the API do this
@@ -2021,7 +1998,7 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 			if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) metadata.genre = metadata.genre.join(separator);
 		}
 		if (track["ALB_PICTURE"]) {
-			metadata.image = Deezer.albumPicturesHost + track["ALB_PICTURE"]+"/"+settings.artworkSize+"x"+settings.artworkSize+"-000000-80-0-0"+(settings.PNGcovers ? ".png" : ".jpg");
+			metadata.image = s.Deezer.albumPicturesHost + track["ALB_PICTURE"]+"/"+settings.artworkSize+"x"+settings.artworkSize+"-000000-80-0-0"+(settings.PNGcovers ? ".png" : ".jpg");
 		}
 		if (ajson.artist.picture_small) {
 			metadata.artistImage = ajson.artist.picture_small.split("56x56-000000-80-0-0.jpg")[0]+settings.artworkSize+"x"+settings.artworkSize+"-000000-80-0-0"+(settings.PNGcovers ? ".png" : ".jpg");
@@ -2065,16 +2042,17 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 	}
 	return metadata;
 }
+*/
 
 // Show crash error in console for debugging
 process.on('unhandledRejection', function (err) {
-	logger.error(err.stack);
-});
+	logger.error(err.stack)
+})
 process.on('uncaughtException', function (err) {
-	logger.error(err.stack);
-});
+	logger.error(err.stack)
+})
 
 // Exporting vars
-module.exports.mainFolder = mainFolder;
-module.exports.defaultSettings = defaultSettings;
-module.exports.defaultDownloadFolder = defaultDownloadFolder;
+module.exports.mainFolder = mainFolder
+module.exports.defaultSettings = defaultSettings
+module.exports.defaultDownloadFolder = defaultDownloadFolder
