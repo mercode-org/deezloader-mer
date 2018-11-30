@@ -43,8 +43,8 @@ if(!fs.existsSync(localpaths.user+"config.json")){
 const configFileLocation = localpaths.user+"config.json"
 const autologinLocation = localpaths.user+"autologin"
 // Folders
-const coverArtDir = os.tmpdir() + path.sep + 'deezloader-imgs' + path.sep
-const defaultDownloadDir = localpaths.user + 'Deezloader Music' + path.sep
+const coverArtFolder = os.tmpdir() + path.sep + 'deezloader-imgs' + path.sep
+const defaultDownloadFolder = localpaths.user + 'Deezloader Music' + path.sep
 // Default settings
 const defaultSettings = require('./default.json').userDefined
 // Spotify Files
@@ -57,7 +57,7 @@ if (spotifySupport){
 var Deezer = new deezerApi()
 
 // Setup the folders START
-var mainFolder = defaultDownloadDir
+var mainFolder = defaultDownloadFolder
 
 // See if all settings are there after update
 var configFile = require(localpaths.user+path.sep+"config.json");
@@ -66,7 +66,7 @@ for (let x in defaultSettings){
 		configFile.userDefined[x] = defaultSettings[x]
 	}
 }
-// Set default download directory if not userDefined
+// Set default download folder if not userDefined
 if (configFile.userDefined.downloadLocation != "") {
 	mainFolder = configFile.userDefined.downloadLocation
 }
@@ -1058,7 +1058,7 @@ io.sockets.on('connection', function (socket) {
 	});
 
 	socket.on("saveSettings", function (settings) {
-		if (settings.userDefined.downloadLocation == defaultDownloadDir) {
+		if (settings.userDefined.downloadLocation == defaultDownloadFolder) {
 			settings.userDefined.downloadLocation = "";
 		} else {
 			settings.userDefined.downloadLocation = path.resolve(settings.userDefined.downloadLocation + path.sep) + path.sep;
@@ -1331,12 +1331,12 @@ io.sockets.on('connection', function (socket) {
 				let imgPath;
 				//If its not from an album but a playlist.
 				if(!(settings.albName || settings.createAlbumFolder)){
-					imgPath = coverArtDir + (metadata.barcode ? fixName(metadata.barcode) : fixName(`${metadata.albumArtist} - ${metadata.album}`))+(settings.PNGcovers ? ".png" : ".jpg");
+					imgPath = coverArtFolder + (metadata.barcode ? fixName(metadata.barcode) : fixName(`${metadata.albumArtist} - ${metadata.album}`))+(settings.PNGcovers ? ".png" : ".jpg");
 				}else{
 					if (settings.saveArtwork)
 						imgPath = coverpath + fixName(settingsRegexCover(settings.coverImageTemplate,settings.artName,settings.albName))+(settings.PNGcovers ? ".png" : ".jpg");
 					else
-						imgPath = coverArtDir + fixName(metadata.barcode ? fixName(metadata.barcode) : fixName(`${metadata.albumArtist} - ${metadata.album}`))+(settings.PNGcovers ? ".png" : ".jpg");
+						imgPath = coverArtFolder + fixName(metadata.barcode ? fixName(metadata.barcode) : fixName(`${metadata.albumArtist} - ${metadata.album}`))+(settings.PNGcovers ? ".png" : ".jpg");
 				}
 				if(fs.existsSync(imgPath)){
 					metadata.imagePath = (imgPath).replace(/\\/g, "/");
@@ -1720,11 +1720,11 @@ function antiDot(str){
 function initFolders() {
 	// Check if main folder exists
 	if (!fs.existsSync(mainFolder)) {
-		mainFolder = defaultDownloadDir;
-		updateSettingsFile('downloadLocation', defaultDownloadDir);
+		mainFolder = defaultDownloadFolder;
+		updateSettingsFile('downloadLocation', defaultDownloadFolder);
 	}
-	//fs.removeSync(coverArtDir);
-	fs.ensureDirSync(coverArtDir);
+	//fs.removeSync(coverArtFolder);
+	fs.ensureFolderSync(coverArtFolder);
 }
 
 /**
@@ -1814,6 +1814,7 @@ function splitNumber(str,total){
 	return i > 0 ? str.slice(0, i) : str;
 }
 
+// TODO: Make the API do this
 function slimDownTrackInfo(trackOld){
 	let track = {};
 	track['SNG_ID'] = trackOld["SNG_ID"]
@@ -1848,7 +1849,7 @@ function slimDownTrackInfo(trackOld){
 	track.format = trackOld.format
 	return track
 }
-
+// TODO: Make the API do this
 function slimDownAlbumInfo(ajsonOld){
 	let ajson = {};
 	ajson.artist = {}
@@ -2065,10 +2066,10 @@ function parseMetadata(track, ajson, totalDiskNumber, settings, position, altmet
 	return metadata;
 }
 
+// Show crash error in console for debugging
 process.on('unhandledRejection', function (err) {
 	logger.error(err.stack);
 });
-// Show crash error in console for debugging
 process.on('uncaughtException', function (err) {
 	logger.error(err.stack);
 });
@@ -2076,4 +2077,4 @@ process.on('uncaughtException', function (err) {
 // Exporting vars
 module.exports.mainFolder = mainFolder;
 module.exports.defaultSettings = defaultSettings;
-module.exports.defaultDownloadDir = defaultDownloadDir;
+module.exports.defaultDownloadFolder = defaultDownloadFolder;
