@@ -313,7 +313,6 @@ io.sockets.on('connection', function (s) {
 				let offset = 0
 				do{
 					let resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total", offset: offset*100})
-					console.log(resp.body)
 					if (first){
 						var numPages=Math.floor((resp.body.total-1)/100)
 						var response = new Array(resp.body.total)
@@ -348,6 +347,45 @@ io.sockets.on('connection', function (s) {
 			}
 		}
 	})
+
+	s.on("getUserSettings", function () {
+		let settings = configFile.userDefined;
+		if (!settings.downloadLocation) {
+			settings.downloadLocation = mainFolder;
+		}
+		s.emit('getUserSettings', {settings: settings});
+	});
+
+	s.on("saveSettings", function (settings) {
+		if (settings.userDefined.downloadLocation == defaultDownloadFolder) {
+			settings.userDefined.downloadLocation = "";
+		} else {
+			settings.userDefined.downloadLocation = path.resolve(settings.userDefined.downloadLocation + path.sep) + path.sep;
+			mainFolder = settings.userDefined.downloadLocation;
+		}
+
+		if (settings.userDefined.queueConcurrency < 1) settings.userDefined.queueConcurrency = 1;
+
+		if (settings.userDefined.queueConcurrency != s.trackQueue.concurrency){
+			s.trackQueue.concurrency = settings.userDefined.queueConcurrency;
+		}
+
+		if (settings.userDefined.chartsCountry != configFile.userDefined.chartsCountry){
+			s.emit("setChartsCountry", {selected: settings.userDefined.chartsCountry});
+			getChartsTrackListByCountry(settings.userDefined.chartsCountry);
+		}
+
+		if (settings.userDefined.spotifyUser != configFile.userDefined.spotifyUser){
+			getMyPlaylistList(settings.userDefined.spotifyUser);
+		}
+
+		configFile.userDefined = settings.userDefined;
+		fs.outputFile(configFileLocation, JSON.stringify(configFile, null, 2), function (err) {
+			if (err) return;
+			logger.info("Settings updated");
+			initFolders();
+		});
+	});
 
 	/*
 	// TODO: Make download progress not depend from the API
@@ -1002,48 +1040,7 @@ io.sockets.on('connection', function (s) {
 			s.emit("downloadAlreadyInQueue", {alreadyInQueue: false, id: data.id});
 		}
 	});
-	*/
 
-	s.on("getUserSettings", function () {
-		let settings = configFile.userDefined;
-		if (!settings.downloadLocation) {
-			settings.downloadLocation = mainFolder;
-		}
-		s.emit('getUserSettings', {settings: settings});
-	});
-
-	s.on("saveSettings", function (settings) {
-		if (settings.userDefined.downloadLocation == defaultDownloadFolder) {
-			settings.userDefined.downloadLocation = "";
-		} else {
-			settings.userDefined.downloadLocation = path.resolve(settings.userDefined.downloadLocation + path.sep) + path.sep;
-			mainFolder = settings.userDefined.downloadLocation;
-		}
-
-		if (settings.userDefined.queueConcurrency < 1) settings.userDefined.queueConcurrency = 1;
-
-		if (settings.userDefined.queueConcurrency != s.trackQueue.concurrency){
-			s.trackQueue.concurrency = settings.userDefined.queueConcurrency;
-		}
-
-		if (settings.userDefined.chartsCountry != configFile.userDefined.chartsCountry){
-			s.emit("setChartsCountry", {selected: settings.userDefined.chartsCountry});
-			getChartsTrackListByCountry(settings.userDefined.chartsCountry);
-		}
-
-		if (settings.userDefined.spotifyUser != configFile.userDefined.spotifyUser){
-			getMyPlaylistList(settings.userDefined.spotifyUser);
-		}
-
-		configFile.userDefined = settings.userDefined;
-		fs.outputFile(configFileLocation, JSON.stringify(configFile, null, 2), function (err) {
-			if (err) return;
-			logger.info("Settings updated");
-			initFolders();
-		});
-	});
-
-	/*
 	// TODO: Rewrite this entire function with awaits
 	function downloadTrack(t, settings, altmetadata, callback) {
 		if (!s.downloadQueue[t.queueId]) {
