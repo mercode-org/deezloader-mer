@@ -1,15 +1,12 @@
 /*
- *  _____                    _                    _
- * |  __ \                  | |                  | |
- * | |  | |  ___   ___  ____| |  ___    __ _   __| |  ___  _ __
- * | |  | | / _ \ / _ \|_  /| | / _ \  / _` | / _` | / _ \| '__|
- * | |__| ||  __/|  __/ / / | || (_) || (_| || (_| ||  __/| |
- * |_____/  \___| \___|/___||_| \___/  \__,_| \__,_| \___||_|
- *
- *
- *
- *  Original work by ZzMTV <https://boerse.to/members/zzmtv.3378614/>
- * */
+*   _____                _                 _             _____                _
+*  |  __ \              | |               | |           |  __ \              (_)
+*  | |  | | ___  ___ ___| | ___   __ _  __| | ___ _ __  | |__) |___ _ __ ___  ___  __
+*  | |  | |/ _ \/ _ \_  / |/ _ \ / _` |/ _` |/ _ \ '__| |  _  // _ \ '_ ` _ \| \ \/ /
+*  | |__| |  __/  __// /| | (_) | (_| | (_| |  __/ |    | | \ \  __/ | | | | | |>  <
+*  |_____/ \___|\___/___|_|\___/ \__,_|\__,_|\___|_|    |_|  \_\___|_| |_| |_|_/_/\_\
+*
+**/
 
 // Server stuff
 const express = require('express')
@@ -101,6 +98,7 @@ io.sockets.on('connection', function (s) {
 	})
 
 	// Connection dependet variables
+	s.Deezer = new deezerApi()
 	// TODO: Change queue system
 	s.downloadQueue = {}
 	s.currentItem = null
@@ -109,7 +107,6 @@ io.sockets.on('connection', function (s) {
 		autostart: true
 	})
 	s.trackQueue.concurrency = configFile.userDefined.queueConcurrency
-	s.Deezer = new deezerApi()
 
 	// Function for logging in
 	s.on("login", async function (username, password, autologin) {
@@ -119,6 +116,8 @@ io.sockets.on('connection', function (s) {
 			s.emit("login", {user: s.Deezer.user})
 			logger.info("Logged in successfully")
 			if (autologin){
+				// Save session login so next time login is not needed
+				// This is the same method used by the official website
 				s.emit('getCookies', s.Deezer.getCookies())
 			}
 		}catch(err){
@@ -127,7 +126,7 @@ io.sockets.on('connection', function (s) {
 		}
 	});
 
-
+	// Function for autologin
 	s.on("autologin", async function(jar, email){
 		try{
       await s.Deezer.loginViaCookies(jar, email)
@@ -139,10 +138,215 @@ io.sockets.on('connection', function (s) {
     }
 	})
 
+	// Function for logout
 	s.on("logout", function(){
 		logger.info("Logged out")
+		// Creating new object to clear the cookies
 		s.Deezer = new deezerApi()
 		return
+	})
+
+	// Returns list of charts available
+	s.on("getChartsCountryList", async function (data) {
+		try{
+			let charts = await s.Deezer.legacyGetChartsTopCountry()
+			charts = charts.data || []
+			let countries = []
+			for (let i = 0; i < charts.length; i++) {
+				let obj = {
+					country: charts[i].title.replace("Top ", ""),
+					picture_small: charts[i].picture_small,
+					picture_medium: charts[i].picture_medium,
+					picture_big: charts[i].picture_big,
+					playlistId: charts[i].id
+				}
+				countries.push(obj)
+			}
+			s.emit("getChartsCountryList", {countries: countries, selected: data.selected})
+		}catch(err){
+			logger.error(`getChartsCountryList failed: ${err.stack}`)
+			return
+		}
+	})
+
+	// Returns chart tracks from Playlist ID
+	async function getChartsTrackListById(playlistId){
+		if (typeof playlistId === 'undefined') {
+			s.emit("getChartsTrackListByCountry", {err: "Can't find that playlist"})
+			return
+		}
+		try{
+			let tracks = await s.Deezer.legacyGetPlaylistTracks(playlistId)
+			s.emit("getChartsTrackListByCountry", {
+				playlistId: playlistId,
+				tracks: tracks.data
+			})
+		}catch(err){
+			s.emit("getChartsTrackListByCountry", {err: err})
+			logger.error(`getChartsTrackListById failed: ${err.stack}`)
+			return
+		}
+	}
+
+	// Returns chart tracks from country name
+	async function getChartsTrackListByCountry(country){
+		if (typeof country === 'undefined') {
+			s.emit("getChartsTrackListByCountry", {err: "No country passed"})
+			return
+		}
+		try{
+			let charts = await s.Deezer.legacyGetChartsTopCountry()
+			charts = charts.data || []
+			let countries = []
+			for (let i = 0; i < charts.length; i++) {
+				countries.push(charts[i].title.replace("Top ", ""))
+			}
+			if (countries.indexOf(country) == -1) {
+				s.emit("getChartsTrackListByCountry", {err: "Country not found"});
+				return
+			}
+			let playlistId = charts[countries.indexOf(country)].id;
+			await getChartsTrackListById(playlistId)
+		}catch(err){
+			logger.error(`getChartsTrackListByCountry failed: ${err.stack}`)
+			return
+		}
+	}
+	s.on("getChartsTrackListByCountry", function (data) {getChartsTrackListByCountry(data.country)})
+
+	// Returns list of playlists
+	async function getMyPlaylistList(){
+		try{
+			logger.info("Loading Personal Playlists")
+			let data = await s.Deezer.legacyGetUserPlaylists(s.Deezer.user.id)
+			data = data.data || []
+			let playlists = []
+			for (let i = 0; i < data.length; i++) {
+				let obj = {
+					title: data[i].title,
+					image: data[i].picture_small,
+					songs: data[i].nb_tracks,
+					link: data[i].link
+				}
+				playlists.push(obj)
+			}
+			if (configFile.userDefined.spotifyUser && spotifySupport){
+				let creds = await Spotify.clientCredentialsGrant()
+				Spotify.setAccessToken(creds.body['access_token'])
+				let first = true
+				let offset = 0
+				do{
+					let data = await Spotify.getUserPlaylists(configFile.userDefined.spotifyUser, {fields: "items(images,name,owner.id,tracks.total,uri),total", offset: offset*20})
+					if (first){
+						var total = data.body.total
+						var numPages=Math.floor((total-1)/20)
+						var playlistList = new Array(total)
+						first = false
+					}
+					data.body.items.forEach((playlist, i) => {
+						playlistList[(offset*20)+i] = {
+							title: playlist.name,
+							image: (playlist.images[0] ? playlist.images[0].url : ""),
+							songs: playlist.tracks.total,
+							link: playlist.uri,
+							spotify: true
+						}
+					})
+					offset++
+				}while(offset<=numPages)
+				playlists = playlists.concat(playlistList)
+			}
+			logger.info(`Loaded ${playlists.length} Playlist${playlists.length>1 ? "s" : ""}`)
+			s.emit("getMyPlaylistList", {playlists: playlists})
+		}catch(err){
+			logger.error(`getMyPlaylistList failed: ${err.stack}`)
+			return
+		}
+	}
+	s.on("getMyPlaylistList", function (d) {getMyPlaylistList()})
+
+	// Returns search results from a query
+	s.on("search", async function (data) {
+		data.type = data.type || "track"
+		if (["track", "playlist", "album", "artist"].indexOf(data.type) == -1) data.type = "track"
+
+		// Remove "feat."  "ft." and "&" (causes only problems)
+		data.text = data.text
+			.replace(/ feat[\.]? /g, " ")
+			.replace(/ ft[\.]? /g, " ")
+			.replace(/\(feat[\.]? /g, " ")
+			.replace(/\(ft[\.]? /g, " ")
+			.replace(/\&/g, "")
+			.replace(/–/g, "-")
+			.replace(/—/g, "-")
+
+		try {
+			let searchObject = await s.Deezer.legacySearch(encodeURIComponent(data.text), data.type)
+			s.emit("search", {type: data.type, items: searchObject.data})
+		} catch (err) {
+			s.emit("search", {type: data.type, items: []})
+			logger.error(`search failed: ${err.stack}`)
+			return
+		}
+	})
+
+	// Returns list of tracks from an album/playlist or the list of albums from an artist
+	s.on("getTrackList", async function (data) {
+		if (!data.type || (["playlist", "album", "artist", "spotifyplaylist"].indexOf(data.type) == -1) || !data.id) {
+			s.emit("getTrackList", {err: -1, response: {}, id: data.id, reqType: data.type})
+			return
+		}
+		if (data.type == 'artist') {
+			try{
+				let response = await s.Deezer.legacyGetArtistAlbums(data.id)
+				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type})
+			}catch(err){
+				s.emit("getTrackList", {err: "wrong artist id", response: {}, id: data.id, reqType: data.type})
+				logger.error(`getTrackList failed: ${err.stack}`)
+				return
+			}
+		}else if(data.type == "spotifyplaylist" && spotifySupport){
+			try{
+				let creds = await Spotify.clientCredentialsGrant()
+				Spotify.setAccessToken(creds.body.access_token)
+				let first = true
+				let offset = 0
+				do{
+					let resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total", offset: offset*100})
+					console.log(resp.body)
+					if (first){
+						var numPages=Math.floor((resp.body.total-1)/100)
+						var response = new Array(resp.body.total)
+						first = false
+					}
+					resp.body.items.forEach((t, index) => {
+						response[index+offset*100]={
+							explicit_lyrics: t.track.explicit,
+							preview: t.track.preview_url,
+							title: t.track.name,
+							artist: {
+								name: t.track.artists[0].name
+							},
+							duration: Math.floor(t.track.duration_ms/1000)
+						}
+					})
+					offset++
+				}while(offset<=numPages)
+				s.emit("getTrackList", {response: {'data': response}, id: data.id, reqType: data.type})
+			}catch(err){
+				logger.error(`getTrackList failed: ${err.stack}`)
+			}
+		}else{
+			let reqType = data.type.charAt(0).toUpperCase() + data.type.slice(1)
+			try{
+				let response = await s.Deezer["legacyGet" + reqType + "Tracks"](data.id)
+				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type})
+			}catch(err){
+				s.emit("getTrackList", {err: "wrong id "+reqType, response: {}, id: data.id, reqType: data.type})
+				logger.error(`getTrackList failed: ${err.stack}`)
+				return
+			}
+		}
 	})
 
 	/*
@@ -754,233 +958,8 @@ io.sockets.on('connection', function (s) {
 			}
 			break;
 		}
-	}*/
-
-	// Returns list of charts available
-	s.on("getChartsCountryList", async function (data) {
-		try{
-			let charts = await s.Deezer.legacyGetChartsTopCountry()
-			if(charts){
-				charts = charts.data || []
-			}else{
-				charts = []
-			}
-			let countries = []
-			for (let i = 0; i < charts.length; i++) {
-				let obj = {
-					country: charts[i].title.replace("Top ", ""),
-					picture_small: charts[i].picture_small,
-					picture_medium: charts[i].picture_medium,
-					picture_big: charts[i].picture_big,
-					playlistId: charts[i].id
-				}
-				countries.push(obj)
-			}
-			s.emit("getChartsCountryList", {countries: countries, selected: data.selected})
-		}catch(err){
-			logger.error(`getChartsCountryList failed: ${err.stack}`)
-			return
-		}
-	})
-
-	// Returns chart tracks from Playlist ID
-	async function getChartsTrackListById(playlistId){
-		if (typeof playlistId === 'undefined') {
-			s.emit("getChartsTrackListByCountry", {err: "Can't find that playlist"})
-			return
-		}
-		try{
-			let tracks = await s.Deezer.legacyGetPlaylistTracks(playlistId)
-			s.emit("getChartsTrackListByCountry", {
-				playlistId: playlistId,
-				tracks: tracks.data
-			})
-		}catch(err){
-			s.emit("getChartsTrackListByCountry", {err: err})
-			logger.error(`getChartsTrackListById failed: ${err.stack}`)
-			return
-		}
 	}
 
-	// Returns chart tracks from country name
-	async function getChartsTrackListByCountry(country){
-		if (typeof country === 'undefined') {
-			s.emit("getChartsTrackListByCountry", {err: "No country passed"})
-			return
-		}
-		try{
-			let charts = await s.Deezer.legacyGetChartsTopCountry()
-			if(charts){
-				charts = charts.data || []
-			}else{
-				charts = []
-			}
-			let countries = []
-			for (let i = 0; i < charts.length; i++) {
-				countries.push(charts[i].title.replace("Top ", ""))
-			}
-			if (countries.indexOf(country) == -1) {
-				s.emit("getChartsTrackListByCountry", {err: "Country not found"});
-				return
-			}
-			let playlistId = charts[countries.indexOf(country)].id;
-			await getChartsTrackListById(playlistId)
-		}catch(err){
-			logger.error(`getChartsTrackListByCountry failed: ${err.stack}`)
-			return
-		}
-	}
-	s.on("getChartsTrackListByCountry", function (data) {getChartsTrackListByCountry(data.country)})
-
-	// Returns list of playlists
-	async function getMyPlaylistList(){
-		try{
-			logger.info("Loading Personal Playlists")
-			let data = await s.Deezer.legacyGetUserPlaylists(s.Deezer.user.id)
-			if(data){
-				data = data.data || []
-			}else{
-				data = []
-			}
-			let playlists = []
-			for (let i = 0; i < data.length; i++) {
-				let obj = {
-					title: data[i].title,
-					image: data[i].picture_small,
-					songs: data[i].nb_tracks,
-					link: data[i].link
-				}
-				playlists.push(obj)
-			}
-			if (configFile.userDefined.spotifyUser && spotifySupport){
-				let creds = await Spotify.clientCredentialsGrant()
-				Spotify.setAccessToken(creds.body['access_token'])
-				let data = Spotify.getUserPlaylists(configFile.userDefined.spotifyUser, {fields: "total"})
-				let total = data.body.total
-				let numPages=Math.floor((total-1)/20)
-				let pages = []
-				let playlistList = new Array(total)
-				for (let offset = 0; offset<=numPages; offset++){
-					pages.push(new Promise(async function(resolvePage) {
-						data = await Spotify.getUserPlaylists(configFile.userDefined.spotifyUser, {fields: "items(images,name,owner.id,tracks.total,uri)", offset: offset*20})
-						playlistList[(offset*20)+i] = {
-							title: playlist.name,
-							image: (playlist.images[0] ? playlist.images[0].url : ""),
-							songs: playlist.tracks.total,
-							link: playlist.uri,
-							spotify: true
-						}
-						resolvePage()
-					}))
-				}
-				await Promise.all(pages)
-				playlists = playlists.concat(playlistList)
-			}
-			logger.info(`Loaded ${playlists.length} Playlist${playlists.length>1 ? "s" : ""}`)
-			s.emit("getMyPlaylistList", {playlists: playlists})
-		}catch(err){
-			logger.error(`getMyPlaylistList failed: ${err.stack}`)
-			return
-		}
-	}
-	s.on("getMyPlaylistList", function (d) {getMyPlaylistList()})
-
-	// Returns search results from a query
-	s.on("search", async function (data) {
-		data.type = data.type || "track"
-		if (["track", "playlist", "album", "artist"].indexOf(data.type) == -1) data.type = "track"
-
-		// Remove "feat."  "ft." and "&" (causes only problems)
-		data.text = data.text
-			.replace(/ feat[\.]? /g, " ")
-			.replace(/ ft[\.]? /g, " ")
-			.replace(/\(feat[\.]? /g, " ")
-			.replace(/\(ft[\.]? /g, " ")
-			.replace(/\&/g, "")
-			.replace(/–/g, "-")
-			.replace(/—/g, "-")
-
-		try {
-			let searchObject = await s.Deezer.legacySearch(encodeURIComponent(data.text), data.type)
-			s.emit("search", {type: data.type, items: searchObject.data})
-		} catch (err) {
-			s.emit("search", {type: data.type, items: []})
-			logger.error(`search failed: ${err.stack}`)
-			return
-		}
-	})
-
-	s.on("getTrackList", async function (data) {
-		if (!data.type || (["playlist", "album", "artist", "spotifyplaylist"].indexOf(data.type) == -1) || !data.id) {
-			s.emit("getTrackList", {err: -1, response: {}, id: data.id, reqType: data.type})
-			return
-		}
-		if (data.type == 'artist') {
-			try{
-				let response = await s.Deezer.legacyGetArtistAlbums(data.id)
-				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type})
-			}catch(err){
-				s.emit("getTrackList", {err: "wrong artist id", response: {}, id: data.id, reqType: data.type})
-				logger.error(`getTrackList failed: ${err.stack}`)
-				return
-			}
-		}else if(data.type == "spotifyplaylist" && spotifySupport){
-			try{
-				let creds = await Spotify.clientCredentialsGrant()
-				Spotify.setAccessToken(creds.body['access_token'])
-				let resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total"})
-				numPages=Math.floor((resp.body["total"]-1)/100)
-				let pages = []
-				let response = new Array(resp.body["total"])
-				resp.body["items"].map((t,i)=>{
-					response[i]={
-						explicit_lyrics: t.track.explicit,
-						preview: t.track.preview_url,
-						title: t.track.name,
-						artist: {
-							name: t.track.artists[0].name
-						},
-						duration: Math.floor(t.track.duration_ms/1000)
-					}
-				})
-				if (resp.body["total"]>100){
-					for (let offset = 1; offset<=numPages; offset++){
-						pages.push(new Promise(async function(resolvePage) {
-							let resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit))", offset: offset*100})
-							resp.body['items'].forEach((t, index) => {
-								response[index+offset*100]={
-									explicit_lyrics: t.track.explicit,
-									preview: t.track.preview_url,
-									title: t.track.name,
-									artist: {
-										name: t.track.artists[0].name
-									},
-									duration: Math.floor(t.track.duration_ms/1000)
-								}
-							})
-							resolvePage()
-						}))
-					}
-				}
-				await Promise.all(pages)
-				s.emit("getTrackList", {response: {'data': response}, id: data.id, reqType: data.type})
-			}catch(err){
-				logger.error(`getTrackList failed: ${err.stack}`)
-			}
-		}else{
-			let reqType = data.type.charAt(0).toUpperCase() + data.type.slice(1)
-			try{
-				let response = await s.Deezer["legacyGet" + reqType + "Tracks"](data.id)
-				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type})
-			}catch(err){
-				s.emit("getTrackList", {err: "wrong id "+reqType, response: {}, id: data.id, reqType: data.type})
-				logger.error(`getTrackList failed: ${err.stack}`)
-				return
-			}
-		}
-	})
-
-	/*
 	// TODO: Change queue system
 	function socketCancelDownload(queueId){
 		if (!queueId) {
