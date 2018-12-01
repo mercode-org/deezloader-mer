@@ -597,6 +597,7 @@ socket.on("getTrackList", function (data) {
 	//data.response -> API response
 	if (data.err){
 		trackListSelectiveModalApp.title = "Can't get data"
+		console.log(data.err)
 		return
 	}
 	if (data.response){

@@ -123,7 +123,7 @@ io.sockets.on('connection', function (s) {
 			}
 		}catch(err){
 			s.emit("login", {error: err.message})
-			logger.error("Failed to login, "+err)
+			logger.error(`Login failed: ${err.message}`)
 		}
 	});
 
@@ -134,6 +134,7 @@ io.sockets.on('connection', function (s) {
 			s.emit('login', {user: s.Deezer.user})
     }catch(err){
       s.emit('login', {error: err.message})
+			logger.error(`Autologin failed: ${err.message}`)
       return
     }
 	})
@@ -141,8 +142,8 @@ io.sockets.on('connection', function (s) {
 	s.on("logout", function(){
 		logger.info("Logged out")
 		s.Deezer = new deezerApi()
-		return;
-	});
+		return
+	})
 
 	/*
 	// TODO: Make download progress not depend from the API
@@ -777,7 +778,7 @@ io.sockets.on('connection', function (s) {
 			}
 			s.emit("getChartsCountryList", {countries: countries, selected: data.selected})
 		}catch(err){
-			logger.error(err.stack)
+			logger.error(`getChartsCountryList failed: ${err.stack}`)
 			return
 		}
 	})
@@ -796,7 +797,7 @@ io.sockets.on('connection', function (s) {
 			})
 		}catch(err){
 			s.emit("getChartsTrackListByCountry", {err: err})
-			logger.error(err.stack)
+			logger.error(`getChartsTrackListById failed: ${err.stack}`)
 			return
 		}
 	}
@@ -825,7 +826,7 @@ io.sockets.on('connection', function (s) {
 			let playlistId = charts[countries.indexOf(country)].id;
 			await getChartsTrackListById(playlistId)
 		}catch(err){
-			logger.error(err.stack)
+			logger.error(`getChartsTrackListByCountry failed: ${err.stack}`)
 			return
 		}
 	}
@@ -878,7 +879,7 @@ io.sockets.on('connection', function (s) {
 			logger.info(`Loaded ${playlists.length} Playlist${playlists.length>1 ? "s" : ""}`)
 			s.emit("getMyPlaylistList", {playlists: playlists})
 		}catch(err){
-			logger.error(err.stack)
+			logger.error(`getMyPlaylistList failed: ${err.stack}`)
 			return
 		}
 	}
@@ -902,36 +903,35 @@ io.sockets.on('connection', function (s) {
 		try {
 			let searchObject = await s.Deezer.legacySearch(encodeURIComponent(data.text), data.type)
 			s.emit("search", {type: data.type, items: searchObject.data})
-		} catch (e) {
+		} catch (err) {
 			s.emit("search", {type: data.type, items: []})
-			logger.error(e.stack)
+			logger.error(`search failed: ${err.stack}`)
 			return
 		}
 	})
 
-	// TODO: Fix this
-	/*
-	s.on("getTrackList", function (data) {
+	s.on("getTrackList", async function (data) {
 		if (!data.type || (["playlist", "album", "artist", "spotifyplaylist"].indexOf(data.type) == -1) || !data.id) {
-			s.emit("getTrackList", {err: -1, response: {}, id: data.id, reqType: data.type});
-			return;
+			s.emit("getTrackList", {err: -1, response: {}, id: data.id, reqType: data.type})
+			return
 		}
 		if (data.type == 'artist') {
-			s.Deezer.getArtistAlbums(data.id, function (response, err) {
-				if (err) {
-					s.emit("getTrackList", {err: "wrong id artist", response: {}, id: data.id, reqType: data.type});
-					return;
-				}
-				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type});
-			});
+			try{
+				let response = await s.Deezer.legacyGetArtistAlbums(data.id)
+				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type})
+			}catch(err){
+				s.emit("getTrackList", {err: "wrong artist id", response: {}, id: data.id, reqType: data.type})
+				logger.error(`getTrackList failed: ${err.stack}`)
+				return
+			}
 		}else if(data.type == "spotifyplaylist" && spotifySupport){
-			Spotify.clientCredentialsGrant().then(function(creds) {
-				Spotify.setAccessToken(creds.body['access_token']);
-				return Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total"})
-			}).then(function(resp) {
-				numPages=Math.floor((resp.body["total"]-1)/100);
+			try{
+				let creds = await Spotify.clientCredentialsGrant()
+				Spotify.setAccessToken(creds.body['access_token'])
+				let resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total"})
+				numPages=Math.floor((resp.body["total"]-1)/100)
 				let pages = []
-				let response = new Array(resp.body["total"]);
+				let response = new Array(resp.body["total"])
 				resp.body["items"].map((t,i)=>{
 					response[i]={
 						explicit_lyrics: t.track.explicit,
@@ -941,44 +941,46 @@ io.sockets.on('connection', function (s) {
 							name: t.track.artists[0].name
 						},
 						duration: Math.floor(t.track.duration_ms/1000)
-					};
+					}
 				})
 				if (resp.body["total"]>100){
 					for (let offset = 1; offset<=numPages; offset++){
-						pages.push(new Promise(function(resolvePage) {
-							Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit))", offset: offset*100}).then(function(resp){
-								resp.body['items'].forEach((t, index) => {
-									response[index+offset*100]={
-										explicit_lyrics: t.track.explicit,
-										preview: t.track.preview_url,
-										title: t.track.name,
-										artist: {
-											name: t.track.artists[0].name
-										},
-										duration: Math.floor(t.track.duration_ms/1000)
-									};
-								});
-								resolvePage();
-							});
-						}));
+						pages.push(new Promise(async function(resolvePage) {
+							let resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit))", offset: offset*100})
+							resp.body['items'].forEach((t, index) => {
+								response[index+offset*100]={
+									explicit_lyrics: t.track.explicit,
+									preview: t.track.preview_url,
+									title: t.track.name,
+									artist: {
+										name: t.track.artists[0].name
+									},
+									duration: Math.floor(t.track.duration_ms/1000)
+								}
+							})
+							resolvePage()
+						}))
 					}
 				}
-				Promise.all(pages).then((val)=>{
-					s.emit("getTrackList", {response: {'data': response}, id: data.id, reqType: data.type});
-				})
-			})
+				await Promise.all(pages)
+				s.emit("getTrackList", {response: {'data': response}, id: data.id, reqType: data.type})
+			}catch(err){
+				logger.error(`getTrackList failed: ${err.stack}`)
+			}
 		}else{
-			let reqType = data.type.charAt(0).toUpperCase() + data.type.slice(1);
-			Deezer["get" + reqType + "Tracks"](data.id, function (response, err) {
-				if (err) {
-					s.emit("getTrackList", {err: "wrong id "+reqType, response: {}, id: data.id, reqType: data.type});
-					return;
-				}
-				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type});
-			});
+			let reqType = data.type.charAt(0).toUpperCase() + data.type.slice(1)
+			try{
+				let response = await s.Deezer["legacyGet" + reqType + "Tracks"](data.id)
+				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type})
+			}catch(err){
+				s.emit("getTrackList", {err: "wrong id "+reqType, response: {}, id: data.id, reqType: data.type})
+				logger.error(`getTrackList failed: ${err.stack}`)
+				return
+			}
 		}
-	});
+	})
 
+	/*
 	// TODO: Change queue system
 	function socketCancelDownload(queueId){
 		if (!queueId) {

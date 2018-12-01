@@ -173,6 +173,11 @@ module.exports = class Deezer {
     return body
   }
 
+  async legacyGetAlbumTracks(id){
+    var body = await this.legacyApiCall(`album/${id}/tracks`, {limit: -1})
+    return body
+  }
+
   async legacySearch(term, type){
     var body = await this.legacyApiCall(`search/${type}`, {q: term})
     if(body.error) {
