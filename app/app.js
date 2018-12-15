@@ -347,6 +347,7 @@ io.sockets.on('connection', function (s) {
 		}
 	})
 
+	// Sends settings saved by the user to the frontend
 	s.on("getUserSettings", function () {
 		let settings = configFile.userDefined;
 		if (!settings.downloadLocation) {
@@ -355,6 +356,7 @@ io.sockets.on('connection', function (s) {
 		s.emit('getUserSettings', {settings: settings});
 	});
 
+	// Saves locally the settings comming from the frontend
 	s.on("saveSettings", function (settings) {
 		if (settings.userDefined.downloadLocation == defaultDownloadFolder) {
 			settings.userDefined.downloadLocation = "";
@@ -399,7 +401,7 @@ io.sockets.on('connection', function (s) {
 			}
 			if (parseInt(track.SNG_ID)<0){
 				complete = track.FILESIZE;
-			}else if(track.format == 9){
+			}else if(track.selectedFormat == 9){
 				complete = track.FILESIZE_FLAC;
 			}else{
 				if (track.FILESIZE_MP3_320) {
@@ -1089,6 +1091,27 @@ io.sockets.on('connection', function (s) {
 			track.bpm = 0
 		}
 
+		switch(settings.maxBitrate){
+			case "9":
+				track.selectedFormat = 9
+				track.selectedFilesize = track.filesize.flac
+				if (track.filesize.flac>0) break
+				if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+			case "3":
+				track.selectedFormat = 3
+				track.selectedFilesize = track.filesize.mp3_320
+				if (track.filesize.mp3_320>0) break
+				if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+			case "1":
+				track.selectedFormat = 1
+				track.selectedFilesize = track.filesize.mp3_128
+				if (track.filesize.mp3_128>0) break
+				if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+			default:
+				track.selectedFormat = 8
+				track.selectedFilesize = track.filesize.default
+		}
+
 		if (settings.removeAlbumVersion){
 			if(track.title.indexOf("Album Version")>-1){
 				track.title = track.title.replace(/\(Album Version\)/g,"")
@@ -1120,37 +1143,37 @@ io.sockets.on('connection', function (s) {
 			if(track.contributor.composer){
 				track.composerString = [];
 				uniqueArray(track.contributor.composer, track.composerString, settings.removeDupedTags)
-				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.composerString = track.composerString.join(separator);
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.composerString = track.composerString.join(separator);
 			}
 			if(track.contributor.musicpublisher){
 				track.musicpublisherString = [];
 				uniqueArray(track.contributor.musicpublisher, track.musicpublisherString, settings.removeDupedTags)
-				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.musicpublisherString = track.musicpublisherString.join(separator);
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.musicpublisherString = track.musicpublisherString.join(separator);
 			}
 			if(track.contributor.producer){
 				track.producerString = [];
 				uniqueArray(track.contributor.producer, track.producerString, settings.removeDupedTags)
-				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.producerString = track.producerString.join(separator);
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.producerString = track.producerString.join(separator);
 			}
 			if(track.contributor.engineer){
 				track.engineerString = [];
 				uniqueArray(track.contributor.engineer, track.engineerString, settings.removeDupedTags)
-				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.engineerString = track.engineerString.join(separator);
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.engineerString = track.engineerString.join(separator);
 			}
 			if(track.contributor.writer){
 				track.writerString = [];
 				uniqueArray(track.contributor.writer, track.writerString, settings.removeDupedTags)
-				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.writerString = track.writerString.join(separator);
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.writerString = track.writerString.join(separator);
 			}
 			if(track.contributor.author){
 				track.authorString = [];
 				uniqueArray(track.contributor.author, track.authorString, settings.removeDupedTags)
-				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.authorString = track.authorString.join(separator);
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.authorString = track.authorString.join(separator);
 			}
 			if(track.contributor.mixer){
 				track.mixerString = [];
 				uniqueArray(track.contributor.mixer, track.mixerString, settings.removeDupedTags)
-				if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.mixerString = track.mixerString.join(separator);
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.mixerString = track.mixerString.join(separator);
 			}
 		}
 
@@ -1171,7 +1194,7 @@ io.sockets.on('connection', function (s) {
 	  		track.artistsString.splice(posMainArtist, 1);
 	  		track.artistsString.splice(0, 0, element);
 			}
-			if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.artistsString = track.artistsString.join(separator);
+			if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.artistsString = track.artistsString.join(separator);
 		}
 
 		if(ajson.genres && ajson.genres.data[0] && ajson.genres.data[0].name){
@@ -1181,7 +1204,7 @@ io.sockets.on('connection', function (s) {
 				genreArray.push(genre.name);
 			});
 			uniqueArray(genreArray, track.genreString, false)
-			if (!(track.format == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.genreString = track.genreString.join(separator);
+			if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.genreString = track.genreString.join(separator);
 		}
 
 		if (ajson.release_date) {
@@ -1257,7 +1280,7 @@ io.sockets.on('connection', function (s) {
 		}
 		let writePath;
 		// TODO: Use id instead, filename only at the end after tagging
-		if(track.format == 9){
+		if(track.selectedFormat == 9){
 			writePath = filepath + filename + '.flac';
 		}else{
 			writePath = filepath + filename + '.mp3';
@@ -1342,7 +1365,7 @@ io.sockets.on('connection', function (s) {
 
 		/*
 		if (parseInt(t.id)>0){
-			if(track.format == 9){
+			if(track.selectedFormat == 9){
 				let flacComments = [];
 				if (settings.tags.title)
 					flacComments.push('TITLE=' + metadata.title);
