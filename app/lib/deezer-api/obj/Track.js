@@ -36,6 +36,7 @@ module.exports = class Track {
       }
       this.MD5 = body.results.DATA.MD5_ORIGIN
       this.mediaVersion = body.results.DATA.MEDIA_VERSION
+      this.fallbackId = (body.results.DATA.FALLBACK ? (body.results.DATA.FALLBACK.SNG_ID ? body.results.DATA.FALLBACK.SNG_ID : 0) : 0)
       this.album = {id: body.results.DATA.ALB_ID, title: body.results.DATA.ALB_NAME, picture: body.results.DATA.ALB_PICTURE}
       this.mainArtist = {id: body.results.DATA.ART_ID, name: body.results.DATA.ART_NAME, picture: body.results.DATA.ART_PICTURE}
       this.artist = []

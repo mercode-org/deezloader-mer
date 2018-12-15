@@ -13,11 +13,9 @@
 		"electron-window-state-manager": "latest",
 		"express": "latest",
 		"fs-extra": "latest",
-		"package.json": "latest",
-		"queue": "latest",
+		"queue": "^5.0.0",
 		"request": "^2.87.0",
 		"request-promise-native": "^1.0.5",
-		"requestretry": "latest",
 		"socket.io": "latest",
 		"spotify-web-api-node": "latest"
 	}
