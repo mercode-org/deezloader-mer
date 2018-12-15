@@ -21,7 +21,8 @@ module.exports = class Track {
       this.filesize = body.results.FILESIZE
       this.MD5 = body.results.MD5_ORIGIN
       this.mediaVersion = body.results.MEDIA_VERSION
-      this.album = {id: 0, title: body.results.ALB_NAME, picture: body.results.ALB_PICTURE}
+      this.album = {id: 0, name: body.results.ALB_NAME, picture: body.results.ALB_PICTURE}
+      this.mainArtist = {id: 0, name: body.results.ART_NAME}
       this.artist = {id: 0, name: body.results.ART_NAME}
       this.recordType = -1
     } else {
@@ -37,7 +38,7 @@ module.exports = class Track {
       this.MD5 = body.results.DATA.MD5_ORIGIN
       this.mediaVersion = body.results.DATA.MEDIA_VERSION
       this.fallbackId = (body.results.DATA.FALLBACK ? (body.results.DATA.FALLBACK.SNG_ID ? body.results.DATA.FALLBACK.SNG_ID : 0) : 0)
-      this.album = {id: body.results.DATA.ALB_ID, title: body.results.DATA.ALB_NAME, picture: body.results.DATA.ALB_PICTURE}
+      this.album = {id: body.results.DATA.ALB_ID, name: body.results.DATA.ALB_NAME, picture: body.results.DATA.ALB_PICTURE}
       this.mainArtist = {id: body.results.DATA.ART_ID, name: body.results.DATA.ART_NAME, picture: body.results.DATA.ART_PICTURE}
       this.artist = []
       body.results.DATA.ARTISTS.forEach(artist=>{
@@ -55,7 +56,10 @@ module.exports = class Track {
       this.copyright = body.results.DATA.COPYRIGHT
       this.recordType = body.results.DATA.TYPE
       this.contributor = body.results.DATA.SNG_CONTRIBUTORS
-      this.unsyncLyrics = body.results.LYRICS.LYRICS_TEXT
+      this.unsyncLyrics = {
+  			description: "",
+  			lyrics: body.results.LYRICS.LYRICS_TEXT
+  		}
       this.syncLyrics = ""
       for(let i=0; i < body.results.LYRICS.LYRICS_SYNC_JSON.length; i++){
 				if(body.results.LYRICS.LYRICS_SYNC_JSON[i].lrc_timestamp){
