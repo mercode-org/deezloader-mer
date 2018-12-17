@@ -1,6 +1,7 @@
 const request = require('request-promise')
 const tough = require('tough-cookie');
 const Track = require('./obj/Track.js')
+const Album = require('./obj/Album.js')
 const getBlowfishKey = require('./utils.js').getBlowfishKey
 const decryptChunk = require('./utils.js').decryptChunk
 
@@ -129,9 +130,11 @@ module.exports = class Deezer {
     var body
     if (id<0){
       body = await this.apiCall(`song.getData`, {sng_id: id})
+      body.sourcePage = 'song.getData'
       body.type = -1
     }else{
       body = await this.apiCall(`deezer.pageTrack`, {sng_id: id})
+      body.sourcePage = 'deezer.pageTrack'
       body.type = 0
     }
     return new Track(body)
@@ -139,7 +142,13 @@ module.exports = class Deezer {
 
   async getAlbum(id){
     var body = await this.apiCall(`album.getData`, {alb_id: id})
-    return body
+    body.sourcePage = 'album.getData'
+    /*
+    Alternative query, currently not used
+      var body = await this.apiCall(`deezer.pageAlbum`, {alb_id: id, lang: 'en'})
+      body.sourcePage = 'deezer.pageAlbum'
+    */
+    return new Album(body)
   }
 
   async getAlbumTracks(id){

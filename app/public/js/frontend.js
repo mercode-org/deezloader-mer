@@ -16,6 +16,10 @@ socket.on("message", function(desc){
 	message(desc.title, desc.msg)
 })
 
+socket.on("printObj", function(obj){
+	console.log(obj)
+})
+
 //Login button
 $('#modal_login_btn_login').click(function () {
 	$('#modal_login_btn_login').attr("disabled", true)
