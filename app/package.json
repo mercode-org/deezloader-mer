@@ -8,14 +8,16 @@
 	"license": "GPL-3.0",
 	"dependencies": {
 		"async": "latest",
+		"bluebird": "^3.5.3",
 		"dateformat": "latest",
 		"electron-context-menu": "latest",
 		"electron-window-state-manager": "latest",
 		"express": "latest",
 		"fs-extra": "latest",
+		"node-downloader-helper": "^1.0.9",
 		"queue": "^5.0.0",
 		"request": "^2.87.0",
-		"request-promise-native": "^1.0.5",
+		"request-promise": "^4.2.2",
 		"socket.io": "latest",
 		"spotify-web-api-node": "latest"
 	}

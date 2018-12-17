@@ -917,7 +917,7 @@ function addToQueue(url) {
 function alreadyInQueue(id) {
 	var alreadyInQueue = false
 	$('#tab_downloads_table_downloads').find('tbody').find('tr').each(function () {
-		if ($(this).data('deezerid') == id) {
+		if ($(this).data('deezerid') == `${id}:${userSettings.maxBitrate}`) {
 			alreadyInQueue = true
 			return false
 		}

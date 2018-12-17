@@ -40,11 +40,11 @@
 				<span class="card-title">Please login to your deezer account.</span>
 				<h6 class="red-text" id="login-res-text"></h6>
 				<div class="input-field col s12">
-					<input type="text" id="modal_login_input_username"/>
+					<input autocomplete="off" type="text" id="modal_login_input_username"/>
 					<label for="modal_login_input_username">Email</label>
 				</div>
 				<div class="input-field col s12">
-					<input type="password" id="modal_login_input_password"/>
+					<input autocomplete="off" type="password" id="modal_login_input_password"/>
 					<label for="modal_login_input_password">Password</label>
 				</div>
 			</div>
@@ -71,13 +71,13 @@
 		<div class="row">
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<input type="text" id="modal_settings_input_trackNameTemplate"/>
+				<input autocomplete="off" type="text" id="modal_settings_input_trackNameTemplate"/>
 				<label for="modal_settings_input_trackNameTemplate">Track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
           data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album%, %explicit% and %label%">info_outline</i></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<input type="text" id="modal_settings_input_playlistTrackNameTemplate"/>
+				<input autocomplete="off" type="text" id="modal_settings_input_playlistTrackNameTemplate"/>
 				<label for="modal_settings_input_playlistTrackNameTemplate">Playlist track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
           data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album%, %explicit% and %label%">info_outline</i></label>
 			</div>
@@ -85,13 +85,13 @@
     <div class="row">
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<input type="text" id="modal_settings_input_albumTrackNameTemplate"/>
+				<input autocomplete="off" type="text" id="modal_settings_input_albumTrackNameTemplate"/>
 				<label for="modal_settings_input_albumTrackNameTemplate">Album track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
           data-tooltip="Supported variables are: %number%, %year%, %artist%, %title%, %album%, %explicit% and %label%">info_outline</i></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<input type="text" id="modal_settings_input_albumNameTemplate"/>
+				<input autocomplete="off" type="text" id="modal_settings_input_albumNameTemplate"/>
 				<label for="modal_settings_input_albumNameTemplate">Album names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
           data-tooltip="Supported variables are: %year%, %artist%, %type%, %album%, %explicit% and %label%">info_outline</i></label>
 			</div>
@@ -99,13 +99,13 @@
     <div class="row">
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<input type="text" id="modal_settings_input_coverImageTemplate"/>
+				<input autocomplete="off" type="text" id="modal_settings_input_coverImageTemplate"/>
 				<label for="modal_settings_input_albumTrackNameTemplate">Cover Image name <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
           data-tooltip="Supported variables are: %artist% and %name%">info_outline</i></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<input type="text" id="modal_settings_input_artistImageTemplate"/>
+				<input autocomplete="off" type="text" id="modal_settings_input_artistImageTemplate"/>
 				<label for="modal_settings_input_albumNameTemplate">Artist Image name <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
           data-tooltip="Supported variables are: %artist%">info_outline</i></label>
 			</div>
@@ -178,26 +178,26 @@
 		<div class="row">
 			<div class="input-field col s12">
 				<i class="material-icons prefix">label</i>
-				<input type="text" id="modal_settings_input_downloadTracksLocation"/>
+				<input autocomplete="off" type="text" id="modal_settings_input_downloadTracksLocation"/>
 				<label for="modal_settings_input_downloadTracksLocation">Download location</label>
 			</div>
 		</div>
     <div class="row">
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<input type="number" id="modal_settings_number_queueConcurrency" min="1"/>
+				<input autocomplete="off" type="number" id="modal_settings_number_queueConcurrency" min="1"/>
 				<label for="modal_settings_number_queueConcurrency">Concurrent Download Limit</label>
 			</div>
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<input type="number" id="modal_settings_number_paddingSize" min="0"/>
+				<input autocomplete="off" type="number" id="modal_settings_number_paddingSize" min="0"/>
 				<label for="modal_settings_number_paddingSize">Padding Size Overwrite</label>
 			</div>
 		</div>
 		<div class="row">
 			<div class="input-field col s12 m6">
 				<i class="material-icons prefix">label</i>
-				<input type="text" id="modal_settings_input_spotifyUser"/>
+				<input autocomplete="off" type="text" id="modal_settings_input_spotifyUser"/>
 				<label for="modal_settings_input_spotifyUser">Spotify Username</label>
 			</div>
 		</div>
@@ -864,7 +864,7 @@
     <div id="tab_search">
       <form id="tab_search_form_search">
         <div class="inline-input-group col s12">
-          <input id="tab_search_form_search_input_searchString" type="text" class="input" placeholder="Start searching ...">
+          <input autocomplete="off" id="tab_search_form_search_input_searchString" type="text" class="input" placeholder="Start searching ...">
           <button class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">search</i></button>
         </div>
         <div class="row center">
@@ -1013,7 +1013,7 @@
     <div id="tab_url">
       <form id="tab_url_form_url" class="row">
         <div class="inline-input-group">
-          <input type="text" id="song_url" class="input" placeholder="Song/Playlist/Album/Artist URL, separated by ';'">
+          <input autocomplete="off" type="text" id="song_url" class="input" placeholder="Song/Playlist/Album/Artist URL, separated by ';'">
           <button class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">get_app</i></button>
         </div>
       </form>

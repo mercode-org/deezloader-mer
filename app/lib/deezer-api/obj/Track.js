@@ -1,16 +1,5 @@
-
-const crypto = require('crypto')
-
-function _md5 (data) {
-  let md5sum = crypto.createHash('md5')
-  md5sum.update(new Buffer(data, 'binary'))
-  return md5sum.digest('hex')
-}
-
-function _ecbCrypt (key, data) {
-  let cipher = crypto.createCipheriv("aes-128-ecb", new Buffer(key), new Buffer(""));
-  return Buffer.concat([cipher.update(data, 'binary'), cipher.final()]).toString("hex").toLowerCase();
-}
+const _md5 = require('../utils.js').md5
+const _ecbCrypt = require('../utils.js').ecbCrypt
 
 module.exports = class Track {
   constructor(body){
@@ -38,7 +27,7 @@ module.exports = class Track {
       this.MD5 = body.results.DATA.MD5_ORIGIN
       this.mediaVersion = body.results.DATA.MEDIA_VERSION
       this.fallbackId = (body.results.DATA.FALLBACK ? (body.results.DATA.FALLBACK.SNG_ID ? body.results.DATA.FALLBACK.SNG_ID : 0) : 0)
-      this.album = {id: body.results.DATA.ALB_ID, name: body.results.DATA.ALB_NAME, picture: body.results.DATA.ALB_PICTURE}
+      this.album = {id: body.results.DATA.ALB_ID, name: body.results.DATA.ALB_TITLE, picture: body.results.DATA.ALB_PICTURE}
       this.mainArtist = {id: body.results.DATA.ART_ID, name: body.results.DATA.ART_NAME, picture: body.results.DATA.ART_PICTURE}
       this.artist = []
       body.results.DATA.ARTISTS.forEach(artist=>{
@@ -56,18 +45,20 @@ module.exports = class Track {
       this.copyright = body.results.DATA.COPYRIGHT
       this.recordType = body.results.DATA.TYPE
       this.contributor = body.results.DATA.SNG_CONTRIBUTORS
-      this.unsyncLyrics = {
-  			description: "",
-  			lyrics: body.results.LYRICS.LYRICS_TEXT
-  		}
-      this.syncLyrics = ""
-      for(let i=0; i < body.results.LYRICS.LYRICS_SYNC_JSON.length; i++){
-				if(body.results.LYRICS.LYRICS_SYNC_JSON[i].lrc_timestamp){
-					this.syncLyrics += body.results.LYRICS.LYRICS_SYNC_JSON[i].lrc_timestamp + body.results.LYRICS.LYRICS_SYNC_JSON[i].line+"\r\n";
-				}else if(i+1 < body.results.LYRICS.LYRICS_SYNC_JSON.length){
-					this.syncLyrics += body.results.LYRICS.LYRICS_SYNC_JSON[i+1].lrc_timestamp + body.results.LYRICS.LYRICS_SYNC_JSON[i].line+"\r\n";
-				}
-			}
+      if (body.results.LYRICS){
+        this.unsyncLyrics = {
+    			description: "",
+    			lyrics: body.results.LYRICS.LYRICS_TEXT
+    		}
+        this.syncLyrics = ""
+        for(let i=0; i < body.results.LYRICS.LYRICS_SYNC_JSON.length; i++){
+  				if(body.results.LYRICS.LYRICS_SYNC_JSON[i].lrc_timestamp){
+  					this.syncLyrics += body.results.LYRICS.LYRICS_SYNC_JSON[i].lrc_timestamp + body.results.LYRICS.LYRICS_SYNC_JSON[i].line+"\r\n";
+  				}else if(i+1 < body.results.LYRICS.LYRICS_SYNC_JSON.length){
+  					this.syncLyrics += body.results.LYRICS.LYRICS_SYNC_JSON[i+1].lrc_timestamp + body.results.LYRICS.LYRICS_SYNC_JSON[i].line+"\r\n";
+  				}
+  			}
+      }
       this.date = {
         day: body.results.DATA.PHYSICAL_RELEASE_DATE.slice(8,10),
         month: body.results.DATA.PHYSICAL_RELEASE_DATE.slice(5,7),

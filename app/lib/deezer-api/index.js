@@ -1,6 +1,8 @@
-const request = require('request-promise-native')
+const request = require('request-promise')
 const tough = require('tough-cookie');
 const Track = require('./obj/Track.js')
+const getBlowfishKey = require('./utils.js').getBlowfishKey
+const decryptChunk = require('./utils.js').decryptChunk
 
 module.exports = class Deezer {
   constructor(){
@@ -110,6 +112,7 @@ module.exports = class Deezer {
     try{
       this.setCookies(cookies)
       var userData = await this.apiCall(`deezer.getUserData`)
+      if (!userData.results.USER.USER_ID) throw new Error('Cookie expired, please login again.')
       this.user = {
         email: email,
         id: userData.results.USER.USER_ID,
@@ -189,5 +192,36 @@ module.exports = class Deezer {
       throw new Error("Wrong search type/text: " + text)
     }
     return body
+  }
+
+  decryptDownload(source, trackId) {
+  	var chunk_size = 2048
+  	var part_size = 0x1800
+  	var blowFishKey = getBlowfishKey(trackId)
+  	var i = 0
+  	var position = 0
+
+  	var destBuffer = Buffer.alloc(source.length)
+  	destBuffer.fill(0)
+
+  	while(position < source.length) {
+  		var chunk
+  		if ((source.length - position) >= 2048)
+  			chunk_size = 2048
+  		else
+  			chunk_size = source.length - position
+  		chunk = Buffer.alloc(chunk_size)
+  		let chunkString
+  		chunk.fill(0)
+  		source.copy(chunk, 0, position, position + chunk_size)
+  		if(i % 3 > 0 || chunk_size < 2048)
+  			chunkString = chunk.toString('binary')
+  		else
+  			chunkString = decryptChunk(chunk, blowFishKey)
+  		destBuffer.write(chunkString, position, chunkString.length, 'binary')
+  		position += chunk_size
+  		i++
+  	}
+  	return destBuffer
   }
 }
