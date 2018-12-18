@@ -434,8 +434,9 @@ io.sockets.on('connection', function (s) {
 	async function downloadAlbum(data){
 		try{
 			var album = await s.Deezer.legacyGetAlbum(data.id)
-			if (data.settings.tags.discTotal){
-				album.discTotal = await s.Deezer.getAlbum(data.id).discTotal
+			if (data.settings.tags.discTotal || data.settings.createCDFolder){
+				var discTotal = await s.Deezer.getAlbum(data.id)
+				album.discTotal = discTotal.discTotal
 			}
 			album.tracks = await s.Deezer.getAlbumTracks(data.id)
 			let _album = {
@@ -451,12 +452,30 @@ io.sockets.on('connection', function (s) {
 				obj: album,
 			}
 			addToQueue(_album)
+			return
 		}catch(err){
 			logger.error(err)
 			return
 		}
 	}
-	s.on("downloadalbum", data=>{downloadAlbum(data)});
+	s.on("downloadalbum", async data=>{await downloadAlbum(data)});
+
+	async function downloadArtist(data){
+		try{
+			var albums = await s.Deezer.legacyGetArtistAlbums(data.id);
+			(function sendAllAlbums(i) {
+				setTimeout(function () {
+					data.id = albums.data[albums.data.length-1-i].id
+					downloadAlbum(JSON.parse(JSON.stringify(data)))
+					if (--i+1) sendAllAlbums(i)
+				}, 100)
+			})(albums.data.length-1)
+		}catch(err){
+			logger.error(err.stack)
+			return
+		}
+	}
+	s.on("downloadartist", async data=>{ await downloadArtist(data)});
 
 	/*
 	function downloadPlaylist(data){
@@ -490,23 +509,6 @@ io.sockets.on('connection', function (s) {
 		});
 	}
 	s.on("downloadplaylist", data=>{downloadPlaylist(data)});
-
-	function downloadArtist(data){
-		s.Deezer.getArtistAlbums(data.id, function (albums, err) {
-			if (err) {
-				logger.error(err)
-				return;
-			}
-			(function sendAllAlbums(i) {
-				setTimeout(function () {
-		      data.id = albums.data[albums.data.length-1-i].id;
-					downloadAlbum(JSON.parse(JSON.stringify(data)));
-		      if (--i+1) sendAllAlbums(i);
-		   	}, 100)
-			})(albums.data.length-1);
-		});
-	}
-	s.on("downloadartist", data=>{downloadArtist(data)});
 
 	s.on("downloadspotifyplaylist", function (data) {
 		if (spotifySupport){
@@ -558,27 +560,36 @@ io.sockets.on('connection', function (s) {
 		logger.info(`Registered ${downloading.type}: ${downloading.id} | ${downloading.artist} - ${downloading.name}`);
 		switch(downloading.type){
 			case "track":
+				downloading.downloadPromise = new Promise(async (resolve,reject)=>{
+					try{
+						await downloadTrackObject(downloading.obj, downloading.queueId, downloading.settings)
+						downloading.downloaded++
+					}catch(err){
+						logger.error(err.stack)
+						downloading.failed++
+					}
+					s.emit("updateQueue", {
+						name: downloading.name,
+						artist: downloading.artist,
+						size: downloading.size,
+						downloaded: downloading.downloaded,
+						failed: downloading.failed,
+						queueId: downloading.queueId,
+						id: downloading.id,
+						type: downloading.type,
+					})
+					s.emit("downloadProgress", {
+						queueId: downloading.queueId,
+						percentage: 100
+					})
+					resolve()
+				})
 				try{
-					await downloadTrackObject(downloading.obj, downloading.queueId, downloading.settings)
-					downloading.downloaded++
+					await downloading.downloadPromise
 				}catch(err){
-					logger.error(err.stack)
-					downloading.failed++
+					if (err) return logger.error(err.stack);
+					logger.info("Downloading Stopped");
 				}
-				s.emit("updateQueue", {
-					name: downloading.name,
-					artist: downloading.artist,
-					size: downloading.size,
-					downloaded: downloading.downloaded,
-					failed: downloading.failed,
-					queueId: downloading.queueId,
-					id: downloading.id,
-					type: downloading.type,
-				})
-				s.emit("downloadProgress", {
-					queueId: downloading.queueId,
-					percentage: 100
-				})
 				if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]]
 				s.currentItem = null
 				queueDownload(getNextDownload())
@@ -939,7 +950,7 @@ io.sockets.on('connection', function (s) {
 		}
 	}
 
-	function cancelDownload(queueId){
+	function cancelDownload(queueId, cleanAll=false){
 		if (!queueId) return
 		let cancel = false
 		let cancelSuccess
@@ -956,24 +967,25 @@ io.sockets.on('connection', function (s) {
 		}
 
 		if (cancel) {
-			s.emit("cancelDownload", {queueId: queueId});
+			s.emit("cancelDownload", {queueId: queueId, cleanAll: cleanAll});
 		}
 	}
 	s.on("cancelDownload", function (data) {cancelDownload(data.queueId)});
 
 	s.on("cancelAllDownloads", function(data){
 		data.queueList.forEach(x=>{
-			cancelDownload(x);
+			cancelDownload(x, true);
 		})
+		s.emit("cancelAllDownloads")
 	})
 
 	async function downloadTrackObject(track, queueId, settings) {
 		if (!s.downloadQueue[queueId]) {
-			logger.error(`Failed to download ${track.artist.name} - ${track.title}: Not in queue`)
+			logger.error(`[${track.artist.name} - ${track.title}] Failed to download: Not in queue`)
 			return
 		}
 		if (track.id == 0){
-			logger.error(`Failed to download ${track.artist.name} - ${track.title}: Wrong ID`)
+			logger.error(`[${track.artist.name} - ${track.title}] Failed to download: Wrong ID`)
 			return
 		}
 
@@ -991,19 +1003,20 @@ io.sockets.on('connection', function (s) {
 		var ajson
 		if (!track.ajson){
 			try{
+				logger.info(`[${track.artist.name} - ${track.title}] Getting album info`)
 				ajson = await s.Deezer.legacyGetAlbum(track.album.id)
 			}catch(err){
-				logger.warn("Album not found, trying to reach deeper")
+				logger.warn(`[${track.artist.name} - ${track.title}] Album not found, trying to reach deeper`)
 				try{
 					ajson = await s.Deezer.getAlbum(track.album.id)
 					ajson.fromNewAPI = true
 				} catch(err){
 					if(track.fallbackId){
-						logger.warn("Failed to download track, falling on alternative")
+						logger.warn(`[${track.artist.name} - ${track.title}] Failed to download track, falling on alternative`)
 						track = await s.Deezer.getTrack(track.fallbackId)
 						return downloadTrackObject(track, queueId, settings)
 					}else{
-						logger.error(`Failed to download ${track.artist.name} - ${track.name}: ${err}`)
+						logger.error(`[${track.artist.name} - ${track.title}] Failed to download: ${err}`)
 						return
 					}
 				}
@@ -1013,9 +1026,14 @@ io.sockets.on('connection', function (s) {
 		}
 		if (!ajson.fromNewAPI){
 			// Aquiring discTotal (only if necessary)
-			if (((settings.tags.discTotal || settings.createCDFolder) && parseInt(track.id)>0) && !ajson.discTotal){
-				logger.info("Getting total disc number");
-				track.discTotal = await s.Deezer.legacyGetTrack(ajson.tracks.data[ajson.tracks.data.length-1].id).disk_number
+			if ((settings.tags.discTotal || settings.createCDFolder) && parseInt(track.id)>0){
+				if (ajson.discTotal){
+					logger.info(`[${track.artist.name} - ${track.title}] Getting total disc number`);
+					var discTotal = await s.Deezer.getAlbum(ajson.id)
+					track.discTotal = discTotal.discTotal
+				}else{
+					track.discTotal = ajson.discTotal
+				}
 			}
 			track.album.artist = {
 				id: ajson.artist.id,
@@ -1062,9 +1080,10 @@ io.sockets.on('connection', function (s) {
 
 		// Aquiring bpm (only if necessary)
 		if ((settings.tags.bpm && parseInt(track.id)>0)){
-			logger.info("Getting BPM");
+			logger.info(`[${track.artist.name} - ${track.title}] Getting BPM`);
 			try{
-				track.bpm = await s.Deezer.legacyGetTrack(track.id).bpm
+				var bpm = await s.Deezer.legacyGetTrack(track.id)
+				track.bpm = bpm.bpm
 			}catch(err){
 				track.bpm = 0
 			}
@@ -1258,10 +1277,10 @@ io.sockets.on('connection', function (s) {
 			}
 		}
 		if (fs.existsSync(writePath)) {
-			logger.info("Already downloaded: " + track.artist.name + ' - ' + track.title);
+			logger.info(`[${track.artist.name} - ${track.title}] Already downloaded`);
 			return;
 		}else{
-			logger.info('Downloading file to ' + writePath);
+			logger.info(`[${track.artist.name} - ${track.title}] Downloading file to ${writePath}`);
 		}
 		// Get cover image
 		if (track.album.pictureUrl) {
@@ -1277,22 +1296,22 @@ io.sockets.on('connection', function (s) {
 			}
 			if(fs.existsSync(imgPath)){
 				track.album.picturePath = (imgPath).replace(/\\/g, "/")
-				logger.info("Starting the download process CODE:1")
+				logger.info(`[${track.artist.name} - ${track.title}] Starting the download process CODE:1`)
 			}else{
 				try{
 					var body = await request.get(track.album.pictureUrl, {strictSSL: false,encoding: 'binary'})
 					fs.outputFileSync(imgPath,body,'binary')
 					track.album.picturePath = (imgPath).replace(/\\/g, "/")
-					logger.info("Starting the download process CODE:2")
+					logger.info(`[${track.artist.name} - ${track.title}] Starting the download process CODE:2`)
 				}catch(error){
-					logger.error("Cannot download Album Image: "+error.stack)
+					logger.error(`[${track.artist.name} - ${track.title}] Cannot download Album Image: ${error.stack}`)
 					track.album.pictureUrl = undefined
 					track.album.picturePath = undefined
 				}
 			}
 		}else{
 			track.album.pictureUrl = undefined
-			logger.info("Starting the download process CODE:3")
+			logger.info(`[${track.artist.name} - ${track.title}] Starting the download process CODE:3`)
 		}
 
 		// Get Artist Image
@@ -1305,9 +1324,9 @@ io.sockets.on('connection', function (s) {
 						var body = await request.get(track.album.artist.pictureUrl, {strictSSL: false,encoding: 'binary'})
 						if (body.indexOf("unauthorized")>-1) throw new Error("Unauthorized")
 						fs.outputFileSync(imgPath,body,'binary')
-						logger.info("Saved Artist Image")
+						logger.info(`[${track.artist.name} - ${track.title}] Saved Artist Image`)
 					}catch(err){
-						logger.error("Cannot download Artist Image: "+err.stack)
+						logger.error(`[${track.artist.name} - ${track.title}] Cannot download Artist Image: ${err.stack}`)
 					}
 				}
 			}
@@ -1319,45 +1338,47 @@ io.sockets.on('connection', function (s) {
 		else
 			tempPath = writePath
 
-		logger.info("Downloading track")
+		logger.info(`[${track.artist.name} - ${track.title}] Downloading track`)
 		var downloadingPromise = new Promise((resolve, reject)=>{
 			let req = requestOld.get({url: track.getDownloadUrl(track.selectedFormat), strictSSL: false, headers: s.Deezer.httpHeaders, encoding: 'binary'}, function (error, response, body) {
 				if (error){
-					logger.error("Downloading error: "+err.stack)
-					reject("Downloading error: "+err.stack)
+					logger.error(`[${track.artist.name} - ${track.title}] Downloading error: ${error}`)
+					reject("Downloading error: "+error)
 				}
 				if (!s.downloadQueue[queueId]){
 					fs.remove(tempPath)
 					return reject()
 				}
-				logger.info("Decrypting track")
+				logger.info(`[${track.artist.name} - ${track.title}] Decrypting track`)
 				var decryptedSource = s.Deezer.decryptDownload(Buffer.from(body, 'binary'), track.id)
 				try{
 					fs.outputFileSync(tempPath,decryptedSource)
 					resolve()
 				}catch(err){
-					return logger.error("Decryption error: "+err.stack)
+					return logger.error(`[${track.artist.name} - ${track.title}] Decryption error: ${err.stack}`)
 				}
 			}).on("data", function(data) {
-				if (!s.downloadQueue[queueId]) reject()
+				if (!s.downloadQueue[queueId] || !s.currentItem) reject()
 			})
 			if(s.currentItem.type == "track"){
 				let chunkLength = 0
 				req.on("data", function(data) {
-					if (!s.downloadQueue[queueId]) reject()
+					if (!s.downloadQueue[queueId] || !s.currentItem) reject()
 					chunkLength += data.length
-					if (!s.currentItem.percentage) {
-						s.currentItem.percentage = 0
-					}
-					let complete = track.selectedFilesize
-					let percentage = (chunkLength / complete) * 100;
-					if ((percentage - s.currentItem.percentage > 1) || (chunkLength == complete)) {
-						s.currentItem.percentage = percentage
-						s.emit("downloadProgress", {
-							queueId: s.currentItem.queueId,
-							percentage: s.currentItem.percentage-5
-						})
-					}
+					try{
+						if (!s.currentItem.percentage) {
+							s.currentItem.percentage = 0
+						}
+						let complete = track.selectedFilesize
+						let percentage = (chunkLength / complete) * 100;
+						if ((percentage - s.currentItem.percentage > 1) || (chunkLength == complete)) {
+							s.currentItem.percentage = percentage
+							s.emit("downloadProgress", {
+								queueId: s.currentItem.queueId,
+								percentage: s.currentItem.percentage-5
+							})
+						}
+					}catch(err){}
 				})
 			}
 		})
@@ -1367,8 +1388,8 @@ io.sockets.on('connection', function (s) {
 			if (err) logger.error(err)
 			return
 		}
-		
-		logger.info("Adding Tags")
+
+		logger.info(`[${track.artist.name} - ${track.title}] Adding Tags`)
 		if (parseInt(track.id)>0){
 			if(track.selectedFormat == 9){
 				let flacComments = [];
@@ -1585,7 +1606,7 @@ io.sockets.on('connection', function (s) {
 				fs.remove(tempPath);
 			}
 		}
-		logger.info("Downloaded: " + track.artist.name + " - " + track.title)
+		logger.info(`[${track.artist.name} - ${track.title}] Downloaded`)
 	}
 })
 

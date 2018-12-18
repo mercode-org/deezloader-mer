@@ -1005,7 +1005,7 @@ socket.on("cancelDownload", function (data) {
 	//data.queueId		-> queueId of item which was canceled
 	$('#' + data.queueId).addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
 		$(this).remove()
-		M.toast({html: '<i class="material-icons left">clear</i>One download removed!', displayLength: 5000, classes: 'rounded'})
+		if (!data.cleanAll) M.toast({html: '<i class="material-icons left">clear</i>One download removed!', displayLength: 5000, classes: 'rounded'})
 	})
 })
 
@@ -1021,6 +1021,10 @@ $('#cancelAllTable').click(function (ev) {
 		return $(i).attr('id')
 	}).get()
 	socket.emit('cancelAllDownloads', {queueList: listOfIDs})
+})
+
+socket.on("cancelAllDownloads", function () {
+	M.toast({html: '<i class="material-icons left">clear</i>All downloads removed!', displayLength: 5000, classes: 'rounded'})
 })
 
 //****************************************************************************************************\\

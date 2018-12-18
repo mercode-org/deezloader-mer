@@ -201,6 +201,11 @@ module.exports = class Deezer {
     return body
   }
 
+  async legacyGetTrack(id){
+    var body = await this.legacyApiCall(`track/${id}`)
+    return body
+  }
+
   async legacyGetChartsTopCountry(){
     return await this.legacyGetUserPlaylists('637006841')
   }
