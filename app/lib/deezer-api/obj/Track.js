@@ -146,8 +146,14 @@ module.exports = class Track {
         this.album = {id: body.ALB_ID, title: body.ALB_TITLE, picture: body.ALB_PICTURE}
         this.artist = {id: body.ART_ID, name: body.ART_NAME, picture: body.ART_PICTURE}
         this.artistsString = []
-        if (body.SNG_CONTRIBUTORS.main_artist) this.artistsString.join(body.SNG_CONTRIBUTORS.main_artist); else if (body.SNG_CONTRIBUTORS.mainartist) this.artistsString.join(body.SNG_CONTRIBUTORS.mainartist)
-        if (body.SNG_CONTRIBUTORS.associatedperformer) this.artistsString.join(body.SNG_CONTRIBUTORS.associatedperformer)
+        if (body.SNG_CONTRIBUTORS.main_artist){
+          this.artistsString = this.artistsString.concat(body.SNG_CONTRIBUTORS.main_artist)
+        }else if (body.SNG_CONTRIBUTORS.mainartist){
+          this.artistsString = this.artistsString.concat(body.SNG_CONTRIBUTORS.mainartist)
+        }
+        if (body.SNG_CONTRIBUTORS.associatedperformer) {
+          this.artistsString = this.artistsString.concat(body.SNG_CONTRIBUTORS.associatedperformer)
+        }
         this.gain = body.GAIN
         this.discNumber = body.DISK_NUMBER
         this.trackNumber = body.TRACK_NUMBER

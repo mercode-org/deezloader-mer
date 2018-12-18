@@ -410,7 +410,6 @@ io.sockets.on('connection', function (s) {
 	async function downloadTrack(data){
 		try{
 			var track = await s.Deezer.getTrack(data.id)
-			s.emit('printObj', track)
 			let _track = {
 				name: track.title,
 				artist: track.artist.name,
@@ -1134,7 +1133,7 @@ io.sockets.on('connection', function (s) {
 			}
 		}
 
-		if((track.artists || track.artistsString) && typeof track.artists == "object"){
+		if(track.artists || track.artistsString){
 			if (!track.artistsString){
 				track.artistsString = []
 				artistArray = []
@@ -1397,7 +1396,7 @@ io.sockets.on('connection', function (s) {
 					flacComments.push('TITLE=' + track.title);
 				if (settings.tags.album)
 					flacComments.push('ALBUM=' + track.album.title);
-				if (settings.tags.album.artist)
+				if (settings.tags.albumArtist)
 					flacComments.push('ALBUMARTIST=' + track.album.artist.name);
 				if (settings.tags.trackNumber)
 					flacComments.push('TRACKNUMBER=' + track.trackNumber);
@@ -1553,7 +1552,7 @@ io.sockets.on('connection', function (s) {
 					writer.setFrame('TPE1', [track.artistsString])
 				if (settings.tags.album)
 					writer.setFrame('TALB', track.album.title)
-				if (settings.tags.album.artist && track.album.artist)
+				if (settings.tags.albumArtist && track.album.artist)
 					writer.setFrame('TPE2', track.album.artist.name)
 				if (settings.tags.trackNumber)
 					writer.setFrame('TRCK', (settings.tags.trackTotal ? track.trackNumber+"/"+track.trackTotal : track.trackNumber))
@@ -1579,8 +1578,8 @@ io.sockets.on('connection', function (s) {
 				}
 				if(track.unsyncLyrics && settings.tags.unsynchronisedLyrics)
 					writer.setFrame('USLT', track.unsyncLyrics);
-				if(track.publisherString && settings.tags.publisher)
-					writer.setFrame('TPUB', track.publisherString);
+				if(track.publisher && settings.tags.publisher)
+					writer.setFrame('TPUB', track.publisher);
 				if(track.genreString && settings.tags.genre)
 					writer.setFrame('TCON', [track.genreString]);
 				if(track.copyright && settings.tags.copyright)
