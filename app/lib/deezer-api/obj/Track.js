@@ -130,6 +130,33 @@ module.exports = class Track {
         this.contributor = body.SNG_CONTRIBUTORS
         this.lyricsId = body.LYRICS_ID
       break
+      case 'song.getListByAlbum':
+        this.id = body.SNG_ID
+        this.title = `${body.SNG_TITLE}${body.VERSION ? ` ${body.VERSION}`: ""}`
+        this.duration = body.DURATION
+        this.filesize = {
+          default: parseInt(body.FILESIZE),
+          mp3_128: parseInt(body.FILESIZE_MP3_128),
+          mp3_320: parseInt(body.FILESIZE_MP3_320),
+          flac: parseInt(body.FILESIZE_FLAC),
+        }
+        this.MD5 = body.MD5_ORIGIN
+        this.mediaVersion = body.MEDIA_VERSION
+        this.fallbackId = (body.FALLBACK ? (body.FALLBACK.SNG_ID ? body.FALLBACK.SNG_ID : 0) : 0)
+        this.album = {id: body.ALB_ID, title: body.ALB_TITLE, picture: body.ALB_PICTURE}
+        this.artist = {id: body.ART_ID, name: body.ART_NAME, picture: body.ART_PICTURE}
+        this.artistsString = []
+        if (body.SNG_CONTRIBUTORS.main_artist) this.artistsString.join(body.SNG_CONTRIBUTORS.main_artist); else if (body.SNG_CONTRIBUTORS.mainartist) this.artistsString.join(body.SNG_CONTRIBUTORS.mainartist)
+        if (body.SNG_CONTRIBUTORS.associatedperformer) this.artistsString.join(body.SNG_CONTRIBUTORS.associatedperformer)
+        this.gain = body.GAIN
+        this.discNumber = body.DISK_NUMBER
+        this.trackNumber = body.TRACK_NUMBER
+        this.explicit = body.EXPLICIT_LYRICS
+        this.ISRC = body.ISRC
+        this.recordType = body.TYPE
+        this.contributor = body.SNG_CONTRIBUTORS
+        this.lyricsId = body.LYRICS_ID
+      break
     }
   }
 

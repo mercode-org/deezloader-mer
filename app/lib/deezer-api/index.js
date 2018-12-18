@@ -15,9 +15,11 @@ module.exports = class Deezer {
       "Cache-Control": "max-age=0",
       "Accept": "*/*",
       "Accept-Charset": "utf-8,ISO-8859-1;q=0.7,*;q=0.3",
-      "Accept-Language": "en-US,en;q=0.9,en-US;q=0.8,en;q=0.7"
+      "Accept-Language": "en-US,en;q=0.9,en-US;q=0.8,en;q=0.7",
+      "Connection": 'keep-alive'
     }
     this.albumPicturesHost = `https://e-cdns-images.dzcdn.net/images/cover/`
+    this.artistPictureHost = `https://e-cdns-images.dzcdn.net/images/artist/`
     this.user = {}
     this.jar = request.jar()
   }
@@ -152,8 +154,13 @@ module.exports = class Deezer {
   }
 
   async getAlbumTracks(id){
+    var tracksArray = []
     var body = await this.apiCall(`song.getListByAlbum`, {alb_id: id, nb: -1})
-    return body.results
+    body.results.data.forEach(track=>{
+      track.sourcePage = 'song.getListByAlbum'
+      tracksArray.push(new Track(track))
+    })
+    return tracksArray
   }
 
   async getArtist(id){
@@ -169,6 +176,24 @@ module.exports = class Deezer {
   async getPlaylistTracks(id){
     var body = await this.apiCall(`playlist.getSongs`, {playlist_id: id, nb: -1})
     return body.results
+  }
+
+  async getLyrics(id){
+    var body = await this.apiCall(`song.getLyrics`, {sng_id: id})
+    let lyr
+    lyr.unsyncLyrics = {
+      description: "",
+      lyrics: body.results.LYRICS_TEXT
+    }
+    lyr.syncLyrics = ""
+    for(let i=0; i < body.results.LYRICS_SYNC_JSON.length; i++){
+      if(body.results.LYRICS_SYNC_JSON[i].lrc_timestamp){
+        this.syncLyrics += body.results.LYRICS_SYNC_JSON[i].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
+      }else if(i+1 < body.results.LYRICS_SYNC_JSON.length){
+        this.syncLyrics += body.results.LYRICS_SYNC_JSON[i+1].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
+      }
+    }
+    return lyr
   }
 
   async legacyGetUserPlaylists(id){
@@ -192,6 +217,11 @@ module.exports = class Deezer {
 
   async legacyGetAlbumTracks(id){
     var body = await this.legacyApiCall(`album/${id}/tracks`, {limit: -1})
+    return body
+  }
+
+  async legacyGetArtistAlbums(id){
+    var body = await this.legacyApiCall(`artist/${id}/albums`, {limit: -1})
     return body
   }
 
