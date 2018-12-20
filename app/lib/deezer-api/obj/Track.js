@@ -131,6 +131,7 @@ module.exports = class Track {
         this.lyricsId = body.LYRICS_ID
       break
       case 'song.getListByAlbum':
+      case 'playlist.getSongs':
         this.id = body.SNG_ID
         this.title = `${body.SNG_TITLE}${body.VERSION ? ` ${body.VERSION}`: ""}`
         this.duration = body.DURATION
@@ -154,6 +155,7 @@ module.exports = class Track {
         if (body.SNG_CONTRIBUTORS.associatedperformer) {
           this.artistsString = this.artistsString.concat(body.SNG_CONTRIBUTORS.associatedperformer)
         }
+        if (!this.artistsString[0]) this.artistsString.push(this.artist.name)
         this.gain = body.GAIN
         this.discNumber = body.DISK_NUMBER
         this.trackNumber = body.TRACK_NUMBER

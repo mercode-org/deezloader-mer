@@ -232,35 +232,39 @@ io.sockets.on('connection', function (s) {
 				playlists.push(obj)
 			}
 			if (configFile.userDefined.spotifyUser && spotifySupport){
-				let creds = await Spotify.clientCredentialsGrant()
-				Spotify.setAccessToken(creds.body['access_token'])
-				let first = true
-				let offset = 0
-				do{
-					let data = await Spotify.getUserPlaylists(configFile.userDefined.spotifyUser, {fields: "items(images,name,owner.id,tracks.total,uri),total", offset: offset*20})
-					if (first){
-						var total = data.body.total
-						var numPages=Math.floor((total-1)/20)
-						var playlistList = new Array(total)
-						first = false
-					}
-					data.body.items.forEach((playlist, i) => {
-						playlistList[(offset*20)+i] = {
-							title: playlist.name,
-							image: (playlist.images[0] ? playlist.images[0].url : ""),
-							songs: playlist.tracks.total,
-							link: playlist.uri,
-							spotify: true
+				try{
+					let creds = await Spotify.clientCredentialsGrant()
+					Spotify.setAccessToken(creds.body['access_token'])
+					let first = true
+					let offset = 0
+					do{
+						let data = await Spotify.getUserPlaylists(configFile.userDefined.spotifyUser, {fields: "items(images,name,owner.id,tracks.total,uri),total", offset: offset*20})
+						if (first){
+							var total = data.body.total
+							var numPages=Math.floor((total-1)/20)
+							var playlistList = new Array(total)
+							first = false
 						}
-					})
-					offset++
-				}while(offset<=numPages)
-				playlists = playlists.concat(playlistList)
+						data.body.items.forEach((playlist, i) => {
+							playlistList[(offset*20)+i] = {
+								title: playlist.name,
+								image: (playlist.images[0] ? playlist.images[0].url : ""),
+								songs: playlist.tracks.total,
+								link: playlist.uri,
+								spotify: true
+							}
+						})
+						offset++
+					}while(offset<=numPages)
+					playlists = playlists.concat(playlistList)
+				}catch(err){
+					logger.error(`Spotify playlist failed loading: ${err}`)
+				}
 			}
 			logger.info(`Loaded ${playlists.length} Playlist${playlists.length>1 ? "s" : ""}`)
 			s.emit("getMyPlaylistList", {playlists: playlists})
 		}catch(err){
-			logger.error(`getMyPlaylistList failed: ${err.stack}`)
+			logger.error(`getMyPlaylistList failed: ${err}`)
 			return
 		}
 	}
@@ -476,39 +480,31 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadartist", async data=>{ await downloadArtist(data)});
 
-	/*
-	function downloadPlaylist(data){
-		s.Deezer.getPlaylist(data.id, function (playlist, err) {
-			if (err) {
-				logger.error(err)
-				return;
-			}
-			let queueId = "id" + Math.random().toString(36).substring(2);
+	async function downloadPlaylist(data){
+		try{
+			var playlist = await s.Deezer.legacyGetPlaylist(data.id)
+			playlist.tracks = await s.Deezer.getPlaylistTracks(data.id)
 			let _playlist = {
-				name: playlist["title"],
-				size: playlist.nb_tracks,
-				downloaded: 0,
+				name: playlist.title,
 				artist: playlist.creator.name,
+				size: playlist.tracks.length,
+				downloaded: 0,
 				failed: 0,
-				queueId: queueId,
-				id: playlist["id"],
+				queueId: `id${Math.random().toString(36).substring(2)}`,
+				id: `${playlist.id}:${data.settings.maxBitrate}`,
 				type: "playlist",
-				cover: playlist["picture_small"],
-			};
-			_playlist.settings = data.settings || {};
-			s.Deezer.getAdvancedPlaylistTracks(data.id, function (playlist, err) {
-				if (err){
-					logger.error(err)
-					return;
-				}
-				_playlist.size = playlist.data.length
-				_playlist.tracks = playlist.data
-				addToQueue(JSON.parse(JSON.stringify(_playlist)));
-			})
-		});
+				settings: data.settings || {},
+				obj: playlist,
+			}
+			addToQueue(_playlist)
+		}catch(err){
+			logger.error(err)
+			return
+		}
 	}
 	s.on("downloadplaylist", data=>{downloadPlaylist(data)});
 
+	/*
 	s.on("downloadspotifyplaylist", function (data) {
 		if (spotifySupport){
 			Spotify.clientCredentialsGrant().then(function(creds) {
@@ -693,16 +689,7 @@ io.sockets.on('connection', function (s) {
 				s.currentItem = null;
 				queueDownload(getNextDownload())
 			break
-			/*
 			case "playlist":
-				downloading.playlistContent = downloading.tracks.map((t,i) => {
-					if (t.FALLBACK){
-						if (t.FALLBACK.SNG_ID)
-							return {id: t.SNG_ID, fallback: t.FALLBACK.SNG_ID, name: (t.VERSION ? t.SNG_TITLE + " "+t.VERSION : t.SNG_TITLE), artist: t.ART_NAME, index: i+"", queueId: downloading.queueId}
-					}else{
-						return {id: t.SNG_ID, name: (t.VERSION ? t.SNG_TITLE+" "+t.VERSION : t.SNG_TITLE), artist: t.ART_NAME, index: i+"", queueId: downloading.queueId}
-					}
-				})
 				downloading.settings.plName = downloading.name;
 				downloading.errorLog = ""
 				downloading.searchedLog = "";
@@ -711,37 +698,41 @@ io.sockets.on('connection', function (s) {
 					fullSize: downloading.playlistContent.length
 				};
 				filePath = mainFolder+antiDot(fixName(downloading.settings.plName)) + path.sep
-				downloading.finished = new Promise((resolve,reject)=>{
-					downloading.playlistContent.every(function (t) {
+				downloading.downloadPromise = new Promise((resolve,reject)=>{
+					downloading.obj.tracks.every(await function (t) {
 						s.trackQueue.push(cb=>{
-							if (!s.downloadQueue[downloading.queueId]) {
-								reject();
-								return false;
+							try{
+								await downloadTrackObject(t, downloading.queueId, downloading.settings)
+								downloading.downloaded++
+								downloading.playlistArr[t.playlistData[0]] = t.playlistData[1].split(filePath)[1]
+								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.name}\r\n`
+							}catch(err){
+								logger.error(err.stack)
+								downloading.failed++
+								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 							}
-							logger.info(`Now downloading: ${t.artist} - ${t.name}`)
-							downloadTrackObject(t, downloading.settings, null, function (err, track) {
-								if (!err) {
-									downloading.downloaded++;
-									downloading.playlistArr[track.playlistData[0]] = track.playlistData[1].split(filePath)[1];
-									if (track.searched) downloading.searchedLog += `${t.artist} - ${t.name}\r\n`
-								} else {
-									downloading.failed++;
-									downloading.errorLog += `${t.id} | ${t.artist} - ${t.name} | ${err}\r\n`;
-								}
-								s.emit("downloadProgress", {
-									queueId: downloading.queueId,
-									percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-								});
-								s.emit("updateQueue", downloading);
-								if (downloading.downloaded + downloading.failed == downloading.size)
-									resolve();
-								cb();
+							s.emit("downloadProgress", {
+								queueId: downloading.queueId,
+								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
 							});
-						});
-						return true;
+							s.emit("updateQueue", {
+								name: downloading.name,
+								artist: downloading.artist,
+								size: downloading.size,
+								downloaded: downloading.downloaded,
+								failed: downloading.failed,
+								queueId: downloading.queueId,
+								id: downloading.id,
+								type: downloading.type,
+							})
+							if (downloading.downloaded + downloading.failed == downloading.size) resolve()
+							cb()
+						})
+						return true
 					})
-				});
-				downloading.finished.then(()=>{
+				})
+				try{
+					await downloading.downloadPromise
 					logger.info("Playlist finished "+downloading.name);
 					s.emit("downloadProgress", {
 						queueId: downloading.queueId,
@@ -786,17 +777,15 @@ io.sockets.on('connection', function (s) {
 							});
 						}
 					}
-					if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
-					s.currentItem = null;
-					queueDownload(getNextDownload());
-				}).catch((err)=>{
-					if (err) return logger.error(err.stack);
-					logger.info("Stopping the playlist queue");
-					if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]];
-					s.currentItem = null;
-					queueDownload(getNextDownload());
-				});
-				break;
+				}catch(err){
+					if (err) return logger.error(err.stack)
+					logger.info("Stopping the playlist queue")
+				}
+				if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]]
+				s.currentItem = null
+				queueDownload(getNextDownload())
+			break
+			/*
 			case "spotifyplaylist":
 			if (spotifySupport){
 				Spotify.clientCredentialsGrant().then(function(creds) {
