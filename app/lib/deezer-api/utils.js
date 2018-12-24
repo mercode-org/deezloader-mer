@@ -27,9 +27,14 @@ function decryptChunk(chunk, blowFishKey){
   return cipher.update(chunk, 'binary', 'binary') + cipher.final()
 }
 
+function sleep(ms) {
+  return new Promise(resolve => setTimeout(resolve, ms));
+}
+
 module.exports = {
   md5: md5,
   ecbCrypt: ecbCrypt,
   getBlowfishKey: getBlowfishKey,
-  decryptChunk: decryptChunk
+  decryptChunk: decryptChunk,
+  sleep: sleep
 }

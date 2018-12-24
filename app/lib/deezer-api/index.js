@@ -4,6 +4,7 @@ const Track = require('./obj/Track.js')
 const Album = require('./obj/Album.js')
 const getBlowfishKey = require('./utils.js').getBlowfishKey
 const decryptChunk = require('./utils.js').decryptChunk
+const sleep = require('./utils.js').sleep
 
 module.exports = class Deezer {
   constructor(){
@@ -68,6 +69,14 @@ module.exports = class Deezer {
       json: true,
       headers: this.httpHeaders
     })
+    if (result.error){
+      if (result.error.code == 4){
+        await sleep(500)
+        return await legacyApiCall(method, args)
+      }else{
+        throw new Error(`${result.error.type}: ${result.error.message}`)
+      }
+    }
     return result
   }
 
@@ -176,9 +185,11 @@ module.exports = class Deezer {
   async getPlaylistTracks(id){
     var tracksArray = []
     var body = await this.apiCall(`playlist.getSongs`, {playlist_id: id, nb: -1})
-    body.results.data.forEach(track=>{
+    body.results.data.forEach((track, index)=>{
       track.sourcePage = 'playlist.getSongs'
-      tracksArray.push(new Track(track))
+      let _track = new Track(track)
+      _track.position = index
+      tracksArray.push(_track)
     })
     return tracksArray
   }
