@@ -67,7 +67,8 @@ module.exports = class Deezer {
       qs: args,
       jar: this.jar,
       json: true,
-      headers: this.httpHeaders
+      headers: this.httpHeaders,
+      timeout: 30000
     })
     if (result.error){
       if (result.error.code == 4){
@@ -137,29 +138,38 @@ module.exports = class Deezer {
     }
   }
 
-  async getTrack(id, settings = {}){
+  async getTrack(id){
     var body
     if (id<0){
       body = await this.apiCall(`song.getData`, {sng_id: id})
-      body.sourcePage = 'song.getData'
-      body.type = -1
+      body.results.sourcePage = 'song.getData'
+      body.results.type = -1
     }else{
       body = await this.apiCall(`deezer.pageTrack`, {sng_id: id})
-      body.sourcePage = 'deezer.pageTrack'
-      body.type = 0
+      body.results.sourcePage = 'deezer.pageTrack'
     }
-    return new Track(body)
+    return new Track(body.results)
+  }
+
+  async getTracks(ids){
+    var tracksArray = []
+    var body = await this.apiCall(`song.getListData`, {sng_ids: ids})
+    body.results.data.forEach(track=>{
+      track.sourcePage = 'song.getData'
+      tracksArray.push(new Track(track))
+    })
+    return tracksArray
   }
 
   async getAlbum(id){
     var body = await this.apiCall(`album.getData`, {alb_id: id})
-    body.sourcePage = 'album.getData'
+    body.results.sourcePage = 'album.getData'
     /*
     Alternative query, currently not used
       var body = await this.apiCall(`deezer.pageAlbum`, {alb_id: id, lang: 'en'})
       body.sourcePage = 'deezer.pageAlbum'
     */
-    return new Album(body)
+    return new Album(body.results)
   }
 
   async getAlbumTracks(id){
@@ -219,6 +229,11 @@ module.exports = class Deezer {
 
   async legacyGetTrack(id){
     var body = await this.legacyApiCall(`track/${id}`)
+    return body
+  }
+
+  async legacyGetTrackByISRC(isrc){
+    var body = await this.legacyApiCall(`track/isrc:${isrc}`)
     return body
   }
 
