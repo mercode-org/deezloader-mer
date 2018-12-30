@@ -556,6 +556,31 @@ io.sockets.on('connection', function (s) {
 			let resp = await s.Deezer.legacyGetTrackByISRC(track.external_ids.isrc)
 			return resp.id
 		}else{
+			let resp
+			track.artists[0].name = track.artists[0].name.replace(/–/g,"-").replace(/’/g, "'")
+			track.name = track.name.replace(/–/g,"-").replace(/’/g, "'")
+			track.album.name = track.album.name.replace(/–/g,"-").replace(/’/g, "'")
+			try{
+				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}" album:"${track.album.name}"`, "track", 1)
+			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+			if (resp.data) return resp.data[0].id
+			try{
+				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}"`, "track", 1)
+			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+			if (resp.data) return resp.data[0].id
+			if (track.name.indexOf("(") < track.name.indexOf(")")){
+				try{
+					resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split("(")[0]}"`, "track", 1)
+				}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+				if (resp.data) return resp.data[0].id
+			}else if (track.indexOf(" - ")>0){
+				try{
+					resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split(" - ")[0]}"`, "track", 1)
+				}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+				if (resp.data) return resp.data[0].id
+			}else{
+				return 0
+			}
 			return 0
 		}
 	}
@@ -612,7 +637,7 @@ io.sockets.on('connection', function (s) {
 				try{
 					await downloading.downloadPromise
 				}catch(err){
-					if (err) return logger.error(`queueDownload:track failed: ${err.stack ? err.stack : err}`)
+					if (err) logger.error(`queueDownload:track failed: ${err.stack ? err.stack : err}`)
 					logger.info("Downloading Stopped")
 				}
 			break
@@ -710,7 +735,7 @@ io.sockets.on('connection', function (s) {
 						fs.writeFileSync(filePath+"playlist.m3u", downloading.playlistArr.join("\r\n"));
 					}
 				}catch(err){
-					if (err) return logger.error(`queueDownload:album failed: ${err.stack ? err.stack : err}`)
+					if (err) logger.error(`queueDownload:album failed: ${err.stack ? err.stack : err}`)
 					logger.info("Stopping the album queue");
 				}
 			break
@@ -808,7 +833,7 @@ io.sockets.on('connection', function (s) {
 						}
 					}
 				}catch(err){
-					if (err) return logger.error(`queueDownload:playlist failed: ${err.stack ? err.stack : err}`)
+					if (err) logger.error(`queueDownload:playlist failed: ${err.stack ? err.stack : err}`)
 					logger.info("Stopping the playlist queue")
 				}
 			break
@@ -923,7 +948,7 @@ io.sockets.on('connection', function (s) {
 						}
 					}
 				}catch(err){
-					if (err) return logger.error(`queueDownload:spotifyplaylist failed: ${err.stack ? err.stack : err}`)
+					if (err) logger.error(`queueDownload:spotifyplaylist failed: ${err.stack ? err.stack : err}`)
 					logger.info("Stopping the playlist queue")
 				}
 			break
@@ -946,7 +971,7 @@ io.sockets.on('connection', function (s) {
 					concurrency: s.trackQueue.concurrency
 				})
 			}
-			delete s.downloadQueue[queueId];
+			delete s.downloadQueue[queueId]
 		}
 
 		if (cancel) {

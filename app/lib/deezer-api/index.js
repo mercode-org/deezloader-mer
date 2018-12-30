@@ -73,7 +73,7 @@ module.exports = class Deezer {
     if (result.error){
       if (result.error.code == 4){
         await sleep(500)
-        return await legacyApiCall(method, args)
+        return await this.legacyApiCall(method, args)
       }else{
         throw new Error(`${result.error.type}: ${result.error.message}`)
       }
@@ -266,8 +266,8 @@ module.exports = class Deezer {
     return body
   }
 
-  async legacySearch(term, type){
-    var body = await this.legacyApiCall(`search/${type}`, {q: term})
+  async legacySearch(term, type, limit = 30){
+    var body = await this.legacyApiCall(`search/${type}`, {q: term, limit: limit})
     if(body.error) {
       throw new Error("Wrong search type/text: " + text)
     }
