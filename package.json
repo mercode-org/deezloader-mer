@@ -9,7 +9,7 @@
 	},
 	"devDependencies": {
 		"cross-env": "latest",
-		"electron": "latest",
+		"electron": "^3.0.10",
 		"electron-builder": "latest"
 	},
 	"scripts": {
