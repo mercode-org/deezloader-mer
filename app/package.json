@@ -18,6 +18,7 @@
 		"queue": "^5.0.0",
 		"request": "^2.87.0",
 		"request-promise": "^4.2.2",
+		"sequential-task-queue": "^1.2.1",
 		"socket.io": "latest",
 		"spotify-web-api-node": "latest"
 	}

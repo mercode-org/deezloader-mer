@@ -64,7 +64,3 @@ dist
 app/authCredentials.js
 .DS_Store
 */.DS_Store
-/package-lock.json
-*/package-lock.json
-/yarn.lock
-*/yarn.lock

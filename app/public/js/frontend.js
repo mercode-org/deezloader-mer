@@ -945,11 +945,8 @@ socket.on('addToQueue', function (data) {
 	var btn_remove = $('<a href="#" class="btn-flat waves-effect"><i class="material-icons">remove</i></a>')
 
 	$(btn_remove).click(function (ev) {
-
 		ev.preventDefault()
-
 		socket.emit("cancelDownload", {queueId: data.queueId})
-
 	})
 
 	btn_remove.appendTo(tableBody.children('tr:last')).wrap('<td class="eventBtn center">')

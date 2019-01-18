@@ -19,7 +19,6 @@ const ID3Writer = require('./lib/browser-id3-writer')
 const deezerApi = require('./lib/deezer-api')
 const spotifyApi = require('spotify-web-api-node')
 // App stuff
-const Promise = require("bluebird")
 const fs = require('fs-extra')
 const async = require('async')
 const request = require('request-promise')
@@ -30,15 +29,12 @@ const logger = require('./utils/logger.js')
 const queue = require('queue')
 const localpaths = require('./utils/localpaths.js')
 const package = require('./package.json')
+const stq = require('sequential-task-queue')
 
 // First run, create config file
 if(!fs.existsSync(localpaths.user+"config.json")){
 	fs.outputFileSync(localpaths.user+"config.json",fs.readFileSync(__dirname+path.sep+"default.json",'utf8'))
 }
-
-Promise.config({
-	cancellation: true
-})
 
 // Main Constants
 // Files
@@ -105,9 +101,8 @@ io.sockets.on('connection', function (s) {
 
 	// Connection dependet variables
 	s.Deezer = new deezerApi()
+	s.dqueue = new stq.SequentialTaskQueue()
 	s.downloadQueue = {}
-	s.currentItem = null
-	s.lastQueueId = null
 	s.trackQueue = queue({
 		autostart: true
 	})
@@ -398,23 +393,6 @@ io.sockets.on('connection', function (s) {
 		});
 	});
 
-	function addToQueue(object) {
-		s.downloadQueue[object.queueId] = object
-		s.emit('addToQueue', object)
-		queueDownload(getNextDownload())
-	}
-
-	function getNextDownload() {
-		if (s.currentItem != null || Object.keys(s.downloadQueue).length == 0) {
-			if (Object.keys(s.downloadQueue).length == 0 && s.currentItem == null) {
-				s.emit("emptyDownloadQueue", {})
-			}
-			return null
-		}
-		s.currentItem = s.downloadQueue[Object.keys(s.downloadQueue)[0]]
-		return s.currentItem
-	}
-
 	async function downloadTrack(data){
 		try{
 			var track = await s.Deezer.getTrack(data.id)
@@ -585,19 +563,72 @@ io.sockets.on('connection', function (s) {
 		}
 	}
 
-	//currentItem: the current item being downloaded at that moment such as a track or an album
+	function addToQueue(object) {
+		s.downloadQueue[object.queueId] = object
+		s.emit('addToQueue', object)
+		s.downloadQueue[object.queueId].downloadQueuePromise = s.dqueue.push(addNextDownload, { args: object })
+	}
+
+	function addNextDownload(obj, token){
+		return new Promise(async (resolve, reject) => {
+      await queueDownload(obj)
+			resolve()
+    }).then(() => new Promise((resolve, reject) => {
+      if (token.cancelled)
+        reject()
+      else
+        resolve()
+    }))
+	}
+
+	function cancelDownload(queueId, cleanAll=false){
+		if (!queueId) return
+		let cancel = false
+		let cancelSuccess
+		if (s.downloadQueue[queueId]){
+			cancel = true;
+			if (s.downloadQueue[queueId].downloadQueuePromise) s.downloadQueue[queueId].downloadQueuePromise.cancel()
+			if (s.downloadQueue[Object.keys(s.downloadQueue)[0]].queueId == queueId) {
+				s.trackQueue = queue({
+					autostart: true,
+					concurrency: s.trackQueue.concurrency
+				})
+			}
+			delete s.downloadQueue[queueId]
+		}
+
+		if (cancel) {
+			s.emit("cancelDownload", {queueId: queueId, cleanAll: cleanAll});
+		}
+	}
+	s.on("cancelDownload", function (data) {cancelDownload(data.queueId)});
+
+	s.on("cancelAllDownloads", function(data){
+		data.queueList.forEach(x=>{
+			cancelDownload(x, true);
+		})
+		s.emit("cancelAllDownloads")
+	})
+
+	/*function getNextDownload() {
+		if (s.currentItem != null || Object.keys(s.downloadQueue).length == 0) {
+			if (Object.keys(s.downloadQueue).length == 0 && s.currentItem == null) {
+				s.emit("emptyDownloadQueue", {})
+			}
+			return null
+		}
+		s.currentItem = s.downloadQueue[Object.keys(s.downloadQueue)[0]]
+		return s.currentItem
+	}*/
+
 	//downloadQueue: the tracks in the queue to be downloaded
 	//lastQueueId: the most recent queueId
 	//queueId: random number generated when user clicks download on something
 	async function queueDownload(downloading) {
-		if (!downloading) return;
+		if (!downloading) return
 
-		// New batch emits new message
-		if (s.lastQueueId != downloading.queueId) {
-			if (downloading.type != "spotifyplaylist"){
-				s.emit("downloadStarted", {queueId: downloading.queueId})
-			}
-			s.lastQueueId = downloading.queueId
+		if (downloading.type != "spotifyplaylist"){
+			s.emit("downloadStarted", {queueId: downloading.queueId})
 		}
 
 		downloading.errorLog = "";
@@ -610,7 +641,7 @@ io.sockets.on('connection', function (s) {
 			*  TRACK DOWNLOAD
 			*/
 			case "track":
-				downloading.downloadPromise = new Promise(async (resolve,reject)=>{
+				var downloadPromise = new Promise(async (resolve,reject)=>{
 					try{
 						await downloadTrackObject(downloading.obj, downloading.queueId, downloading.settings)
 						downloading.downloaded++
@@ -635,7 +666,7 @@ io.sockets.on('connection', function (s) {
 					resolve()
 				})
 				try{
-					await downloading.downloadPromise
+					await downloadPromise
 				}catch(err){
 					if (err) logger.error(`queueDownload:track failed: ${err.stack ? err.stack : err}`)
 					logger.info("Downloading Stopped")
@@ -954,38 +985,10 @@ io.sockets.on('connection', function (s) {
 			break
 		}
 		if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]]
-		s.currentItem = null
-		queueDownload(getNextDownload())
-	}
-
-	function cancelDownload(queueId, cleanAll=false){
-		if (!queueId) return
-		let cancel = false
-		let cancelSuccess
-		if (s.downloadQueue[queueId]){
-			cancel = true;
-			if (s.currentItem && s.currentItem.queueId == queueId) {
-				if (s.downloadQueue[queueId].downloadPromise) s.downloadQueue[queueId].downloadPromise.cancel()
-				s.trackQueue = queue({
-					autostart: true,
-					concurrency: s.trackQueue.concurrency
-				})
-			}
-			delete s.downloadQueue[queueId]
-		}
-
-		if (cancel) {
-			s.emit("cancelDownload", {queueId: queueId, cleanAll: cleanAll});
+		if (Object.keys(s.downloadQueue).length == 0) {
+			s.emit("emptyDownloadQueue", {})
 		}
 	}
-	s.on("cancelDownload", function (data) {cancelDownload(data.queueId)});
-
-	s.on("cancelAllDownloads", function(data){
-		data.queueList.forEach(x=>{
-			cancelDownload(x, true);
-		})
-		s.emit("cancelAllDownloads")
-	})
 
 	async function downloadTrackObject(track, queueId, settings) {
 		if (!s.downloadQueue[queueId]) {
@@ -1384,24 +1387,24 @@ io.sockets.on('connection', function (s) {
 					return logger.error(`[${track.artist.name} - ${track.title}] Decryption error: ${err.stack}`)
 				}
 			}).on("data", function(data) {
-				if (!s.downloadQueue[queueId] || !s.currentItem) reject()
+				if (!s.downloadQueue[queueId]) reject()
 			})
-			if((s.downloadQueue[queueId] || s.currentItem) && s.currentItem.type == "track"){
+			if((s.downloadQueue[queueId]) && s.downloadQueue[queueId].type == "track"){
 				let chunkLength = 0
 				req.on("data", function(data) {
-					if (!s.downloadQueue[queueId] || !s.currentItem) reject()
+					if (!s.downloadQueue[queueId]) reject()
 					chunkLength += data.length
 					try{
-						if (!s.currentItem.percentage) {
-							s.currentItem.percentage = 0
+						if (!s.downloadQueue[queueId].percentage) {
+							s.downloadQueue[queueId].percentage = 0
 						}
 						let complete = track.selectedFilesize
 						let percentage = (chunkLength / complete) * 100;
-						if ((percentage - s.currentItem.percentage > 1) || (chunkLength == complete)) {
-							s.currentItem.percentage = percentage
+						if ((percentage - s.downloadQueue[queueId].percentage > 1) || (chunkLength == complete)) {
+							s.downloadQueue[queueId].percentage = percentage
 							s.emit("downloadProgress", {
-								queueId: s.currentItem.queueId,
-								percentage: s.currentItem.percentage-5
+								queueId: queueId,
+								percentage: s.downloadQueue[queueId].percentage-5
 							})
 						}
 					}catch(err){}
@@ -1805,10 +1808,11 @@ function uniqueArray(origin, destination, removeDupes=true){
 
 // Show crash error in console for debugging
 process.on('unhandledRejection', function (err) {
-	logger.error(err.stack)
+	if (err) logger.error(err.stack ? err.stack : err)
+
 })
 process.on('uncaughtException', function (err) {
-	logger.error(err.stack)
+	if (err) logger.error(err.stack ? err.stack : err)
 })
 
 // Exporting vars
