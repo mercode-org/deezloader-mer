@@ -132,6 +132,7 @@ module.exports = class Track {
       break
       case 'song.getListByAlbum':
       case 'playlist.getSongs':
+      case 'artist.getTopTrack':
         this.id = body.SNG_ID
         this.title = `${body.SNG_TITLE}${body.VERSION ? ` ${body.VERSION}`: ""}`
         this.duration = body.DURATION

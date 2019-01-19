@@ -892,11 +892,11 @@ $('#tab_url_form_url').submit(function (ev) {
 
 //############################################TAB_DOWNLOADS###########################################\\
 function addToQueue(url) {
-	var type = getTypeFromLink(url), id = getIDFromLink(url)
+	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
 	if (type == 'track') {
 		userSettings.filename = userSettings.trackNameTemplate
 		userSettings.foldername = userSettings.albumNameTemplate
-	} else if (type == 'playlist' || type == 'spotifyplaylist') {
+	} else if (type == 'playlist' || type == 'spotifyplaylist' || type == 'artisttop') {
 		userSettings.filename = userSettings.playlistTrackNameTemplate
 		userSettings.foldername = userSettings.albumNameTemplate
 	} else if (type == 'album' || type == 'artist'){
@@ -910,7 +910,7 @@ function addToQueue(url) {
 		M.toast({html: '<i class="material-icons left">playlist_add_check</i> Already in download-queue!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
-	if (id.match(/^[0-9]+$/) == null && type != 'spotifyplaylist' && parseInt(id)>0) {
+	if (id.match(/^[0-9]+$/) == null && type != 'spotifyplaylist') {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong ID!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
@@ -1051,14 +1051,19 @@ function quoteattr(s, preserveCR) {
 
 }
 
-function getIDFromLink(link) {
+function getIDFromLink(link, type) {
 	if (link.indexOf('?') > -1) {
 		link = link.substring(0, link.indexOf("?"))
 	}
+	// Spotify
 	if ((link.startsWith("http") && link.indexOf('open.spotify.com/') >= 0)){
 		return link.slice(link.indexOf("/playlist/")+10)
 	} else if (link.startsWith("spotify:")){
 		return link.slice(link.indexOf("playlist:")+9)
+
+	// Deezer
+	} else if(type == "artisttop") {
+		return link.match(/\/artist\/(\d+)\/top_track/)[1];
 	} else {
 		return link.substring(link.lastIndexOf("/") + 1)
 	}
@@ -1068,13 +1073,15 @@ function getTypeFromLink(link) {
 	var type
 	if (link.indexOf('spotify') > -1){
 		type = "spotifyplaylist"
-	} else	if (link.indexOf('track') > -1) {
+	} else	if (link.indexOf('/track') > -1) {
 		type = "track"
-	} else if (link.indexOf('playlist') > -1) {
+	} else if (link.indexOf('/playlist') > -1) {
 		type = "playlist"
-	} else if (link.indexOf('album') > -1) {
+	} else if (link.indexOf('/album') > -1) {
 		type = "album"
-	} else if (link.indexOf('artist')) {
+	} else if (link.match(/\/artist\/(\d+)\/top_track/)) {
+		type = "artisttop";
+	} else if (link.indexOf('/artist')) {
 		type = "artist"
 	}
 	return type
