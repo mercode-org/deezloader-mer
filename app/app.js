@@ -486,6 +486,30 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadplaylist", data=>{downloadPlaylist(data)});
 
+	async function downloadArtistTop(data){
+		try{
+			var artist = await s.Deezer.legacyGetArtist(data.id)
+			artist.tracks = await s.Deezer.getArtistTopTracks(data.id)
+			let _playlist = {
+				name: artist.name + " Most played tracks",
+				artist: artist.name,
+				size: artist.tracks.length,
+				downloaded: 0,
+				failed: 0,
+				queueId: `id${Math.random().toString(36).substring(2)}`,
+				id: `${artist.id}:${data.settings.maxBitrate}`,
+				type: "playlist",
+				settings: data.settings || {},
+				obj: artist,
+			}
+			addToQueue(_playlist)
+		}catch(err){
+			logger.error(`downloadArtistTop failed: ${err.stack ? err.stack : err}`)
+			return
+		}
+	}
+	s.on("downloadartisttop", data=>{downloadArtistTop(data)});
+
 	async function downloadSpotifyPlaylist(data){
 		if (spotifySupport){
 			try{

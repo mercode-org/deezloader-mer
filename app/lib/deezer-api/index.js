@@ -204,6 +204,18 @@ module.exports = class Deezer {
     return tracksArray
   }
 
+  async getArtistTopTracks(id){
+    var tracksArray = []
+    var body = await this.apiCall(`artist.getTopTrack`, {art_id: id, nb: 100})
+    body.results.data.forEach((track, index)=>{
+      track.sourcePage = 'artist.getTopTrack'
+      let _track = new Track(track)
+      _track.position = index
+      tracksArray.push(_track)
+    })
+    return tracksArray
+  }
+
   async getLyrics(id){
     var body = await this.apiCall(`song.getLyrics`, {sng_id: id})
     let lyr
@@ -263,6 +275,11 @@ module.exports = class Deezer {
 
   async legacyGetArtistAlbums(id){
     var body = await this.legacyApiCall(`artist/${id}/albums`, {limit: -1})
+    return body
+  }
+
+  async legacyGetArtist(id){
+    var body = await this.legacyApiCall(`artist/${id}`, {limit: -1})
     return body
   }
 
