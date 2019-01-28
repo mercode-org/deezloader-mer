@@ -1065,7 +1065,7 @@ io.sockets.on('connection', function (s) {
 			if (!ajson.fromNewAPI){
 				// Aquiring discTotal (only if necessary)
 				if ((settings.tags.discTotal || settings.createCDFolder) && parseInt(track.id)>0){
-					if (ajson.discTotal){
+					if (!ajson.discTotal){
 						logger.info(`[${track.artist.name} - ${track.title}] Getting total disc number`);
 						var discTotal = await s.Deezer.getAlbum(ajson.id)
 						track.discTotal = discTotal.discTotal
@@ -1471,7 +1471,7 @@ io.sockets.on('connection', function (s) {
 						flacComments.push('ARTIST=' + track.artistsString);
 					}
 				if (settings.tags.discTotal)
-					flacComments.push('DISCTOTAL='+splitNumber(track.discTotal,true));
+					flacComments.push('DISCTOTAL='+track.discTotal);
 				if (settings.tags.length)
 					flacComments.push('LENGTH=' + track.length);
 				if (settings.tags.barcode && track.album.barcode)
