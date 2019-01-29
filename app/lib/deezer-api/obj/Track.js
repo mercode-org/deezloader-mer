@@ -83,14 +83,16 @@ module.exports = class Track {
       			description: "",
       			lyrics: body.LYRICS.LYRICS_TEXT
       		}
-          this.syncLyrics = ""
-          for(let i=0; i < body.LYRICS.LYRICS_SYNC_JSON.length; i++){
-    				if(body.LYRICS.LYRICS_SYNC_JSON[i].lrc_timestamp){
-    					this.syncLyrics += body.LYRICS.LYRICS_SYNC_JSON[i].lrc_timestamp + body.LYRICS.LYRICS_SYNC_JSON[i].line+"\r\n";
-    				}else if(i+1 < body.LYRICS.LYRICS_SYNC_JSON.length){
-    					this.syncLyrics += body.LYRICS.LYRICS_SYNC_JSON[i+1].lrc_timestamp + body.LYRICS.LYRICS_SYNC_JSON[i].line+"\r\n";
-    				}
-    			}
+					if (body.LYRICS.LYRICS_SYNC_JSON){
+						this.syncLyrics = ""
+	          for(let i=0; i < body.LYRICS.LYRICS_SYNC_JSON.length; i++){
+	    				if(body.LYRICS.LYRICS_SYNC_JSON[i].lrc_timestamp){
+	    					this.syncLyrics += body.LYRICS.LYRICS_SYNC_JSON[i].lrc_timestamp + body.LYRICS.LYRICS_SYNC_JSON[i].line+"\r\n";
+	    				}else if(i+1 < body.LYRICS.LYRICS_SYNC_JSON.length){
+	    					this.syncLyrics += body.LYRICS.LYRICS_SYNC_JSON[i+1].lrc_timestamp + body.LYRICS.LYRICS_SYNC_JSON[i].line+"\r\n";
+	    				}
+	    			}
+					}
         }
         this.date = {
           day: body.DATA.PHYSICAL_RELEASE_DATE.slice(8,10),
