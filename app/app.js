@@ -1473,7 +1473,7 @@ io.sockets.on('connection', function (s) {
 				if (settings.tags.discTotal)
 					flacComments.push('DISCTOTAL='+track.discTotal);
 				if (settings.tags.length)
-					flacComments.push('LENGTH=' + track.length);
+					flacComments.push('LENGTH=' + track.duration);
 				if (settings.tags.barcode && track.album.barcode)
 					flacComments.push('BARCODE=' + track.album.barcode);
 				if (track.unsyncLyrics && settings.tags.unsynchronisedLyrics)
@@ -1616,7 +1616,7 @@ io.sockets.on('connection', function (s) {
 					writer.setFrame('TSRC', track.ISRC);
 
 				if (settings.tags.length)
-					writer.setFrame('TLEN', track.length);
+					writer.setFrame('TLEN', track.duration);
 				if (settings.tags.barcode && track.album.barcode)
 					writer.setFrame('TXXX', {
 						description: 'BARCODE',
