@@ -34,7 +34,7 @@
 					]
 				}
 			],
-			"category": "Audio"
+			"category": "AudioVideo;Audio"
 		},
 		"mac": {
 			"category": "public.app-category.music"
