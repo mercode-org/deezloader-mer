@@ -1122,7 +1122,7 @@ io.sockets.on('connection', function (s) {
 
 			}
 
-			// Aquiring bpm (only if necessary)
+			// Acquiring bpm (only if necessary)
 			if (settings.tags.bpm){
 				logger.info(`[${track.artist.name} - ${track.title}] Getting BPM`);
 				try{
@@ -1133,6 +1133,19 @@ io.sockets.on('connection', function (s) {
 				}
 			}else{
 				track.bpm = 0
+			}
+
+			// Acquiring ReplayGain value (only if necessary)
+			if (settings.tags.replayGain){
+				logger.info(`[${track.artist.name} - ${track.title}] Getting tack gain`);
+				try{
+					var gain = await s.Deezer.legacyGetTrack(track.id)
+					track.replayGain = gain.gain
+				}catch(err){
+					track.replayGain = 0
+				}
+			}else{
+				track.replayGain = 0
 			}
 
 			let separator = settings.multitagSeparator
