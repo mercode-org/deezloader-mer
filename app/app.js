@@ -1137,7 +1137,7 @@ io.sockets.on('connection', function (s) {
 
 			// Acquiring ReplayGain value (only if necessary)
 			if (settings.tags.replayGain){
-				logger.info(`[${track.artist.name} - ${track.title}] Getting tack gain`);
+				logger.info(`[${track.artist.name} - ${track.title}] Getting track gain`);
 				try{
 					var gain = await s.Deezer.legacyGetTrack(track.id)
 					track.replayGain = gain.gain
