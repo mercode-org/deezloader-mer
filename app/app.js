@@ -723,6 +723,7 @@ io.sockets.on('connection', function (s) {
 					label : downloading.obj.label,
 					release_date : downloading.obj.release_date,
 					genres : downloading.obj.genres,
+					discTotal: downloading.obj.discTotal ? downloading.obj.discTotal : null
 				}
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.obj.tracks.every(function (t) {
