@@ -1698,7 +1698,9 @@ function updateSettingsFile(config, value) {
 
 function fixName (txt) {
   const regEx = /[\0\/\\:*?"<>|]/g;
-  return txt.replace(regEx, '_');
+  txt = txt.replace(regEx, '_');
+  txt = txt.slice(0,200);
+  return txt;
 }
 
 function antiDot(str){
