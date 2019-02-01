@@ -218,7 +218,7 @@ module.exports = class Deezer {
 
   async getLyrics(id){
     var body = await this.apiCall(`song.getLyrics`, {sng_id: id})
-    let lyr
+    let lyr = {}
     lyr.unsyncLyrics = {
       description: "",
       lyrics: body.results.LYRICS_TEXT
