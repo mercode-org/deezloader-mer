@@ -2,12 +2,12 @@ const crypto = require('crypto')
 
 function md5 (data, type = 'binary') {
   let md5sum = crypto.createHash('md5')
-  md5sum.update(new Buffer(data, type))
+  md5sum.update(Buffer.from(data, type))
   return md5sum.digest('hex')
 }
 
 function ecbCrypt (key, data) {
-  let cipher = crypto.createCipheriv("aes-128-ecb", new Buffer(key), new Buffer(""));
+  let cipher = crypto.createCipheriv("aes-128-ecb", Buffer.from(key), Buffer.from(""));
   return Buffer.concat([cipher.update(data, 'binary'), cipher.final()]).toString("hex").toLowerCase();
 }
 
