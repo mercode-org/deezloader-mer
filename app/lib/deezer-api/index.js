@@ -218,7 +218,7 @@ module.exports = class Deezer {
 
   async getLyrics(id){
     var body = await this.apiCall(`song.getLyrics`, {sng_id: id})
-    let lyr
+    var lyr = {}
     lyr.unsyncLyrics = {
       description: "",
       lyrics: body.results.LYRICS_TEXT
@@ -226,9 +226,9 @@ module.exports = class Deezer {
     lyr.syncLyrics = ""
     for(let i=0; i < body.results.LYRICS_SYNC_JSON.length; i++){
       if(body.results.LYRICS_SYNC_JSON[i].lrc_timestamp){
-        this.syncLyrics += body.results.LYRICS_SYNC_JSON[i].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
+        lyr.syncLyrics += body.results.LYRICS_SYNC_JSON[i].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
       }else if(i+1 < body.results.LYRICS_SYNC_JSON.length){
-        this.syncLyrics += body.results.LYRICS_SYNC_JSON[i+1].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
+        lyr.syncLyrics += body.results.LYRICS_SYNC_JSON[i+1].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
       }
     }
     return lyr
