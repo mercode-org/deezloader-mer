@@ -910,7 +910,7 @@ function addToQueue(url) {
 		M.toast({html: '<i class="material-icons left">playlist_add_check</i> Already in download-queue!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
-	if (id.match(/^[0-9]+$/) == null && type != 'spotifyplaylist') {
+	if (id.match(/^-?[0-9]+$/) == null && type != 'spotifyplaylist') {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong ID!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
