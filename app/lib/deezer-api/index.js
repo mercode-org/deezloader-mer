@@ -42,34 +42,42 @@ module.exports = class Deezer {
 
   // Simple function to request data from the hidden API (gw-light.php)
   async apiCall(method, args = {}){
-    var result = await request({
-      uri: this.apiUrl,
-      method: 'POST',
-      qs: {
-        api_version: "1.0",
-        api_token: (method === "deezer.getUserData" ? "null" : await this.getToken()),
-        input: "3",
-        method: method
-      },
-      body: args,
-      jar: this.jar,
-      json: true,
-      headers: this.httpHeaders
-    })
-    return result
+		try{
+			var result = await request({
+				uri: this.apiUrl,
+				method: 'POST',
+				qs: {
+					api_version: "1.0",
+					api_token: (method === "deezer.getUserData" ? "null" : await this.getToken()),
+					input: "3",
+					method: method
+				},
+				body: args,
+				jar: this.jar,
+				json: true,
+				headers: this.httpHeaders
+			})
+		}catch (err){
+			return this.apiCall(method, args)
+		}
+		return result
   }
 
   // Simple function to request data from the legacy API (api.deezer.com)
   async legacyApiCall(method, args = {}){
-    var result = await request({
-      uri: `${this.legacyApiUrl}${method}`,
-      method: 'GET',
-      qs: args,
-      jar: this.jar,
-      json: true,
-      headers: this.httpHeaders,
-      timeout: 30000
-    })
+		try{
+	    var result = await request({
+	      uri: `${this.legacyApiUrl}${method}`,
+	      method: 'GET',
+	      qs: args,
+	      jar: this.jar,
+	      json: true,
+	      headers: this.httpHeaders,
+	      timeout: 30000
+	    })
+		}catch (err){
+			return this.legacyApiCall(method, args)
+		}
     if (result.error){
       if (result.error.code == 4){
         await sleep(500)
@@ -219,18 +227,22 @@ module.exports = class Deezer {
   async getLyrics(id){
     var body = await this.apiCall(`song.getLyrics`, {sng_id: id})
     var lyr = {}
-    lyr.unsyncLyrics = {
-      description: "",
-      lyrics: body.results.LYRICS_TEXT
-    }
-    lyr.syncLyrics = ""
-    for(let i=0; i < body.results.LYRICS_SYNC_JSON.length; i++){
-      if(body.results.LYRICS_SYNC_JSON[i].lrc_timestamp){
-        lyr.syncLyrics += body.results.LYRICS_SYNC_JSON[i].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
-      }else if(i+1 < body.results.LYRICS_SYNC_JSON.length){
-        lyr.syncLyrics += body.results.LYRICS_SYNC_JSON[i+1].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
-      }
-    }
+		if (body.results.LYRICS_TEXT){
+			lyr.unsyncLyrics = {
+				description: "",
+				lyrics: body.results.LYRICS_TEXT
+			}
+		}
+		if (body.results.LYRICS_SYNC_JSON){
+			lyr.syncLyrics = ""
+			for(let i=0; i < body.results.LYRICS_SYNC_JSON.length; i++){
+				if(body.results.LYRICS_SYNC_JSON[i].lrc_timestamp){
+					lyr.syncLyrics += body.results.LYRICS_SYNC_JSON[i].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
+				}else if(i+1 < body.results.LYRICS_SYNC_JSON.length){
+					lyr.syncLyrics += body.results.LYRICS_SYNC_JSON[i+1].lrc_timestamp + body.results.LYRICS_SYNC_JSON[i].line+"\r\n";
+				}
+			}
+		}
     return lyr
   }
 

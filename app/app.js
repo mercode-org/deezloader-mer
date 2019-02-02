@@ -393,7 +393,13 @@ io.sockets.on('connection', function (s) {
 		});
 	});
 
+	/*
+	 * Downloading section of the app
+	*/
+
+	// Gets data from the frontend and creates the track object
 	async function downloadTrack(data){
+		logger.info(`Added to Queue ${data.id}`)
 		try{
 			var track = await s.Deezer.getTrack(data.id)
 			let _track = {
@@ -416,7 +422,9 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadtrack", async data=>{await downloadTrack(data)})
 
+	// Gets data from the frontend and creates the album object
 	async function downloadAlbum(data){
+		logger.info(`Added to Queue ${data.id}`)
 		try{
 			var album = await s.Deezer.legacyGetAlbum(data.id)
 			if (data.settings.tags.discTotal || data.settings.createCDFolder){
@@ -445,7 +453,9 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadalbum", async data=>{await downloadAlbum(data)});
 
+	// Gets data from the frontend and creates for each album an album object
 	async function downloadArtist(data){
+		logger.info(`Added to Queue ${data.id}`)
 		try{
 			var albums = await s.Deezer.legacyGetArtistAlbums(data.id);
 			(function sendAllAlbums(i) {
@@ -462,7 +472,9 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadartist", async data=>{ await downloadArtist(data)});
 
+	// Gets data from the frontend and creates the playlist object
 	async function downloadPlaylist(data){
+		logger.info(`Added to Queue ${data.id}`)
 		try{
 			var playlist = await s.Deezer.legacyGetPlaylist(data.id)
 			playlist.tracks = await s.Deezer.getPlaylistTracks(data.id)
@@ -486,7 +498,9 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadplaylist", data=>{downloadPlaylist(data)});
 
+	// Gets data from the frontend and creates the object fot the artist top tracks
 	async function downloadArtistTop(data){
+		logger.info(`Added to Queue ${data.id}`)
 		try{
 			var artist = await s.Deezer.legacyGetArtist(data.id)
 			artist.tracks = await s.Deezer.getArtistTopTracks(data.id)
@@ -510,7 +524,9 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadartisttop", data=>{downloadArtistTop(data)});
 
+	// Gets data from the frontend and creates the spotify playlist object
 	async function downloadSpotifyPlaylist(data){
+		logger.info(`Added to Queue ${data.id}`)
 		if (spotifySupport){
 			try{
 				let creds = await Spotify.clientCredentialsGrant()
@@ -553,6 +569,9 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadspotifyplaylist", data=>{downloadSpotifyPlaylist(data)})
 
+	// Converts the spotify track to a deezer one
+	// It tries first with the isrc (best way of conversion)
+	// Fallbacks to the old way, using search
 	async function convertSpotify2Deezer(track){
 		if (track.external_ids.isrc){
 			let resp = await s.Deezer.legacyGetTrackByISRC(track.external_ids.isrc)
@@ -587,12 +606,15 @@ io.sockets.on('connection', function (s) {
 		}
 	}
 
+	// All the above functions call this function
+	// It adds the object to an array and adds the promise for the download to the object itself
 	function addToQueue(object) {
 		s.downloadQueue[object.queueId] = object
 		s.emit('addToQueue', object)
 		s.downloadQueue[object.queueId].downloadQueuePromise = s.dqueue.push(addNextDownload, { args: object })
 	}
 
+	// Wrapper for queue download
 	function addNextDownload(obj, token){
 		return new Promise(async (resolve, reject) => {
       await queueDownload(obj)
@@ -605,6 +627,8 @@ io.sockets.on('connection', function (s) {
     }))
 	}
 
+	// Cancels download
+	// TODO: Might check this one, could be a little buggy
 	function cancelDownload(queueId, cleanAll=false){
 		if (!queueId) return
 		let cancel = false
@@ -646,7 +670,6 @@ io.sockets.on('connection', function (s) {
 	}*/
 
 	//downloadQueue: the tracks in the queue to be downloaded
-	//lastQueueId: the most recent queueId
 	//queueId: random number generated when user clicks download on something
 	async function queueDownload(downloading) {
 		if (!downloading) return
@@ -1015,6 +1038,7 @@ io.sockets.on('connection', function (s) {
 		}
 	}
 
+	// This function takes the track object and does all the stuff to download it
 	async function downloadTrackObject(track, queueId, settings) {
 		if (!s.downloadQueue[queueId]) {
 			logger.error(`[${track.artist.name} - ${track.title}] Failed to download: Not in queue`)
@@ -1371,7 +1395,7 @@ io.sockets.on('connection', function (s) {
 					track.album.picturePath = (imgPath).replace(/\\/g, "/")
 					logger.info(`[${track.artist.name} - ${track.title}] Starting the download process CODE:2`)
 				}catch(error){
-					logger.error(`[${track.artist.name} - ${track.title}] Cannot download Album Image: ${error.stack}`)
+					logger.error(`[${track.artist.name} - ${track.title}] Cannot download Album Image: ${error}`)
 					track.album.pictureUrl = undefined
 					track.album.picturePath = undefined
 				}
@@ -1393,7 +1417,7 @@ io.sockets.on('connection', function (s) {
 						fs.outputFileSync(imgPath,body,'binary')
 						logger.info(`[${track.artist.name} - ${track.title}] Saved Artist Image`)
 					}catch(err){
-						logger.error(`[${track.artist.name} - ${track.title}] Cannot download Artist Image: ${err.stack}`)
+						logger.error(`[${track.artist.name} - ${track.title}] Cannot download Artist Image: ${err}`)
 					}
 				}
 			}
