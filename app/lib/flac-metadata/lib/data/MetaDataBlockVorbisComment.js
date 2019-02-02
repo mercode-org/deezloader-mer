@@ -50,7 +50,7 @@ MetaDataBlockVorbisComment.prototype.parse = function(buffer) {
 MetaDataBlockVorbisComment.prototype.publish = function() {
   var pos = 0;
   var size = this.getSize();
-  var buffer = new Buffer(4 + size);
+  var buffer = Buffer.alloc(4 + size);
 
   var header = size;
   header |= (this.type << 24);

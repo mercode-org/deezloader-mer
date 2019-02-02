@@ -39,7 +39,7 @@ MetaDataBlockStreamInfo.prototype.parse = function(buffer) {
     this.bitsPerSample = (tmp >>> 4) & 0x1f;
     this.samples = +((tmp & 0x0f) << 4) + buffer.readUInt32BE(pos + 14);
 
-    this.checksum = new Buffer(16);
+    this.checksum = Buffer.alloc(16);
     buffer.copy(this.checksum, 0, 18, 34);
 
     this.duration = this.samples / this.sampleRate;

@@ -53,7 +53,7 @@ MetaDataBlockPicture.prototype.parse = function(buffer) {
     pos += 16;
 
     var pictureDataLength = buffer.readUInt32BE(pos);
-    this.pictureData = new Buffer(pictureDataLength);
+    this.pictureData = Buffer.from(pictureDataLength);
     buffer.copy(this.pictureData, 0, pos + 4, pictureDataLength);
 
     this.hasData = true;
@@ -68,7 +68,7 @@ MetaDataBlockPicture.prototype.parse = function(buffer) {
 MetaDataBlockPicture.prototype.publish = function() {
   var pos = 0;
   var size = this.getSize();
-  var buffer = new Buffer(4 + size);
+  var buffer = Buffer.alloc(4 + size);
 
   var header = size;
   header |= (this.type << 24);

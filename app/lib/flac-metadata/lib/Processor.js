@@ -83,7 +83,7 @@ Processor.prototype._transform = function (chunk, enc, done) {
       // Not enough data available
       if (persist) {
         // Copy/append incomplete block to backup buffer
-        this.buf = this.buf || new Buffer(minCapacity);
+        this.buf = this.buf || Buffer.alloc(minCapacity);
         chunk.copy(this.buf, this.bufPos, chunkPos, chunkLen);
       } else {
         // Push incomplete block after validation
