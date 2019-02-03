@@ -581,7 +581,6 @@ io.sockets.on('connection', function (s) {
 		}catch(err){
 			logger.warn("ISRC not found, falling back to old method")
 		}
-
 		let resp
 		track.artists[0].name = track.artists[0].name.replace(/–/g,"-").replace(/’/g, "'")
 		track.name = track.name.replace(/–/g,"-").replace(/’/g, "'")
@@ -589,21 +588,21 @@ io.sockets.on('connection', function (s) {
 		try{
 			resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}" album:"${track.album.name}"`, "track", 1)
 		}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
-		if (resp.data) return resp.data[0].id
+		if (resp.data[0]) return resp.data[0].id
 		try{
 			resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}"`, "track", 1)
 		}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
-		if (resp.data) return resp.data[0].id
+		if (resp.data[0]) return resp.data[0].id
 		if (track.name.indexOf("(") < track.name.indexOf(")")){
 			try{
 				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split("(")[0]}"`, "track", 1)
 			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
-			if (resp.data) return resp.data[0].id
-		}else if (track.indexOf(" - ")>0){
+			if (resp.data[0]) return resp.data[0].id
+		}else if (track.name.indexOf(" - ")>0){
 			try{
 				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split(" - ")[0]}"`, "track", 1)
 			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
-			if (resp.data) return resp.data[0].id
+			if (resp.data[0]) return resp.data[0].id
 		}else{
 			return 0
 		}
@@ -928,13 +927,16 @@ io.sockets.on('connection', function (s) {
 				downloading.playlistArr = Array(downloading.size)
 				downloading.playlistContent = new Array(downloading.size);
 				logger.info("Waiting for all tracks to be converted");
-				downloading.obj.tracks.map(async (t,i)=>{
-					try{
-						downloading.playlistContent[i] = await convertSpotify2Deezer(t)
-					}catch(err){
-						logger.error(`queueDownload:spotifyplaylist failed during conversion: ${err.stack ? err.stack : err}`)
-					}
-				})
+				const convert = async () =>{
+					await asyncForEach(downloading.obj.tracks, async (t,i)=>{
+						try{
+							downloading.playlistContent[i] = await convertSpotify2Deezer(t)
+						}catch(err){
+							logger.error(`queueDownload:spotifyplaylist failed during conversion: ${err.stack ? err.stack : err}`)
+						}
+					})
+				}
+				await convert()
 				if (!s.downloadQueue[downloading.queueId]) {
 					logger.info("Stopping the playlist queue")
 					break
@@ -1872,6 +1874,12 @@ function uniqueArray(origin, destination, removeDupes=true){
 			})
 		})
 	}
+}
+
+async function asyncForEach(array, callback) {
+  for (let index = 0; index < array.length; index++) {
+    await callback(array[index], index, array);
+  }
 }
 
 // Show crash error in console for debugging
