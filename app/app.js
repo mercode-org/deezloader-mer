@@ -573,37 +573,41 @@ io.sockets.on('connection', function (s) {
 	// It tries first with the isrc (best way of conversion)
 	// Fallbacks to the old way, using search
 	async function convertSpotify2Deezer(track){
-		if (track.external_ids.isrc){
-			let resp = await s.Deezer.legacyGetTrackByISRC(track.external_ids.isrc)
-			return resp.id
-		}else{
-			let resp
-			track.artists[0].name = track.artists[0].name.replace(/–/g,"-").replace(/’/g, "'")
-			track.name = track.name.replace(/–/g,"-").replace(/’/g, "'")
-			track.album.name = track.album.name.replace(/–/g,"-").replace(/’/g, "'")
-			try{
-				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}" album:"${track.album.name}"`, "track", 1)
-			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
-			if (resp.data) return resp.data[0].id
-			try{
-				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}"`, "track", 1)
-			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
-			if (resp.data) return resp.data[0].id
-			if (track.name.indexOf("(") < track.name.indexOf(")")){
-				try{
-					resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split("(")[0]}"`, "track", 1)
-				}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
-				if (resp.data) return resp.data[0].id
-			}else if (track.indexOf(" - ")>0){
-				try{
-					resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split(" - ")[0]}"`, "track", 1)
-				}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
-				if (resp.data) return resp.data[0].id
-			}else{
-				return 0
+		try{
+			if (track.external_ids.isrc){
+				let resp = await s.Deezer.legacyGetTrackByISRC(track.external_ids.isrc)
+				return resp.id
 			}
+		}catch(err){
+			logger.warn("ISRC not found, falling back to old method")
+		}
+
+		let resp
+		track.artists[0].name = track.artists[0].name.replace(/–/g,"-").replace(/’/g, "'")
+		track.name = track.name.replace(/–/g,"-").replace(/’/g, "'")
+		track.album.name = track.album.name.replace(/–/g,"-").replace(/’/g, "'")
+		try{
+			resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}" album:"${track.album.name}"`, "track", 1)
+		}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+		if (resp.data) return resp.data[0].id
+		try{
+			resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}"`, "track", 1)
+		}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+		if (resp.data) return resp.data[0].id
+		if (track.name.indexOf("(") < track.name.indexOf(")")){
+			try{
+				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split("(")[0]}"`, "track", 1)
+			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+			if (resp.data) return resp.data[0].id
+		}else if (track.indexOf(" - ")>0){
+			try{
+				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split(" - ")[0]}"`, "track", 1)
+			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+			if (resp.data) return resp.data[0].id
+		}else{
 			return 0
 		}
+		return 0
 	}
 
 	// All the above functions call this function
