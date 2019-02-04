@@ -950,7 +950,7 @@ io.sockets.on('connection', function (s) {
 			case "spotifyplaylist":
 				downloading.settings.plName = downloading.name
 				downloading.playlistArr = Array(downloading.size)
-				downloading.playlistContent = new Array(downloading.size);
+				downloading.playlistContent = new Array(downloading.size)
 				logger.info("Waiting for all tracks to be converted");
 				const convert = async () =>{
 					await asyncForEach(downloading.obj.tracks, async (t,i)=>{
@@ -981,6 +981,11 @@ io.sockets.on('connection', function (s) {
 								return false
 							}
 							t.position = index
+							if (t.id==0){
+								t.title = downloading.obj.tracks[t.position].name
+					      t.album = {id: 0, title: downloading.obj.tracks[t.position].album.name}
+					      t.artist = {id: 0, name: downloading.obj.tracks[t.position].artists[0].name}
+							}
 							try{
 								await downloadTrackObject(t, downloading.queueId, downloading.settings)
 								downloading.downloaded++
@@ -1072,13 +1077,13 @@ io.sockets.on('connection', function (s) {
 	async function downloadTrackObject(track, queueId, settings) {
 		if (!s.downloadQueue[queueId]) {
 			logger.error(`[${track.artist.name} - ${track.title}] Failed to download: Not in queue`)
-			throw new Error(`Failed to download: Not in queue`)
-			return
+			throw new Error("Not in queue")
+			return false
 		}
-		if (track.id == 0){
+		if (parseInt(track.id) == 0){
 			logger.error(`[${track.artist.name} - ${track.title}] Failed to download: Wrong ID`)
-			throw new Error(`Failed to download: Wrong ID`)
-			return
+			throw new Error("Wrong ID")
+			return false
 		}
 
 		/* Album information is necessary for the following tags:

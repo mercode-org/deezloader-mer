@@ -161,9 +161,27 @@ module.exports = class Deezer {
   async getTracks(ids){
     var tracksArray = []
     var body = await this.apiCall(`song.getListData`, {sng_ids: ids})
-    body.results.data.forEach(track=>{
-      tracksArray.push(new Track(track))
-    })
+		var errors = 0
+		for(var i=0; i<ids.length; i++){
+			if (ids[i] != 0) {
+				tracksArray.push(new Track(body.results.data[i-errors]))
+			}else{
+				errors++
+				tracksArray.push({
+					id: 0,
+			    title: '',
+			    duration: 0,
+			    MD5: 0,
+			    mediaVersion: 0,
+			    filesize: 0,
+			    album: {id: 0, title: "", picture: ""},
+			    artist: {id: 0, name: ""},
+			    artists: [{id: 0, name: ""}],
+			    recordType: -1,
+				})
+			}
+
+		}
     return tracksArray
   }
 
