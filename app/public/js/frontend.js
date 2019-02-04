@@ -723,7 +723,7 @@ socket.on("getTrackList", function (data) {
 			}
 		} else if(data.reqType == 'spotifyplaylist') {
 			trackListModalApp.type = "Spotify Playlist"
-			trackListModalApp.link = data.id
+			trackListModalApp.link = 'spotify:playlist:'+data.id
 			trackListModalApp.title = 'Tracklist'
 			trackListModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},

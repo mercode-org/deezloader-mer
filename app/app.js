@@ -696,7 +696,6 @@ io.sockets.on('connection', function (s) {
 						await downloadTrackObject(downloading.obj, downloading.queueId, downloading.settings)
 						downloading.downloaded++
 					}catch(err){
-						logger.error(`queueDownload:track failed: ${err.stack ? err.stack : err}`)
 						downloading.failed++
 					}
 					s.emit("updateQueue", {
@@ -766,7 +765,6 @@ io.sockets.on('connection', function (s) {
 								downloading.playlistArr[t.playlistData[0]] = t.playlistData[1].split(filePath)[1]
 								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.name}\r\n`
 							}catch(err){
-								logger.error(`queueDownload:album failed: ${err.stack ? err.stack : err}`)
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 							}
@@ -844,7 +842,6 @@ io.sockets.on('connection', function (s) {
 								downloading.playlistArr[t.playlistData[0]] = t.playlistData[1].split(filePath)[1]
 								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.name}\r\n`
 							}catch(err){
-								logger.error(`queueDownload:playlist failed: ${err.stack ? err.stack : err}`)
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 							}
@@ -962,7 +959,6 @@ io.sockets.on('connection', function (s) {
 								downloading.playlistArr[t.playlistData[0]] = t.playlistData[1].split(filePath)[1]
 								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.name}\r\n`
 							}catch(err){
-								logger.error(`queueDownload:spotifyplaylist failed: ${err.stack ? err.stack : err}`)
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 							}
@@ -1402,6 +1398,7 @@ io.sockets.on('connection', function (s) {
 					logger.info(`[${track.artist.name} - ${track.title}] Starting the download process CODE:2`)
 				}catch(error){
 					logger.error(`[${track.artist.name} - ${track.title}] Cannot download Album Image: ${error}`)
+					logger.error(`Album art link: ${track.album.pictureUrl}`)
 					track.album.pictureUrl = undefined
 					track.album.picturePath = undefined
 				}
@@ -1441,10 +1438,18 @@ io.sockets.on('connection', function (s) {
 				if (error){
 					logger.error(`[${track.artist.name} - ${track.title}] Downloading error: ${error}`)
 					reject("Downloading error: "+error)
+					return false
 				}
 				if (!s.downloadQueue[queueId]){
 					fs.remove(tempPath)
-					return reject()
+					reject("Not in Queue")
+					return false
+				}
+				if (body.length == 0){
+					logger.error(`[${track.artist.name} - ${track.title}] Downloading error: Track is Empty`)
+					fs.remove(tempPath)
+					reject("Track is Empty")
+					return false
 				}
 				logger.info(`[${track.artist.name} - ${track.title}] Decrypting track`)
 				var decryptedSource = s.Deezer.decryptDownload(Buffer.from(body, 'binary'), track.id)
@@ -1452,15 +1457,22 @@ io.sockets.on('connection', function (s) {
 					fs.outputFileSync(tempPath,decryptedSource)
 					resolve()
 				}catch(err){
-					return logger.error(`[${track.artist.name} - ${track.title}] Decryption error: ${err.stack}`)
+					logger.error(`[${track.artist.name} - ${track.title}] Decryption error: ${err}`)
+					reject(err)
+					return false
 				}
 			}).on("data", function(data) {
-				if (!s.downloadQueue[queueId]) reject()
+				if (!s.downloadQueue[queueId]){
+					reject("Not in Queue")
+					return false
+				}
 			})
 			if((s.downloadQueue[queueId]) && s.downloadQueue[queueId].type == "track"){
 				let chunkLength = 0
 				req.on("data", function(data) {
-					if (!s.downloadQueue[queueId]) reject()
+					if (!s.downloadQueue[queueId]){
+						reject("Not in Queue")
+					}
 					chunkLength += data.length
 					try{
 						if (!s.downloadQueue[queueId].percentage) {
@@ -1479,12 +1491,9 @@ io.sockets.on('connection', function (s) {
 				})
 			}
 		})
-		try{
-			await downloadingPromise
-		}catch(err){
-			if (err) logger.error(`downloadTrackObject failed: ${err.stack ? err.stack : err}`)
-			return
-		}
+
+
+		await downloadingPromise
 
 		logger.info(`[${track.artist.name} - ${track.title}] Adding Tags`)
 		if (parseInt(track.id)>0){
