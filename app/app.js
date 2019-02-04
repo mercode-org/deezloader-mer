@@ -842,6 +842,7 @@ io.sockets.on('connection', function (s) {
 								downloading.playlistArr[t.playlistData[0]] = t.playlistData[1].split(filePath)[1]
 								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.name}\r\n`
 							}catch(err){
+								logger.debug(err.stack ? err.stack : err)
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 							}
@@ -1235,6 +1236,9 @@ io.sockets.on('connection', function (s) {
 					})
 				}else{
 					artistArray = track.artistsString
+				}
+				if (! Array.isArray(track.artistsString)){
+					track.artistsString = [track.artistsString]
 				}
 				uniqueArray(artistArray, track.artistsString, settings.removeDupedTags)
 				let posMainArtist = track.artistsString.indexOf(track.album.artist.name)

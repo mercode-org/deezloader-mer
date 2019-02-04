@@ -24,11 +24,13 @@ module.exports = class Track {
 			this.fallbackId = (body.FALLBACK ? (body.FALLBACK.SNG_ID ? body.FALLBACK.SNG_ID : 0) : 0)
       this.album = {id: body.ALB_ID, title: body.ALB_TITLE, picture: body.ALB_PICTURE}
       this.artist = {id: body.ART_ID, name: body.ART_NAME, picture: body.ART_PICTURE ? body.ART_PICTURE : null}
-			this.date = {
-        day: body.PHYSICAL_RELEASE_DATE.slice(8,10),
-        month: body.PHYSICAL_RELEASE_DATE.slice(5,7),
-        year: body.PHYSICAL_RELEASE_DATE.slice(0, 4)
-      }
+			if (body.PHYSICAL_RELEASE_DATE) {
+				this.date = {
+	        day: body.PHYSICAL_RELEASE_DATE.slice(8,10),
+	        month: body.PHYSICAL_RELEASE_DATE.slice(5,7),
+	        year: body.PHYSICAL_RELEASE_DATE.slice(0, 4)
+	      }
+			}
 			if (body.ARTISTS){
 				this.artists = []
 	      body.ARTISTS.forEach(artist=>{
@@ -39,6 +41,7 @@ module.exports = class Track {
 	        })
 	      })
 			}else{
+				this.artistsString = ""
 				if (body.SNG_CONTRIBUTORS.main_artist){
 	        this.artistsString = this.artistsString.concat(body.SNG_CONTRIBUTORS.main_artist)
 	      }else if (body.SNG_CONTRIBUTORS.mainartist){
