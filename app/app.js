@@ -402,6 +402,8 @@ io.sockets.on('connection', function (s) {
 		logger.info(`Added to Queue ${data.id}`)
 		try{
 			var track = await s.Deezer.getTrack(data.id)
+			data.settings.filename = data.settings.trackNameTemplate
+			data.settings.foldername = data.settings.albumNameTemplate
 			let _track = {
 				name: track.title,
 				artist: track.artist.name,
@@ -431,20 +433,41 @@ io.sockets.on('connection', function (s) {
 				var discTotal = await s.Deezer.getAlbum(data.id)
 				album.discTotal = discTotal.discTotal
 			}
-			album.tracks = await s.Deezer.getAlbumTracks(data.id)
-			let _album = {
-				name: album.title,
-				artist: album.artist.name,
-				size: album.tracks.length,
-				downloaded: 0,
-				failed: 0,
-				queueId: `id${Math.random().toString(36).substring(2)}`,
-				id: `${album.id}:${data.settings.maxBitrate}`,
-				type: 'album',
-				settings: data.settings || {},
-				obj: album,
+			if (album.nb_tracks == 1){
+				var track = await s.Deezer.getTrack(album.tracks.data[0].id)
+				data.settings.filename = data.settings.trackNameTemplate
+				data.settings.foldername = data.settings.albumNameTemplate
+				let _track = {
+					name: track.title,
+					artist: track.artist.name,
+					size: 1,
+					downloaded: 0,
+					failed: 0,
+					queueId: `id${Math.random().toString(36).substring(2)}`,
+					id: `${track.id}:${data.settings.maxBitrate}`,
+					type: 'track',
+					settings: data.settings || {},
+					obj: track,
+				}
+				addToQueue(_track)
+			}else{
+				album.tracks = await s.Deezer.getAlbumTracks(data.id)
+				data.settings.filename = data.settings.albumTrackNameTemplate
+				data.settings.foldername = data.settings.albumNameTemplate
+				let _album = {
+					name: album.title,
+					artist: album.artist.name,
+					size: album.tracks.length,
+					downloaded: 0,
+					failed: 0,
+					queueId: `id${Math.random().toString(36).substring(2)}`,
+					id: `${album.id}:${data.settings.maxBitrate}`,
+					type: 'album',
+					settings: data.settings || {},
+					obj: album,
+				}
+				addToQueue(_album)
 			}
-			addToQueue(_album)
 			return
 		}catch(err){
 			logger.error(`downloadAlbum failed: ${err.stack ? err.stack : err}`)
@@ -477,6 +500,8 @@ io.sockets.on('connection', function (s) {
 		logger.info(`Added to Queue ${data.id}`)
 		try{
 			var playlist = await s.Deezer.legacyGetPlaylist(data.id)
+			data.settings.filename = data.settings.playlistTrackNameTemplate
+			data.settings.foldername = data.settings.albumNameTemplate
 			playlist.tracks = await s.Deezer.getPlaylistTracks(data.id)
 			let _playlist = {
 				name: playlist.title,
@@ -503,6 +528,8 @@ io.sockets.on('connection', function (s) {
 		logger.info(`Added to Queue ${data.id}`)
 		try{
 			var artist = await s.Deezer.legacyGetArtist(data.id)
+			data.settings.filename = data.settings.playlistTrackNameTemplate
+			data.settings.foldername = data.settings.albumNameTemplate
 			artist.tracks = await s.Deezer.getArtistTopTracks(data.id)
 			let _playlist = {
 				name: artist.name + " Most played tracks",
@@ -533,6 +560,8 @@ io.sockets.on('connection', function (s) {
 				Spotify.setAccessToken(creds.body['access_token'])
 				let first = true
 				let offset = 0
+				data.settings.filename = data.settings.playlistTrackNameTemplate
+				data.settings.foldername = data.settings.albumNameTemplate
 				do{
 					var resp = await Spotify.getPlaylist(data.id, {fields: "id,name,owner,images,tracks(total,items(track(artists,name,album,external_ids)))", offset: offset*100})
 					if (first){

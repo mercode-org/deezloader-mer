@@ -893,16 +893,7 @@ $('#tab_url_form_url').submit(function (ev) {
 //############################################TAB_DOWNLOADS###########################################\\
 function addToQueue(url) {
 	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
-	if (type == 'track') {
-		userSettings.filename = userSettings.trackNameTemplate
-		userSettings.foldername = userSettings.albumNameTemplate
-	} else if (type == 'playlist' || type == 'spotifyplaylist' || type == 'artisttop') {
-		userSettings.filename = userSettings.playlistTrackNameTemplate
-		userSettings.foldername = userSettings.albumNameTemplate
-	} else if (type == 'album' || type == 'artist'){
-		userSettings.filename = userSettings.albumTrackNameTemplate
-		userSettings.foldername = userSettings.albumNameTemplate
-	} else {
+	if (['track', 'playlist', 'spotifyplaylist', 'artisttop', 'album', 'artist'].indexOf(type) == -1) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong Type!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
