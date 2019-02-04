@@ -1413,12 +1413,12 @@ io.sockets.on('connection', function (s) {
 			let imgPath;
 			//If its not from an album but a playlist.
 			if(!(settings.albName || settings.createAlbumFolder)){
-				imgPath = coverArtFolder + (track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg");
+				imgPath = coverArtFolder + (track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg")
 			}else{
 				if (settings.saveArtwork)
-					imgPath = coverpath + settingsRegexCover(settings.coverImageTemplate,settings.artName,settings.albName)+(settings.PNGcovers ? ".png" : ".jpg");
+					imgPath = coverpath + settingsRegexCover(settings.coverImageTemplate,track.album.artist.name,track.album.title)+(settings.PNGcovers ? ".png" : ".jpg")
 				else
-					imgPath = coverArtFolder + fixName(track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg");
+					imgPath = coverArtFolder + fixName(track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg")
 			}
 			if(fs.existsSync(imgPath)){
 				track.album.picturePath = (imgPath).replace(/\\/g, "/")
@@ -1769,6 +1769,7 @@ function updateSettingsFile(config, value) {
 }
 
 function fixName (txt) {
+	txt = txt+""
   const regEx = /[\0\/\\:*?"<>|]/g;
   txt = txt.replace(regEx, '_');
   txt = txt.slice(0,200);
@@ -1782,7 +1783,7 @@ function antiDot(str){
 	if(str.length < 1){
 		str = "dot";
 	}
-	return fixName(str);
+	return str;
 }
 
 /**
