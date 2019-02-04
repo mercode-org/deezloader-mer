@@ -1808,7 +1808,7 @@ function initFolders() {
 function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) {
 	try{
 		filename = filename.replace(/%title%/g, fixName(track.title));
-		filename = filename.replace(/%album%/g, fixName(track.album));
+		filename = filename.replace(/%album%/g, fixName(track.album.title));
 		filename = filename.replace(/%artist%/g, fixName((saveFullArtists ? track.artistsString : track.artist.name)));
 		filename = filename.replace(/%year%/g, fixName(track.date.year));
 		filename = filename.replace(/%label%/g, fixName(track.publisher));
@@ -1825,6 +1825,7 @@ function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) 
 		filename = filename.replace(/%label%/g, fixName(track.genre[0] ? track.genre[0] : "Unknown"));
 		return filename.trim();
 	}catch(e){
+		logger.error(e)
 		if (typeof e == "Error") throw e; else throw new Error(e)
 	}
 }
