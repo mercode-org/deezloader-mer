@@ -40,7 +40,17 @@ Here are listed the MD5 chechsums (so you can be sure the files were not tampere
 
 ## Build
 If you want to buid it yourself you will need Node.js installed and npm or yarn.<br/>
-Then to build it you just need to run `npm install` or `yarn install` and after that `compile<OS>.sh` or `.bat`.<br/>
+To start utilizing the app you should open a terminal inside the project folder and run `npm install`.<br/>
+If you want to start the app, without compiling it you can use `npm start`<br/>
+To run it in server mode you can use `npm start -- -s` or go inside the `app` folder and use `node app.js`<br/>
+To build the app for other OSs follow the table below
+
+| OS                 | Command              |
+| ------------------ | -------------------- |
+| Windows x64        | `npm run dist:win64` |
+| Windows x32 or x86 | `npm run dist:win32` |
+| Linux              | `npm run dist:linux` |
+| macOS              | `npm run dist:macOS` |
 
 ## Disclaimer
 I am not responsible for the usage of this program by other people.<br/>
