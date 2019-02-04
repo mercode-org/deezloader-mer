@@ -1348,9 +1348,11 @@ io.sockets.on('connection', function (s) {
 		let filepath = mainFolder;
 		let artistPath;
 		if (settings.createArtistFolder || settings.createAlbumFolder) {
+
 			if(settings.plName){
 				filepath += antiDot(fixName(settings.plName)) + path.sep;
 			}
+
 			if (settings.createArtistFolder) {
 				if(settings.artName){
 					filepath += antiDot(fixName(settings.artName)) + path.sep;
@@ -1823,11 +1825,10 @@ function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) 
 			filename = filename.replace(/%number%/g, '');
 		}
 		filename = filename.replace(/%explicit%/g, fixName((track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : "")));
-		filename = filename.replace(/%label%/g, fixName(track.genre[0] ? track.genre[0] : "Unknown"));
+		filename = filename.replace(/%label%/g, fixName(track.genre ? (Array.isArray(track.genre) ? track.genre[0] : track.genre) : "Unknown"));
 		return filename.trim();
 	}catch(e){
-		logger.error(e)
-		if (typeof e == "Error") throw e; else throw new Error(e)
+		logger.error("settingsRegex failed: "+e)
 	}
 }
 
@@ -1838,18 +1839,23 @@ function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) 
  * @returns {XML|string|*}
  */
 function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, publisher, genres) {
-	foldername = foldername.replace(/%album%/g, fixName(album))
-	foldername = foldername.replace(/%artist%/g, fixName(artist))
-	foldername = foldername.replace(/%year%/g, fixName(year))
-	if (rtype){
-		foldername = foldername.replace(/%type%/g, fixName(rtype[0].toUpperCase() + rtype.substring(1)))
-	}else{
-		foldername = foldername.replace(/%type%/g, "")
+	try{
+		foldername = foldername.replace(/%album%/g, fixName(album))
+		foldername = foldername.replace(/%artist%/g, fixName(artist))
+		foldername = foldername.replace(/%year%/g, fixName(year))
+		if (rtype){
+			foldername = foldername.replace(/%type%/g, fixName(rtype[0].toUpperCase() + rtype.substring(1)))
+		}else{
+			foldername = foldername.replace(/%type%/g, "")
+		}
+		foldername = foldername.replace(/%label%/g, fixName(publisher))
+		foldername = foldername.replace(/%explicit%/g, fixName((explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : "")))
+		foldername = foldername.replace(/%genre%/g, fixName(genres ? (Array.isArray(genres) ? genres[0] : genres) : "Unknown"))
+		return foldername.trim();
+	}catch(e){
+		logger.error("settingsRegexAlbum failed: "+e)
 	}
-	foldername = foldername.replace(/%label%/g, fixName(publisher))
-	foldername = foldername.replace(/%explicit%/g, fixName((explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : "")))
-	foldername = foldername.replace(/%genre%/g, fixName((genres[0] ? genres[0] : "Unknown")))
-	return foldername.trim();
+
 }
 
 function settingsRegexCover(foldername, artist, name) {
