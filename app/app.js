@@ -553,7 +553,7 @@ io.sockets.on('connection', function (s) {
 						first = false
 					}
 					resp.body.tracks.items.forEach((track, i) => {
-						trackList[(offset*20)+i] = track.track
+						trackList[(offset*100)+i] = track.track
 					})
 					offset++
 				}while(offset<=numPages)
