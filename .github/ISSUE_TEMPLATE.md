@@ -1,7 +1,3 @@
-Issue tracker is **ONLY** used for reporting bugs. NEW FEATURE ACCEPTED ONLY VIA PULL REQUEST!
-
-<!--- Provide a general summary of the issue in the Title above -->
-
 ## Expected Behavior
 <!--- Tell us what should happen -->
 
@@ -20,16 +16,15 @@ Issue tracker is **ONLY** used for reporting bugs. NEW FEATURE ACCEPTED ONLY VIA
 4.
 
 ## Context (Environment)
-<!--- How has this issue affected you? What are you trying to accomplish? -->
-<!--- Providing context helps us come up with a solution that is most useful in the real world -->
-
-<!--- Provide a general summary of the issue in the Title above -->
+- Operative System:
+- App Version:
+- Did you build it from the repo?:
 
 ## Detailed Description
 <!--- Provide a detailed description of the change or addition you are proposing -->
 
 ## Log File
-<!--- Upload your log file to pastebin and paste the link here -->
+<!--- Upload your log file to pastebin and paste the link here, can be helpfull sometimes -->
 
 ## Possible Implementation
 <!--- Not obligatory, but suggest an idea for implementing addition or change -->
