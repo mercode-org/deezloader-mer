@@ -763,10 +763,10 @@ io.sockets.on('connection', function (s) {
 						filePath += antiDot(fixName(downloading.settings.artName)) + path.sep;
 					}
 					if (downloading.settings.createAlbumFolder) {
-						filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genres))) + path.sep;
+						filePath += antiDot(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genres)) + path.sep;
 					}
 				} else if (downloading.settings.artName) {
-					filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genres))) + path.sep;
+					filePath += antiDot(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genres)) + path.sep;
 				}
 				let ajson = {
 					artist : downloading.obj.artist,
@@ -923,7 +923,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-						let imgPath = filePath + antiDot(fixName(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name)))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
+						let imgPath = filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.cover){
 							downloading.cover = downloading.cover.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
 							request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
@@ -1040,7 +1040,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
-						let imgPath = filePath + antiDot(fixName(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name)))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
+						let imgPath = filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.obj.images){
 							downloading.cover = downloading.obj.images[0].url.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
 							request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
@@ -1340,7 +1340,7 @@ io.sockets.on('connection', function (s) {
 			let filename = fixName(`${track.artist.name} - ${track.title}`);
 		}
 		if (settings.filename) {
-			filename = fixName(settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize));
+			filename = settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize);
 		}
 
 		// TODO: Move to a separate function
@@ -1362,15 +1362,15 @@ io.sockets.on('connection', function (s) {
 
 			if (settings.createAlbumFolder) {
 				if(settings.artName){
-					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
+					filepath += antiDot(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre)) + path.sep;
 				}else{
-					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,track.album.artist.name,track.album.title,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
+					filepath += antiDot(settingsRegexAlbum(settings.foldername,track.album.artist.name,track.album.title,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre)) + path.sep;
 				}
 			}
 		} else if (settings.plName) {
 			filepath += antiDot(fixName(settings.plName)) + path.sep;
 		} else if (settings.artName) {
-			filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
+			filepath += antiDot(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre)) + path.sep;
 		}
 		let coverpath = filepath;
 		if (track.discTotal > 1 && (settings.artName || settings.createAlbumFolder) && settings.createCDFolder){
@@ -1416,7 +1416,7 @@ io.sockets.on('connection', function (s) {
 				imgPath = coverArtFolder + (track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg");
 			}else{
 				if (settings.saveArtwork)
-					imgPath = coverpath + fixName(settingsRegexCover(settings.coverImageTemplate,settings.artName,settings.albName))+(settings.PNGcovers ? ".png" : ".jpg");
+					imgPath = coverpath + settingsRegexCover(settings.coverImageTemplate,settings.artName,settings.albName)+(settings.PNGcovers ? ".png" : ".jpg");
 				else
 					imgPath = coverArtFolder + fixName(track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg");
 			}
@@ -1445,7 +1445,7 @@ io.sockets.on('connection', function (s) {
 		if (parseInt(this.id)>0 && track.album.artist.picture && settings.saveArtworkArtist) {
 			let imgPath;
 			if(settings.createArtistFolder){
-				imgPath = artistPath + antiDot(fixName(settingsRegexArtistCover(settings.artistImageTemplate,track.album.artist.name)))+(settings.PNGcovers ? ".png" : ".jpg");
+				imgPath = artistPath + antiDot(settingsRegexArtistCover(settings.artistImageTemplate,track.album.artist.name))+(settings.PNGcovers ? ".png" : ".jpg");
 				if(!fs.existsSync(imgPath)){
 					try{
 						var body = await request.get(track.album.artist.pictureUrl, {strictSSL: false,encoding: 'binary'})
@@ -1807,22 +1807,22 @@ function initFolders() {
  */
 function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) {
 	try{
-		filename = filename.replace(/%title%/g, track.title);
-		filename = filename.replace(/%album%/g, track.album);
-		filename = filename.replace(/%artist%/g, (saveFullArtists ? track.artistsString : track.artist.name));
-		filename = filename.replace(/%year%/g, track.date.year);
-		filename = filename.replace(/%label%/g, track.publisher);
+		filename = filename.replace(/%title%/g, fixName(track.title));
+		filename = filename.replace(/%album%/g, fixName(track.album));
+		filename = filename.replace(/%artist%/g, fixName((saveFullArtists ? track.artistsString : track.artist.name)));
+		filename = filename.replace(/%year%/g, fixName(track.date.year));
+		filename = filename.replace(/%label%/g, fixName(track.publisher));
 		if(typeof track.trackNumber != 'undefined'){
 			if(configFile.userDefined.padtrck){
-				 filename = filename.replace(/%number%/g, pad(track.trackNumber, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : track.trackTotal)));
+				 filename = filename.replace(/%number%/g, fixName(pad(track.trackNumber, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : track.trackTotal))));
 			}else{
-				filename = filename.replace(/%number%/g, track.trackNumber);
+				filename = filename.replace(/%number%/g, fixName(track.trackNumber));
 			}
 		} else {
 			filename = filename.replace(/%number%/g, '');
 		}
-		filename = filename.replace(/%explicit%/g, (track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : ""));
-		filename = filename.replace(/%label%/g, track.genre[0] ? track.genre[0] : "Unknown");
+		filename = filename.replace(/%explicit%/g, fixName((track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : "")));
+		filename = filename.replace(/%label%/g, fixName(track.genre[0] ? track.genre[0] : "Unknown"));
 		return filename.trim();
 	}catch(e){
 		if (typeof e == "Error") throw e; else throw new Error(e)
@@ -1836,28 +1836,28 @@ function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) 
  * @returns {XML|string|*}
  */
 function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, publisher, genres) {
-	foldername = foldername.replace(/%album%/g, album);
-	foldername = foldername.replace(/%artist%/g, artist);
-	foldername = foldername.replace(/%year%/g, year);
+	foldername = foldername.replace(/%album%/g, fixName(album))
+	foldername = foldername.replace(/%artist%/g, fixName(artist))
+	foldername = foldername.replace(/%year%/g, fixName(year))
 	if (rtype){
-		foldername = foldername.replace(/%type%/g, rtype[0].toUpperCase() + rtype.substring(1));
+		foldername = foldername.replace(/%type%/g, fixName(rtype[0].toUpperCase() + rtype.substring(1)))
 	}else{
-		foldername = foldername.replace(/%type%/g, "");
+		foldername = foldername.replace(/%type%/g, "")
 	}
-	foldername = foldername.replace(/%label%/g, publisher);
-	foldername = foldername.replace(/%explicit%/g, (explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : ""));
-	foldername = foldername.replace(/%genre%/g, (genres[0] ? genres[0] : "Unknown"))
+	foldername = foldername.replace(/%label%/g, fixName(publisher))
+	foldername = foldername.replace(/%explicit%/g, fixName((explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : "")))
+	foldername = foldername.replace(/%genre%/g, fixName((genres[0] ? genres[0] : "Unknown")))
 	return foldername.trim();
 }
 
 function settingsRegexCover(foldername, artist, name) {
-	foldername = foldername.replace(/%name%/g, name);
-	foldername = foldername.replace(/%artist%/g, artist);
+	foldername = foldername.replace(/%name%/g, fixName(name));
+	foldername = foldername.replace(/%artist%/g, fixName(artist));
 	return foldername;
 }
 
 function settingsRegexArtistCover(foldername, artist) {
-	foldername = foldername.replace(/%artist%/g, artist);
+	foldername = foldername.replace(/%artist%/g, fixName(artist));
 	return foldername;
 }
 
