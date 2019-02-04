@@ -577,7 +577,7 @@ io.sockets.on('connection', function (s) {
 				var numPages=Math.floor((_playlist.size-1)/100)
 				var trackList = new Array(_playlist.size)
 				do{
-					var resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,album,external_ids))", offset: offset*100+1})
+					var resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,album,external_ids))", offset: offset*100})
 					resp.body.items.forEach((track, i) => {
 						trackList[i+(offset*100)] = track.track
 					})
