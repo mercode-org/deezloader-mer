@@ -599,6 +599,7 @@ io.sockets.on('connection', function (s) {
 	// It tries first with the isrc (best way of conversion)
 	// Fallbacks to the old way, using search
 	async function convertSpotify2Deezer(track){
+		if (!track) return 0
 		try{
 			if (track.external_ids.isrc){
 				let resp = await s.Deezer.legacyGetTrackByISRC(track.external_ids.isrc)
