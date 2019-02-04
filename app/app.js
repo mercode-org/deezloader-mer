@@ -763,10 +763,10 @@ io.sockets.on('connection', function (s) {
 						filePath += antiDot(fixName(downloading.settings.artName)) + path.sep;
 					}
 					if (downloading.settings.createAlbumFolder) {
-						filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label))) + path.sep;
+						filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genres))) + path.sep;
 					}
 				} else if (downloading.settings.artName) {
-					filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label))) + path.sep;
+					filePath += antiDot(fixName(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genres))) + path.sep;
 				}
 				let ajson = {
 					artist : downloading.obj.artist,
@@ -1362,15 +1362,15 @@ io.sockets.on('connection', function (s) {
 
 			if (settings.createAlbumFolder) {
 				if(settings.artName){
-					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher))) + path.sep;
+					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
 				}else{
-					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,track.album.artist.name,track.album.title,track.date.year,track.recordType,track.album.explicit,track.publisher))) + path.sep;
+					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,track.album.artist.name,track.album.title,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
 				}
 			}
 		} else if (settings.plName) {
 			filepath += antiDot(fixName(settings.plName)) + path.sep;
 		} else if (settings.artName) {
-			filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher))) + path.sep;
+			filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
 		}
 		let coverpath = filepath;
 		if (track.discTotal > 1 && (settings.artName || settings.createAlbumFolder) && settings.createCDFolder){
@@ -1822,6 +1822,7 @@ function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) 
 			filename = filename.replace(/%number%/g, '');
 		}
 		filename = filename.replace(/%explicit%/g, (track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : ""));
+		filename = filename.replace(/%label%/g, track.genre[0] ? track.genre[0] : "Unknown");
 		return filename.trim();
 	}catch(e){
 		if (typeof e == "Error") throw e; else throw new Error(e)
@@ -1834,7 +1835,7 @@ function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) 
  * @param foldername
  * @returns {XML|string|*}
  */
-function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, publisher) {
+function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, publisher, genres) {
 	foldername = foldername.replace(/%album%/g, album);
 	foldername = foldername.replace(/%artist%/g, artist);
 	foldername = foldername.replace(/%year%/g, year);
@@ -1845,6 +1846,7 @@ function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, pu
 	}
 	foldername = foldername.replace(/%label%/g, publisher);
 	foldername = foldername.replace(/%explicit%/g, (explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : ""));
+	foldername = foldername.replace(/%genre%/g, (genres[0] ? genres[0] : "Unknown"))
 	return foldername.trim();
 }
 
