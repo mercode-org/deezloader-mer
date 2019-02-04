@@ -558,31 +558,28 @@ io.sockets.on('connection', function (s) {
 			try{
 				let creds = await Spotify.clientCredentialsGrant()
 				Spotify.setAccessToken(creds.body['access_token'])
-				let first = true
-				let offset = 0
+				var offset = 0
 				data.settings.filename = data.settings.playlistTrackNameTemplate
 				data.settings.foldername = data.settings.albumNameTemplate
+				var resp = await Spotify.getPlaylist(data.id, {fields: "id,name,owner,images,tracks(total)"})
+				var _playlist = {
+					name: resp.body.name,
+					artist: (resp.body.owner.display_name ? resp.body.owner.display_name : resp.body.owner.id),
+					size: resp.body.tracks.total,
+					downloaded: 0,
+					failed: 0,
+					queueId: `id${Math.random().toString(36).substring(2)}`,
+					settings: data.settings || {},
+					id: `${resp.body.id}:${data.settings.maxBitrate}`,
+					type: "spotifyplaylist",
+					obj: resp.body
+				}
+				var numPages=Math.floor((_playlist.size-1)/100)
+				var trackList = new Array(_playlist.size)
 				do{
-					var resp = await Spotify.getPlaylist(data.id, {fields: "id,name,owner,images,tracks(total,items(track(artists,name,album,external_ids)))", offset: offset*100})
-					if (first){
-						var _playlist = {
-							name: resp.body.name,
-							artist: (resp.body.owner.display_name ? resp.body.owner.display_name : resp.body.owner.id),
-							size: resp.body.tracks.total,
-							downloaded: 0,
-							failed: 0,
-							queueId: `id${Math.random().toString(36).substring(2)}`,
-							settings: data.settings || {},
-							id: `${resp.body.id}:${data.settings.maxBitrate}`,
-							type: "spotifyplaylist",
-							obj: resp.body
-						}
-						var numPages=Math.floor((_playlist.size-1)/100)
-						var trackList = new Array(_playlist.size)
-						first = false
-					}
-					resp.body.tracks.items.forEach((track, i) => {
-						trackList[(offset*100)+i] = track.track
+					var resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,album,external_ids))", offset: offset*100+1})
+					resp.body.items.forEach((track, i) => {
+						trackList[i+(offset*100)] = track.track
 					})
 					offset++
 				}while(offset<=numPages)
