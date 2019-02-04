@@ -150,11 +150,10 @@ module.exports = class Deezer {
     var body
     if (id<0){
       body = await this.apiCall(`song.getData`, {sng_id: id})
-      body.results.sourcePage = 'song.getData'
-      body.results.type = -1
     }else{
       body = await this.apiCall(`deezer.pageTrack`, {sng_id: id})
-      body.results.sourcePage = 'deezer.pageTrack'
+			if (body.results.LYRICS) body.results.DATA.LYRICS = body.results.LYRICS
+      body.results = body.results.DATA
     }
     return new Track(body.results)
   }
@@ -163,7 +162,6 @@ module.exports = class Deezer {
     var tracksArray = []
     var body = await this.apiCall(`song.getListData`, {sng_ids: ids})
     body.results.data.forEach(track=>{
-      track.sourcePage = 'song.getData'
       tracksArray.push(new Track(track))
     })
     return tracksArray
@@ -171,11 +169,11 @@ module.exports = class Deezer {
 
   async getAlbum(id){
     var body = await this.apiCall(`album.getData`, {alb_id: id})
-    body.results.sourcePage = 'album.getData'
     /*
     Alternative query, currently not used
       var body = await this.apiCall(`deezer.pageAlbum`, {alb_id: id, lang: 'en'})
-      body.sourcePage = 'deezer.pageAlbum'
+			if (body.results.SONGS) body.results.DATA.SONGS = body.results.SONGS
+			body.results = body.results.DATA
     */
     return new Album(body.results)
   }
@@ -184,7 +182,6 @@ module.exports = class Deezer {
     var tracksArray = []
     var body = await this.apiCall(`song.getListByAlbum`, {alb_id: id, nb: -1})
     body.results.data.forEach(track=>{
-      track.sourcePage = 'song.getListByAlbum'
       tracksArray.push(new Track(track))
     })
     return tracksArray
@@ -204,7 +201,6 @@ module.exports = class Deezer {
     var tracksArray = []
     var body = await this.apiCall(`playlist.getSongs`, {playlist_id: id, nb: -1})
     body.results.data.forEach((track, index)=>{
-      track.sourcePage = 'playlist.getSongs'
       let _track = new Track(track)
       _track.position = index
       tracksArray.push(_track)
@@ -216,7 +212,6 @@ module.exports = class Deezer {
     var tracksArray = []
     var body = await this.apiCall(`artist.getTopTrack`, {art_id: id, nb: 100})
     body.results.data.forEach((track, index)=>{
-      track.sourcePage = 'artist.getTopTrack'
       let _track = new Track(track)
       _track.position = index
       tracksArray.push(_track)
