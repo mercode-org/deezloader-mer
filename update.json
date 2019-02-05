@@ -1,4 +1,4 @@
 {
-  "version":"4.1.6",
-  "changelog":"- Fixed Spotify Playlist problem\r\n- Fixed security issue where Client Secret is exposed in Compiled binaries\r\n- Now to use Spotify Features you need to follow a guide first (Link in the changelog)\r\n- Minor bugfixes and improvments\r\n"
+  "version":"4.1.7",
+  "changelog":"- Partial rewrite of the app (4.2.0 will have the other half)\r\n- Fixed login security issue\r\n- Better Spotify integration (now conversion uses ISRC if found)\r\n- Fixed France Charts not showing up\r\n- Albums with only one track will download as a single track\r\n- Added option %genre% for Track and Album names\r\n- Added support for subfolders in Album name\r\n- Minor changes to the UI\r\n"
 }
