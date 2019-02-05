@@ -41,12 +41,15 @@ module.exports = class Track {
 	        })
 	      })
 			}else{
-				this.artistsString = ""
+				this.artistsString = []
 				if (body.SNG_CONTRIBUTORS.main_artist){
 	        this.artistsString = this.artistsString.concat(body.SNG_CONTRIBUTORS.main_artist)
 	      }else if (body.SNG_CONTRIBUTORS.mainartist){
 	        this.artistsString = this.artistsString.concat(body.SNG_CONTRIBUTORS.mainartist)
 	      }
+				if (body.SNG_CONTRIBUTORS.featuredartist) {
+					this.artistsString = this.artistsString.concat(body.SNG_CONTRIBUTORS.featuredartist)
+				}
 	      if (body.SNG_CONTRIBUTORS.associatedperformer) {
 	        this.artistsString = this.artistsString.concat(body.SNG_CONTRIBUTORS.associatedperformer)
 	      }

@@ -1267,10 +1267,10 @@ io.sockets.on('connection', function (s) {
 						artistArray.push(artist.name)
 					})
 				}else{
+					if (! Array.isArray(track.artistsString)){
+						track.artistsString = [track.artistsString,]
+					}
 					artistArray = track.artistsString
-				}
-				if (! Array.isArray(track.artistsString)){
-					track.artistsString = [track.artistsString]
 				}
 				uniqueArray(artistArray, track.artistsString, settings.removeDupedTags)
 				let posMainArtist = track.artistsString.indexOf(track.album.artist.name)
