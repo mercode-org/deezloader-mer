@@ -28,15 +28,15 @@ All compiled downloads are on Telegram.<br>
 [@DeezloaderRemixCommunity](https://t.me/DeezloaderRemixCommunity)<br>
 Here are listed the MD5 chechsums (so you can be sure the files were not tampered):<br>
 
-| Filename                             | Checksum MD5                     |
-| ------------------------------------ | -------------------------------- |
-| Deezloader Remix 4.1.7 Setup.exe     | 3c885994079d19203a881d78653b5eac |
-| Deezloader Remix 4.1.7.exe           | 7c40f3d680c6a402cb97fd2494141dad |
-| Deezloader Remix 4.1.7 Setup x32.exe | 0df2c23bb000cf92cecad86a8817c8ff |
-| Deezloader Remix 4.1.7 x32.exe       | 8bc24b5c9fcf3742b2ebc8d66dafef0f |
-| Deezloader Remix 4.1.7.AppImage      | 75c34f83ccb482bf3db4a14819d0507f |
-| Deezloader Remix 4.1.7 i386.AppImage | 719a1d02f2c9e2ab3d4620e61303e792 |
-| Deezloader Remix-4.1.7.dmg           | 818eea52a4622ab8ba09228540d00f87 |
+| Filename                             | Checksum MD5                       |
+| ------------------------------------ | ---------------------------------- |
+| Deezloader Remix 4.1.7 Setup.exe     | `a7aa885b74be4bcd4ae06d8492f09993` | 
+| Deezloader Remix 4.1.7.exe           | `c05901335eb01823df77dc1248a116c5` |
+| Deezloader Remix 4.1.7 Setup x32.exe | `c92b110d05286434f5fd85624b374297` |
+| Deezloader Remix 4.1.7 x32.exe       | `155e7a53af387dedd915b7ab464cbbee` |
+| Deezloader Remix 4.1.7.AppImage      | `dada22ffb9fb29104eec9f2491fe86f0` |
+| Deezloader Remix 4.1.7 i386.AppImage | `7e6c29c09852b78b9776c6c1392f1030` |
+| Deezloader Remix-4.1.7.dmg           | `402bd47078a673b9cefc92e1b3977e69` |
 
 ## Build
 If you want to buid it yourself you will need Node.js installed and npm or yarn.<br/>
