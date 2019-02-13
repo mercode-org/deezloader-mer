@@ -1081,8 +1081,8 @@ io.sockets.on('connection', function (s) {
 			return false
 		}
 		if (parseInt(track.id) == 0){
-			logger.error(`[${track.artist.name} - ${track.title}] Failed to download: Wrong ID`)
-			throw new Error("Wrong ID")
+			logger.error(`[${track.artist.name} - ${track.title}] Failed to download: Song not Found`)
+			throw new Error("Song not Found")
 			return false
 		}
 
@@ -1206,6 +1206,12 @@ io.sockets.on('connection', function (s) {
 				}
 			}else{
 				track.replayGain = 0
+			}
+
+			if (settings.tags.discNumber && !track.discNumber){
+				logger.info(`[${track.artist.name} - ${track.title}] Getting disc number`);
+				var discNumber = await s.Deezer.legacyGetTrack(track.id)
+				track.discNumber = discNumber.disk_number
 			}
 
 			let separator = settings.multitagSeparator
