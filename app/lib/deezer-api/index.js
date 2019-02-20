@@ -103,7 +103,9 @@ module.exports = class Deezer {
           type:'login',
           mail: mail,
           password: password,
-          checkFormLogin: checkFormLogin.results.checkFormLogin
+          checkFormLogin: checkFormLogin.results.checkFormLogin,
+          reCaptchaToken: "",
+          reCaptchaDisabled: 1
         },
         headers: {
           ...this.httpHeaders,
