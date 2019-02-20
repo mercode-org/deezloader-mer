@@ -448,7 +448,7 @@ function showResults_table_track(tracks) {
 		var currentResultTrack = tracks[i]
 		$(tableBody).append(
 			`<tr>
-			<td><a href="#" class="circle ${(currentResultTrack.preview ? `single-cover" preview="${currentResultTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" class="circle" src="${(currentResultTrack.album.cover_small ? currentResultTrack.album.cover_small : "img/noCover.jpg" )}"/></a></td>
+			<td><a href="#" class="rounded ${(currentResultTrack.preview ? `single-cover" preview="${currentResultTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" class="rounded" src="${(currentResultTrack.album.cover_small ? currentResultTrack.album.cover_small : "img/noCover.jpg" )}"/></a></td>
 			<td>${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</td>
 			<td><span class="resultArtist resultLink" data-link="${currentResultTrack.artist.link}">${currentResultTrack.artist.name}</span></td>
 			<td><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentResultTrack.album.id}">${currentResultTrack.album.title}</span></td>
@@ -476,7 +476,7 @@ function showResults_table_album(albums) {
 		var currentResultAlbum = albums[i]
 		$(tableBody).append(
 				`<tr>
-				<td><img style="width:56px;" src="${(currentResultAlbum.cover_small ? currentResultAlbum.cover_small : "img/noCover.jpg")}" class="circle" /></td>
+				<td><img style="width:56px;" src="${(currentResultAlbum.cover_small ? currentResultAlbum.cover_small : "img/noCover.jpg")}" class="rounded" /></td>
 				<td>${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</td>
 				<td><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
 				<td>${currentResultAlbum.nb_tracks}</td>
@@ -500,7 +500,7 @@ function showResults_table_artist(artists) {
 		var currentResultArtist = artists[i]
 		$(tableBody).append(
 				`<tr>
-				<td><img style="width:56px;" src="${(currentResultArtist.picture_small ? currentResultArtist.picture_small : "img/noCover.jpg")}" class="circle" /></td>
+				<td><img style="width:56px;" src="${(currentResultArtist.picture_small ? currentResultArtist.picture_small : "img/noCover.jpg")}" class="rounded" /></td>
 				<td>${currentResultArtist.name}</td>
 				<td>${currentResultArtist.nb_album}</td>
 				</tr>`)
@@ -517,7 +517,7 @@ function showResults_table_playlist(playlists) {
 		var currentResultPlaylist = playlists[i]
 		$(tableBody).append(
 				`<tr>
-				<td><img style="width:56px;" src="${(currentResultPlaylist.picture_small ? currentResultPlaylist.picture_small : "img/noCover.jpg")}" class="circle" /></td>
+				<td><img style="width:56px;" src="${(currentResultPlaylist.picture_small ? currentResultPlaylist.picture_small : "img/noCover.jpg")}" class="rounded" /></td>
 				<td>${currentResultPlaylist.title}</td>
 				<td>${currentResultPlaylist.nb_tracks}</td>
 				</tr>`)
@@ -784,8 +784,8 @@ socket.on("getChartsCountryList", function (data) {
 	//data.countries[0].country -> String (country name)
 	//data.countries[0].picture_small/picture_medium/picture_big -> url to cover
 	for (var i = 0; i < data.countries.length; i++) {
-		$('#tab_charts_select_country').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left circle">' + data.countries[i]['country'] + '</option>')
-		$('#modal_settings_select_chartsCounrty').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left circle">' + data.countries[i]['country'] + '</option>')
+		$('#tab_charts_select_country').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left rounded">' + data.countries[i]['country'] + '</option>')
+		$('#modal_settings_select_chartsCounrty').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left rounded">' + data.countries[i]['country'] + '</option>')
 	}
 	$('#tab_charts_select_country').find('option[value="' + data.selected + '"]').attr("selected", true)
 	$('#modal_settings_select_chartsCounrty').find('option[value="' + data.selected + '"]').attr("selected", true)
@@ -817,7 +817,7 @@ socket.on("getChartsTrackListByCountry", function (data) {
 		$(chartsTableBody).append(
 				`<tr>
 				<td>${(i + 1)}</td>
-				<td><a href="#" class="circle ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="circle" /></a></td>
+				<td><a href="#" class="rounded ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="rounded" /></a></td>
 				<td>${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${currentChartTrack.title}</td>
 				<td><span class="resultArtist resultLink" data-link="${currentChartTrack.artist.link}">${currentChartTrack.artist.name}</span></td>
 				<td><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentChartTrack.album.id}">${currentChartTrack.album.title}</span></td>
@@ -847,7 +847,7 @@ socket.on("getMyPlaylistList", function (data) {
 		var currentResultPlaylist = data.playlists[i]
 		$(tableBody).append(
 				`<tr>
-				<td><img src="${currentResultPlaylist.image}" class="circle" width="56px" /></td>
+				<td><img src="${currentResultPlaylist.image}" class="rounded" width="56px" /></td>
 				<td>${currentResultPlaylist.title}</td>
 				<td>${currentResultPlaylist.songs}</td>
 				</tr>`)
