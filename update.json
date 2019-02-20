@@ -1,4 +1,4 @@
 {
-  "version":"4.1.7",
-  "changelog":"- Partial rewrite of the app (4.2.0 will have the other half)\r\n- Fixed login security issue\r\n- Better Spotify integration (now conversion uses ISRC if found)\r\n- Fixed France Charts not showing up\r\n- Albums with only one track will download as a single track\r\n- Added option %genre% for Track and Album names\r\n- Added support for subfolders in Album name\r\n- Minor changes to the UI\r\n"
+  "version":"4.1.8",
+  "changelog":"- Fix the issue where some people wasn't able to log in from the Netherlands\r\n"
 }
