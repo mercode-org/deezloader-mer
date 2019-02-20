@@ -145,6 +145,9 @@ nav {
 	.modal{
 		width: 100%;
 		margin: 0px;
+		max-height: 95%;
+		height: 100% !important;
+		top: 32px !important;
 	}
 	#main_icon{
 		top: 4px;
