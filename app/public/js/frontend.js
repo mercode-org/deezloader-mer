@@ -73,8 +73,8 @@ $('#openDownloadsFolder').on('click', function () {
 
 $('#modal_tags_replayGain').on('click', function() {
 	if ($(this).is(':checked')) {
-	message('Warning','Saving replay gain causes tracks to be quieter for some users.')
-}
+		message('Warning','Saving replay gain causes tracks to be quieter for some users.')
+	}
 })
 // Do misc stuff on page load
 $(document).ready(function () {
@@ -449,9 +449,14 @@ function showResults_table_track(tracks) {
 		$(tableBody).append(
 			`<tr>
 			<td><a href="#" class="rounded ${(currentResultTrack.preview ? `single-cover" preview="${currentResultTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" class="rounded" src="${(currentResultTrack.album.cover_small ? currentResultTrack.album.cover_small : "img/noCover.jpg" )}"/></a></td>
-			<td>${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</td>
-			<td><span class="resultArtist resultLink" data-link="${currentResultTrack.artist.link}">${currentResultTrack.artist.name}</span></td>
-			<td><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentResultTrack.album.id}">${currentResultTrack.album.title}</span></td>
+			<td class="hide-on-med-and-up">
+				<p class="remove-margin">${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</p>
+				<p class="remove-margin">${currentResultTrack.artist.name}</p>
+				<p class="remove-margin">${currentResultTrack.album.title}</p>
+			</td>
+			<td class="hide-on-small-only">${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</td>
+			<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentResultTrack.artist.link}">${currentResultTrack.artist.name}</span></td>
+			<td class="hide-on-small-only"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentResultTrack.album.id}">${currentResultTrack.album.title}</span></td>
 			<td>${convertDuration(currentResultTrack.duration)}</td>
 			</tr>`)
 		generateDownloadLink(currentResultTrack.link).appendTo(tableBody.children('tr:last')).wrap('<td>')

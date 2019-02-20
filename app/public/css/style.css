@@ -8,6 +8,10 @@ td{
 th{
 	text-align: left;
 }
+.remove-margin{
+	margin:0px;
+	padding-bottom: 4px;
+}
 
 #initializing {
 	z-index: 98;
@@ -141,6 +145,10 @@ nav {
 	nav {
 		padding-top: 0px;
 		padding-bottom: 0px;
+	}
+	.container{
+		margin: auto 0px;
+		width: 100%
 	}
 	.modal{
 		width: 100%;
