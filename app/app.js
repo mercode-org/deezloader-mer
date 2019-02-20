@@ -16,7 +16,7 @@ const io = require('socket.io').listen(server, {log: false, wsEngine: 'ws'})
 // Music tagging stuff
 const mflac = require('./lib/flac-metadata')
 const ID3Writer = require('./lib/browser-id3-writer')
-const deezerApi = require('./lib/deezer-api')
+const deezerApi = require('deezer-api')
 const spotifyApi = require('spotify-web-api-node')
 // App stuff
 const fs = require('fs-extra')
