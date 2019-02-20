@@ -75,7 +75,7 @@ logger.info('Server is running @ localhost:' + configFile.serverPort)
 
 // START sockets clusterfuck
 io.sockets.on('connection', function (s) {
-	logger.info("Connection recived!")
+	logger.info("Connection received!")
 
 	// Check for updates
 	request({
