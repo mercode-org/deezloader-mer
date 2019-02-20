@@ -208,7 +208,7 @@ $('.modal-close').click(function (e) {
 const $settingsAreaParent = $('#modal_settings')
 
 // Open settings panel
-$('#nav_btn_openSettingsModal').click(function () {
+$('#nav_btn_openSettingsModal, #sidenav_settings').click(function () {
 	fillSettingsModal(userSettings)
 })
 
