@@ -1586,10 +1586,10 @@ io.sockets.on('connection', function (s) {
 				if (track.copyright && settings.tags.copyright)
 					flacComments.push('COPYRIGHT=' + track.copyright);
 				if (0 < parseInt(track.date.year)){
+					if (settings.tags.date)
+						flacComments.push('DATE=' + track.dateString);
 					if (settings.tags.year)
 						flacComments.push('YEAR=' + track.date.year);
-					if (settings.tags.date)
-					flacComments.push('DATE=' + track.dateString);
 				}
 				if (0 < parseInt(track.bpm) && settings.tags.bpm)
 					flacComments.push('BPM=' + track.bpm);
