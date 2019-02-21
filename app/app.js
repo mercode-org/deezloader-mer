@@ -84,13 +84,13 @@ io.sockets.on('connection', function (s) {
 	})
 	.then(body=>{
 		logger.info("Checking for updates")
-		let [currentVersion_MAJOR, currentVersion_MINOR, currentVersion_PATCH] = package.version.split(".")
-		let [lastVersion_MAJOR, lastVersion_MINOR, lastVersion_PATCH] = body.version.split(".")
+		let [currentVersion_MAJOR, currentVersion_MINOR, currentVersion_PATCH] = package.version.split(".").map(x=>parseInt(x))
+		let [lastVersion_MAJOR, lastVersion_MINOR, lastVersion_PATCH] = body.version.split(".").map(x=>parseInt(x))
 		if (
-			parseInt(lastVersion_MAJOR) > parseInt(currentVersion_MAJOR) ||
-			parseInt(lastVersion_MINOR) > parseInt(currentVersion_MINOR) ||
-			parseInt(lastVersion_PATCH) > parseInt(currentVersion_PATCH))
-		{
+			lastVersion_MAJOR>currentVersion_MAJOR ||
+			lastVersion_MAJOR==currentVersion_MAJOR && lastVersion_MINOR>currentVersion_MINOR ||
+			lastVersion_MAJOR==currentVersion_MAJOR && lastVersion_MINOR==currentVersion_MINOR && lastVersion_PATCH>currentVersion_PATCH
+		){
 			logger.info("Update Available")
 			s.emit("message", {title: `Version ${lastVersion_MAJOR}.${lastVersion_MINOR}.${lastVersion_PATCH} is available!`, msg: body.changelog})
 		}
