@@ -10,7 +10,10 @@ th{
 }
 .remove-margin{
 	margin:0px;
-	padding-bottom: 4px;
+	padding-bottom: 3px;
+}
+.secondary-text{
+	opacity: 0.75;
 }
 
 #initializing {

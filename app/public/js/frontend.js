@@ -12,10 +12,13 @@ let userSettings = []
 let preview_track = document.getElementById('preview-track')
 let preview_stopped = true
 
+// Popup message listener
 socket.on("message", function(desc){
 	message(desc.title, desc.msg)
 })
 
+// Prints object obj into console
+// For Debug purposes
 socket.on("printObj", function(obj){
 	console.log(obj)
 })
@@ -34,10 +37,12 @@ $('#modal_login_btn_login').click(function () {
 	socket.emit('login', username, password, autologin)
 })
 
+// New login system (uses cookies)
 socket.on('getCookies', function(jar){
 	localStorage.setItem('autologin', JSON.stringify(jar))
 })
 
+// After Login
 socket.on("login", function (data) {
 	if (!data.error) {
 		$("#modal_settings_username").html(data.user.name)
@@ -55,8 +60,8 @@ socket.on("login", function (data) {
 		// Load personal pubblic playlists
 		socket.emit("getMyPlaylistList", {})
 	}else{
-			$('#login-res-text').text(data.error)
-			setTimeout(function(){$('#login-res-text').text("")},3000)
+		$('#login-res-text').text(data.error)
+		setTimeout(function(){$('#login-res-text').text("")},3000)
 	}
 	$('#modal_login_btn_login').attr("disabled", false)
 	$('#modal_login_btn_login').html("Login")
@@ -71,16 +76,22 @@ $('#openDownloadsFolder').on('click', function () {
 	}
 })
 
+// Alert for replayGain tag
 $('#modal_tags_replayGain').on('click', function() {
 	if ($(this).is(':checked')) {
 		message('Warning','Saving replay gain causes tracks to be quieter for some users.')
 	}
 })
+
 // Do misc stuff on page load
 $(document).ready(function () {
+	// Page Initializing
 	M.AutoInit()
 	preview_track.volume = 0
+	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
+	$('.modal').modal()
 
+	// Autologin
 	socket.emit("getUserSettings")
 	if (localStorage.getItem('autologin')){
 		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
@@ -92,11 +103,10 @@ $(document).ready(function () {
 		M.updateTextFields()
 	}
 
+	// Side Nav Stuff
 	$('.sidenav').sidenav({
 		edge: 'right'
 	})
-
-	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
 
 	$('.sidenav_tab').click((e)=>{
 		e.preventDefault
@@ -105,6 +115,7 @@ $(document).ready(function () {
 		tabs.updateTabIndicator()
 	})
 
+	// scrollToTop FAB
 	$(window).scroll(function () {
 		if ($(this).scrollTop() > 100) {
 			$('#btn_scrollToTop a').removeClass('scale-out').addClass('scale-in')
@@ -118,11 +129,17 @@ $(document).ready(function () {
 		return false
 	})
 
+	// Playlist Stuff
 	$("#button_refresh_playlist_tab").click(function(){
 		$("table_personal_playlists").html("")
 		socket.emit("getMyPlaylistList", {})
 	})
 
+	$('#downloadChartPlaylist').click(function(){
+		addToQueue(`https://www.deezer.com/playlist/${$(this).data("id")}`)
+	})
+
+	// Track Preview Feature
 	$(preview_track).on('canplay', ()=>{
 		preview_track.play()
 		preview_stopped = false
@@ -139,6 +156,18 @@ $(document).ready(function () {
 		}
 	})
 
+	$('#modal_trackList, #modal_trackListSelective').modal({
+		onCloseStart: ()=>{
+			if ($('.preview_playlist_controls').filter(function(){return $(this).attr("playing")}).length > 0){
+				$(preview_track).animate({volume: 0}, 800)
+				preview_stopped = true
+				$(".preview_playlist_controls").removeAttr("playing")
+				$('.preview_playlist_controls').text("play_arrow")
+			}
+		}
+	})
+
+	// Night Theme Switch
 	$('#nightTimeSwitcher').change(function(){
 		if(this.checked){
 			document.getElementsByTagName('link')[4].disabled = false
@@ -163,27 +192,12 @@ $(document).ready(function () {
 		$('#nightTimeSwitcher').change()
 	}
 
-	$('#downloadChartPlaylist').click(function(){
-		addToQueue(`https://www.deezer.com/playlist/${$(this).data("id")}`)
-	})
-
-	$('.modal').modal()
-
-	$('#modal_trackList, #modal_trackListSelective').modal({
-		onCloseStart: ()=>{
-			if ($('.preview_playlist_controls').filter(function(){return $(this).attr("playing")}).length > 0){
-				$(preview_track).animate({volume: 0}, 800)
-				preview_stopped = true
-				$(".preview_playlist_controls").removeAttr("playing")
-				$('.preview_playlist_controls').text("play_arrow")
-			}
-		}
-	})
-
+	// Search on tab change
 	$('input[name=searchMode][type=radio]').change(()=>{
 		$('#tab_search_form_search').submit()
 	})
 
+	// Button download all tracks in selective modal
 	$('#download_all_tracks_selective, #download_all_tracks').click(function(){
 		addToQueue($(this).attr("data-link"))
 	})
@@ -295,6 +309,7 @@ $('#modal_settings_btn_defaultSettings').click(function () {
 	}
 })
 
+// Sign Up Button
 $('#modal_login_btn_signup').click(function(){
 	if(typeof shell != 'undefined'){
 		shell.openExternal("https://www.deezer.com/register")
@@ -303,6 +318,7 @@ $('#modal_login_btn_signup').click(function(){
 	}
 })
 
+// Logout Button
 $('#modal_settings_btn_logout').click(function () {
 	$('#modal_login_input_username').val("")
 	$('#modal_login_input_password').val("")
@@ -399,35 +415,37 @@ function message(title, message) {
 //****************************************************************************************************\\
 
 //#############################################TAB_SEARCH#############################################\\
-$('#tab_search_form_search').submit(function (ev) {
 
+// Submit Search Form
+$('#tab_search_form_search').submit(function (ev) {
 	ev.preventDefault()
 
 	var searchString = $('#tab_search_form_search_input_searchString').val().trim()
 	var mode = $('#tab_search_form_search').find('input[name=searchMode]:checked').val()
 
-	if (searchString.length == 0) {
-		return
-	}
+	if (searchString.length == 0) {return}
 
+	// Clean Table and show loading indicator
 	$('#tab_search_table_results').find('thead').find('tr').addClass('hide')
 	$('#tab_search_table_results_tbody_results').addClass('hide')
 	$('#tab_search_table_results_tbody_noResults').addClass('hide')
 	$('#tab_search_table_results_tbody_loadingIndicator').removeClass('hide')
 
 	socket.emit("search", {type: mode, text: searchString})
-
 })
 
+// Parse data from search
 socket.on('search', function (data) {
-
+	// Remove loading indicator
 	$('#tab_search_table_results_tbody_loadingIndicator').addClass('hide')
 
+	// If no data, display No Results Found
 	if (data.items.length == 0) {
 		$('#tab_search_table_results_tbody_noResults').removeClass('hide')
 		return
 	}
 
+	// Populate table and show results
 	if (data.type == 'track') {
 		showResults_table_track(data.items)
 	} else if (data.type == 'album') {
@@ -451,8 +469,8 @@ function showResults_table_track(tracks) {
 			<td><a href="#" class="rounded ${(currentResultTrack.preview ? `single-cover" preview="${currentResultTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" class="rounded" src="${(currentResultTrack.album.cover_small ? currentResultTrack.album.cover_small : "img/noCover.jpg" )}"/></a></td>
 			<td class="hide-on-med-and-up">
 				<p class="remove-margin">${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</p>
-				<p class="remove-margin">${currentResultTrack.artist.name}</p>
-				<p class="remove-margin">${currentResultTrack.album.title}</p>
+				<p class="remove-margin secondary-text">${currentResultTrack.artist.name}</p>
+				<p class="remove-margin secondary-text">${currentResultTrack.album.title}</p>
 			</td>
 			<td class="hide-on-small-only">${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</td>
 			<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentResultTrack.artist.link}">${currentResultTrack.artist.name}</span></td>
@@ -482,10 +500,15 @@ function showResults_table_album(albums) {
 		$(tableBody).append(
 				`<tr>
 				<td><img style="width:56px;" src="${(currentResultAlbum.cover_small ? currentResultAlbum.cover_small : "img/noCover.jpg")}" class="rounded" /></td>
-				<td>${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</td>
-				<td><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
-				<td>${currentResultAlbum.nb_tracks}</td>
-				<td>${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</td>
+				<td class="hide-on-med-and-up">
+					<p class="remove-margin">${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</p>
+					<p class="remove-margin secondary-text">${currentResultAlbum.artist.name}</p>
+					<p class="remove-margin secondary-text">${currentResultAlbum.nb_tracks == "1" ? `1 Track` : `${currentResultAlbum.nb_tracks} Tracks`} | ${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</p>
+				</td>
+				<td class="hide-on-small-only">${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</td>
+				<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
+				<td class="hide-on-small-only">${currentResultAlbum.nb_tracks}</td>
+				<td class="hide-on-small-only">${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</td>
 				</tr>`)
 		generateShowTracklistSelectiveButton(currentResultAlbum.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
 		generateDownloadLink(currentResultAlbum.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
@@ -549,7 +572,7 @@ function generateShowTracklistButton(link) {
 	})
 	return btn_showTrackList
 }
-
+// TODO: Finish Vue.js Implementation
 var trackListSelectiveModalApp = new Vue({
 	el: '#modal_trackListSelective',
 	data: {
@@ -823,9 +846,14 @@ socket.on("getChartsTrackListByCountry", function (data) {
 				`<tr>
 				<td>${(i + 1)}</td>
 				<td><a href="#" class="rounded ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="rounded" /></a></td>
-				<td>${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${currentChartTrack.title}</td>
-				<td><span class="resultArtist resultLink" data-link="${currentChartTrack.artist.link}">${currentChartTrack.artist.name}</span></td>
-				<td><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentChartTrack.album.id}">${currentChartTrack.album.title}</span></td>
+				<td class="hide-on-med-and-up">
+					<p class="remove-margin">${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${currentChartTrack.title}</p>
+					<p class="remove-margin secondary-text">${currentChartTrack.artist.name}</p>
+					<p class="remove-margin secondary-text">${currentChartTrack.album.title}</p>
+				</td>
+				<td class="hide-on-small-only">${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${currentChartTrack.title}</td>
+				<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentChartTrack.artist.link}">${currentChartTrack.artist.name}</span></td>
+				<td class="hide-on-small-only"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentChartTrack.album.id}">${currentChartTrack.album.title}</span></td>
 				<td>${convertDuration(currentChartTrack.duration)}</td>
 				</tr>`)
 		generateDownloadLink(currentChartTrack.link).appendTo(chartsTableBody.children('tr:last')).wrap('<td>')
