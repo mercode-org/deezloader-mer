@@ -1172,7 +1172,7 @@ io.sockets.on('connection', function (s) {
 					ajson.genres.data.forEach(function(genre){
 						genreArray.push(genre.name);
 					});
-					uniqueArray(genreArray, track.genre, false)
+					track.genre = uniqueArray(genreArray, false)
 				}
 			}else{
 				// Missing barcode, genre, recordType
@@ -1230,37 +1230,37 @@ io.sockets.on('connection', function (s) {
 			if(track.contributor){
 				if(track.contributor.composer){
 					track.composerString = []
-					uniqueArray(track.contributor.composer, track.composerString)
+					track.composerString = uniqueArray(track.contributor.composer)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.composerString = track.composerString.join(separator)
 				}
 				if(track.contributor.musicpublisher){
 					track.musicpublisherString = []
-					uniqueArray(track.contributor.musicpublisher, track.musicpublisherString)
+					track.musicpublisherString = uniqueArray(track.contributor.musicpublisher)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.musicpublisherString = track.musicpublisherString.join(separator)
 				}
 				if(track.contributor.producer){
 					track.producerString = []
-					uniqueArray(track.contributor.producer, track.producerString)
+					track.producerString = uniqueArray(track.contributor.producer)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.producerString = track.producerString.join(separator)
 				}
 				if(track.contributor.engineer){
 					track.engineerString = []
-					uniqueArray(track.contributor.engineer, track.engineerString)
+					track.engineerString = uniqueArray(track.contributor.engineer)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.engineerString = track.engineerString.join(separator)
 				}
 				if(track.contributor.writer){
 					track.writerString = []
-					uniqueArray(track.contributor.writer, track.writerString)
+					track.writerString = uniqueArray(track.contributor.writer)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.writerString = track.writerString.join(separator)
 				}
 				if(track.contributor.author){
 					track.authorString = []
-					uniqueArray(track.contributor.author, track.authorString)
+					track.authorString = uniqueArray(track.contributor.author)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.authorString = track.authorString.join(separator)
 				}
 				if(track.contributor.mixer){
 					track.mixerString = [];
-					uniqueArray(track.contributor.mixer, track.mixerString)
+					track.mixerString = uniqueArray(track.contributor.mixer)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.mixerString = track.mixerString.join(separator)
 				}
 			}
@@ -1278,7 +1278,7 @@ io.sockets.on('connection', function (s) {
 					}
 					artistArray = track.artistsString
 				}
-				uniqueArray(artistArray, track.artistsString)
+				track.artistsString = uniqueArray(artistArray)
 				let posMainArtist = track.artistsString.indexOf(track.album.artist.name)
 				if (posMainArtist !== -1 && posMainArtist !== 0){
 					let element = track.artistsString[posMainArtist]
@@ -1921,20 +1921,22 @@ function swichReleaseType(id){
 	}
 }
 
-function uniqueArray(origin, destination, removeDupes=true){
+function uniqueArray(origin, removeDupes=true){
+	destination = []
 	Array.from(new Set(origin)).forEach(function(x){
 		if(destination.indexOf(x) == -1)
 			destination.push(x);
-	});
+	})
 	if (removeDupes){
 		destination.forEach((name,index)=>{
 			destination.forEach((name2,index2)=>{
-				if(!(index===index2) && (name.indexOf(name2)!== -1)){
+				if(!(index===index2) && (name.toLowerCase().indexOf(name2.toLowerCase())!== -1)){
 					destination.splice(index, 1);
 				}
 			})
 		})
 	}
+	return destination
 }
 
 async function asyncForEach(array, callback) {
