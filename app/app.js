@@ -608,27 +608,32 @@ io.sockets.on('connection', function (s) {
 		}catch(err){
 			logger.warn("ISRC not found, falling back to old method")
 		}
+		return convertMetadata2Deezer(track.artists[0].name, track.name, track.album.name)
+	}
+
+	// Tries to get track id from pure luck
+	async function convertMetadata2Deezer(artist, track, album){
 		let resp
-		track.artists[0].name = track.artists[0].name.replace(/–/g,"-").replace(/’/g, "'")
-		track.name = track.name.replace(/–/g,"-").replace(/’/g, "'")
-		track.album.name = track.album.name.replace(/–/g,"-").replace(/’/g, "'")
+		artist = artist.replace(/–/g,"-").replace(/’/g, "'")
+		track = track.replace(/–/g,"-").replace(/’/g, "'")
+		album = album.replace(/–/g,"-").replace(/’/g, "'")
 		try{
-			resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}" album:"${track.album.name}"`, "track", 1)
-		}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+			resp = await s.Deezer.legacySearch(`artist:"${artist}" track:"${track}" album:"${album}"`, "track", 1)
+		}catch(err){logger.err(`ConvertFromMetadata: ${err.stack ? err.stack : err}`)}
 		if (resp.data[0]) return resp.data[0].id
 		try{
-			resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name}"`, "track", 1)
-		}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+			resp = await s.Deezer.legacySearch(`artist:"${artist}" track:"${track}"`, "track", 1)
+		}catch(err){logger.err(`ConvertFromMetadata: ${err.stack ? err.stack : err}`)}
 		if (resp.data[0]) return resp.data[0].id
-		if (track.name.indexOf("(") < track.name.indexOf(")")){
+		if (track.indexOf("(") < track.indexOf(")")){
 			try{
-				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split("(")[0]}"`, "track", 1)
-			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+				resp = await s.Deezer.legacySearch(`artist:"${artist}" track:"${track.split("(")[0]}"`, "track", 1)
+			}catch(err){logger.err(`ConvertFromMetadata: ${err.stack ? err.stack : err}`)}
 			if (resp.data[0]) return resp.data[0].id
-		}else if (track.name.indexOf(" - ")>0){
+		}else if (track.indexOf(" - ")>0){
 			try{
-				resp = await s.Deezer.legacySearch(`artist:"${track.artists[0].name}" track:"${track.name.split(" - ")[0]}"`, "track", 1)
-			}catch(err){logger.err(`Convert2Spotify: ${err.stack ? err.stack : err}`)}
+				resp = await s.Deezer.legacySearch(`artist:"${artist}" track:"${track.split(" - ")[0]}"`, "track", 1)
+			}catch(err){logger.err(`ConvertFromMetadata: ${err.stack ? err.stack : err}`)}
 			if (resp.data[0]) return resp.data[0].id
 		}else{
 			return 0
@@ -790,7 +795,7 @@ io.sockets.on('connection', function (s) {
 								await downloadTrackObject(t, downloading.queueId, downloading.settings)
 								downloading.downloaded++
 								downloading.playlistArr[t.playlistData[0]] = t.playlistData[1].split(filePath)[1]
-								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.name}\r\n`
+								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.title}\r\n`
 							}catch(err){
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
@@ -867,7 +872,7 @@ io.sockets.on('connection', function (s) {
 								await downloadTrackObject(t, downloading.queueId, downloading.settings)
 								downloading.downloaded++
 								downloading.playlistArr[t.playlistData[0]] = t.playlistData[1].split(filePath)[1]
-								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.name}\r\n`
+								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.title}\r\n`
 							}catch(err){
 								logger.debug(err.stack ? err.stack : err)
 								downloading.failed++
@@ -990,7 +995,7 @@ io.sockets.on('connection', function (s) {
 								await downloadTrackObject(t, downloading.queueId, downloading.settings)
 								downloading.downloaded++
 								downloading.playlistArr[t.playlistData[0]] = t.playlistData[1].split(filePath)[1]
-								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.name}\r\n`
+								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.title}\r\n`
 							}catch(err){
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
@@ -1113,6 +1118,17 @@ io.sockets.on('connection', function (s) {
 							logger.warn(`[${track.artist.name} - ${track.title}] Failed to download track, falling on alternative`)
 							track = await s.Deezer.getTrack(track.fallbackId)
 							return downloadTrackObject(track, queueId, settings)
+						}else if(!track.searched){
+							logger.warn(`[${track.artist.name} - ${track.title}] Failed to download track, searching for alternative`)
+							var _trackID = await convertMetadata2Deezer(track.artist.name, track.title, track.album.title)
+							if (_trackID != "0"){
+								track = await s.Deezer.getTrack()
+								track.searched = true
+								return downloadTrackObject(track, queueId, settings)
+							}else{
+								logger.error(`[${track.artist.name} - ${track.title}] Failed to download: Alternative not found`)
+								return
+							}
 						}else{
 							logger.error(`[${track.artist.name} - ${track.title}] Failed to download: ${err}`)
 							return
@@ -1490,7 +1506,6 @@ io.sockets.on('connection', function (s) {
 					return false
 				}
 				if (body.length == 0){
-					logger.error(`[${track.artist.name} - ${track.title}] Downloading error: Track is Empty`)
 					fs.remove(tempPath)
 					reject("Track is Empty")
 					return false
@@ -1536,8 +1551,48 @@ io.sockets.on('connection', function (s) {
 			}
 		})
 
-
-		await downloadingPromise
+		try{
+			await downloadingPromise
+		}catch(err){
+			if (err==="Track is Empty"){
+				if(track.fallbackId && track.fallbackId != "0"){
+					logger.warn(`[${track.artist.name} - ${track.title}] Track is empty, falling on alternative`)
+					var _track = await s.Deezer.getTrack(track.fallbackId)
+					track.id = _track.id
+					track.fallbackId = _track.fallbackId
+					track.filesize = _track.filesize
+					track.duration = _track.duration
+					track.MD5 = _track.MD5
+					track.mediaVersion = _track.mediaVersion
+					return downloadTrackObject(track, queueId, settings)
+				}else if(!track.searched){
+					logger.warn(`[${track.artist.name} - ${track.title}] Track is empty, searching for alternative`)
+					_trackId = await convertMetadata2Deezer(track.artist.name, track.title, track.album.title)
+					if (_trackId != "0"){
+						_track = await s.Deezer.getTrack(_trackId)
+						track.id = _track.id
+						track.fallbackId = _track.fallbackId
+						track.filesize = _track.filesize
+						track.duration = _track.duration
+						track.MD5 = _track.MD5
+						track.mediaVersion = _track.mediaVersion
+						track.searched = true
+						return downloadTrackObject(track, queueId, settings)
+					}else{
+						logger.error(`[${track.artist.name} - ${track.title}] No alternative found`)
+						throw new Error("No Alternative Found")
+						return
+					}
+				}else{
+					logger.error(`[${track.artist.name} - ${track.title}] Downloading error: Track is Empty`)
+					throw new Error("Track is Empty")
+					return
+				}
+			}else{
+				throw new Error(err)
+				return
+			}
+		}
 
 		logger.info(`[${track.artist.name} - ${track.title}] Adding Tags`)
 		if (parseInt(track.id)>0){
