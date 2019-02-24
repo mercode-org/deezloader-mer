@@ -1230,37 +1230,37 @@ io.sockets.on('connection', function (s) {
 			if(track.contributor){
 				if(track.contributor.composer){
 					track.composerString = []
-					uniqueArray(track.contributor.composer, track.composerString, settings.removeDupedTags)
+					uniqueArray(track.contributor.composer, track.composerString)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.composerString = track.composerString.join(separator)
 				}
 				if(track.contributor.musicpublisher){
 					track.musicpublisherString = []
-					uniqueArray(track.contributor.musicpublisher, track.musicpublisherString, settings.removeDupedTags)
+					uniqueArray(track.contributor.musicpublisher, track.musicpublisherString)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.musicpublisherString = track.musicpublisherString.join(separator)
 				}
 				if(track.contributor.producer){
 					track.producerString = []
-					uniqueArray(track.contributor.producer, track.producerString, settings.removeDupedTags)
+					uniqueArray(track.contributor.producer, track.producerString)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.producerString = track.producerString.join(separator)
 				}
 				if(track.contributor.engineer){
 					track.engineerString = []
-					uniqueArray(track.contributor.engineer, track.engineerString, settings.removeDupedTags)
+					uniqueArray(track.contributor.engineer, track.engineerString)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.engineerString = track.engineerString.join(separator)
 				}
 				if(track.contributor.writer){
 					track.writerString = []
-					uniqueArray(track.contributor.writer, track.writerString, settings.removeDupedTags)
+					uniqueArray(track.contributor.writer, track.writerString)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.writerString = track.writerString.join(separator)
 				}
 				if(track.contributor.author){
 					track.authorString = []
-					uniqueArray(track.contributor.author, track.authorString, settings.removeDupedTags)
+					uniqueArray(track.contributor.author, track.authorString)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.authorString = track.authorString.join(separator)
 				}
 				if(track.contributor.mixer){
 					track.mixerString = [];
-					uniqueArray(track.contributor.mixer, track.mixerString, settings.removeDupedTags)
+					uniqueArray(track.contributor.mixer, track.mixerString)
 					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.mixerString = track.mixerString.join(separator)
 				}
 			}
@@ -1278,9 +1278,9 @@ io.sockets.on('connection', function (s) {
 					}
 					artistArray = track.artistsString
 				}
-				uniqueArray(artistArray, track.artistsString, settings.removeDupedTags)
+				uniqueArray(artistArray, track.artistsString)
 				let posMainArtist = track.artistsString.indexOf(track.album.artist.name)
-				if (posMainArtist !== -1 && posMainArtist !== 0 && settings.removeDupedTags){
+				if (posMainArtist !== -1 && posMainArtist !== 0){
 					let element = track.artistsString[posMainArtist]
 		  		track.artistsString.splice(posMainArtist, 1)
 		  		track.artistsString.splice(0, 0, element)

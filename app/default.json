@@ -34,7 +34,6 @@
 		"dateFormatYear": "4",
 		"fallbackBitrate": true,
 		"saveFullArtists": false,
-		"removeDupedTags":false,
 		"tags": {
 			"title": true,
 			"artist": true,
