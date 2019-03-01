@@ -558,7 +558,8 @@ var trackListSelectiveModalApp = new Vue({
 	el: '#modal_trackListSelective',
 	data: {
 		title: "",
-		metadata : {},
+		metadata : "",
+		release_date: "",
 		image: "",
 		type: "",
 		link: "",
@@ -572,6 +573,7 @@ var trackListModalApp = new Vue({
 	data: {
 		title: "",
 		metadata : {},
+		release_date: "",
 		image: "",
 		type: "",
 		link: "",
@@ -596,6 +598,7 @@ function showTrackListSelective(link) {
 	trackListSelectiveModalApp.title = "Loading..."
 	trackListSelectiveModalApp.image = ""
 	trackListSelectiveModalApp.metadata = ""
+	trackListSelectiveModalApp.release_date = ""
 	trackListSelectiveModalApp.type = ""
 	$('#modal_trackListSelective').modal('open')
 	socket.emit('getTrackList', {id: getIDFromLink(link), type: getTypeFromLink(link)})
@@ -631,6 +634,7 @@ function showTrackList(link) {
 	trackListModalApp.title = "Loading..."
 	trackListModalApp.image = ""
 	trackListModalApp.metadata = ""
+	trackListModalApp.release_date = ""
 	trackListModalApp.type = ""
 	$('#modal_trackList').modal('open')
 	socket.emit("getTrackList", {id: getIDFromLink(link), type: getTypeFromLink(link)})
@@ -695,6 +699,7 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListSelectiveModalApp.title = data.response.title
 			trackListSelectiveModalApp.image = data.response.picture_xl
+			trackListSelectiveModalApp.release_date = data.response.creation_date.substring(0,10)
 			trackListSelectiveModalApp.metadata = `by ${data.response.creator.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},
@@ -733,6 +738,7 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListSelectiveModalApp.title = data.response.title
 			trackListSelectiveModalApp.metadata = `${data.response.artist.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
+			trackListSelectiveModalApp.release_date = data.response.release_date.substring(0,10)
 			trackListSelectiveModalApp.image = data.response.cover_xl
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},

@@ -705,7 +705,8 @@
 	<div class="modal-content">
     <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
       <h4>{{ title }}</h4>
-      <h6 v-if="metadata">{{ metadata }}</h6>
+      <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
+      <span class="right" v-if="release_date"> {{ release_date }} </span>
     </div>
     <div class="row modal-container">
 			<table class="highlight col s12">
@@ -749,7 +750,8 @@
 	<div class="modal-content">
     <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
       <h4>{{ title }}</h4>
-      <h6 v-if="metadata">{{ metadata }}</h6>
+      <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
+      <span class="right" v-if="release_date">{{ release_date }}</span>
     </div>
     <div class="row modal-container">
 			<table class="highlight col s12">
