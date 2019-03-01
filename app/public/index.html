@@ -701,12 +701,13 @@
 </div>
 
 <!--##########################################MODAL_TRACKLIST###########################################-->
-<div id="modal_trackList" class="modal modal-fixed-footer">
+<div id="modal_trackList" class="modal modal-fixed-footer modal-custom-header">
 	<div class="modal-content">
-		<div class="row">
-			<h4 class="col s12">{{ title }}</h4>
-		</div>
-		<div class="row">
+    <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
+      <h4>{{ title }}</h4>
+      <h6 v-if="metadata">{{ metadata }}</h6>
+    </div>
+    <div class="row modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
@@ -715,7 +716,7 @@
 				</thead>
 				<tbody id="modal_trackList_table_trackList_tbody_loadingIndicator" class="hide">
 				<tr>
-					<td class="center" colspan="4">
+					<td class="center" colspan="6">
 						<div class="preloader-wrapper big active">
 							<div class="spinner-layer">
 								<div class="circle-clipper left">
@@ -744,12 +745,13 @@
 </div>
 
 <!--##########################################MODAL_TRACKLISTALBUM###########################################-->
-<div id="modal_trackListSelective" class="modal modal-fixed-footer">
+<div id="modal_trackListSelective" class="modal modal-fixed-footer modal-custom-header">
 	<div class="modal-content">
-		<div class="row">
-			<h4 class="col s12">{{ title }}</h4>
-		</div>
-		<div class="row">
+    <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
+      <h4>{{ title }}</h4>
+      <h6 v-if="metadata">{{ metadata }}</h6>
+    </div>
+    <div class="row modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
@@ -758,7 +760,7 @@
 				</thead>
 				<tbody id="modal_trackListSelective_table_trackList_tbody_loadingIndicator" class="hide">
 				<tr>
-					<td class="center" colspan="4">
+					<td class="center" colspan="6">
 						<div class="preloader-wrapper big active">
 							<div class="spinner-layer">
 								<div class="circle-clipper left">

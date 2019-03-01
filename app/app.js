@@ -302,7 +302,9 @@ io.sockets.on('connection', function (s) {
 		}
 		if (data.type == 'artist') {
 			try{
-				let response = await s.Deezer.legacyGetArtistAlbums(data.id)
+				let response = await s.Deezer.legacyGetArtist(data.id)
+				let tracks = await s.Deezer.legacyGetArtistAlbums(data.id)
+				response.data = tracks.data
 				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type})
 			}catch(err){
 				s.emit("getTrackList", {err: "wrong artist id", response: {}, id: data.id, reqType: data.type})
@@ -315,15 +317,20 @@ io.sockets.on('connection', function (s) {
 				Spotify.setAccessToken(creds.body.access_token)
 				let first = true
 				let offset = 0
+				var response = {}
+				let resp0 = await Spotify.getPlaylist(data.id, {fields: "images,name,owner"})
+				response.title = resp0.body.name
+				response.image = resp0.body.images[0].url
+				response.owner = resp0.body.owner.display_name
 				do{
 					let resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total", offset: offset*100})
 					if (first){
 						var numPages=Math.floor((resp.body.total-1)/100)
-						var response = new Array(resp.body.total)
+						response.data = new Array(resp.body.total)
 						first = false
 					}
 					resp.body.items.forEach((t, index) => {
-						response[index+offset*100]={
+						response.data[index+offset*100]={
 							explicit_lyrics: t.track.explicit,
 							preview: t.track.preview_url,
 							title: t.track.name,
@@ -335,14 +342,16 @@ io.sockets.on('connection', function (s) {
 					})
 					offset++
 				}while(offset<=numPages)
-				s.emit("getTrackList", {response: {'data': response}, id: data.id, reqType: data.type})
+				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type})
 			}catch(err){
 				logger.error(`getTrackList failed: ${err.stack}`)
 			}
 		}else{
 			let reqType = data.type.charAt(0).toUpperCase() + data.type.slice(1)
 			try{
-				let response = await s.Deezer["legacyGet" + reqType + "Tracks"](data.id)
+				let response = await s.Deezer["legacyGet" + reqType](data.id)
+				let tracks = await s.Deezer["legacyGet" + reqType + "Tracks"](data.id)
+				response.data = tracks.data
 				s.emit("getTrackList", {response: response, id: data.id, reqType: data.type})
 			}catch(err){
 				s.emit("getTrackList", {err: "wrong id "+reqType, response: {}, id: data.id, reqType: data.type})

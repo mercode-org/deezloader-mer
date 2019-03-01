@@ -1,3 +1,7 @@
+:root {
+  --main-modal-background: #212121; 
+}
+
 body, .tabs, .card, .modal, input, .collapsible-header{
   background-color: #212121;
   color: white;

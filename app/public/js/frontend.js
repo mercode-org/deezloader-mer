@@ -553,6 +553,34 @@ function showResults_table_playlist(playlists) {
 	$('.tooltipped').tooltip({delay: 100})
 }
 
+// TODO: Finish Vue.js Implementation
+var trackListSelectiveModalApp = new Vue({
+	el: '#modal_trackListSelective',
+	data: {
+		title: "",
+		metadata : {},
+		image: "",
+		type: "",
+		link: "",
+		head: null,
+		body: []
+	}
+})
+
+var trackListModalApp = new Vue({
+	el: '#modal_trackList',
+	data: {
+		title: "",
+		metadata : {},
+		image: "",
+		type: "",
+		link: "",
+		head: null,
+		body: []
+	}
+})
+
+// Generate Button for tracklist with selection
 function generateShowTracklistSelectiveButton(link) {
 	var btn_showTrackListSelective = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
 	$(btn_showTrackListSelective).click(function (ev){
@@ -562,40 +590,13 @@ function generateShowTracklistSelectiveButton(link) {
 	return btn_showTrackListSelective
 }
 
-function generateShowTracklistButton(link) {
-	var btn_showTrackList = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
-	$(btn_showTrackList).click(function (ev) {
-		ev.preventDefault()
-		showTrackList(link)
-	})
-	return btn_showTrackList
-}
-// TODO: Finish Vue.js Implementation
-var trackListSelectiveModalApp = new Vue({
-	el: '#modal_trackListSelective',
-	data: {
-		title: null,
-		type: null,
-		link: null,
-		head: null,
-		body: []
-	}
-})
-
-var trackListModalApp = new Vue({
-	el: '#modal_trackList',
-	data: {
-		title: null,
-		type: null,
-		link: null,
-		head: null,
-		body: []
-	}
-})
-
 function showTrackListSelective(link) {
 	$('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').addClass('hide')
 	$('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').removeClass('hide')
+	trackListSelectiveModalApp.title = "Loading..."
+	trackListSelectiveModalApp.image = ""
+	trackListSelectiveModalApp.metadata = ""
+	trackListSelectiveModalApp.type = ""
 	$('#modal_trackListSelective').modal('open')
 	socket.emit('getTrackList', {id: getIDFromLink(link), type: getTypeFromLink(link)})
 }
@@ -614,16 +615,30 @@ $('#download_track_selection').click(function(e){
 	$('#modal_trackListSelective').modal('close')
 })
 
+// Generate Button for tracklist without selection
+function generateShowTracklistButton(link) {
+	var btn_showTrackList = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
+	$(btn_showTrackList).click(function (ev) {
+		ev.preventDefault()
+		showTrackList(link)
+	})
+	return btn_showTrackList
+}
+
 function showTrackList(link) {
 	$('#modal_trackList_table_trackList_tbody_trackList').addClass('hide')
 	$('#modal_trackList_table_trackList_tbody_loadingIndicator').removeClass('hide')
+	trackListModalApp.title = "Loading..."
+	trackListModalApp.image = ""
+	trackListModalApp.metadata = ""
+	trackListModalApp.type = ""
 	$('#modal_trackList').modal('open')
 	socket.emit("getTrackList", {id: getIDFromLink(link), type: getTypeFromLink(link)})
 }
 
 socket.on("getTrackList", function (data) {
 	//data.err			-> undefined/err
-	//data.id			 -> passed id
+	//data.id			  -> passed id
 	//data.response -> API response
 	if (data.err){
 		trackListSelectiveModalApp.title = "Can't get data"
@@ -645,11 +660,13 @@ socket.on("getTrackList", function (data) {
 			var tableBody = $('#modal_trackList_table_trackList_tbody_trackList')
 		}
 		$(tableBody).html('')
+		console.log(data)
 		//############################################
 		if (data.reqType == 'artist') {
+			trackListModalApp.title = data.response.name
+			trackListModalApp.image = data.response.picture_xl
 			trackListModalApp.type = data.reqType
 			trackListModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
-			trackListModalApp.title = 'Album List'
 			trackListModalApp.head = [
 				{title: '#'},
 				{title: ''},
@@ -676,7 +693,9 @@ socket.on("getTrackList", function (data) {
 		} else if(data.reqType == 'playlist') {
 			trackListSelectiveModalApp.type = data.reqType
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
-			trackListSelectiveModalApp.title = 'Playlist'
+			trackListSelectiveModalApp.title = data.response.title
+			trackListSelectiveModalApp.image = data.response.picture_xl
+			trackListSelectiveModalApp.metadata = `by ${data.response.creator.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},
 				{title: '#'},
@@ -686,7 +705,9 @@ socket.on("getTrackList", function (data) {
 				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
 			]
 			$('.selectAll').prop('checked', false)
+			let totalDuration = 0
 			for (var i = 0; i < trackList.length; i++) {
+				totalDuration += trackList[i].duration
 				$(tableBody).append(
 					`<tr>
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
@@ -705,10 +726,14 @@ socket.on("getTrackList", function (data) {
 				)
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'))
 			}
+			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
+			trackListSelectiveModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else if(data.reqType == 'album') {
 			trackListSelectiveModalApp.type = data.reqType
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
-			trackListSelectiveModalApp.title = 'Tracklist'
+			trackListSelectiveModalApp.title = data.response.title
+			trackListSelectiveModalApp.metadata = `${data.response.artist.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
+			trackListSelectiveModalApp.image = data.response.cover_xl
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},
 				{title: '#'},
@@ -723,7 +748,9 @@ socket.on("getTrackList", function (data) {
 			} else {
 				baseDisc =1
 			}
+			let totalDuration = 0
 			for (var i = 0; i < trackList.length; i++) {
+				totalDuration += trackList[i].duration
 				discNum = trackList[i].disk_number
 				if (discNum != baseDisc){
 					$(tableBody).append(`<tr><td colspan="4" style="opacity: 0.54;"><i class="material-icons valignicon tiny">album</i>${discNum}</td></tr>`)
@@ -747,10 +774,14 @@ socket.on("getTrackList", function (data) {
 				)
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'))
 			}
+			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
+			trackListSelectiveModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else if(data.reqType == 'spotifyplaylist') {
 			trackListModalApp.type = "Spotify Playlist"
 			trackListModalApp.link = 'spotify:playlist:'+data.id
-			trackListModalApp.title = 'Tracklist'
+			trackListModalApp.title = data.response.title
+			trackListModalApp.image = data.response.image
+			trackListModalApp.metadata = `by ${data.response.owner} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
 			trackListModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>'},
 				{title: '#'},
@@ -758,7 +789,9 @@ socket.on("getTrackList", function (data) {
 				{title: 'Artist'},
 				{title: '<i class="material-icons">timer</i>'}
 			]
+			let totalDuration = 0
 			for (var i = 0; i < trackList.length; i++) {
+				totalDuration += trackList[i].duration
 				$(tableBody).append(
 					`<tr>
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
@@ -770,6 +803,8 @@ socket.on("getTrackList", function (data) {
 				)
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'))
 			}
+			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
+			trackListModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else {
 			trackListModalApp.type = null
 			trackListModalApp.title = 'Tracklist'
@@ -1171,6 +1206,15 @@ function convertDuration(duration) {
 		ss = "0" + ss
 	}
 	return mm + ":" + ss
+}
+
+function convertDurationSeparated(duration){
+	var hh, mm, ss
+	mm = Math.floor(duration / 60)
+	hh = Math.floor(mm / 60)
+	ss = duration - (mm * 60)
+	mm -= hh*60
+	return [hh, mm, ss]
 }
 
 function sleep(milliseconds) {

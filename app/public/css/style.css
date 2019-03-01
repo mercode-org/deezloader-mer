@@ -1,3 +1,7 @@
+:root {
+  --main-modal-background: #fafafa;
+}
+
 body {
 	background-color: white;
 }
@@ -103,6 +107,17 @@ th{
 #title-bar #title-bar-btns i {
 	font-size: 20px;
 	padding: 0 10px;
+}
+.modal-custom-header > .modal-content{
+	padding: 0px !important;
+}
+.modal-container{
+	padding: 8px 24px;
+}
+.trackList-header{
+	background-position: 0% 35%;
+	background-size: cover;
+	padding: 220px 24px 8px;
 }
 
 #slide-out .background{
