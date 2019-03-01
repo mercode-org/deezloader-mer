@@ -673,18 +673,16 @@ socket.on("getTrackList", function (data) {
 			trackListModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListModalApp.head = [
 				{title: '#'},
-				{title: ''},
 				{title: 'Album Title'},
 				{title: 'Release Date'},
 				{title: 'Record Type'},
-				{title: 'Download Album'}
+				{title: '', width: "56px"}
 			]
 			for (var i = 0; i < trackList.length; i++) {
 				$(tableBody).append(
 					`<tr>
 					<td>${(i + 1)}</td>
-					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')}</td>
-					<td><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${trackList[i].title}</div></a></td>
+					<td><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</div></a></td>
 					<td>${trackList[i].release_date}</td>
 					<td>${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)}</td>
 					</tr>`
@@ -702,12 +700,12 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.release_date = data.response.creation_date.substring(0,10)
 			trackListSelectiveModalApp.metadata = `by ${data.response.creator.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
 			trackListSelectiveModalApp.head = [
-				{title: '<i class="material-icons">music_note</i>'},
+				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: 'Song'},
 				{title: 'Artist'},
-				{title: '<i class="material-icons">timer</i>'},
-				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
+				{title: '<i class="material-icons">timer</i>', width: "40px"},
+				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "56px"}
 			]
 			$('.selectAll').prop('checked', false)
 			let totalDuration = 0
@@ -741,12 +739,12 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.release_date = data.response.release_date.substring(0,10)
 			trackListSelectiveModalApp.image = data.response.cover_xl
 			trackListSelectiveModalApp.head = [
-				{title: '<i class="material-icons">music_note</i>'},
+				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: 'Song'},
 				{title: 'Artist'},
-				{title: '<i class="material-icons">timer</i>'},
-				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
+				{title: '<i class="material-icons">timer</i>', width: "40px"},
+				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "56px"}
 			]
 			$('.selectAll').prop('checked', false)
 			if (trackList[trackList.length-1].disk_number != 1){
@@ -789,11 +787,11 @@ socket.on("getTrackList", function (data) {
 			trackListModalApp.image = data.response.image
 			trackListModalApp.metadata = `by ${data.response.owner} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
 			trackListModalApp.head = [
-				{title: '<i class="material-icons">music_note</i>'},
+				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: 'Song'},
 				{title: 'Artist'},
-				{title: '<i class="material-icons">timer</i>'}
+				{title: '<i class="material-icons">timer</i>', width: "40px"}
 			]
 			let totalDuration = 0
 			for (var i = 0; i < trackList.length; i++) {
