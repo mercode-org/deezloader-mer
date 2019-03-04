@@ -600,6 +600,7 @@ function showTrackListSelective(link) {
 	trackListSelectiveModalApp.metadata = ""
 	trackListSelectiveModalApp.release_date = ""
 	trackListSelectiveModalApp.type = ""
+	trackListSelectiveModalApp.head = []
 	trackListSelectiveModalApp.body = []
 	$('#modal_trackListSelective').modal('open')
 	socket.emit('getTrackList', {id: getIDFromLink(link), type: getTypeFromLink(link)})
@@ -637,6 +638,7 @@ function showTrackList(link) {
 	trackListModalApp.metadata = ""
 	trackListModalApp.release_date = ""
 	trackListModalApp.type = ""
+	trackListModalApp.head = []
 	trackListModalApp.body = []
 	$('#modal_trackList').modal('open')
 	socket.emit("getTrackList", {id: getIDFromLink(link), type: getTypeFromLink(link)})
