@@ -1,5 +1,6 @@
 :root {
   --main-modal-background: #fafafa;
+  --appbar-height: 32px;
 }
 
 body {
@@ -174,9 +175,9 @@ nav {
 	.modal{
 		width: 100%;
 		margin: 0px;
-		max-height: 95%;
+		max-height: calc(100% - var(--appbar-height));
 		height: 100% !important;
-		top: 32px !important;
+		top: var(--appbar-height) !important;
 	}
 	#main_icon{
 		top: 4px;
