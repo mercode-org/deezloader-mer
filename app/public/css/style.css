@@ -119,6 +119,9 @@ th{
 	background-size: cover;
 	padding: 220px 24px 8px;
 }
+.valignicon{
+  vertical-align: middle !important;
+}
 
 #slide-out .background{
 	background-image: url("../img/bg.png");

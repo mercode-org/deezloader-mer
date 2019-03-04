@@ -501,7 +501,7 @@ function showResults_table_album(albums) {
 				<td class="hide-on-med-and-up">
 					<p class="remove-margin">${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</p>
 					<p class="remove-margin secondary-text">${currentResultAlbum.artist.name}</p>
-					<p class="remove-margin secondary-text">${currentResultAlbum.nb_tracks == "1" ? `1 Track` : `${currentResultAlbum.nb_tracks} Tracks`} | ${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</p>
+					<p class="remove-margin secondary-text">${currentResultAlbum.nb_tracks == "1" ? `1 Track` : `${currentResultAlbum.nb_tracks} Tracks`} • ${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</p>
 				</td>
 				<td class="hide-on-small-only">${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</td>
 				<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
@@ -600,6 +600,7 @@ function showTrackListSelective(link) {
 	trackListSelectiveModalApp.metadata = ""
 	trackListSelectiveModalApp.release_date = ""
 	trackListSelectiveModalApp.type = ""
+	trackListSelectiveModalApp.body = []
 	$('#modal_trackListSelective').modal('open')
 	socket.emit('getTrackList', {id: getIDFromLink(link), type: getTypeFromLink(link)})
 }
@@ -636,6 +637,7 @@ function showTrackList(link) {
 	trackListModalApp.metadata = ""
 	trackListModalApp.release_date = ""
 	trackListModalApp.type = ""
+	trackListModalApp.body = []
 	$('#modal_trackList').modal('open')
 	socket.emit("getTrackList", {id: getIDFromLink(link), type: getTypeFromLink(link)})
 }
@@ -672,19 +674,22 @@ socket.on("getTrackList", function (data) {
 			trackListModalApp.type = data.reqType
 			trackListModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListModalApp.head = [
-				{title: '#'},
-				{title: 'Album Title'},
-				{title: 'Release Date'},
-				{title: 'Record Type'},
+				{title: '', smallonly:true},
+				{title: 'Album Title', hideonsmall:true},
+				{title: 'Release Date', hideonsmall:true},
+				{title: 'Record Type', hideonsmall:true},
 				{title: '', width: "56px"}
 			]
 			for (var i = 0; i < trackList.length; i++) {
 				$(tableBody).append(
 					`<tr>
-					<td>${(i + 1)}</td>
-					<td><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</div></a></td>
-					<td>${trackList[i].release_date}</td>
-					<td>${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)}</td>
+					<td class="hide-on-med-and-up">
+						<a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</div></a>
+						<p class="remove-margin secondary-text">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)} • ${trackList[i].release_date}</p>
+					</td>
+					<td class="hide-on-small-only"><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</div></a></td>
+					<td class="hide-on-small-only">${trackList[i].release_date}</td>
+					<td class="hide-on-small-only">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)}</td>
 					</tr>`
 				)
 				generateDownloadLink(trackList[i].link).appendTo(tableBody.children('tr:last')).wrap('<td>')
@@ -703,9 +708,9 @@ socket.on("getTrackList", function (data) {
 				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: 'Song'},
-				{title: 'Artist'},
+				{title: 'Artist', hideonsmall:true},
 				{title: '<i class="material-icons">timer</i>', width: "40px"},
-				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "56px"}
+				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "24px"}
 			]
 			$('.selectAll').prop('checked', false)
 			let totalDuration = 0
@@ -715,8 +720,12 @@ socket.on("getTrackList", function (data) {
 					`<tr>
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${(i + 1)}</td>
-					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
-					<td>${trackList[i].artist.name}</td>
+					<td class="hide-on-med-and-up">
+						<p class="remove-margin">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</p>
+						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
+					</td>
+					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					<td>
 						<div class="valign-wrapper">
@@ -742,9 +751,9 @@ socket.on("getTrackList", function (data) {
 				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: 'Song'},
-				{title: 'Artist'},
+				{title: 'Artist', hideonsmall:true},
 				{title: '<i class="material-icons">timer</i>', width: "40px"},
-				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "56px"}
+				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "24px"}
 			]
 			$('.selectAll').prop('checked', false)
 			if (trackList[trackList.length-1].disk_number != 1){
@@ -764,8 +773,12 @@ socket.on("getTrackList", function (data) {
 					`<tr>
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${trackList[i].track_position}</td>
-					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
-					<td>${trackList[i].artist.name}</td>
+					<td class="hide-on-med-and-up">
+						<p class="remove-margin">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</p>
+						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
+					</td>
+					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					<td>
 						<div class="valign-wrapper">
@@ -790,7 +803,7 @@ socket.on("getTrackList", function (data) {
 				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: 'Song'},
-				{title: 'Artist'},
+				{title: 'Artist', hideonsmall:true},
 				{title: '<i class="material-icons">timer</i>', width: "40px"}
 			]
 			let totalDuration = 0
@@ -800,8 +813,12 @@ socket.on("getTrackList", function (data) {
 					`<tr>
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${(i + 1)}</td>
-					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
-					<td>${trackList[i].artist.name}</td>
+					<td class="hide-on-med-and-up">
+						<p class="remove-margin">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</p>
+						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
+					</td>
+					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					</tr>`
 				)

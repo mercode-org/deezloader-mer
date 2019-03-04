@@ -706,13 +706,13 @@
     <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
       <h4>{{ title }}</h4>
       <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
-      <span class="right" v-if="release_date"> {{ release_date }} </span>
+      <span class="right hide-on-small-only" v-if="release_date"> {{ release_date }} </span>
     </div>
     <div class="row modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
-					<td v-for="data in head" v-html="data.title" v-bind:style = "{ 'width': `${data.width ? data.width : 'auto'}`}"></td>
+					<td v-for="data in head" v-html="data.title" v-bind:style = "{ 'width': `${data.width ? data.width : 'auto'}`}" v-bind:class="{ 'hide-on-med-and-up' : data.smallonly, 'hide-on-small-only': data.hideonsmall }"></td>
 				</tr>
 				</thead>
 				<tbody id="modal_trackList_table_trackList_tbody_loadingIndicator" class="hide">
@@ -751,13 +751,13 @@
     <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
       <h4>{{ title }}</h4>
       <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
-      <span class="right" v-if="release_date">{{ release_date }}</span>
+      <span class="right hide-on-small-only" v-if="release_date">{{ release_date }}</span>
     </div>
     <div class="row modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
-					<td v-for="data in head" v-html="data.title" v-bind:style = "{ 'width': `${data.width ? data.width : 'auto'}`}"></td>
+					<td v-for="data in head" v-html="data.title" v-bind:style = "{ 'width': `${data.width ? data.width : 'auto'}`}" v-bind:class="{ 'hide-on-med-and-up' : data.smallonly, 'hide-on-small-only': data.hideonsmall }"></td>
 				</tr>
 				</thead>
 				<tbody id="modal_trackListSelective_table_trackList_tbody_loadingIndicator" class="hide">
@@ -786,8 +786,8 @@
 	</div>
 	<div class="modal-footer">
     <a href="#" id="download_all_tracks_selective" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
-		<a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download selection<i class="material-icons right">file_download</i></a>
-		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+		<a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><span class="hide-on-small-only">Download selection<i class="material-icons right">file_download</i></span><i class="material-icons hide-on-med-and-up">file_download</i></a>
+    <a href="#" class="modal-close waves-effect btn-flat">Close</a>
 	</div>
 </div>
 
