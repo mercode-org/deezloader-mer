@@ -1332,13 +1332,6 @@ io.sockets.on('connection', function (s) {
 			track.date = {year: 0,day: 0,month: 0}
 		}
 
-		if(settings.plName && !(settings.createArtistFolder || settings.createAlbumFolder) && !settings.numplaylistbyalbum){
-			track.trackNumber = (track.position+1).toString();
-			track.trackTotal = settings.playlist.fullSize;
-			track.discNumber = "1";
-			track.discTotal = "1";
-		}
-
 		// Auto detect aviable track format from settings
 		if (parseInt(track.id)>0){
 			switch(settings.maxBitrate){
@@ -1374,7 +1367,7 @@ io.sockets.on('connection', function (s) {
 			let filename = fixName(`${track.artist.name} - ${track.title}`);
 		}
 		if (settings.filename) {
-			filename = settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize);
+			filename = settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize, settings.plName && !(settings.createArtistFolder || settings.createAlbumFolder) && !settings.numplaylistbyalbum);
 		}
 
 		// TODO: Move to a separate function
@@ -1881,18 +1874,20 @@ function initFolders() {
  * @param playlist
  * @returns {XML|string|*}
  */
-function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) {
+function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize, playlistNumbering) {
 	try{
 		filename = filename.replace(/%title%/g, fixName(track.title));
 		filename = filename.replace(/%album%/g, fixName(track.album.title));
 		filename = filename.replace(/%artist%/g, fixName((saveFullArtists ? track.artistsString : track.artist.name)));
 		filename = filename.replace(/%year%/g, fixName(track.date.year));
 		filename = filename.replace(/%label%/g, fixName(track.publisher));
-		if(typeof track.trackNumber != 'undefined'){
+		let tNumber = playlistNumbering ? track.position+1 : track.trackNumber
+		let tTotal = playlistNumbering ? playlist.fullSize : track.trackTotal
+		if(typeof tNumber != 'undefined'){
 			if(configFile.userDefined.padtrck){
-				 filename = filename.replace(/%number%/g, fixName(pad(track.trackNumber, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : track.trackTotal))));
+				 filename = filename.replace(/%number%/g, fixName(pad(tNumber, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : tTotal))));
 			}else{
-				filename = filename.replace(/%number%/g, fixName(track.trackNumber));
+				filename = filename.replace(/%number%/g, fixName(tNumber));
 			}
 		} else {
 			filename = filename.replace(/%number%/g, '');
