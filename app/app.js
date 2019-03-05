@@ -1161,7 +1161,7 @@ io.sockets.on('connection', function (s) {
 				track.album.artist = {
 					id: ajson.artist.id,
 					name: ajson.artist.name,
-					picture: ajson.artist.picture_small.split("/56x56-000000-80-0-0.jpg")[0].split(s.Deezer.artistPicturesHost)[1],
+					picture: ajson.artist.picture_small.split("/56x56-000000-80-0-0.jpg")[0].split(s.Deezer.artistPictureHost)[1],
 				}
 				track.trackTotal = ajson.nb_tracks
 				track.album.barcode = ajson.upc
@@ -1249,8 +1249,25 @@ io.sockets.on('connection', function (s) {
 					track.title.trim()
 				}
 			}
-
-			track.album.artist.pictureUrl = `${s.Deezer.artistPicturesHost}${track.album.artist.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
+			if (!track.album.artist.picture && !settings.plName){
+				if (track.artist.name == track.album.artist.name && !track.album.artist.picture){
+					track.album.artist.picture = track.artist.picture
+				}else{
+					let found = false
+					track.artists.forEach(x=>{
+						if(!found && x.name == track.album.artist.name){
+							track.album.artist.picture = x.picture
+							found = true
+						}
+					})
+					if(settings.saveArtworkArtist && !found){
+						artist = await s.Deezer.legacyGetArtist(track.album.artist.id)
+						track.album.artist.picture = artist.picture_small.split("/56x56-000000-80-0-0.jpg")[0].split(s.Deezer.artistPictureHost)[1]
+					}
+				}
+			}
+			if (!track.album.artist.picture) track.album.artist.picture = ""
+			track.album.artist.pictureUrl = `${s.Deezer.artistPictureHost}${track.album.artist.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
 			track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
 			if(track.contributor){
 				if(track.contributor.composer){
@@ -1471,7 +1488,7 @@ io.sockets.on('connection', function (s) {
 		}
 
 		// Get Artist Image
-		if (parseInt(this.id)>0 && track.album.artist.picture && settings.saveArtworkArtist) {
+		if (parseInt(track.id)>0 && track.album.artist.pictureUrl && settings.saveArtworkArtist) {
 			let imgPath;
 			if(settings.createArtistFolder){
 				imgPath = artistPath + antiDot(settingsRegexArtistCover(settings.artistImageTemplate,track.album.artist.name))+(settings.PNGcovers ? ".png" : ".jpg");
