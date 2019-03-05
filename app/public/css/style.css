@@ -157,10 +157,43 @@ nav {
 	background-color: #23232c;
 }
 
+/* The Modal (background) */
+.smallmodal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  animation-duration: 0.3s;
+}
+
+/* Modal Content */
+.smallmodal-content {
+  background-color: none;
+  margin: auto;
+  width: 20%;
+  align-items: center;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.smallmodal-content .btn{
+  width: 100%;
+  margin-bottom: 8px;
+}
+
 @media only screen and (max-width: 992px) {
 	#nav-mobile .left{
 		margin-right: 0px;
 	}
+  .smallmodal-content{
+    width: 50%
+  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -179,6 +212,9 @@ nav {
 		height: 100% !important;
 		top: var(--appbar-height) !important;
 	}
+  .smallmodal-content{
+    width: 90%;
+  }
 	#main_icon{
 		top: 4px;
 		left: calc(50% - 25px);
@@ -337,6 +373,7 @@ a[href^="http://"],
 a[href^="https://"],
 a[href^="ftp://"] {
     -webkit-user-drag: auto;
+    -webkit-touch-callout: none;
     user-drag: auto; /* Technically not supported in Electron yet */
 }
 .preview_playlist_controls{

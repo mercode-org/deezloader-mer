@@ -7,6 +7,8 @@ if(typeof mainApp !== "undefined"){
 	var defaultUserSettings = mainApp.defaultSettings
 	var defaultDownloadLocation = mainApp.defaultDownloadDir
 }
+var modalQuality = document.getElementById('modal_quality');
+modalQuality.open = false
 let userSettings = []
 
 let preview_track = document.getElementById('preview-track')
@@ -200,6 +202,25 @@ $(document).ready(function () {
 	// Button download all tracks in selective modal
 	$('#download_all_tracks_selective, #download_all_tracks').click(function(){
 		addToQueue($(this).attr("data-link"))
+	})
+
+	// Quality Modal
+	window.onclick = function(event) {
+	  if (event.target == modalQuality && modalQuality.open) {
+			console.log("Closing")
+			$(modalQuality).addClass('animated fadeOut')
+	  }
+	}
+	$(modalQuality).on('webkitAnimationEnd', function () {
+		if (modalQuality.open){
+			$(this).removeClass('animated fadeOut')
+			$(this).css('display', 'none')
+			modalQuality.open = false
+		}else{
+			$(this).removeClass('animated fadeIn')
+			$(this).css('display', 'block')
+			modalQuality.open = true
+		}
 	})
 })
 
@@ -980,13 +1001,14 @@ $('#tab_url_form_url').submit(function (ev) {
 })
 
 //############################################TAB_DOWNLOADS###########################################\\
-function addToQueue(url) {
+function addToQueue(url, forceBitrate=null) {
+	bitrate = forceBitrate ? forceBitrate : userSettings.maxBitrate
 	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
 	if (['track', 'playlist', 'spotifyplaylist', 'artisttop', 'album', 'artist'].indexOf(type) == -1) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong Type!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
-	if (alreadyInQueue(id)) {
+	if (alreadyInQueue(id, bitrate)) {
 		M.toast({html: '<i class="material-icons left">playlist_add_check</i> Already in download-queue!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
@@ -994,14 +1016,14 @@ function addToQueue(url) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong ID!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
-	socket.emit("download" + type, {id: id, settings: userSettings})
+	socket.emit("download" + type, {id: id, settings: userSettings, bitrate: bitrate})
 	M.toast({html: '<i class="material-icons left">add</i>Added to download-queue', displayLength: 5000, classes: 'rounded'})
 }
 
-function alreadyInQueue(id) {
+function alreadyInQueue(id, bitrate) {
 	var alreadyInQueue = false
 	$('#tab_downloads_table_downloads').find('tbody').find('tr').each(function () {
-		if ($(this).data('deezerid') == `${id}:${userSettings.maxBitrate}`) {
+		if ($(this).data('deezerid') == `${id}:${bitrate}`) {
 			alreadyInQueue = true
 			return false
 		}
@@ -1168,12 +1190,26 @@ function getTypeFromLink(link) {
 }
 
 function generateDownloadLink(url) {
-	var btn_download = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">file_download</i></a>')
-	$(btn_download).click(function (ev) {
+	var btn_download = $('<a href="#" class="waves-effect btn-flat" oncontextmenu="return false;"><i class="material-icons">file_download</i></a>')
+	$(btn_download).on("taphold", {
+		clickHandler: function(ev) {
+			ev.preventDefault()
+			addToQueue(url)
+		}
+	}, function(ev) {
 		ev.preventDefault()
-		addToQueue(url)
+		$(modalQuality).data("url", url)
+		$(modalQuality).css('display', 'block')
+		console.log("Opening")
+		$(modalQuality).addClass('animated fadeIn')
 	})
 	return btn_download
+}
+
+function modalQualityButton(bitrate){
+	var url=$(modalQuality).data("url")
+	addToQueue(url, bitrate)
+	$(modalQuality).addClass('animated fadeOut')
 }
 
 function addPreviewControlsHover(el){

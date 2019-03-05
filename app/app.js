@@ -420,7 +420,8 @@ io.sockets.on('connection', function (s) {
 				downloaded: 0,
 				failed: 0,
 				queueId: `id${Math.random().toString(36).substring(2)}`,
-				id: `${track.id}:${data.settings.maxBitrate}`,
+				id: `${track.id}:${data.bitrate}`,
+				bitrate: data.bitrate+"",
 				type: 'track',
 				settings: data.settings || {},
 				obj: track,
@@ -453,7 +454,8 @@ io.sockets.on('connection', function (s) {
 					downloaded: 0,
 					failed: 0,
 					queueId: `id${Math.random().toString(36).substring(2)}`,
-					id: `${track.id}:${data.settings.maxBitrate}`,
+					id: `${track.id}:${data.bitrate}`,
+					bitrate: data.bitrate+"",
 					type: 'track',
 					settings: data.settings || {},
 					obj: track,
@@ -470,7 +472,8 @@ io.sockets.on('connection', function (s) {
 					downloaded: 0,
 					failed: 0,
 					queueId: `id${Math.random().toString(36).substring(2)}`,
-					id: `${album.id}:${data.settings.maxBitrate}`,
+					id: `${album.id}:${data.bitrate}`,
+					bitrate: data.bitrate+"",
 					type: 'album',
 					settings: data.settings || {},
 					obj: album,
@@ -519,7 +522,8 @@ io.sockets.on('connection', function (s) {
 				downloaded: 0,
 				failed: 0,
 				queueId: `id${Math.random().toString(36).substring(2)}`,
-				id: `${playlist.id}:${data.settings.maxBitrate}`,
+				id: `${playlist.id}:${data.bitrate}`,
+				bitrate: data.bitrate+"",
 				type: "playlist",
 				settings: data.settings || {},
 				obj: playlist,
@@ -547,7 +551,8 @@ io.sockets.on('connection', function (s) {
 				downloaded: 0,
 				failed: 0,
 				queueId: `id${Math.random().toString(36).substring(2)}`,
-				id: `${artist.id}:${data.settings.maxBitrate}`,
+				id: `${artist.id}:${data.bitrate}`,
+				bitrate: data.bitrate+"",
 				type: "playlist",
 				settings: data.settings || {},
 				obj: artist,
@@ -579,7 +584,8 @@ io.sockets.on('connection', function (s) {
 					failed: 0,
 					queueId: `id${Math.random().toString(36).substring(2)}`,
 					settings: data.settings || {},
-					id: `${resp.body.id}:${data.settings.maxBitrate}`,
+					id: `${resp.body.id}:${data.bitrate}`,
+					bitrate: data.bitrate+"",
 					type: "spotifyplaylist",
 					obj: resp.body
 				}
@@ -1351,7 +1357,7 @@ io.sockets.on('connection', function (s) {
 
 		// Auto detect aviable track format from settings
 		if (parseInt(track.id)>0){
-			switch(settings.maxBitrate){
+			switch(s.downloadQueue[queueId].bitrate){
 				case "9":
 					track.selectedFormat = 9
 					track.selectedFilesize = track.filesize.flac
