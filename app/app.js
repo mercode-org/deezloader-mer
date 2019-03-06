@@ -1917,6 +1917,7 @@ function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize, 
 		}
 		filename = filename.replace(/%explicit%/g, fixName((track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : "")));
 		filename = filename.replace(/%label%/g, fixName(track.genre ? (Array.isArray(track.genre) ? track.genre[0] : track.genre) : "Unknown"));
+		filename = filename.replace(/[/\\]/g, path.sep)
 		return filename.trim();
 	}catch(e){
 		logger.error("settingsRegex failed: "+e)
@@ -1942,6 +1943,7 @@ function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, pu
 		foldername = foldername.replace(/%label%/g, fixName(publisher))
 		foldername = foldername.replace(/%explicit%/g, fixName((explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : "")))
 		foldername = foldername.replace(/%genre%/g, fixName(genres ? (Array.isArray(genres) ? genres[0] : genres) : "Unknown"))
+		foldername = foldername.replace(/[/\\]/g, path.sep)
 		return foldername.trim();
 	}catch(e){
 		logger.error("settingsRegexAlbum failed: "+e)
@@ -1952,11 +1954,13 @@ function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, pu
 function settingsRegexCover(foldername, artist, name) {
 	foldername = foldername.replace(/%name%/g, fixName(name));
 	foldername = foldername.replace(/%artist%/g, fixName(artist));
+	foldername = foldername.replace(/[/\\]/g, path.sep)
 	return foldername;
 }
 
 function settingsRegexArtistCover(foldername, artist) {
 	foldername = foldername.replace(/%artist%/g, fixName(artist));
+	foldername = foldername.replace(/[/\\]/g, path.sep)
 	return foldername;
 }
 
