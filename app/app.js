@@ -443,7 +443,7 @@ io.sockets.on('connection', function (s) {
 				var discTotal = await s.Deezer.getAlbum(data.id)
 				album.discTotal = discTotal.discTotal
 			}
-			if (album.nb_tracks == 1){
+			if (album.nb_tracks == 1 && data.settings.downloadSinglesAsTracks){
 				var track = await s.Deezer.getTrack(album.tracks.data[0].id)
 				data.settings.filename = data.settings.trackNameTemplate
 				data.settings.foldername = data.settings.albumNameTemplate
@@ -776,15 +776,19 @@ io.sockets.on('connection', function (s) {
 				downloading.settings.artName = downloading.artist;
 				downloading.playlistArr = Array(downloading.size);
 				filePath = mainFolder;
+				downloading.obj.genresString = []
+				downloading.obj.genres.data.map((x)=>{
+					downloading.obj.genresString.push(x.name)
+				})
 				if (downloading.settings.createArtistFolder || downloading.settings.createAlbumFolder) {
 					if (downloading.settings.createArtistFolder) {
 						filePath += antiDot(fixName(downloading.settings.artName)) + path.sep;
 					}
 					if (downloading.settings.createAlbumFolder) {
-						filePath += antiDot(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genres)) + path.sep;
+						filePath += antiDot(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genresString)) + path.sep;
 					}
 				} else if (downloading.settings.artName) {
-					filePath += antiDot(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genres)) + path.sep;
+					filePath += antiDot(settingsRegexAlbum(downloading.settings.foldername,downloading.settings.artName,downloading.settings.albName,downloading.obj.release_date.slice(0, 4),downloading.obj.record_type,downloading.obj.explicit_lyrics,downloading.obj.label, downloading.obj.genresString)) + path.sep;
 				}
 				let ajson = {
 					artist : downloading.obj.artist,

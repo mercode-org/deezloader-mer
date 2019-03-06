@@ -34,6 +34,7 @@
 		"dateFormatYear": "4",
 		"fallbackBitrate": true,
 		"saveFullArtists": false,
+		"downloadSinglesAsTracks": true,
 		"tags": {
 			"title": true,
 			"artist": true,

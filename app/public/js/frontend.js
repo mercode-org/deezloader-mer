@@ -285,6 +285,7 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		fallbackBitrate : $('#modal_settings_cbox_fallbackBitrate').is(':checked'),
 		minimizeToTray : $('#modal_settings_cbox_minimizeToTray').is(':checked'),
 		saveFullArtists : $('#modal_settings_cbox_saveFullArtists').is(':checked'),
+		downloadSinglesAsTracks: $('#modal_settings_cbox_downloadSinglesAsTracks').is(':checked'),
 		tags: {
 			title: $('#modal_tags_title').is(':checked'),
 			artist: $('#modal_tags_artist').is(':checked'),
@@ -388,6 +389,7 @@ function fillSettingsModal(settings) {
 	$('#modal_settings_cbox_fallbackBitrate').prop('checked', settings.fallbackBitrate)
 	$('#modal_settings_cbox_minimizeToTray').prop('checked', settings.minimizeToTray)
 	$('#modal_settings_cbox_saveFullArtists').prop('checked', settings.saveFullArtists)
+	$('#modal_settings_cbox_downloadSinglesAsTracks').prop('checked', settings.downloadSinglesAsTracks)
 
 	$('#modal_tags_title').prop('checked', settings.tags.title)
 	$('#modal_tags_artist').prop('checked', settings.tags.artist)
