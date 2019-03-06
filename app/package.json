@@ -1,11 +1,7 @@
 {
 	"name": "deezloader-rmx",
 	"productName": "Deezloader Remix",
-<<<<<<< HEAD
-	"version": "4.1.8",
-=======
 	"version": "4.2.0",
->>>>>>> rewrite
 	"description": "Download music from Deezer",
 	"main": "main.js",
 	"author": "RemixDevs",
