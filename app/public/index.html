@@ -16,7 +16,11 @@
   <meta charset="utf-8"/>
 </head>
 <body>
+<<<<<<< HEAD
 <span id="appVersionFallback" hidden>4.1.8</span>
+=======
+<span id="appVersionFallback" hidden>4.2.0</span>
+>>>>>>> rewrite
 
 <div id="title-bar" class="deezloader-black">
 	<div class="resize-padding" style="width: 100%; height: 3px;"></div>
@@ -299,12 +303,6 @@
         <label>
   				<input type="checkbox" id="modal_settings_cbox_saveFullArtists" class="filled-in"/>
   				<span>Save file with full artists</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_removeDupedTags" class="filled-in"/>
-  				<span>Better removal of duplicates (BETA)</span>
         </label>
       </p>
 		</div>
@@ -624,7 +622,7 @@
 							- Added option %explicit% for Track and Album names (Will add "(Explicit)" in that position if it's explicit)<br/>
 							- Added option to remove "(Album Version)" from track title<br/>
 							- Added options to select which format should the date tag have<br/>
-							- Added option to not fallback if desired bitrate is not aviable<br/>
+							- Added option to not fallback if desired bitrate is not available<br/>
 							- Logging enhancements<br/>
 							- Other minor bug-fixing<br/>
 							<br/>
@@ -686,14 +684,14 @@
             <h5>You want to contribute to this project? You can do that <b>in different ways!</b></h5>
             <p>If you know JavaScript, HTML, CSS or Node.js you could contribute writing code, fixing bugs and adding features using the <a href="https://notabug.org/RemixDevs/DeezloaderRemix">Official Repo</a>.</p>
             <p>If you are good at graphics and design you could help by submitting a new design, you can open a new issue with some design <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new">here</a>.<br>
-            	<p>Keep in mind that we are (sorta) following the <a href="https://material.io/">Material Desing Principles</a>.</p>
+            	<p>Keep in mind that we are (sorta) following the <a href="https://material.io/">Material Design Principles</a>.</p>
             	If you are good at finding bugs you can help Beta Test the app before release.<br>
             	Join our <a href="https://t.me/joinchat/BJf2dUoyFbTomvUGaslmCA">Telegram Group</a> to be notified when betas come out!</p>
             <hr>
             <h5>You want to contribute monetarily? You could make a donation!</h5>
             <p>If you can donate you can do that with this links.<br>
               You shoud remember that <b>this is a free project</b> and <b>you should support the artists you love</b> before supporting the developer.<br>
-              Don't feel obbligated to donate, I appreciate you anyway!</p>
+              Don't feel obligated to donate, I appreciate you anyway!</p>
             <p>
               PayPal: <a href="https://paypal.me/RemixDev">PayPal.me/RemixDev</a><br>
               Bitcoin: 1sdNymSJrMBWyHM4u2m9uco5nv6uV4Qs1<br>
@@ -710,21 +708,23 @@
 </div>
 
 <!--##########################################MODAL_TRACKLIST###########################################-->
-<div id="modal_trackList" class="modal modal-fixed-footer">
+<div id="modal_trackList" class="modal modal-fixed-footer modal-custom-header">
 	<div class="modal-content">
-		<div class="row">
-			<h4 class="col s12">{{ title }}</h4>
-		</div>
-		<div class="row">
+    <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
+      <h4>{{ title }}</h4>
+      <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
+      <span class="right hide-on-small-only" v-if="release_date"> {{ release_date }} </span>
+    </div>
+    <div class="row modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
-					<td v-for="data in head" v-html="data.title"></td>
+					<td v-for="data in head" v-html="data.title" v-bind:style = "{ 'width': `${data.width ? data.width : 'auto'}`}" v-bind:class="{ 'hide-on-med-and-up' : data.smallonly, 'hide-on-small-only': data.hideonsmall }"></td>
 				</tr>
 				</thead>
 				<tbody id="modal_trackList_table_trackList_tbody_loadingIndicator" class="hide">
 				<tr>
-					<td class="center" colspan="4">
+					<td class="center" colspan="6">
 						<div class="preloader-wrapper big active">
 							<div class="spinner-layer">
 								<div class="circle-clipper left">
@@ -753,21 +753,23 @@
 </div>
 
 <!--##########################################MODAL_TRACKLISTALBUM###########################################-->
-<div id="modal_trackListSelective" class="modal modal-fixed-footer">
+<div id="modal_trackListSelective" class="modal modal-fixed-footer modal-custom-header">
 	<div class="modal-content">
-		<div class="row">
-			<h4 class="col s12">{{ title }}</h4>
-		</div>
-		<div class="row">
+    <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
+      <h4>{{ title }}</h4>
+      <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
+      <span class="right hide-on-small-only" v-if="release_date">{{ release_date }}</span>
+    </div>
+    <div class="row modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
-					<td v-for="data in head" v-html="data.title"></td>
+					<td v-for="data in head" v-html="data.title" v-bind:style = "{ 'width': `${data.width ? data.width : 'auto'}`}" v-bind:class="{ 'hide-on-med-and-up' : data.smallonly, 'hide-on-small-only': data.hideonsmall }"></td>
 				</tr>
 				</thead>
-				<tbody id="modal_trackListSelective_table_trackList_tbody_loadingIndicator" class="hide">
+				<tbody id="modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator" class="hide">
 				<tr>
-					<td class="center" colspan="4">
+					<td class="center" colspan="6">
 						<div class="preloader-wrapper big active">
 							<div class="spinner-layer">
 								<div class="circle-clipper left">
@@ -791,8 +793,8 @@
 	</div>
 	<div class="modal-footer">
     <a href="#" id="download_all_tracks_selective" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
-		<a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download selection<i class="material-icons right">file_download</i></a>
-		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+		<a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><span class="hide-on-small-only">Download selection<i class="material-icons right">file_download</i></span><i class="material-icons hide-on-med-and-up">file_download</i></a>
+    <a href="#" class="modal-close waves-effect btn-flat">Close</a>
 	</div>
 </div>
 
@@ -857,7 +859,7 @@
   <li><a href="#!" tab-id="tab_url" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i>Download from URL</a></li>
   <li><a href="#!" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i>Downloads</a></li>
   <li><div class="divider"></div></li>
-  <li><a href="#modal_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i>Settings</a></li>
+  <li><a href="#modal_settings" id="sidenav_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i>Settings</a></li>
   <li><a href="#modal_about" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">star</i>About</a></li>
   <li><a href="#!" id="nightModeSwitch2"><i class="material-icons">brightness_2</i>Enable Night Mode</a>
   </li>
@@ -910,7 +912,7 @@
       <div id="tab_search_results">
 				<table id="tab_search_table_results" class="striped col s12">
 					<thead class="hide-on-small-only">
-  					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_track">
+  					<tr class="hide" id="tab_search_table_results_thead_track">
   						<th style="width: 56px;"><!--cover--></th>
   						<th>Song</th>
   						<th>Artist</th>
@@ -918,7 +920,7 @@
   						<th><i class="material-icons">timer</i></th>
   						<th style="width: 56px;"><!--download_link--></th>
   					</tr>
-  					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_album">
+  					<tr class="hide" id="tab_search_table_results_thead_album">
   						<th style="width: 56px;"><!--cover--></th>
   						<th>Album</th>
   						<th>Artist</th>
@@ -927,14 +929,14 @@
   						<th><!--space--></th>
   						<th style="width: 56px;"><!--download_link--></th>
   					</tr>
-  					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_artist">
+  					<tr class="hide" id="tab_search_table_results_thead_artist">
   						<th style="width: 56px;"><!--cover--></th>
   						<th>Artist</th>
   						<th>Albums</th>
   						<th><!--space--></th>
   						<th style="width: 56px;"><!--download_link--></th>
   					</tr>
-  					<tr class="animated fadeInUp hide" id="tab_search_table_results_thead_playlist">
+  					<tr class="hide" id="tab_search_table_results_thead_playlist">
   						<th style="width: 56px;"><!--cover--></th>
   						<th>Name</th>
   						<th>Songs</th>
@@ -954,8 +956,8 @@
   						</td>
   					</tr>
 					</tbody>
-					<tbody id="tab_search_table_results_tbody_results" class="animated fadeInUp"></tbody>
-					<tbody id="tab_search_table_results_tbody_noResults" class="animated fadeInUp hide">
+					<tbody id="tab_search_table_results_tbody_results"></tbody>
+					<tbody id="tab_search_table_results_tbody_noResults" class="hide">
   					<tr>
   						<td class="center">Nothing found!</td>
   					</tr>
@@ -1009,7 +1011,7 @@
       <div class="col s12">
         <table class="striped">
           <thead>
-            <tr class="animated fadeInUp">
+            <tr>
               <th style="width: 56px;"><!--cover--></th>
               <th>Name</th>
               <th>Songs</th>
@@ -1017,7 +1019,7 @@
               <th style="width: 56px;"><!--download_link--></th>
             </tr>
           </thead>
-          <tbody id="table_personal_playlists" class="animated fadeInUp">
+          <tbody id="table_personal_playlists">
           </tbody>
         </table>
       </div>
@@ -1077,6 +1079,15 @@
   <source id="preview-track_source" src="" type="audio/mpeg">
 </audio>
 
+<div id="modal_quality" class="smallmodal">
+  <!-- Modal content -->
+  <div class="smallmodal-content">
+    <a onclick="modalQualityButton(9)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download FLAC</a><br>
+    <a onclick="modalQualityButton(3)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download MP3 320kbps</a><br>
+    <a onclick="modalQualityButton(1)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download MP3 128kbps</a><br>
+  </div>
+</div>
+
 <footer class="deezloader-black darken-1 left page-footer hide-on-med-and-down valign-wrapper">
       <p><span style="position: relative;display: inline-block;transform: rotateY(180deg);">&copy;</span> Deezloader original code by ZzMTV.</p>
 </footer>
@@ -1085,10 +1096,12 @@
 	window.module = module;
 	module = undefined;
 }</script>
+
 <script type="text/javascript" src="js/socket.io.js"></script>
 <script type="text/javascript" src="js/jquery-3.3.1.min.js"></script>
 <script type="text/javascript" src="js/materialize.min.js"></script>
 <script type="text/javascript" src="js/vue.min.js"></script>
+<script type="text/javascript" src="js/taphold.js"></script>
 <script type="text/javascript" src="js/appBase.js"></script>
 <script type="text/javascript" src="js/frontend.js"></script>
 <script>if (window.module) module = window.module;</script>

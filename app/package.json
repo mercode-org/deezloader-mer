@@ -1,7 +1,11 @@
 {
 	"name": "deezloader-rmx",
 	"productName": "Deezloader Remix",
+<<<<<<< HEAD
 	"version": "4.1.8",
+=======
+	"version": "4.2.0",
+>>>>>>> rewrite
 	"description": "Download music from Deezer",
 	"main": "main.js",
 	"author": "RemixDevs",
@@ -9,6 +13,7 @@
 	"dependencies": {
 		"async": "latest",
 		"dateformat": "latest",
+		"deezer-api": "git+https://notabug.org/RemixDevs/deezer-api.git#master",
 		"electron-context-menu": "latest",
 		"electron-window-state-manager": "latest",
 		"express": "latest",

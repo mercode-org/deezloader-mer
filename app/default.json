@@ -18,7 +18,7 @@
 		"padtrck": false,
 		"syncedlyrics": false,
 		"numplaylistbyalbum": false,
-		"chartsCountry": "UK",
+		"chartsCountry": "Worldwide",
 		"spotifyUser": "",
 		"saveArtwork": false,
 		"saveArtworkArtist": false,
@@ -34,7 +34,6 @@
 		"dateFormatYear": "4",
 		"fallbackBitrate": true,
 		"saveFullArtists": false,
-		"removeDupedTags":false,
 		"tags": {
 			"title": true,
 			"artist": true,

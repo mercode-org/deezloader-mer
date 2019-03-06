@@ -7,15 +7,20 @@ if(typeof mainApp !== "undefined"){
 	var defaultUserSettings = mainApp.defaultSettings
 	var defaultDownloadLocation = mainApp.defaultDownloadDir
 }
+var modalQuality = document.getElementById('modal_quality');
+modalQuality.open = false
 let userSettings = []
 
 let preview_track = document.getElementById('preview-track')
 let preview_stopped = true
 
+// Popup message listener
 socket.on("message", function(desc){
 	message(desc.title, desc.msg)
 })
 
+// Prints object obj into console
+// For Debug purposes
 socket.on("printObj", function(obj){
 	console.log(obj)
 })
@@ -34,10 +39,12 @@ $('#modal_login_btn_login').click(function () {
 	socket.emit('login', username, password, autologin)
 })
 
+// New login system (uses cookies)
 socket.on('getCookies', function(jar){
 	localStorage.setItem('autologin', JSON.stringify(jar))
 })
 
+// After Login
 socket.on("login", function (data) {
 	if (!data.error) {
 		$("#modal_settings_username").html(data.user.name)
@@ -55,8 +62,8 @@ socket.on("login", function (data) {
 		// Load personal pubblic playlists
 		socket.emit("getMyPlaylistList", {})
 	}else{
-			$('#login-res-text').text(data.error)
-			setTimeout(function(){$('#login-res-text').text("")},3000)
+		$('#login-res-text').text(data.error)
+		setTimeout(function(){$('#login-res-text').text("")},3000)
 	}
 	$('#modal_login_btn_login').attr("disabled", false)
 	$('#modal_login_btn_login').html("Login")
@@ -71,16 +78,22 @@ $('#openDownloadsFolder').on('click', function () {
 	}
 })
 
+// Alert for replayGain tag
 $('#modal_tags_replayGain').on('click', function() {
 	if ($(this).is(':checked')) {
-	message('Warning','Saving replay gain causes tracks to be quieter for some users.')
-}
+		message('Warning','Saving replay gain causes tracks to be quieter for some users.')
+	}
 })
+
 // Do misc stuff on page load
 $(document).ready(function () {
+	// Page Initializing
 	M.AutoInit()
 	preview_track.volume = 0
+	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
+	$('.modal').modal()
 
+	// Autologin
 	socket.emit("getUserSettings")
 	if (localStorage.getItem('autologin')){
 		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
@@ -92,11 +105,10 @@ $(document).ready(function () {
 		M.updateTextFields()
 	}
 
+	// Side Nav Stuff
 	$('.sidenav').sidenav({
 		edge: 'right'
 	})
-
-	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
 
 	$('.sidenav_tab').click((e)=>{
 		e.preventDefault
@@ -105,6 +117,7 @@ $(document).ready(function () {
 		tabs.updateTabIndicator()
 	})
 
+	// scrollToTop FAB
 	$(window).scroll(function () {
 		if ($(this).scrollTop() > 100) {
 			$('#btn_scrollToTop a').removeClass('scale-out').addClass('scale-in')
@@ -118,11 +131,17 @@ $(document).ready(function () {
 		return false
 	})
 
+	// Playlist Stuff
 	$("#button_refresh_playlist_tab").click(function(){
 		$("table_personal_playlists").html("")
 		socket.emit("getMyPlaylistList", {})
 	})
 
+	$('#downloadChartPlaylist').click(function(){
+		addToQueue(`https://www.deezer.com/playlist/${$(this).data("id")}`)
+	})
+
+	// Track Preview Feature
 	$(preview_track).on('canplay', ()=>{
 		preview_track.play()
 		preview_stopped = false
@@ -139,6 +158,18 @@ $(document).ready(function () {
 		}
 	})
 
+	$('#modal_trackList, #modal_trackListSelective').modal({
+		onCloseStart: ()=>{
+			if ($('.preview_playlist_controls').filter(function(){return $(this).attr("playing")}).length > 0){
+				$(preview_track).animate({volume: 0}, 800)
+				preview_stopped = true
+				$(".preview_playlist_controls").removeAttr("playing")
+				$('.preview_playlist_controls').text("play_arrow")
+			}
+		}
+	})
+
+	// Night Theme Switch
 	$('#nightTimeSwitcher').change(function(){
 		if(this.checked){
 			document.getElementsByTagName('link')[4].disabled = false
@@ -163,29 +194,33 @@ $(document).ready(function () {
 		$('#nightTimeSwitcher').change()
 	}
 
-	$('#downloadChartPlaylist').click(function(){
-		addToQueue(`https://www.deezer.com/playlist/${$(this).data("id")}`)
-	})
-
-	$('.modal').modal()
-
-	$('#modal_trackList, #modal_trackListSelective').modal({
-		onCloseStart: ()=>{
-			if ($('.preview_playlist_controls').filter(function(){return $(this).attr("playing")}).length > 0){
-				$(preview_track).animate({volume: 0}, 800)
-				preview_stopped = true
-				$(".preview_playlist_controls").removeAttr("playing")
-				$('.preview_playlist_controls').text("play_arrow")
-			}
-		}
-	})
-
+	// Search on tab change
 	$('input[name=searchMode][type=radio]').change(()=>{
 		$('#tab_search_form_search').submit()
 	})
 
+	// Button download all tracks in selective modal
 	$('#download_all_tracks_selective, #download_all_tracks').click(function(){
 		addToQueue($(this).attr("data-link"))
+	})
+
+	// Quality Modal
+	window.onclick = function(event) {
+	  if (event.target == modalQuality && modalQuality.open) {
+			console.log("Closing")
+			$(modalQuality).addClass('animated fadeOut')
+	  }
+	}
+	$(modalQuality).on('webkitAnimationEnd', function () {
+		if (modalQuality.open){
+			$(this).removeClass('animated fadeOut')
+			$(this).css('display', 'none')
+			modalQuality.open = false
+		}else{
+			$(this).removeClass('animated fadeIn')
+			$(this).css('display', 'block')
+			modalQuality.open = true
+		}
 	})
 })
 
@@ -208,7 +243,7 @@ $('.modal-close').click(function (e) {
 const $settingsAreaParent = $('#modal_settings')
 
 // Open settings panel
-$('#nav_btn_openSettingsModal').click(function () {
+$('#nav_btn_openSettingsModal, #sidenav_settings').click(function () {
 	fillSettingsModal(userSettings)
 })
 
@@ -250,7 +285,6 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		fallbackBitrate : $('#modal_settings_cbox_fallbackBitrate').is(':checked'),
 		minimizeToTray : $('#modal_settings_cbox_minimizeToTray').is(':checked'),
 		saveFullArtists : $('#modal_settings_cbox_saveFullArtists').is(':checked'),
-		removeDupedTags : $('#modal_settings_cbox_removeDupedTags').is(':checked'),
 		tags: {
 			title: $('#modal_tags_title').is(':checked'),
 			artist: $('#modal_tags_artist').is(':checked'),
@@ -295,6 +329,7 @@ $('#modal_settings_btn_defaultSettings').click(function () {
 	}
 })
 
+// Sign Up Button
 $('#modal_login_btn_signup').click(function(){
 	if(typeof shell != 'undefined'){
 		shell.openExternal("https://www.deezer.com/register")
@@ -303,6 +338,7 @@ $('#modal_login_btn_signup').click(function(){
 	}
 })
 
+// Logout Button
 $('#modal_settings_btn_logout').click(function () {
 	$('#modal_login_input_username').val("")
 	$('#modal_login_input_password').val("")
@@ -352,7 +388,6 @@ function fillSettingsModal(settings) {
 	$('#modal_settings_cbox_fallbackBitrate').prop('checked', settings.fallbackBitrate)
 	$('#modal_settings_cbox_minimizeToTray').prop('checked', settings.minimizeToTray)
 	$('#modal_settings_cbox_saveFullArtists').prop('checked', settings.saveFullArtists)
-	$('#modal_settings_cbox_removeDupedTags').prop('checked', settings.removeDupedTags)
 
 	$('#modal_tags_title').prop('checked', settings.tags.title)
 	$('#modal_tags_artist').prop('checked', settings.tags.artist)
@@ -399,35 +434,37 @@ function message(title, message) {
 //****************************************************************************************************\\
 
 //#############################################TAB_SEARCH#############################################\\
-$('#tab_search_form_search').submit(function (ev) {
 
+// Submit Search Form
+$('#tab_search_form_search').submit(function (ev) {
 	ev.preventDefault()
 
 	var searchString = $('#tab_search_form_search_input_searchString').val().trim()
 	var mode = $('#tab_search_form_search').find('input[name=searchMode]:checked').val()
 
-	if (searchString.length == 0) {
-		return
-	}
+	if (searchString.length == 0) {return}
 
+	// Clean Table and show loading indicator
 	$('#tab_search_table_results').find('thead').find('tr').addClass('hide')
 	$('#tab_search_table_results_tbody_results').addClass('hide')
 	$('#tab_search_table_results_tbody_noResults').addClass('hide')
 	$('#tab_search_table_results_tbody_loadingIndicator').removeClass('hide')
 
 	socket.emit("search", {type: mode, text: searchString})
-
 })
 
+// Parse data from search
 socket.on('search', function (data) {
-
+	// Remove loading indicator
 	$('#tab_search_table_results_tbody_loadingIndicator').addClass('hide')
 
+	// If no data, display No Results Found
 	if (data.items.length == 0) {
 		$('#tab_search_table_results_tbody_noResults').removeClass('hide')
 		return
 	}
 
+	// Populate table and show results
 	if (data.type == 'track') {
 		showResults_table_track(data.items)
 	} else if (data.type == 'album') {
@@ -448,10 +485,15 @@ function showResults_table_track(tracks) {
 		var currentResultTrack = tracks[i]
 		$(tableBody).append(
 			`<tr>
-			<td><a href="#" class="circle ${(currentResultTrack.preview ? `single-cover" preview="${currentResultTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" class="circle" src="${(currentResultTrack.album.cover_small ? currentResultTrack.album.cover_small : "img/noCover.jpg" )}"/></a></td>
-			<td>${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</td>
-			<td><span class="resultArtist resultLink" data-link="${currentResultTrack.artist.link}">${currentResultTrack.artist.name}</span></td>
-			<td><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentResultTrack.album.id}">${currentResultTrack.album.title}</span></td>
+			<td><a href="#" class="rounded ${(currentResultTrack.preview ? `single-cover" preview="${currentResultTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" class="rounded" src="${(currentResultTrack.album.cover_small ? currentResultTrack.album.cover_small : "img/noCover.jpg" )}"/></a></td>
+			<td class="hide-on-med-and-up">
+				<p class="remove-margin">${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</p>
+				<p class="remove-margin secondary-text">${currentResultTrack.artist.name}</p>
+				<p class="remove-margin secondary-text">${currentResultTrack.album.title}</p>
+			</td>
+			<td class="hide-on-small-only">${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</td>
+			<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentResultTrack.artist.link}">${currentResultTrack.artist.name}</span></td>
+			<td class="hide-on-small-only"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentResultTrack.album.id}">${currentResultTrack.album.title}</span></td>
 			<td>${convertDuration(currentResultTrack.duration)}</td>
 			</tr>`)
 		generateDownloadLink(currentResultTrack.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
@@ -476,11 +518,16 @@ function showResults_table_album(albums) {
 		var currentResultAlbum = albums[i]
 		$(tableBody).append(
 				`<tr>
-				<td><img style="width:56px;" src="${(currentResultAlbum.cover_small ? currentResultAlbum.cover_small : "img/noCover.jpg")}" class="circle" /></td>
-				<td>${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</td>
-				<td><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
-				<td>${currentResultAlbum.nb_tracks}</td>
-				<td>${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</td>
+				<td><img style="width:56px;" src="${(currentResultAlbum.cover_small ? currentResultAlbum.cover_small : "img/noCover.jpg")}" class="rounded" /></td>
+				<td class="hide-on-med-and-up">
+					<p class="remove-margin">${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</p>
+					<p class="remove-margin secondary-text">${currentResultAlbum.artist.name}</p>
+					<p class="remove-margin secondary-text">${currentResultAlbum.nb_tracks == "1" ? `1 Track` : `${currentResultAlbum.nb_tracks} Tracks`} • ${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</p>
+				</td>
+				<td class="hide-on-small-only">${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</td>
+				<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
+				<td class="hide-on-small-only">${currentResultAlbum.nb_tracks}</td>
+				<td class="hide-on-small-only">${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</td>
 				</tr>`)
 		generateShowTracklistSelectiveButton(currentResultAlbum.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
 		generateDownloadLink(currentResultAlbum.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
@@ -500,7 +547,7 @@ function showResults_table_artist(artists) {
 		var currentResultArtist = artists[i]
 		$(tableBody).append(
 				`<tr>
-				<td><img style="width:56px;" src="${(currentResultArtist.picture_small ? currentResultArtist.picture_small : "img/noCover.jpg")}" class="circle" /></td>
+				<td><img style="width:56px;" src="${(currentResultArtist.picture_small ? currentResultArtist.picture_small : "img/noCover.jpg")}" class="rounded" /></td>
 				<td>${currentResultArtist.name}</td>
 				<td>${currentResultArtist.nb_album}</td>
 				</tr>`)
@@ -517,7 +564,7 @@ function showResults_table_playlist(playlists) {
 		var currentResultPlaylist = playlists[i]
 		$(tableBody).append(
 				`<tr>
-				<td><img style="width:56px;" src="${(currentResultPlaylist.picture_small ? currentResultPlaylist.picture_small : "img/noCover.jpg")}" class="circle" /></td>
+				<td><img style="width:56px;" src="${(currentResultPlaylist.picture_small ? currentResultPlaylist.picture_small : "img/noCover.jpg")}" class="rounded" /></td>
 				<td>${currentResultPlaylist.title}</td>
 				<td>${currentResultPlaylist.nb_tracks}</td>
 				</tr>`)
@@ -527,6 +574,36 @@ function showResults_table_playlist(playlists) {
 	$('.tooltipped').tooltip({delay: 100})
 }
 
+// TODO: Finish Vue.js Implementation
+var trackListSelectiveModalApp = new Vue({
+	el: '#modal_trackListSelective',
+	data: {
+		title: "",
+		metadata : "",
+		release_date: "",
+		image: "",
+		type: "",
+		link: "",
+		head: null,
+		body: []
+	}
+})
+
+var trackListModalApp = new Vue({
+	el: '#modal_trackList',
+	data: {
+		title: "",
+		metadata : {},
+		release_date: "",
+		image: "",
+		type: "",
+		link: "",
+		head: null,
+		body: []
+	}
+})
+
+// Generate Button for tracklist with selection
 function generateShowTracklistSelectiveButton(link) {
 	var btn_showTrackListSelective = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
 	$(btn_showTrackListSelective).click(function (ev){
@@ -536,40 +613,16 @@ function generateShowTracklistSelectiveButton(link) {
 	return btn_showTrackListSelective
 }
 
-function generateShowTracklistButton(link) {
-	var btn_showTrackList = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
-	$(btn_showTrackList).click(function (ev) {
-		ev.preventDefault()
-		showTrackList(link)
-	})
-	return btn_showTrackList
-}
-
-var trackListSelectiveModalApp = new Vue({
-	el: '#modal_trackListSelective',
-	data: {
-		title: null,
-		type: null,
-		link: null,
-		head: null,
-		body: []
-	}
-})
-
-var trackListModalApp = new Vue({
-	el: '#modal_trackList',
-	data: {
-		title: null,
-		type: null,
-		link: null,
-		head: null,
-		body: []
-	}
-})
-
 function showTrackListSelective(link) {
 	$('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').addClass('hide')
 	$('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').removeClass('hide')
+	trackListSelectiveModalApp.title = "Loading..."
+	trackListSelectiveModalApp.image = ""
+	trackListSelectiveModalApp.metadata = ""
+	trackListSelectiveModalApp.release_date = ""
+	trackListSelectiveModalApp.type = ""
+	trackListSelectiveModalApp.head = []
+	trackListSelectiveModalApp.body = []
 	$('#modal_trackListSelective').modal('open')
 	socket.emit('getTrackList', {id: getIDFromLink(link), type: getTypeFromLink(link)})
 }
@@ -588,16 +641,33 @@ $('#download_track_selection').click(function(e){
 	$('#modal_trackListSelective').modal('close')
 })
 
+// Generate Button for tracklist without selection
+function generateShowTracklistButton(link) {
+	var btn_showTrackList = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
+	$(btn_showTrackList).click(function (ev) {
+		ev.preventDefault()
+		showTrackList(link)
+	})
+	return btn_showTrackList
+}
+
 function showTrackList(link) {
 	$('#modal_trackList_table_trackList_tbody_trackList').addClass('hide')
 	$('#modal_trackList_table_trackList_tbody_loadingIndicator').removeClass('hide')
+	trackListModalApp.title = "Loading..."
+	trackListModalApp.image = ""
+	trackListModalApp.metadata = ""
+	trackListModalApp.release_date = ""
+	trackListModalApp.type = ""
+	trackListModalApp.head = []
+	trackListModalApp.body = []
 	$('#modal_trackList').modal('open')
 	socket.emit("getTrackList", {id: getIDFromLink(link), type: getTypeFromLink(link)})
 }
 
 socket.on("getTrackList", function (data) {
 	//data.err			-> undefined/err
-	//data.id			 -> passed id
+	//data.id			  -> passed id
 	//data.response -> API response
 	if (data.err){
 		trackListSelectiveModalApp.title = "Can't get data"
@@ -619,27 +689,30 @@ socket.on("getTrackList", function (data) {
 			var tableBody = $('#modal_trackList_table_trackList_tbody_trackList')
 		}
 		$(tableBody).html('')
+		console.log(data)
 		//############################################
 		if (data.reqType == 'artist') {
+			trackListModalApp.title = data.response.name
+			trackListModalApp.image = data.response.picture_xl
 			trackListModalApp.type = data.reqType
 			trackListModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
-			trackListModalApp.title = 'Album List'
 			trackListModalApp.head = [
-				{title: '#'},
-				{title: ''},
-				{title: 'Album Title'},
-				{title: 'Release Date'},
-				{title: 'Record Type'},
-				{title: 'Download Album'}
+				{title: '', smallonly:true},
+				{title: 'Album Title', hideonsmall:true},
+				{title: 'Release Date', hideonsmall:true},
+				{title: 'Record Type', hideonsmall:true},
+				{title: '', width: "56px"}
 			]
 			for (var i = 0; i < trackList.length; i++) {
 				$(tableBody).append(
 					`<tr>
-					<td>${(i + 1)}</td>
-					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')}</td>
-					<td><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${trackList[i].title}</div></a></td>
-					<td>${trackList[i].release_date}</td>
-					<td>${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)}</td>
+					<td class="hide-on-med-and-up">
+						<a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</div></a>
+						<p class="remove-margin secondary-text">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)} • ${trackList[i].release_date}</p>
+					</td>
+					<td class="hide-on-small-only"><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</div></a></td>
+					<td class="hide-on-small-only">${trackList[i].release_date}</td>
+					<td class="hide-on-small-only">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)}</td>
 					</tr>`
 				)
 				generateDownloadLink(trackList[i].link).appendTo(tableBody.children('tr:last')).wrap('<td>')
@@ -650,23 +723,32 @@ socket.on("getTrackList", function (data) {
 		} else if(data.reqType == 'playlist') {
 			trackListSelectiveModalApp.type = data.reqType
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
-			trackListSelectiveModalApp.title = 'Playlist'
+			trackListSelectiveModalApp.title = data.response.title
+			trackListSelectiveModalApp.image = data.response.picture_xl
+			trackListSelectiveModalApp.release_date = data.response.creation_date.substring(0,10)
+			trackListSelectiveModalApp.metadata = `by ${data.response.creator.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
 			trackListSelectiveModalApp.head = [
-				{title: '<i class="material-icons">music_note</i>'},
+				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: 'Song'},
-				{title: 'Artist'},
-				{title: '<i class="material-icons">timer</i>'},
-				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
+				{title: 'Artist', hideonsmall:true},
+				{title: '<i class="material-icons">timer</i>', width: "40px"},
+				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "24px"}
 			]
 			$('.selectAll').prop('checked', false)
+			let totalDuration = 0
 			for (var i = 0; i < trackList.length; i++) {
+				totalDuration += trackList[i].duration
 				$(tableBody).append(
 					`<tr>
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${(i + 1)}</td>
-					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
-					<td>${trackList[i].artist.name}</td>
+					<td class="hide-on-med-and-up">
+						<p class="remove-margin">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</p>
+						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
+					</td>
+					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					<td>
 						<div class="valign-wrapper">
@@ -679,17 +761,22 @@ socket.on("getTrackList", function (data) {
 				)
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'))
 			}
+			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
+			trackListSelectiveModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else if(data.reqType == 'album') {
 			trackListSelectiveModalApp.type = data.reqType
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
-			trackListSelectiveModalApp.title = 'Tracklist'
+			trackListSelectiveModalApp.title = data.response.title
+			trackListSelectiveModalApp.metadata = `${data.response.artist.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
+			trackListSelectiveModalApp.release_date = data.response.release_date.substring(0,10)
+			trackListSelectiveModalApp.image = data.response.cover_xl
 			trackListSelectiveModalApp.head = [
-				{title: '<i class="material-icons">music_note</i>'},
+				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: 'Song'},
-				{title: 'Artist'},
-				{title: '<i class="material-icons">timer</i>'},
-				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>'}
+				{title: 'Artist', hideonsmall:true},
+				{title: '<i class="material-icons">timer</i>', width: "40px"},
+				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "24px"}
 			]
 			$('.selectAll').prop('checked', false)
 			if (trackList[trackList.length-1].disk_number != 1){
@@ -697,7 +784,9 @@ socket.on("getTrackList", function (data) {
 			} else {
 				baseDisc =1
 			}
+			let totalDuration = 0
 			for (var i = 0; i < trackList.length; i++) {
+				totalDuration += trackList[i].duration
 				discNum = trackList[i].disk_number
 				if (discNum != baseDisc){
 					$(tableBody).append(`<tr><td colspan="4" style="opacity: 0.54;"><i class="material-icons valignicon tiny">album</i>${discNum}</td></tr>`)
@@ -707,8 +796,12 @@ socket.on("getTrackList", function (data) {
 					`<tr>
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${trackList[i].track_position}</td>
-					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
-					<td>${trackList[i].artist.name}</td>
+					<td class="hide-on-med-and-up">
+						<p class="remove-margin">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</p>
+						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
+					</td>
+					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					<td>
 						<div class="valign-wrapper">
@@ -721,29 +814,41 @@ socket.on("getTrackList", function (data) {
 				)
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'))
 			}
+			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
+			trackListSelectiveModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else if(data.reqType == 'spotifyplaylist') {
 			trackListModalApp.type = "Spotify Playlist"
 			trackListModalApp.link = 'spotify:playlist:'+data.id
-			trackListModalApp.title = 'Tracklist'
+			trackListModalApp.title = data.response.title
+			trackListModalApp.image = data.response.image
+			trackListModalApp.metadata = `by ${data.response.owner} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
 			trackListModalApp.head = [
-				{title: '<i class="material-icons">music_note</i>'},
+				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: 'Song'},
-				{title: 'Artist'},
-				{title: '<i class="material-icons">timer</i>'}
+				{title: 'Artist', hideonsmall:true},
+				{title: '<i class="material-icons">timer</i>', width: "40px"}
 			]
+			let totalDuration = 0
 			for (var i = 0; i < trackList.length; i++) {
+				totalDuration += trackList[i].duration
 				$(tableBody).append(
 					`<tr>
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${(i + 1)}</td>
-					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
-					<td>${trackList[i].artist.name}</td>
+					<td class="hide-on-med-and-up">
+						<p class="remove-margin">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</p>
+						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
+					</td>
+					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					</tr>`
 				)
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'))
 			}
+			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
+			trackListModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else {
 			trackListModalApp.type = null
 			trackListModalApp.title = 'Tracklist'
@@ -784,8 +889,8 @@ socket.on("getChartsCountryList", function (data) {
 	//data.countries[0].country -> String (country name)
 	//data.countries[0].picture_small/picture_medium/picture_big -> url to cover
 	for (var i = 0; i < data.countries.length; i++) {
-		$('#tab_charts_select_country').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left circle">' + data.countries[i]['country'] + '</option>')
-		$('#modal_settings_select_chartsCounrty').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left circle">' + data.countries[i]['country'] + '</option>')
+		$('#tab_charts_select_country').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left rounded">' + data.countries[i]['country'] + '</option>')
+		$('#modal_settings_select_chartsCounrty').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left rounded">' + data.countries[i]['country'] + '</option>')
 	}
 	$('#tab_charts_select_country').find('option[value="' + data.selected + '"]').attr("selected", true)
 	$('#modal_settings_select_chartsCounrty').find('option[value="' + data.selected + '"]').attr("selected", true)
@@ -817,10 +922,15 @@ socket.on("getChartsTrackListByCountry", function (data) {
 		$(chartsTableBody).append(
 				`<tr>
 				<td>${(i + 1)}</td>
-				<td><a href="#" class="circle ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="circle" /></a></td>
-				<td>${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${currentChartTrack.title}</td>
-				<td><span class="resultArtist resultLink" data-link="${currentChartTrack.artist.link}">${currentChartTrack.artist.name}</span></td>
-				<td><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentChartTrack.album.id}">${currentChartTrack.album.title}</span></td>
+				<td><a href="#" class="rounded ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="rounded" /></a></td>
+				<td class="hide-on-med-and-up">
+					<p class="remove-margin">${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${currentChartTrack.title}</p>
+					<p class="remove-margin secondary-text">${currentChartTrack.artist.name}</p>
+					<p class="remove-margin secondary-text">${currentChartTrack.album.title}</p>
+				</td>
+				<td class="hide-on-small-only">${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${currentChartTrack.title}</td>
+				<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentChartTrack.artist.link}">${currentChartTrack.artist.name}</span></td>
+				<td class="hide-on-small-only"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentChartTrack.album.id}">${currentChartTrack.album.title}</span></td>
 				<td>${convertDuration(currentChartTrack.duration)}</td>
 				</tr>`)
 		generateDownloadLink(currentChartTrack.link).appendTo(chartsTableBody.children('tr:last')).wrap('<td>')
@@ -847,7 +957,7 @@ socket.on("getMyPlaylistList", function (data) {
 		var currentResultPlaylist = data.playlists[i]
 		$(tableBody).append(
 				`<tr>
-				<td><img src="${currentResultPlaylist.image}" class="circle" width="56px" /></td>
+				<td><img src="${currentResultPlaylist.image}" class="rounded" width="56px" /></td>
 				<td>${currentResultPlaylist.title}</td>
 				<td>${currentResultPlaylist.songs}</td>
 				</tr>`)
@@ -891,13 +1001,14 @@ $('#tab_url_form_url').submit(function (ev) {
 })
 
 //############################################TAB_DOWNLOADS###########################################\\
-function addToQueue(url) {
+function addToQueue(url, forceBitrate=null) {
+	bitrate = forceBitrate ? forceBitrate : userSettings.maxBitrate
 	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
 	if (['track', 'playlist', 'spotifyplaylist', 'artisttop', 'album', 'artist'].indexOf(type) == -1) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong Type!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
-	if (alreadyInQueue(id)) {
+	if (alreadyInQueue(id, bitrate)) {
 		M.toast({html: '<i class="material-icons left">playlist_add_check</i> Already in download-queue!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
@@ -905,14 +1016,14 @@ function addToQueue(url) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong ID!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
-	socket.emit("download" + type, {id: id, settings: userSettings})
+	socket.emit("download" + type, {id: id, settings: userSettings, bitrate: bitrate})
 	M.toast({html: '<i class="material-icons left">add</i>Added to download-queue', displayLength: 5000, classes: 'rounded'})
 }
 
-function alreadyInQueue(id) {
+function alreadyInQueue(id, bitrate) {
 	var alreadyInQueue = false
 	$('#tab_downloads_table_downloads').find('tbody').find('tr').each(function () {
-		if ($(this).data('deezerid') == `${id}:${userSettings.maxBitrate}`) {
+		if ($(this).data('deezerid') == `${id}:${bitrate}`) {
 			alreadyInQueue = true
 			return false
 		}
@@ -1079,12 +1190,26 @@ function getTypeFromLink(link) {
 }
 
 function generateDownloadLink(url) {
-	var btn_download = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">file_download</i></a>')
-	$(btn_download).click(function (ev) {
+	var btn_download = $('<a href="#" class="waves-effect btn-flat" oncontextmenu="return false;"><i class="material-icons">file_download</i></a>')
+	$(btn_download).on("taphold", {
+		clickHandler: function(ev) {
+			ev.preventDefault()
+			addToQueue(url)
+		}
+	}, function(ev) {
 		ev.preventDefault()
-		addToQueue(url)
+		$(modalQuality).data("url", url)
+		$(modalQuality).css('display', 'block')
+		console.log("Opening")
+		$(modalQuality).addClass('animated fadeIn')
 	})
 	return btn_download
+}
+
+function modalQualityButton(bitrate){
+	var url=$(modalQuality).data("url")
+	addToQueue(url, bitrate)
+	$(modalQuality).addClass('animated fadeOut')
 }
 
 function addPreviewControlsHover(el){
@@ -1140,6 +1265,15 @@ function convertDuration(duration) {
 		ss = "0" + ss
 	}
 	return mm + ":" + ss
+}
+
+function convertDurationSeparated(duration){
+	var hh, mm, ss
+	mm = Math.floor(duration / 60)
+	hh = Math.floor(mm / 60)
+	ss = duration - (mm * 60)
+	mm -= hh*60
+	return [hh, mm, ss]
 }
 
 function sleep(milliseconds) {

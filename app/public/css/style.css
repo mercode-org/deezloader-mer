@@ -1,3 +1,8 @@
+:root {
+  --main-modal-background: #fafafa;
+  --appbar-height: 32px;
+}
+
 body {
 	background-color: white;
 }
@@ -7,6 +12,13 @@ td{
 }
 th{
 	text-align: left;
+}
+.remove-margin{
+	margin:0px;
+	padding-bottom: 3px;
+}
+.secondary-text{
+	opacity: 0.75;
 }
 
 #initializing {
@@ -97,6 +109,20 @@ th{
 	font-size: 20px;
 	padding: 0 10px;
 }
+.modal-custom-header > .modal-content{
+	padding: 0px !important;
+}
+.modal-container{
+	padding: 8px 24px;
+}
+.trackList-header{
+	background-position: 0% 35%;
+	background-size: cover;
+	padding: 220px 24px 8px;
+}
+.valignicon{
+  vertical-align: middle !important;
+}
 
 #slide-out .background{
 	background-image: url("../img/bg.png");
@@ -131,10 +157,43 @@ nav {
 	background-color: #23232c;
 }
 
+/* The Modal (background) */
+.smallmodal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+  animation-duration: 0.3s;
+}
+
+/* Modal Content */
+.smallmodal-content {
+  background-color: none;
+  margin: auto;
+  width: 20%;
+  align-items: center;
+  position: relative;
+  top: 50%;
+  transform: translateY(-50%);
+}
+.smallmodal-content .btn{
+  width: 100%;
+  margin-bottom: 8px;
+}
+
 @media only screen and (max-width: 992px) {
 	#nav-mobile .left{
 		margin-right: 0px;
 	}
+  .smallmodal-content{
+    width: 50%
+  }
 }
 
 @media only screen and (max-width: 600px) {
@@ -142,10 +201,20 @@ nav {
 		padding-top: 0px;
 		padding-bottom: 0px;
 	}
+	.container{
+		margin: auto 0px;
+		width: 100%
+	}
 	.modal{
 		width: 100%;
 		margin: 0px;
+		max-height: calc(100% - var(--appbar-height));
+		height: 100% !important;
+		top: var(--appbar-height) !important;
 	}
+  .smallmodal-content{
+    width: 90%;
+  }
 	#main_icon{
 		top: 4px;
 		left: calc(50% - 25px);
@@ -232,7 +301,7 @@ nav .brand-logo.left{
 
 ::-webkit-scrollbar {
 	height: 4px;
-	width: 4px;
+	width: 10px;
 }
 
 ::-webkit-scrollbar-track {
@@ -284,13 +353,16 @@ a.single-cover {
 	text-align: center;
 	line-height: 56px;
   position: absolute;
-	border-radius: 28px;
+	border-radius: 5px;
   top: 0;
   right: 0;
 }
+.rounded{
+	border-radius: 5px;
+}
 
 input, button, textarea, :focus {
-    outline: none; // You should add some other style for :focus to help UX/a11y
+    outline: none; /* You should add some other style for :focus to help UX/a11y */
 }
 
 a:not([draggable=true]), img:not([draggable=true]) {
@@ -301,6 +373,7 @@ a[href^="http://"],
 a[href^="https://"],
 a[href^="ftp://"] {
     -webkit-user-drag: auto;
+    -webkit-touch-callout: none;
     user-drag: auto; /* Technically not supported in Electron yet */
 }
 .preview_playlist_controls{
