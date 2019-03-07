@@ -124,6 +124,20 @@ io.sockets.on('connection', function (s) {
 			s.emit("login", {error: err.message})
 			logger.error(`Login failed: ${err.message}`)
 		}
+	})
+
+	// Function for login with userToken
+	s.on("loginViaUserToken", async function (userToken) {
+		try{
+			logger.info("Logging in");
+			await s.Deezer.loginViaUserToken(userToken)
+			s.emit("login", {user: s.Deezer.user})
+			logger.info("Logged in successfully")
+			s.emit('getCookies', s.Deezer.getCookies())
+		}catch(err){
+			s.emit("login", {error: err.message})
+			logger.error(`Login failed: ${err.message}`)
+		}
 	});
 
 	// Function for autologin

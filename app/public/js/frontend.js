@@ -29,6 +29,7 @@ socket.on("printObj", function(obj){
 $('#modal_login_btn_login').click(function () {
 	$('#modal_login_btn_login').attr("disabled", true)
 	$('#modal_login_btn_login').html("Logging in...")
+	/*
 	var username = $('#modal_login_input_username').val()
 	var password = $('#modal_login_input_password').val()
 	var autologin = $('#modal_login_input_autologin').prop("checked")
@@ -37,6 +38,10 @@ $('#modal_login_btn_login').click(function () {
 	}
 	//Send to the software
 	socket.emit('login', username, password, autologin)
+	*/
+	var userToken = $('#modal_login_input_userToken').val()
+	localStorage.setItem('userToken', userToken)
+	socket.emit('loginViaUserToken', userToken)
 })
 
 // New login system (uses cookies)
@@ -51,7 +56,7 @@ socket.on("login", function (data) {
 		$("#modal_settings_picture").attr("src",data.user.picture)
 		$("#side_user").text(data.user.name)
 		$("#side_avatar").attr("src",data.user.picture)
-		$("#side_email").text(data.user.email)
+		$("#side_email").text("id:"+data.user.id)
 		$('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd', function () {
 			$(this).css('display', 'none')
 			$(this).removeClass('animated fadeOut')
@@ -97,11 +102,12 @@ $(document).ready(function () {
 	socket.emit("getUserSettings")
 	if (localStorage.getItem('autologin')){
 		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
-		$('#modal_login_input_autologin').prop('checked', true)
+		//$('#modal_login_input_autologin').prop('checked', true)
 		$('#modal_login_btn_login').attr("disabled", true)
 		$('#modal_login_btn_login').html("Logging in...")
-		$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
-		$('#modal_login_input_password').val("password")
+		//$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
+		//$('#modal_login_input_password').val("password")
+		$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
 		M.updateTextFields()
 	}
 
@@ -341,15 +347,17 @@ $('#modal_login_btn_signup').click(function(){
 
 // Logout Button
 $('#modal_settings_btn_logout').click(function () {
-	$('#modal_login_input_username').val("")
-	$('#modal_login_input_password').val("")
-	$('#modal_login_input_autologin').prop("checked",false)
+	//$('#modal_login_input_username').val("")
+	//$('#modal_login_input_password').val("")
+	//$('#modal_login_input_autologin').prop("checked",false)
+	$('#modal_login_input_userToken').val("")
 	$('#initializing').css('display', '')
 	$('#initializing').addClass('animated fadeIn').on('webkitAnimationEnd', function () {
 		$(this).removeClass('animated fadeIn')
 		$(this).css('display', '')
 	})
 	localStorage.removeItem("autologin")
+	localStorage.removeItem("userToken")
 	localStorage.removeItem("autologin_email")
 	socket.emit('logout')
 })
