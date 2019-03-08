@@ -5,7 +5,7 @@ const socket = io.connect(window.location.href)
 const localStorage = window.localStorage
 if(typeof mainApp !== "undefined"){
 	var defaultUserSettings = mainApp.defaultSettings
-	var defaultDownloadLocation = mainApp.defaultDownloadDir
+	var defaultDownloadLocation = mainApp.defaultDownloadFolder
 }
 var modalQuality = document.getElementById('modal_quality');
 modalQuality.open = false
