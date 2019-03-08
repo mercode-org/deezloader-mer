@@ -1201,17 +1201,16 @@ function getTypeFromLink(link) {
 
 function generateDownloadLink(url) {
 	var btn_download = $('<a href="#" class="waves-effect btn-flat" oncontextmenu="return false;"><i class="material-icons">file_download</i></a>')
-	$(btn_download).on("taphold", {
-		clickHandler: function(ev) {
-			ev.preventDefault()
-			addToQueue(url)
-		}
-	}, function(ev) {
-		ev.preventDefault()
+	$(btn_download).on('contextmenu', function(e){
+    e.preventDefault();
 		$(modalQuality).data("url", url)
 		$(modalQuality).css('display', 'block')
 		console.log("Opening")
 		$(modalQuality).addClass('animated fadeIn')
+    return false;
+	}).on('click', function(e){
+	    e.preventDefault();
+	    addToQueue(url)
 	})
 	return btn_download
 }
