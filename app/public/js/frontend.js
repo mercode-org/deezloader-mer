@@ -703,7 +703,6 @@ socket.on("getTrackList", function (data) {
 			var tableBody = $('#modal_trackList_table_trackList_tbody_trackList')
 		}
 		$(tableBody).html('')
-		console.log(data)
 		//############################################
 		if (data.reqType == 'artist') {
 			trackListModalApp.title = data.response.name
@@ -1210,7 +1209,6 @@ function generateDownloadLink(url) {
     e.preventDefault();
 		$(modalQuality).data("url", url)
 		$(modalQuality).css('display', 'block')
-		console.log("Opening")
 		$(modalQuality).addClass('animated fadeIn')
     return false;
 	}).on('click', function(e){

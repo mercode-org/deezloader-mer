@@ -759,6 +759,7 @@ io.sockets.on('connection', function (s) {
 						await downloadTrackObject(downloading.obj, downloading.queueId, downloading.settings)
 						downloading.downloaded++
 					}catch(err){
+						logger.error(`[${downloading.obj.artist.name} - ${downloading.obj.title}] ${err}`)
 						downloading.failed++
 					}
 					s.emit("updateQueue", {
@@ -834,6 +835,7 @@ io.sockets.on('connection', function (s) {
 							}catch(err){
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
+								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
 							s.emit("downloadProgress", {
 								queueId: downloading.queueId,
@@ -909,9 +911,9 @@ io.sockets.on('connection', function (s) {
 								downloading.playlistArr[t.playlistData[0]] = t.playlistData[1].split(filePath)[1]
 								if (t.searched) downloading.searchedLog += `${t.artist.name} - ${t.title}\r\n`
 							}catch(err){
-								logger.debug(err.stack ? err.stack : err)
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
+								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
 							s.emit("downloadProgress", {
 								queueId: downloading.queueId,
@@ -1034,6 +1036,7 @@ io.sockets.on('connection', function (s) {
 							}catch(err){
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
+								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
 							s.emit("downloadProgress", {
 								queueId: downloading.queueId,
@@ -1229,8 +1232,12 @@ io.sockets.on('connection', function (s) {
 				// Missing barcode, genre, recordType
 				track.album = ajson
 				track.date = track.album.date
+				track.trackTotal = track.album.trackTotal
 				// TODO: Make a loop for each artist
+			}
 
+			if (!track.date.slicedYear){
+				track.date.slicedYear = settings.dateFormatYear == "2" ? track.date.year.slice(2, 4) : track.date.year.slice(0, 4)
 			}
 
 			// Acquiring bpm (only if necessary)
