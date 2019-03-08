@@ -9,11 +9,7 @@ if(typeof require !== "undefined"){
 const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").text() : packageFile.version;
 
 (function () {
-	//open links externally by default
-	$(document).on('click', 'a[href^="http"]', function (event) {
-		event.preventDefault()
-		shell.openExternal(this.href)
-	})
+
 
 	// selectAll-"feature"...its really crappy to wait for document change
 	// but since the materialize modal initialization is a fucking callback hell,
@@ -23,9 +19,14 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 		$('input:checkbox.trackCheckbox').prop('checked', $(this).prop('checked'))
 	})
 
-	// Open DevTools when F12 is pressed
-	// Reload page when F5 is pressed
 	if (typeof require !== "undefined"){
+		//open links externally by default
+		$(document).on('click', 'a[href^="http"]', function (event) {
+			event.preventDefault()
+			shell.openExternal(this.href)
+		})
+		// Open DevTools when F12 is pressed
+		// Reload page when F5 is pressed
 		if (remote.process.env.NODE_ENV == 'development'){
 			document.addEventListener("keydown", function (e) {
 				if (e.which === 123) {
