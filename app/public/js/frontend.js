@@ -90,14 +90,7 @@ $('#modal_tags_replayGain').on('click', function() {
 	}
 })
 
-// Do misc stuff on page load
-$(document).ready(function () {
-	// Page Initializing
-	M.AutoInit()
-	preview_track.volume = 0
-	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
-	$('.modal').modal()
-
+socket.on('checkAutologin', function(){
 	// Autologin
 	socket.emit("getUserSettings")
 	if (localStorage.getItem('autologin')){
@@ -110,6 +103,15 @@ $(document).ready(function () {
 		$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
 		M.updateTextFields()
 	}
+})
+
+// Do misc stuff on page load
+$(document).ready(function () {
+	// Page Initializing
+	M.AutoInit()
+	preview_track.volume = 0
+	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
+	$('.modal').modal()
 
 	// Side Nav Stuff
 	$('.sidenav').sidenav({

@@ -108,6 +108,8 @@ io.sockets.on('connection', function (s) {
 	})
 	s.trackQueue.concurrency = configFile.userDefined.queueConcurrency
 
+	s.emit("checkAutologin")
+
 	// Function for logging in
 	s.on("login", async function (username, password, autologin) {
 		try{
