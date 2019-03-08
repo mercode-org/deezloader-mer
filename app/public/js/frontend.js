@@ -210,12 +210,12 @@ $(document).ready(function () {
 	// Button download all tracks in selective modal
 	$('#download_all_tracks_selective, #download_all_tracks').click(function(){
 		addToQueue($(this).attr("data-link"))
+		$(this).parent().parent().modal("close")
 	})
 
 	// Quality Modal
 	window.onclick = function(event) {
 	  if (event.target == modalQuality && modalQuality.open) {
-			console.log("Closing")
 			$(modalQuality).addClass('animated fadeOut')
 	  }
 	}
@@ -593,6 +593,7 @@ var trackListSelectiveModalApp = new Vue({
 		title: "",
 		metadata : "",
 		release_date: "",
+		explicit: false,
 		image: "",
 		type: "",
 		link: "",
@@ -632,6 +633,7 @@ function showTrackListSelective(link) {
 	trackListSelectiveModalApp.image = ""
 	trackListSelectiveModalApp.metadata = ""
 	trackListSelectiveModalApp.release_date = ""
+	trackListSelectiveModalApp.explicit = false
 	trackListSelectiveModalApp.type = ""
 	trackListSelectiveModalApp.head = []
 	trackListSelectiveModalApp.body = []
@@ -779,6 +781,7 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.type = data.reqType
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListSelectiveModalApp.title = data.response.title
+			trackListSelectiveModalApp.explicit = data.response.explicit_lyrics
 			trackListSelectiveModalApp.metadata = `${data.response.artist.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
 			trackListSelectiveModalApp.release_date = data.response.release_date.substring(0,10)
 			trackListSelectiveModalApp.image = data.response.cover_xl

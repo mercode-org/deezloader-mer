@@ -749,7 +749,7 @@
 <div id="modal_trackListSelective" class="modal modal-fixed-footer modal-custom-header">
 	<div class="modal-content">
     <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
-      <h4>{{ title }}</h4>
+      <h4>{{ title }} <i v-if="explicit" class="material-icons valignicon materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i></h4>
       <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
       <span class="right hide-on-small-only" v-if="release_date">{{ release_date }}</span>
     </div>
