@@ -41,7 +41,7 @@ if(!fs.existsSync(localpaths.user+"config.json")){
 const configFileLocation = localpaths.user+"config.json"
 // Folders
 const coverArtFolder = os.tmpdir() + path.sep + 'deezloader-imgs' + path.sep
-const defaultDownloadFolder = localpaths.home + 'Deezloader Music' + path.sep
+const defaultDownloadFolder = localpaths.home + path.sep + 'Deezloader Music' + path.sep
 // Default settings
 const defaultSettings = require('./default.json').userDefined
 // Spotify Files
