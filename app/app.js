@@ -1297,12 +1297,14 @@ io.sockets.on('connection', function (s) {
 					track.album.artist.picture = track.artist.picture
 				}else{
 					let found = false
-					track.artists.forEach(x=>{
-						if(!found && x.name == track.album.artist.name){
-							track.album.artist.picture = x.picture
-							found = true
-						}
-					})
+					if (track.artists){
+						track.artists.forEach(x=>{
+							if(!found && x.name == track.album.artist.name){
+								track.album.artist.picture = x.picture
+								found = true
+							}
+						})
+					}
 					if(settings.saveArtworkArtist && !found){
 						artist = await s.Deezer.legacyGetArtist(track.album.artist.id)
 						track.album.artist.picture = artist.picture_small.split("/56x56-000000-80-0-0.jpg")[0].split(s.Deezer.artistPictureHost)[1]
