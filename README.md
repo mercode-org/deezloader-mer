@@ -1,5 +1,5 @@
 # Deezloader Remix
-### Latest Version: 4.1.8
+### Latest Version: 4.2.0
 Deezloader Remix is an improved version of Deezloader based on the Reborn branch.<br/>
 With this app you can download songs, playlists and albums directly from Deezer's Server in a single and well packaged app.
 
@@ -31,12 +31,12 @@ Here are listed the MD5 checksums (so you can be sure the files were not tampere
 
 | Filename                             | Checksum MD5                       |
 | ------------------------------------ | ---------------------------------- |
-| Deezloader Remix 4.1.8 Setup.exe     | `830044eb4145dcfe76adf0d98d6d68c2` |
-| Deezloader Remix 4.1.8.exe           | `c4aecd2cf0ccf8549cb3bab9f3b45ae5` |
-| Deezloader Remix 4.1.8 Setup x32.exe | `239ac7e81b5e25e1dd428e5433bc5d74` |
-| Deezloader Remix 4.1.8 x32.exe       | `57e2c1720c0134e832490633684dd491` |
-| Deezloader Remix 4.1.8.AppImage      | `5dbbae73290ef3461bbe1c346a7886bb` |
-| Deezloader Remix 4.1.8 i386.AppImage | `7e6c29c09852b78b9776c6c1392f1030` |
+| Deezloader Remix 4.2.0 Setup.exe     | `91e5efc37fab3ee86918bcfe4f9afb04` |
+| Deezloader Remix 4.2.0.exe           | `800fe9d5d388e12a670595c0ff25e8c6` |
+| Deezloader Remix 4.2.0 Setup x32.exe | `4fafe060e52be4c5a98ea26eb68659dd` |
+| Deezloader Remix 4.2.0 x32.exe       | `ae13ccb7142b70686387eca7ce84939a` |
+| Deezloader Remix 4.2.0.AppImage      | `20a6c5f0f755ec7ee50ce1d7714086ea` |
+| Deezloader Remix 4.2.0 i386.AppImage | `94a3bf9c02469d90975b252e539dee8b` |
 | Deezloader Remix-4.1.8.dmg           | `9273a34fba68793d661de6b6547a80ea` |
 
 ## Build
