@@ -1,4 +1,4 @@
 {
-  "version":"4.1.8",
-  "changelog":"- Fix the issue where some people wasn't able to log in from the Netherlands\r\n"
+  "version":"4.2.0",
+  "changelog":"- New login workflow\r\n- Improved UI\r\n- Revamped album, artists and playlist modals\r\n- Added option to download the track in a different quality over the one selected (right click on d/l button)\r\n- Added autologin by default to fix re-connection problems\r\n- Re-added fallback on track errors\r\n- Fixed Default Settings button\r\n- Fixed links not working in server mode\r\n- Fixed UI problems when on mobile view (responsive site)\r\n- Fixed Settings menu not being populated on mobile view\r\n- Fixed problem with the artist tag when downloading playlists and albums\r\n- Fixed playlist numbering on files (now it doesn't override the trackNumber tag)\r\n- Fixed aritst artwork not saving\r\n"
 }
