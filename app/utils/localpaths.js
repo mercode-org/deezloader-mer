@@ -9,7 +9,7 @@ if(process.env.APPDATA){
 }else if(process.platform == "darwin"){
 	userdata = homedata + '/Library/Application Support/Deezloader Remix/';
 }else if(process.platform == "android"){
-  homedata += "/storage/emulated/0";
+  homedata = "/sdcard";
   userdata = homedata + "/Deezloader Remix/";
 }else{
 	userdata = homedata + '/.config/Deezloader Remix/';
