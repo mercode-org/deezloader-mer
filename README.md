@@ -37,7 +37,7 @@ Here are listed the MD5 checksums (so you can be sure the files were not tampere
 | Deezloader Remix 4.2.0 x32.exe       | `ae13ccb7142b70686387eca7ce84939a` |
 | Deezloader Remix 4.2.0.AppImage      | `20a6c5f0f755ec7ee50ce1d7714086ea` |
 | Deezloader Remix 4.2.0 i386.AppImage | `94a3bf9c02469d90975b252e539dee8b` |
-| Deezloader Remix-4.1.8.dmg           | `9273a34fba68793d661de6b6547a80ea` |
+| Deezloader Remix-4.2.0.dmg           | `d5baff6d8dd694de776c5dd8a1f85a8e` |
 
 ## Build
 If you want to buid it yourself you will need Node.js installed and npm or yarn.<br/>
