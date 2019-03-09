@@ -40,8 +40,18 @@ if(!fs.existsSync(localpaths.user+"config.json")){
 // Files
 const configFileLocation = localpaths.user+"config.json"
 // Folders
-const coverArtFolder = os.tmpdir() + path.sep + 'deezloader-imgs' + path.sep
+var coverArtFolder = 'deezloader-imgs' + path.sep
+
+if(process.platform == "android"){
+    coverArtFolder = localpaths.user + coverArtFolder
+}else{
+    coverArtFolder = os.tmpdir() + path.sep + coverArtFolder
+}
+
 const defaultDownloadFolder = localpaths.home + path.sep + 'Deezloader Music' + path.sep
+if(process.platform == "android"){
+    fs.ensureFileSync(coverArtFolder + '.nomedia');
+}
 // Default settings
 const defaultSettings = require('./default.json').userDefined
 // Spotify Files
