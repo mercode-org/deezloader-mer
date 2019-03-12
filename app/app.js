@@ -83,6 +83,13 @@ app.use('/', express.static(__dirname + '/public/'))
 server.listen(configFile.serverPort)
 logger.info('Server is running @ localhost:' + configFile.serverPort)
 
+var dqueue = new stq.SequentialTaskQueue()
+var downloadQueue = {}
+var trackQueue = queue({
+	autostart: true
+})
+trackQueue.concurrency = configFile.userDefined.queueConcurrency
+
 // START sockets clusterfuck
 io.sockets.on('connection', function (s) {
 	logger.info("Connection received!")
@@ -111,14 +118,10 @@ io.sockets.on('connection', function (s) {
 
 	// Connection dependet variables
 	s.Deezer = new deezerApi()
-	s.dqueue = new stq.SequentialTaskQueue()
-	s.downloadQueue = {}
-	s.trackQueue = queue({
-		autostart: true
-	})
-	s.trackQueue.concurrency = configFile.userDefined.queueConcurrency
 
 	s.emit("checkAutologin")
+	s.emit("getDefaultSettings", defaultSettings, defaultDownloadFolder)
+	s.emit("populateDownloadQueue", downloadQueue)
 
 	// Function for logging in
 	s.on("login", async function (username, password, autologin) {
@@ -407,8 +410,8 @@ io.sockets.on('connection', function (s) {
 
 		if (settings.userDefined.queueConcurrency < 1) settings.userDefined.queueConcurrency = 1
 
-		if (settings.userDefined.queueConcurrency != s.trackQueue.concurrency){
-			s.trackQueue.concurrency = settings.userDefined.queueConcurrency
+		if (settings.userDefined.queueConcurrency != trackQueue.concurrency){
+			trackQueue.concurrency = settings.userDefined.queueConcurrency
 		}
 
 		if (settings.userDefined.chartsCountry != configFile.userDefined.chartsCountry){
@@ -685,9 +688,9 @@ io.sockets.on('connection', function (s) {
 	// All the above functions call this function
 	// It adds the object to an array and adds the promise for the download to the object itself
 	function addToQueue(object) {
-		s.downloadQueue[object.queueId] = object
-		s.emit('addToQueue', object)
-		s.downloadQueue[object.queueId].downloadQueuePromise = s.dqueue.push(addNextDownload, { args: object })
+		downloadQueue[object.queueId] = object
+		io.sockets.emit('addToQueue', object)
+		downloadQueue[object.queueId].downloadQueuePromise = dqueue.push(addNextDownload, { args: object })
 	}
 
 	// Wrapper for queue download
@@ -709,20 +712,20 @@ io.sockets.on('connection', function (s) {
 		if (!queueId) return
 		let cancel = false
 		let cancelSuccess
-		if (s.downloadQueue[queueId]){
+		if (downloadQueue[queueId]){
 			cancel = true;
-			if (s.downloadQueue[queueId].downloadQueuePromise) s.downloadQueue[queueId].downloadQueuePromise.cancel()
-			if (s.downloadQueue[Object.keys(s.downloadQueue)[0]].queueId == queueId) {
-				s.trackQueue = queue({
+			if (downloadQueue[queueId].downloadQueuePromise) downloadQueue[queueId].downloadQueuePromise.cancel()
+			if (downloadQueue[Object.keys(downloadQueue)[0]].queueId == queueId) {
+				trackQueue = queue({
 					autostart: true,
-					concurrency: s.trackQueue.concurrency
+					concurrency: trackQueue.concurrency
 				})
 			}
-			delete s.downloadQueue[queueId]
+			delete downloadQueue[queueId]
 		}
 
 		if (cancel) {
-			s.emit("cancelDownload", {queueId: queueId, cleanAll: cleanAll});
+			io.sockets.emit("cancelDownload", {queueId: queueId, cleanAll: cleanAll});
 		}
 	}
 	s.on("cancelDownload", function (data) {cancelDownload(data.queueId)});
@@ -731,17 +734,17 @@ io.sockets.on('connection', function (s) {
 		data.queueList.forEach(x=>{
 			cancelDownload(x, true);
 		})
-		s.emit("cancelAllDownloads")
+		io.sockets.emit("cancelAllDownloads")
 	})
 
 	/*function getNextDownload() {
-		if (s.currentItem != null || Object.keys(s.downloadQueue).length == 0) {
-			if (Object.keys(s.downloadQueue).length == 0 && s.currentItem == null) {
+		if (s.currentItem != null || Object.keys(downloadQueue).length == 0) {
+			if (Object.keys(downloadQueue).length == 0 && s.currentItem == null) {
 				s.emit("emptyDownloadQueue", {})
 			}
 			return null
 		}
-		s.currentItem = s.downloadQueue[Object.keys(s.downloadQueue)[0]]
+		s.currentItem = downloadQueue[Object.keys(downloadQueue)[0]]
 		return s.currentItem
 	}*/
 
@@ -751,7 +754,7 @@ io.sockets.on('connection', function (s) {
 		if (!downloading) return
 
 		if (downloading.type != "spotifyplaylist"){
-			s.emit("downloadStarted", {queueId: downloading.queueId})
+			io.sockets.emit("downloadStarted", {queueId: downloading.queueId})
 		}
 
 		downloading.errorLog = "";
@@ -772,7 +775,7 @@ io.sockets.on('connection', function (s) {
 						logger.error(`[${downloading.obj.artist.name} - ${downloading.obj.title}] ${err}`)
 						downloading.failed++
 					}
-					s.emit("updateQueue", {
+					io.sockets.emit("updateQueue", {
 						name: downloading.name,
 						artist: downloading.artist,
 						size: downloading.size,
@@ -782,7 +785,7 @@ io.sockets.on('connection', function (s) {
 						id: downloading.id,
 						type: downloading.type,
 					})
-					s.emit("downloadProgress", {
+					io.sockets.emit("downloadProgress", {
 						queueId: downloading.queueId,
 						percentage: 100
 					})
@@ -830,8 +833,8 @@ io.sockets.on('connection', function (s) {
 				}
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.obj.tracks.every(function (t) {
-						s.trackQueue.push(async cb=>{
-							if (!s.downloadQueue[downloading.queueId]) {
+						trackQueue.push(async cb=>{
+							if (!downloadQueue[downloading.queueId]) {
 								reject()
 								return false
 							}
@@ -847,11 +850,11 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
-							s.emit("downloadProgress", {
+							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
 							});
-							s.emit("updateQueue", {
+							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
 								size: downloading.size,
@@ -870,7 +873,7 @@ io.sockets.on('connection', function (s) {
 				try{
 					await downloading.downloadPromise
 					logger.info("Album finished downloading: "+downloading.name);
-					s.emit("downloadProgress", {
+					io.sockets.emit("downloadProgress", {
 						queueId: downloading.queueId,
 						percentage: 100
 					});
@@ -910,8 +913,8 @@ io.sockets.on('connection', function (s) {
 				filePath = mainFolder+antiDot(fixName(downloading.settings.plName)) + path.sep
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.obj.tracks.every(function (t, index) {
-						s.trackQueue.push(async cb=>{
-							if (!s.downloadQueue[downloading.queueId]) {
+						trackQueue.push(async cb=>{
+							if (!downloadQueue[downloading.queueId]) {
 								reject()
 								return false
 							}
@@ -925,11 +928,11 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
-							s.emit("downloadProgress", {
+							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
 							});
-							s.emit("updateQueue", {
+							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
 								size: downloading.size,
@@ -948,7 +951,7 @@ io.sockets.on('connection', function (s) {
 				try{
 					await downloading.downloadPromise
 					logger.info("Playlist finished "+downloading.name);
-					s.emit("downloadProgress", {
+					io.sockets.emit("downloadProgress", {
 						queueId: downloading.queueId,
 						percentage: 100
 					});
@@ -1014,21 +1017,21 @@ io.sockets.on('connection', function (s) {
 					})
 				}
 				await convert()
-				if (!s.downloadQueue[downloading.queueId]) {
+				if (!downloadQueue[downloading.queueId]) {
 					logger.info("Stopping the playlist queue")
 					break
 				}
 				downloading.trackList = await s.Deezer.getTracks(downloading.playlistContent)
 				logger.info("All tracks converted, starting download")
-				s.emit("downloadStarted", {queueId: downloading.queueId})
+				io.sockets.emit("downloadStarted", {queueId: downloading.queueId})
 				downloading.settings.playlist = {
 					fullSize: downloading.trackList.length
 				}
 				filePath = `${mainFolder}${antiDot(fixName(downloading.settings.plName))}${path.sep}`
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.trackList.every(function (t, index) {
-						s.trackQueue.push(async cb=>{
-							if (!s.downloadQueue[downloading.queueId]) {
+						trackQueue.push(async cb=>{
+							if (!downloadQueue[downloading.queueId]) {
 								reject()
 								return false
 							}
@@ -1048,11 +1051,11 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
-							s.emit("downloadProgress", {
+							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
 							});
-							s.emit("updateQueue", {
+							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
 								size: downloading.size,
@@ -1071,7 +1074,7 @@ io.sockets.on('connection', function (s) {
 				try{
 					await downloading.downloadPromise
 					logger.info("Playlist finished "+downloading.name);
-					s.emit("downloadProgress", {
+					io.sockets.emit("downloadProgress", {
 						queueId: downloading.queueId,
 						percentage: 100
 					});
@@ -1120,15 +1123,15 @@ io.sockets.on('connection', function (s) {
 				}
 			break
 		}
-		if (downloading && s.downloadQueue[Object.keys(s.downloadQueue)[0]] && (Object.keys(s.downloadQueue)[0] == downloading.queueId)) delete s.downloadQueue[Object.keys(s.downloadQueue)[0]]
-		if (Object.keys(s.downloadQueue).length == 0) {
-			s.emit("emptyDownloadQueue", {})
+		if (downloading && downloadQueue[Object.keys(downloadQueue)[0]] && (Object.keys(downloadQueue)[0] == downloading.queueId)) delete downloadQueue[Object.keys(downloadQueue)[0]]
+		if (Object.keys(downloadQueue).length == 0) {
+			io.sockets.emit("emptyDownloadQueue", {})
 		}
 	}
 
 	// This function takes the track object and does all the stuff to download it
 	async function downloadTrackObject(track, queueId, settings) {
-		if (!s.downloadQueue[queueId]) {
+		if (!downloadQueue[queueId]) {
 			logger.error(`[${track.artist.name} - ${track.title}] Failed to download: Not in queue`)
 			throw new Error("Not in queue")
 			return false
@@ -1397,7 +1400,7 @@ io.sockets.on('connection', function (s) {
 
 		// Auto detect aviable track format from settings
 		if (parseInt(track.id)>0){
-			switch(s.downloadQueue[queueId].bitrate){
+			switch(downloadQueue[queueId].bitrate){
 				case "9":
 					track.selectedFormat = 9
 					track.selectedFilesize = track.filesize.flac
@@ -1565,7 +1568,7 @@ io.sockets.on('connection', function (s) {
 					reject("Downloading error: "+error)
 					return false
 				}
-				if (!s.downloadQueue[queueId]){
+				if (!downloadQueue[queueId]){
 					fs.remove(tempPath)
 					reject("Not in Queue")
 					return false
@@ -1586,29 +1589,29 @@ io.sockets.on('connection', function (s) {
 					return false
 				}
 			}).on("data", function(data) {
-				if (!s.downloadQueue[queueId]){
+				if (!downloadQueue[queueId]){
 					reject("Not in Queue")
 					return false
 				}
 			})
-			if((s.downloadQueue[queueId]) && s.downloadQueue[queueId].type == "track"){
+			if((downloadQueue[queueId]) && downloadQueue[queueId].type == "track"){
 				let chunkLength = 0
 				req.on("data", function(data) {
-					if (!s.downloadQueue[queueId]){
+					if (!downloadQueue[queueId]){
 						reject("Not in Queue")
 					}
 					chunkLength += data.length
 					try{
-						if (!s.downloadQueue[queueId].percentage) {
-							s.downloadQueue[queueId].percentage = 0
+						if (!downloadQueue[queueId].percentage) {
+							downloadQueue[queueId].percentage = 0
 						}
 						let complete = track.selectedFilesize
 						let percentage = (chunkLength / complete) * 100;
-						if ((percentage - s.downloadQueue[queueId].percentage > 1) || (chunkLength == complete)) {
-							s.downloadQueue[queueId].percentage = percentage
-							s.emit("downloadProgress", {
+						if ((percentage - downloadQueue[queueId].percentage > 1) || (chunkLength == complete)) {
+							downloadQueue[queueId].percentage = percentage
+							io.sockets.emit("downloadProgress", {
 								queueId: queueId,
-								percentage: s.downloadQueue[queueId].percentage-5
+								percentage: downloadQueue[queueId].percentage-5
 							})
 						}
 					}catch(err){}

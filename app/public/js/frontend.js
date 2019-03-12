@@ -2,11 +2,9 @@
 
 // Variables & constants
 const socket = io.connect(window.location.href)
+var defaultUserSettings = {}
+var defaultDownloadLocation = ""
 const localStorage = window.localStorage
-if(typeof mainApp !== "undefined"){
-	var defaultUserSettings = mainApp.defaultSettings
-	var defaultDownloadLocation = mainApp.defaultDownloadFolder
-}
 var modalQuality = document.getElementById('modal_quality');
 modalQuality.open = false
 let userSettings = []
@@ -23,6 +21,11 @@ socket.on("message", function(desc){
 // For Debug purposes
 socket.on("printObj", function(obj){
 	console.log(obj)
+})
+
+socket.on("getDefaultSettings", function(defaultSettings, defaultDownloadFolder){
+	defaultUserSettings = defaultSettings
+	defaultDownloadLocation = defaultDownloadFolder
 })
 
 //Login button
@@ -1045,8 +1048,7 @@ function alreadyInQueue(id, bitrate) {
 	return alreadyInQueue
 }
 
-socket.on('addToQueue', function (data) {
-
+function addObjToQueue(data){
 	var tableBody = $('#tab_downloads_table_downloads').find('tbody')
 
 	$(tableBody).append(
@@ -1067,6 +1069,13 @@ socket.on('addToQueue', function (data) {
 
 	btn_remove.appendTo(tableBody.children('tr:last')).wrap('<td class="eventBtn center">')
 
+}
+
+socket.on('addToQueue', function(data){addObjToQueue(data)})
+socket.on('populateDownloadQueue', function(data){
+	Object.keys(data).forEach(function(key) {
+		addObjToQueue(data[key])
+	})
 })
 
 socket.on("downloadStarted", function (data) {
