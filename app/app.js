@@ -1239,10 +1239,11 @@ io.sockets.on('connection', function (s) {
 					track.genre = uniqueArray(genreArray, false)
 				}
 			}else{
-				// Missing barcode, genre, recordType
+				// Missing barcode, genre
 				track.album = ajson
 				track.date = track.album.date
 				track.trackTotal = track.album.trackTotal
+				track.recordType = swichReleaseType(track.recordType)
 				// TODO: Make a loop for each artist
 			}
 
@@ -2034,7 +2035,7 @@ function splitNumber(str,total){
 }
 
 function swichReleaseType(id){
-	switch (id) {
+	switch (id.toString()) {
 		case "0":
 			return "Album";
 		case "1":
@@ -2042,7 +2043,7 @@ function swichReleaseType(id){
 		case "3":
 			return "EP";
 		default:
-			return id;
+			return "Album";
 	}
 }
 
