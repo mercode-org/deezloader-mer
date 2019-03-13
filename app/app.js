@@ -1319,6 +1319,34 @@ io.sockets.on('connection', function (s) {
 			if (!track.album.artist.picture) track.album.artist.picture = ""
 			track.album.artist.pictureUrl = `${s.Deezer.artistPictureHost}${track.album.artist.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
 			track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
+
+			// Auto detect aviable track format from settings
+			if (parseInt(track.id)>0){
+				switch(downloadQueue[queueId].bitrate.toString()){
+					case "9":
+						track.selectedFormat = 9
+						track.selectedFilesize = track.filesize.flac
+						if (track.filesize.flac>0) break
+						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+					case "3":
+						track.selectedFormat = 3
+						track.selectedFilesize = track.filesize.mp3_320
+						if (track.filesize.mp3_320>0) break
+						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+					case "1":
+						track.selectedFormat = 1
+						track.selectedFilesize = track.filesize.mp3_128
+						if (track.filesize.mp3_128>0) break
+						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+					default:
+						track.selectedFormat = 8
+						track.selectedFilesize = track.filesize.default
+				}
+			}else{
+				track.selectedFilesize = track.filesize
+				track.selectedFormat = 3
+			}
+
 			if(track.contributor){
 				if(track.contributor.composer){
 					track.composerString = []
@@ -1397,33 +1425,6 @@ io.sockets.on('connection', function (s) {
 			}
 		}else{
 			track.date = {year: 0,day: 0,month: 0}
-		}
-
-		// Auto detect aviable track format from settings
-		if (parseInt(track.id)>0){
-			switch(downloadQueue[queueId].bitrate){
-				case "9":
-					track.selectedFormat = 9
-					track.selectedFilesize = track.filesize.flac
-					if (track.filesize.flac>0) break
-					if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
-				case "3":
-					track.selectedFormat = 3
-					track.selectedFilesize = track.filesize.mp3_320
-					if (track.filesize.mp3_320>0) break
-					if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
-				case "1":
-					track.selectedFormat = 1
-					track.selectedFilesize = track.filesize.mp3_128
-					if (track.filesize.mp3_128>0) break
-					if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
-				default:
-					track.selectedFormat = 8
-					track.selectedFilesize = track.filesize.default
-			}
-		}else{
-			track.selectedFilesize = track.filesize
-			track.selectedFormat = 3
 		}
 
 		// TODO: Move to a separate function
