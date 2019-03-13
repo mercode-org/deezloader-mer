@@ -484,6 +484,7 @@ io.sockets.on('connection', function (s) {
 					failed: 0,
 					queueId: `id${Math.random().toString(36).substring(2)}`,
 					id: `${track.id}:${data.bitrate}`,
+					urlId: data.id,
 					bitrate: data.bitrate+"",
 					type: 'track',
 					settings: data.settings || {},
