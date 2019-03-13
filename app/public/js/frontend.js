@@ -9,6 +9,8 @@ var modalQuality = document.getElementById('modal_quality');
 modalQuality.open = false
 let userSettings = []
 
+var downloadQueue = []
+
 let preview_track = document.getElementById('preview-track')
 let preview_stopped = true
 
@@ -1034,17 +1036,26 @@ function addToQueue(url, forceBitrate=null) {
 		return false
 	}
 	socket.emit("download" + type, {id: id, settings: userSettings, bitrate: bitrate})
+	downloadQueue.push(`${id}:${bitrate}`)
 	M.toast({html: '<i class="material-icons left">add</i>Added to download-queue', displayLength: 5000, classes: 'rounded'})
 }
 
 function alreadyInQueue(id, bitrate) {
 	var alreadyInQueue = false
-	$('#tab_downloads_table_downloads').find('tbody').find('tr').each(function () {
-		if ($(this).data('deezerid') == `${id}:${bitrate}` || $(this).data('urlid') == id) {
+	downloadQueue.forEach(function(x){
+		if(x == `${id}:${bitrate}`){
 			alreadyInQueue = true
 			return false
 		}
 	})
+	if (!alreadyInQueue){
+		$('#tab_downloads_table_downloads').find('tbody').find('tr').each(function () {
+			if ($(this).data('deezerid') == `${id}:${bitrate}` || $(this).data('urlid') == id) {
+				alreadyInQueue = true
+				return false
+			}
+		})
+	}
 	return alreadyInQueue
 }
 
@@ -1134,6 +1145,7 @@ socket.on("emptyDownloadQueue", function () {
 socket.on("cancelDownload", function (data) {
 	//data.queueId		-> queueId of item which was canceled
 	$('#' + data.queueId).addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+		downloadQueue.splice( list.indexOf(data.id), 1)
 		$(this).remove()
 		if (!data.cleanAll) M.toast({html: '<i class="material-icons left">clear</i>One download removed!', displayLength: 5000, classes: 'rounded'})
 	})
@@ -1141,6 +1153,7 @@ socket.on("cancelDownload", function (data) {
 
 $('#clearTracksTable').click(function (ev) {
 	$('#tab_downloads_table_downloads').find('tbody').find('.finished, .error').addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+		downloadQueue.splice( list.indexOf($(this).data('deezerid')), 1)
 		$(this).remove()
 	})
 	return false
@@ -1150,6 +1163,9 @@ $('#cancelAllTable').click(function (ev) {
 	let listOfIDs = $('#tab_downloads_table_downloads').find('tbody').find('tr').map((x,i)=>{
 		return $(i).attr('id')
 	}).get()
+	listOfIDs.forEach(function(x){
+		downloadQueue.splice( list.indexOf(x), 1)
+	})
 	socket.emit('cancelAllDownloads', {queueList: listOfIDs})
 })
 
