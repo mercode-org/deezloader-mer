@@ -1040,7 +1040,7 @@ function addToQueue(url, forceBitrate=null) {
 function alreadyInQueue(id, bitrate) {
 	var alreadyInQueue = false
 	$('#tab_downloads_table_downloads').find('tbody').find('tr').each(function () {
-		if ($(this).data('deezerid') == `${id}:${bitrate}`) {
+		if ($(this).data('deezerid') == `${id}:${bitrate}` || $(this).data('urlid') == id) {
 			alreadyInQueue = true
 			return false
 		}
@@ -1051,8 +1051,16 @@ function alreadyInQueue(id, bitrate) {
 function addObjToQueue(data){
 	var tableBody = $('#tab_downloads_table_downloads').find('tbody')
 
+	// If we're downloading a single track album, we create a `data-urlid` property
+	// containing the album ID that's the same on the URL. Example:
+	//
+	// https://www.deezer.com/us/album/6389674 --> data-urlid is 6389674
+	//
+	// That way we can properly detect if a single track albums in the queue. See issue #224
+	var url_id = ('urlId' in data) ? data.urlId : ''
+
 	$(tableBody).append(
-			`<tr id="${data.queueId}" data-deezerid="${data.id}">
+			`<tr id="${data.queueId}" data-deezerid="${data.id}" data-urlid="${url_id}">
 			<td class="queueTitle">${data.name}</td>
 			<td class="queueSize">${data.size}</td>
 			<td class="queueDownloaded">${data.downloaded}</td>
