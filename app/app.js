@@ -1442,7 +1442,7 @@ io.sockets.on('connection', function (s) {
 		// Generating file path
 		let filepath = mainFolder;
 		let artistPath;
-		if (settings.createArtistFolder || settings.createAlbumFolder) {
+		if ((settings.createArtistFolder || settings.createAlbumFolder) && !settings.plName) {
 
 			if(settings.plName){
 				filepath += antiDot(fixName(settings.plName)) + path.sep;
@@ -1541,7 +1541,7 @@ io.sockets.on('connection', function (s) {
 		// Get Artist Image
 		if (parseInt(track.id)>0 && track.album.artist.pictureUrl && settings.saveArtworkArtist) {
 			let imgPath;
-			if(settings.createArtistFolder){
+			if(settings.createArtistFolder && artistPath){
 				imgPath = artistPath + antiDot(settingsRegexArtistCover(settings.artistImageTemplate,track.album.artist.name))+(settings.PNGcovers ? ".png" : ".jpg");
 				if(!fs.existsSync(imgPath)){
 					try{

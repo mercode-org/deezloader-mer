@@ -1145,7 +1145,7 @@ socket.on("emptyDownloadQueue", function () {
 socket.on("cancelDownload", function (data) {
 	//data.queueId		-> queueId of item which was canceled
 	$('#' + data.queueId).addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
-		downloadQueue.splice( list.indexOf(data.id), 1)
+		downloadQueue.splice( downloadQueue.indexOf(data.id), 1)
 		$(this).remove()
 		if (!data.cleanAll) M.toast({html: '<i class="material-icons left">clear</i>One download removed!', displayLength: 5000, classes: 'rounded'})
 	})
@@ -1153,7 +1153,7 @@ socket.on("cancelDownload", function (data) {
 
 $('#clearTracksTable').click(function (ev) {
 	$('#tab_downloads_table_downloads').find('tbody').find('.finished, .error').addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
-		downloadQueue.splice( list.indexOf($(this).data('deezerid')), 1)
+		downloadQueue.splice( downloadQueue.indexOf($(this).data('deezerid')), 1)
 		$(this).remove()
 	})
 	return false
@@ -1164,7 +1164,7 @@ $('#cancelAllTable').click(function (ev) {
 		return $(i).attr('id')
 	}).get()
 	listOfIDs.forEach(function(x){
-		downloadQueue.splice( list.indexOf(x), 1)
+		downloadQueue.splice( listOfIDs.indexOf(x), 1)
 	})
 	socket.emit('cancelAllDownloads', {queueList: listOfIDs})
 })
