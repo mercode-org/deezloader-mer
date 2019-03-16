@@ -1509,13 +1509,13 @@ io.sockets.on('connection', function (s) {
 		if (track.album.pictureUrl) {
 			let imgPath;
 			//If its not from an album but a playlist.
-			if(!(settings.albName || settings.createAlbumFolder)){
-				imgPath = coverArtFolder + (track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg")
-			}else{
-				if (settings.saveArtwork)
+			if(settings.albName || settings.createAlbumFolder){
+				if (settings.saveArtwork && ! settings.plName)
 					imgPath = coverpath + settingsRegexCover(settings.coverImageTemplate,track.album.artist.name,track.album.title)+(settings.PNGcovers ? ".png" : ".jpg")
 				else
 					imgPath = coverArtFolder + fixName(track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg")
+			}else{
+				imgPath = coverArtFolder + (track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg")
 			}
 			if(fs.existsSync(imgPath)){
 				track.album.picturePath = (imgPath).replace(/\\/g, "/")
