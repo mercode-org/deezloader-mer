@@ -1092,8 +1092,11 @@ function addObjToQueue(data){
 
 socket.on('addToQueue', function(data){addObjToQueue(data)})
 socket.on('populateDownloadQueue', function(data){
-	Object.keys(data).forEach(function(key) {
-		addObjToQueue(data[key])
+	Object.keys(data).forEach(function(x) {
+		downloadQueue.push(`${data[x].id}:${data[x].bitrate}`)
+		if ($('#' + data[x].queueId).length == 0){
+			addObjToQueue(data[x])
+		}
 	})
 })
 
