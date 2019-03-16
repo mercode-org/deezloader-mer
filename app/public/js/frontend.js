@@ -1076,7 +1076,7 @@ function addObjToQueue(data){
 			<td class="queueSize">${data.size}</td>
 			<td class="queueDownloaded">${data.downloaded}</td>
 			<td class="queueFailed">${data.failed}</td>
-			<td><div class="progress"><div class="indeterminate"></div></div></td>
+			<td><div class="progress"><div class="changeThis indeterminate"></div></div></td>
 			</tr>`)
 
 	var btn_remove = $('<a href="#" class="btn-flat waves-effect"><i class="material-icons">remove</i></a>')
@@ -1101,7 +1101,7 @@ socket.on("downloadStarted", function (data) {
 	//data.queueId -> queueId of started download
 
 	//Switch progress type indeterminate to determinate
-	$('#' + data.queueId).find('.indeterminate').removeClass('indeterminate').addClass('determinate')
+	$('#' + data.queueId).find('.changeThis').removeClass('indeterminate').addClass('determinate')
 	$('#' + data.queueId).find('.eventBtn').find('a').html('<i class="material-icons">clear</i>')
 
 })
@@ -1134,7 +1134,9 @@ socket.on("downloadProgress", function (data) {
 	//data.queueId -> id (string)
 	//data.percentage -> float/double, percentage
 	//updated in 1% steps
-	$('#' + data.queueId).find('.determinate').css('width', data.percentage + '%')
+	let progressbar = $('#' + data.queueId).find('.changeThis')
+	if (progressbar.hasClass('indeterminate')) progressbar.removeClass('indeterminate').addClass('determinate')
+	$('#' + data.queueId).find('.changeThis').css('width', data.percentage + '%')
 
 })
 
