@@ -1435,7 +1435,7 @@ io.sockets.on('connection', function (s) {
 			let filename = fixName(`${track.artist.name} - ${track.title}`);
 		}
 		if (settings.filename) {
-			filename = settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize, settings.plName && !(settings.createArtistFolder || settings.createAlbumFolder) && !settings.numplaylistbyalbum);
+			filename = settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize, settings.plName && !settings.numplaylistbyalbum);
 		}
 
 		// TODO: Move to a separate function
