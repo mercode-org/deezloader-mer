@@ -40,7 +40,7 @@ Here are listed the MD5 checksums (so you can be sure the files were not tampere
 | Deezloader Remix-4.2.0.dmg           | `d5baff6d8dd694de776c5dd8a1f85a8e` |
 
 ## Build
-If you want to buid it yourself you will need Node.js installed and npm or yarn.<br/>
+If you want to buid it yourself you will need Node.js installed, git and npm or yarn.<br/>
 To start utilizing the app you should open a terminal inside the project folder and run `npm install`.<br/>
 If you want to start the app, without compiling it you can use `npm start`<br/>
 To run it in server mode you can use `npm start -- -s` or go inside the `app` folder and use `node app.js`<br/>
