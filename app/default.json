@@ -47,7 +47,7 @@
 			"albumArtist": true,
 			"genre": true,
 			"year": true,
-			"date": false,
+			"date": true,
 			"explicit": false,
 			"isrc": true,
 			"length": false,
