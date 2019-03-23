@@ -34,7 +34,7 @@
 					]
 				}
 			],
-			"category": "AudioVideo;Audio"
+			"category": "Network"
 		},
 		"mac": {
 			"category": "public.app-category.music"
