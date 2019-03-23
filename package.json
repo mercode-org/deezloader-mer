@@ -34,7 +34,8 @@
 					]
 				}
 			],
-			"category": "Network"
+			"category": "Network",
+			"artifactName": "Deezloader_Remix_${version}-${arch}.${ext}"
 		},
 		"mac": {
 			"category": "public.app-category.music"
