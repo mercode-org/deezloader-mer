@@ -1986,7 +1986,7 @@ function settingsRegexAlbum(foldername, artist, album, year, rtype, explicit, pu
 			foldername = foldername.replace(/%type%/g, "")
 		}
 		foldername = foldername.replace(/%label%/g, fixName(publisher))
-		foldername = foldername.replace(/%explicit%/g, fixName((explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : "")))
+		foldername = foldername.replace(/%explicit%/g, fixName((explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit) ") : "")))
 		foldername = foldername.replace(/%genre%/g, fixName(genres ? (Array.isArray(genres) ? genres[0] : genres) : "Unknown"))
 		foldername = foldername.replace(/[/\\]/g, path.sep)
 		return foldername.trim();
