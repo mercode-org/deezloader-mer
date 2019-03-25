@@ -723,7 +723,7 @@
       <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
       <span class="right hide-on-small-only" v-if="release_date"> {{ release_date }} </span>
     </div>
-    <div class="row modal-container">
+    <div class="modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
@@ -768,7 +768,7 @@
       <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
       <span class="right hide-on-small-only" v-if="release_date">{{ release_date }}</span>
     </div>
-    <div class="row modal-container">
+    <div class="modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
@@ -797,6 +797,7 @@
 				<tbody id="modal_trackListSelective_table_trackListSelective_tbody_trackListSelective" class="hide">
 				</tbody>
 			</table>
+      <span v-if="label" style="opacity: 0.40;margin-top: 8px;display: inline-block;font-size: 13px;">{{ label }}</span>
 		</div>
 	</div>
 	<div class="modal-footer">

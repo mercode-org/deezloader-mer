@@ -598,6 +598,7 @@ var trackListSelectiveModalApp = new Vue({
 		title: "",
 		metadata : "",
 		release_date: "",
+		label: "",
 		explicit: false,
 		image: "",
 		type: "",
@@ -613,6 +614,7 @@ var trackListModalApp = new Vue({
 		title: "",
 		metadata : {},
 		release_date: "",
+		label: "",
 		image: "",
 		type: "",
 		link: "",
@@ -637,6 +639,7 @@ function showTrackListSelective(link) {
 	trackListSelectiveModalApp.title = "Loading..."
 	trackListSelectiveModalApp.image = ""
 	trackListSelectiveModalApp.metadata = ""
+	trackListSelectiveModalApp.label = ""
 	trackListSelectiveModalApp.release_date = ""
 	trackListSelectiveModalApp.explicit = false
 	trackListSelectiveModalApp.type = ""
@@ -786,6 +789,7 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListSelectiveModalApp.title = data.response.title
 			trackListSelectiveModalApp.explicit = data.response.explicit_lyrics
+			trackListSelectiveModalApp.label = data.response.label
 			trackListSelectiveModalApp.metadata = `${data.response.artist.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
 			trackListSelectiveModalApp.release_date = data.response.release_date.substring(0,10)
 			trackListSelectiveModalApp.image = data.response.cover_xl
