@@ -64,3 +64,6 @@ dist
 app/authCredentials.js
 .DS_Store
 */.DS_Store
+
+# JetBrains
+.idea

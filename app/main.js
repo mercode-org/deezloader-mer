@@ -6,6 +6,9 @@ const {app, BrowserWindow, ipcMain, Menu, Tray, Notification} = require('electro
 const os = require('os');
 loadSettings();
 
+const captcha = require('./public/js/captcha');
+captcha.registerScheme();
+
 const theApp = require('./app');
 const WindowStateManager = require('electron-window-state-manager');
 const url = require('url');
@@ -108,7 +111,7 @@ function createWindow () {
 		frame: false,
 		icon: __dirname + "/icon.png",
 		minWidth: 415,
-		minHeight: 32,
+		minHeight: 930,
 		backgroundColor: "#23232c"
 	});
 
@@ -160,6 +163,7 @@ app.on('ready', function(){
 		createWindow();
 		createTray();
 	}
+	captcha.registerProtocol();
 });
 
 // Quit when all windows are closed.

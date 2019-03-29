@@ -123,11 +123,16 @@ io.sockets.on('connection', function (s) {
 	s.emit("getDefaultSettings", defaultSettings, defaultDownloadFolder)
 	s.emit("populateDownloadQueue", downloadQueue)
 
+	const captcha = require('./public/js/captcha');
+	captcha.callbackResponse = function (data) {
+		s.emit("getCaptcha", data)
+	};
+
 	// Function for logging in
-	s.on("login", async function (username, password, autologin) {
+	s.on("login", async function (username, password, captchaResponse, autologin) {
 		try{
 			logger.info("Logging in");
-			await s.Deezer.login(username, password)
+			await s.Deezer.login(username, password, captchaResponse)
 			s.emit("login", {user: s.Deezer.user})
 			logger.info("Logged in successfully")
 			if (autologin){
