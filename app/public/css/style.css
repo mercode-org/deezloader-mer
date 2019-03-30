@@ -396,3 +396,9 @@ a[href^="ftp://"] {
 	cursor:pointer;
 	text-decoration: underline;
 }
+
+#modal_login_iframe_captcha{
+	width: 100%;
+	height: 500px;
+	border: 0;
+}

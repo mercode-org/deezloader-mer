@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>captcha</title>
+</head>
+<body>
+    <form id="modal_captcha_form" action="/submit" method="get">
+        <div class="g-recaptcha" data-sitekey="6Lf4g34UAAAAAF2O2sScZKutelN7GM1FYVBmMom4" data-callback="onCaptchaSolved"></div>
+        <script type="text/javascript" src="https://www.google.com/recaptcha/api.js"></script>
+    </form>
+    <!-- the following src ends in cap://deezer.com/js/jquery-3.3.1.min.js -->
+    <!--<script type="text/javascript" src="./../js/jquery-3.3.1.min.js"></script>-->
+    <!-- therefore we use the http protocol, possible fix: https://github.com/electron/electron/issues/4506#issuecomment-299645031 -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+    <script>
+        function onCaptchaSolved() {
+            $.get("/submit", $("#modal_captcha_form").serialize());
+        }
+    </script>
+</body>
+</html>
