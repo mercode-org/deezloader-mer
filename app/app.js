@@ -109,7 +109,9 @@ io.sockets.on('connection', function (s) {
 			lastVersion_MAJOR==currentVersion_MAJOR && lastVersion_MINOR==currentVersion_MINOR && lastVersion_PATCH>currentVersion_PATCH
 		){
 			logger.info("Update Available")
-			s.emit("message", {title: `Version ${lastVersion_MAJOR}.${lastVersion_MINOR}.${lastVersion_PATCH} is available!`, msg: body.changelog})
+			s.emit("messageUpdate", {title: `Version ${lastVersion_MAJOR}.${lastVersion_MINOR}.${lastVersion_PATCH} is available!`, msg: body.changelog, lastVersion: body.version})
+		}else{
+			logger.info("Running the latest version!")
 		}
 	})
 	.catch(error=>{
