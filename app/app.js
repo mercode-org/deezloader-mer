@@ -1260,9 +1260,9 @@ io.sockets.on('connection', function (s) {
 			// Acquiring bpm (only if necessary)
 			if (settings.tags.bpm){
 				logger.info(`[${track.artist.name} - ${track.title}] Getting BPM`);
+				track.legacyTrack = await s.Deezer.legacyGetTrack(track.id)
 				try{
-					var bpm = await s.Deezer.legacyGetTrack(track.id)
-					track.bpm = bpm.bpm
+					track.bpm = track.legacyTrack.bpm
 				}catch(err){
 					track.bpm = 0
 				}
@@ -1273,8 +1273,8 @@ io.sockets.on('connection', function (s) {
 			// Acquiring ReplayGain value (only if necessary)
 			if (settings.tags.replayGain){
 				logger.info(`[${track.artist.name} - ${track.title}] Getting track gain`);
+				if (!track.legacyTrack) track.legacyTrack = await s.Deezer.legacyGetTrack(track.id)
 				try{
-					var gain = await s.Deezer.legacyGetTrack(track.id)
 					track.replayGain = gain.gain
 				}catch(err){
 					track.replayGain = 0
@@ -1283,10 +1283,11 @@ io.sockets.on('connection', function (s) {
 				track.replayGain = 0
 			}
 
+			// Acquiring discNumber value (only if necessary)
 			if (settings.tags.discNumber && !track.discNumber){
 				logger.info(`[${track.artist.name} - ${track.title}] Getting disc number`);
-				var discNumber = await s.Deezer.legacyGetTrack(track.id)
-				track.discNumber = discNumber.disk_number
+				if (!track.legacyTrack) track.legacyTrack = await s.Deezer.legacyGetTrack(track.id)
+				track.discNumber = track.legacyTrack.disk_number
 			}
 
 			let separator = settings.multitagSeparator
