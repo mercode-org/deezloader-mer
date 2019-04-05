@@ -1410,7 +1410,10 @@ io.sockets.on('connection', function (s) {
 				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.artistsString = track.artistsString.join(separator)
 			}
 			if (track.genre){
-				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.genreString = track.genre.join(separator)
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16))))
+					track.genreString = track.genre.join(separator)
+				else
+					track.genreString = track.genre
 			}
 
 			if (track.date){
