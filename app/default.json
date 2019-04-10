@@ -24,7 +24,7 @@
 		"saveArtworkArtist": false,
 		"logErrors": false,
 		"logSearched": false,
-		"queueConcurrency": 3,
+		"queueConcurrency": 25,
 		"multitagSeparator": ";",
 		"maxBitrate": "3",
 		"PNGcovers": false,

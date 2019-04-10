@@ -19,6 +19,13 @@ socket.on("message", function(desc){
 	message(desc.title, desc.msg)
 })
 
+socket.on("messageUpdate", function(desc){
+	if (localStorage.getItem('updateModal') != desc.lastVersion){
+		message(desc.title, desc.msg)
+		localStorage.setItem('updateModal', desc.lastVersion)
+	}
+})
+
 // Prints object obj into console
 // For Debug purposes
 socket.on("printObj", function(obj){

@@ -1,5 +1,5 @@
 # Deezloader Remix
-### Latest Version: 4.2.0
+### Latest Version: 4.2.1
 Deezloader Remix is an improved version of Deezloader based on the Reborn branch.<br/>
 With this app you can download songs, playlists and albums directly from Deezer's Server in a single and well packaged app.
 
@@ -29,15 +29,15 @@ Mirros: [Wiki/Downloads](https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Down
 Chat: [@DeezloaderRemixCommunity](https://t.me/DeezloaderRemixCommunity)<br>
 Here are listed the MD5 checksums (so you can be sure the files were not tampered):<br>
 
-| Filename                             | Checksum MD5                       |
-| ------------------------------------ | ---------------------------------- |
-| Deezloader Remix 4.2.0 Setup.exe     | `91e5efc37fab3ee86918bcfe4f9afb04` |
-| Deezloader Remix 4.2.0.exe           | `800fe9d5d388e12a670595c0ff25e8c6` |
-| Deezloader Remix 4.2.0 Setup x32.exe | `4fafe060e52be4c5a98ea26eb68659dd` |
-| Deezloader Remix 4.2.0 x32.exe       | `ae13ccb7142b70686387eca7ce84939a` |
-| Deezloader Remix 4.2.0.AppImage      | `20a6c5f0f755ec7ee50ce1d7714086ea` |
-| Deezloader Remix 4.2.0 i386.AppImage | `94a3bf9c02469d90975b252e539dee8b` |
-| Deezloader Remix-4.2.0.dmg           | `d5baff6d8dd694de776c5dd8a1f85a8e` |
+| Checksum MD5                       | Filename                               |
+| ---------------------------------- | -------------------------------------- |
+| `0b607336f5a332504b937a55903dd988` | Deezloader Remix 4.2.1.exe             |
+| `98a3e7e2c050fa695e500f50a7dd22a1` | Deezloader_Remix_4.2.1-i386.AppImage   |
+| `6010cb406f8054a3ca6a3bb6acd7a039` | Deezloader Remix 4.2.1 Setup.exe       |
+| `70610702c1461b0f7ed76673ff15d77b` | Deezloader Remix 4.2.1 Setup x32.exe   |
+| `85a1e843efaf85aa7ef4f8526cf5e049` | Deezloader Remix 4.2.1 x32.exe         |
+| `706967580087748e9689b056e495cc0d` | Deezloader_Remix_4.2.1-x86_64.AppImage |
+| `4efdd879e3160c221f59bf4135c9f689` | Deezloader Remix-4.2.1.dmg             |
 
 ## Build
 If you want to buid it yourself you will need Node.js installed, git and npm or yarn.<br/>
