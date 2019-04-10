@@ -147,7 +147,7 @@ io.sockets.on('connection', function (s) {
 	s.on("loginViaUserToken", async function (userToken) {
 		try{
 			logger.info("Logging in");
-			await s.Deezer.loginViaUserToken(userToken)
+			await s.Deezer.loginViaArl(userToken)
 			s.emit("login", {user: s.Deezer.user})
 			logger.info("Logged in successfully")
 			s.emit('getCookies', s.Deezer.getCookies())
