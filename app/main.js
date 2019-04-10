@@ -111,7 +111,7 @@ function createWindow () {
 		frame: false,
 		icon: __dirname + "/icon.png",
 		minWidth: 415,
-		minHeight: 930,
+		minHeight: 32,
 		backgroundColor: "#23232c"
 	});
 

@@ -131,17 +131,15 @@ io.sockets.on('connection', function (s) {
 	};
 
 	// Function for logging in
-	s.on("login", async function (username, password, captchaResponse, autologin) {
+	s.on("login", async function (username, password, captchaResponse) {
 		try{
 			logger.info("Logging in");
 			await s.Deezer.login(username, password, captchaResponse)
 			s.emit("login", {user: s.Deezer.user})
 			logger.info("Logged in successfully")
-			if (autologin){
-				// Save session login so next time login is not needed
-				// This is the same method used by the official website
-				s.emit('getCookies', s.Deezer.getCookies())
-			}
+			// Save session login so next time login is not needed
+			// This is the same method used by the official website
+			s.emit('getCookies', s.Deezer.getCookies())
 		}catch(err){
 			s.emit("login", {error: err.message})
 			logger.error(`Login failed: ${err.message}`)
@@ -152,7 +150,7 @@ io.sockets.on('connection', function (s) {
 	s.on("loginViaUserToken", async function (userToken) {
 		try{
 			logger.info("Logging in");
-			await s.Deezer.loginViaUserToken(userToken)
+			await s.Deezer.loginViaArl(userToken)
 			s.emit("login", {user: s.Deezer.user})
 			logger.info("Logged in successfully")
 			s.emit('getCookies', s.Deezer.getCookies())

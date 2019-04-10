@@ -69,7 +69,8 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 
 	// Ready state of the page
 	document.onreadystatechange = function () {
-		if (document.readyState == "complete") {
+		console.log(document.readyState)
+		if (document.readyState == "interactive") {
 			initTitleBar()
 			$('#application_version_about').text(version)
 			$('#application_version_logo').text(version.replace(/\.[^/.]+$/, ""))
@@ -83,7 +84,9 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 						$(this).val(newValue)
 					}
 				})
+				$("#login-form-server-mode").hide()
 			}else{
+				$("#login-form-client-mode").hide()
 				$("#openDownloadsFolder").parent().hide()
 				$("#cancelAllTable").parent().removeClass("m4").addClass("m6")
 				$("#clearTracksTable").parent().removeClass("m4").addClass("m6")

@@ -2,6 +2,7 @@
 
 // Variables & constants
 const socket = io.connect(window.location.href)
+const serverMode = typeof require === "undefined"
 var defaultUserSettings = {}
 var defaultDownloadLocation = ""
 const localStorage = window.localStorage
@@ -41,16 +42,24 @@ socket.on("getDefaultSettings", function(defaultSettings, defaultDownloadFolder)
 $('#modal_login_btn_login').click(function () {
 	$('#modal_login_btn_login').attr("disabled", true)
 	$('#modal_login_btn_login').html("Logging in...")
-	var username = $('#modal_login_input_username').val()
-	var password = $('#modal_login_input_password').val()
-	var autologin = $('#modal_login_input_autologin').prop("checked")
-	if (autologin){
-		localStorage.setItem('autologin_email', username)
+	if (serverMode){
+		var userToken = $('#modal_login_input_userToken').val()
+		localStorage.setItem('userToken', userToken)
+		socket.emit('loginViaUserToken', userToken)
+	}else{
+		var captchaWindow = window.open('cap://deezer.com/', '_blank', 'nodeIntegration=no')
+		var timer = setInterval(function() {
+    	if (captchaWindow.closed) {
+      	clearInterval(timer)
+				var username = $('#modal_login_input_username').val()
+				var password = $('#modal_login_input_password').val()
+				localStorage.setItem('autologin_email', username)
+				//Send to the software
+				var captchaResponse = $('#modal_login_input_captchaResponse').val()
+			  socket.emit('login', username, password, captchaResponse)
+      }
+    }, 500);
 	}
-	//Send to the software
-	var captchaResponse = $('#modal_login_input_captchaResponse').val()
-	localStorage.setItem('captchaResponse', captchaResponse)
-    socket.emit('login', username, password, captchaResponse, autologin)
 })
 
 // Get captcha response
@@ -71,7 +80,7 @@ socket.on("login", function (data) {
 		$("#modal_settings_picture").attr("src",data.user.picture)
 		$("#side_user").text(data.user.name)
 		$("#side_avatar").attr("src",data.user.picture)
-		$("#side_email").text(data.user.email)
+		$("#side_email").text(data.user.email ? data.user.email : "id:"+data.user.id)
 		$('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd', function () {
 			$(this).css('display', 'none')
 			$(this).removeClass('animated fadeOut')
@@ -110,12 +119,14 @@ socket.on('checkAutologin', function(){
 	socket.emit("getUserSettings")
 	if (localStorage.getItem('autologin')){
 		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
-		$('#modal_login_input_autologin').prop('checked', true)
 		$('#modal_login_btn_login').attr("disabled", true)
 		$('#modal_login_btn_login').html("Logging in...")
-		$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
-		$('#modal_login_input_password').val("password")
-		$('#modal_login_input_captchaResponse').val(localStorage.getItem('captchaResponse'))
+		if (serverMode){
+			$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
+		}else{
+			$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
+			$('#modal_login_input_password').val("password")
+		}
 		M.updateTextFields()
 	}
 })
@@ -366,7 +377,7 @@ $('#modal_login_btn_signup').click(function(){
 $('#modal_settings_btn_logout').click(function () {
 	$('#modal_login_input_username').val("")
 	$('#modal_login_input_password').val("")
-	$('#modal_login_input_autologin').prop("checked",false)
+	$('#modal_login_input_userToken').val("")
 	$('#modal_login_input_captchaResponse').val("")
 	$('#initializing').css('display', '')
 	$('#initializing').addClass('animated fadeIn').on('webkitAnimationEnd', function () {
@@ -374,9 +385,10 @@ $('#modal_settings_btn_logout').click(function () {
 		$(this).css('display', '')
 	})
 	localStorage.removeItem("autologin")
-	localStorage.removeItem("captchaResponse")
+	localStorage.removeItem("userToken")
 	localStorage.removeItem("autologin_email")
 	socket.emit('logout')
+	M.updateTextFields()
 })
 
 // Populate settings fields

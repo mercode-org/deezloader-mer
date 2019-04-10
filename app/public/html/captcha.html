@@ -16,6 +16,7 @@
     <script>
         function onCaptchaSolved() {
             $.get("/submit", $("#modal_captcha_form").serialize());
+            window.close()
         }
     </script>
 </body>
