@@ -53,9 +53,16 @@ $('#modal_login_btn_login').click(function () {
       	clearInterval(timer)
 				var username = $('#modal_login_input_username').val()
 				var password = $('#modal_login_input_password').val()
+				var captchaResponse = $('#modal_login_input_captchaResponse').val()
+				if (captchaResponse == ""){
+					$('#login-res-text').text("Error: Captcha wasn't solved.")
+					setTimeout(function(){$('#login-res-text').text("")},3000)
+					$('#modal_login_btn_login').attr("disabled", false)
+					$('#modal_login_btn_login').html("Log in")
+					return
+				}
 				localStorage.setItem('autologin_email', username)
 				//Send to the software
-				var captchaResponse = $('#modal_login_input_captchaResponse').val()
 			  socket.emit('login', username, password, captchaResponse)
       }
     }, 500);
