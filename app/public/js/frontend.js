@@ -102,7 +102,7 @@ socket.on("login", function (data) {
 		setTimeout(function(){$('#login-res-text').text("")},3000)
 	}
 	$('#modal_login_btn_login').attr("disabled", false)
-	$('#modal_login_btn_login').html("Login")
+	$('#modal_login_btn_login').html("Log in")
 })
 
 // Open downloads folder
