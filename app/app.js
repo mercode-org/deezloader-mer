@@ -1447,6 +1447,8 @@ io.sockets.on('connection', function (s) {
 			filename = settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize, settings.plName && !settings.numplaylistbyalbum);
 		}
 
+		filename = antiDot(fixName(filename))
+
 		// TODO: Move to a separate function
 		// Generating file path
 		let filepath = mainFolder;
@@ -1468,15 +1470,15 @@ io.sockets.on('connection', function (s) {
 
 			if (settings.createAlbumFolder) {
 				if(settings.artName){
-					filepath += antiDot(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre)) + path.sep;
+					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
 				}else{
-					filepath += antiDot(settingsRegexAlbum(settings.foldername,track.album.artist.name,track.album.title,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre)) + path.sep;
+					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,track.album.artist.name,track.album.title,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
 				}
 			}
 		} else if (settings.plName) {
 			filepath += antiDot(fixName(settings.plName)) + path.sep;
 		} else if (settings.artName) {
-			filepath += antiDot(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre)) + path.sep;
+			filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
 		}
 		let coverpath = filepath;
 		if (track.discTotal > 1 && (settings.artName || settings.createAlbumFolder) && settings.createCDFolder){
