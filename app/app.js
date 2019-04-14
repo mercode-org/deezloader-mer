@@ -674,7 +674,10 @@ io.sockets.on('connection', function (s) {
 		try{
 			if (track.external_ids.isrc){
 				let resp = await s.Deezer.legacyGetTrackByISRC(track.external_ids.isrc)
-				return resp.id
+				if (resp.title)
+					return resp.id
+				else
+					logger.warn("ISRC track is not on Deezer, falling back to old method")
 			}
 		}catch(err){
 			logger.warn("ISRC not found, falling back to old method")
