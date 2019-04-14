@@ -41,9 +41,7 @@ app.isQuiting = false;
 
 app.serverMode = (process.argv.indexOf("-s")>-1 || process.argv.indexOf("--server")>-1);
 
-require('electron-context-menu')({
-	showInspectElement: false
-});
+require('electron-context-menu')()
 
 function loadSettings(){
 	var userdata = "";
@@ -162,8 +160,8 @@ app.on('ready', function(){
 	if (!app.serverMode){
 		createWindow();
 		createTray();
+		captcha.registerProtocol();
 	}
-	captcha.registerProtocol();
 });
 
 // Quit when all windows are closed.
