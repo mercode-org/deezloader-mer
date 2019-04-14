@@ -1042,12 +1042,6 @@ $('#tab_url_form_url').submit(function (ev) {
 		if (url.indexOf('?') > -1) {
 			url = url.substring(0, url.indexOf("?"))
 		}
-		if (url.indexOf('open.spotify.com/') >= 0 ||  url.indexOf('spotify:') >= 0){
-			if (url.indexOf('playlist') < 0){
-				message('Playlist not found', 'Deezloader for now can only download Spotify playlists.')
-				return false
-			}
-		}
 		addToQueue(url)
 	}
 })
@@ -1056,7 +1050,8 @@ $('#tab_url_form_url').submit(function (ev) {
 function addToQueue(url, forceBitrate=null) {
 	bitrate = forceBitrate ? forceBitrate : userSettings.maxBitrate
 	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
-	if (['track', 'playlist', 'spotifyplaylist', 'artisttop', 'album', 'artist'].indexOf(type) == -1) {
+	console.log(type, id)
+	if (['track', 'spotifytrack', 'playlist', 'spotifyplaylist', 'album', 'artist', 'artisttop'].indexOf(type) == -1) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong Type!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
@@ -1064,7 +1059,7 @@ function addToQueue(url, forceBitrate=null) {
 		M.toast({html: '<i class="material-icons left">playlist_add_check</i> Already in download-queue!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
-	if (id.match(/^-?[0-9]+$/) == null && type != 'spotifyplaylist') {
+	if (id.match(/^-?[0-9]+$/) == null && type.indexOf("spotify")<-1) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong ID!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
@@ -1244,9 +1239,30 @@ function getIDFromLink(link, type) {
 	}
 	// Spotify
 	if ((link.startsWith("http") && link.indexOf('open.spotify.com/') >= 0)){
-		return link.slice(link.indexOf("/playlist/")+10)
+		switch (type){
+			case "spotifyplaylist":
+				return link.slice(link.indexOf("/playlist/")+10)
+				break
+			case "spotifytrack":
+				return link.slice(link.indexOf("/track/")+7)
+				break
+			case "spotifyalbum":
+				return link.slice(link.indexOf("/album/")+7)
+				break
+		}
 	} else if (link.startsWith("spotify:")){
-		return link.slice(link.indexOf("playlist:")+9)
+		switch (type){
+			case "spotifyplaylist":
+				return link.slice(link.indexOf("playlist:")+9)
+				break
+			case "spotifytrack":
+				return link.slice(link.indexOf("track:")+6)
+				break
+			case "spotifyalbum":
+				return link.slice(link.indexOf("album:")+6)
+				break
+		}
+
 
 	// Deezer
 	} else if(type == "artisttop") {
@@ -1259,7 +1275,10 @@ function getIDFromLink(link, type) {
 function getTypeFromLink(link) {
 	var type
 	if (link.indexOf('spotify') > -1){
-		type = "spotifyplaylist"
+		type = "spotify"
+		if (link.indexOf('playlist') > -1) type += "playlist"
+		else if (link.indexOf('track') > -1) type += "track"
+		else if (link.indexOf('album') > -1) type += "album"
 	} else	if (link.indexOf('/track') > -1) {
 		type = "track"
 	} else if (link.indexOf('/playlist') > -1) {

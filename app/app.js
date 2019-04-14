@@ -645,6 +645,27 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadspotifyplaylist", data=>{downloadSpotifyPlaylist(data)})
 
+	// Gets data from the frontend and creates data for the deezer track object
+	async function downloadSpotifyTrack(data){
+		logger.info(`Added to Queue ${data.id}`)
+		if (spotifySupport){
+			try{
+				let creds = await Spotify.clientCredentialsGrant()
+				Spotify.setAccessToken(creds.body['access_token'])
+				var resp = await Spotify.getTrack(data.id, {fields: "external_ids"})
+				deezerId = await convertSpotify2Deezer(resp.body)
+				data.id = deezerId
+				downloadTrack(data)
+			}catch(err){
+				logger.error(`downloadSpotifyPlaylist failed: ${err.stack ? err.stack : err}`)
+				return
+			}
+		}else{
+			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+		}
+	}
+	s.on("downloadspotifytrack", data=>{downloadSpotifyTrack(data)})
+
 	// Converts the spotify track to a deezer one
 	// It tries first with the isrc (best way of conversion)
 	// Fallbacks to the old way, using search
