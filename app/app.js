@@ -1015,6 +1015,7 @@ io.sockets.on('connection', function (s) {
 				logger.info("Waiting for all tracks to be converted");
 				const convert = async () =>{
 					await asyncForEach(downloading.obj.tracks, async (t,i)=>{
+						if (!downloadQueue[downloading.queueId]) return false
 						try{
 							downloading.playlistContent[i] = await convertSpotify2Deezer(t)
 						}catch(err){
