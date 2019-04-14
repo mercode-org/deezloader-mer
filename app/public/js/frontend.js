@@ -679,7 +679,9 @@ function showTrackListSelective(link) {
 	trackListSelectiveModalApp.head = []
 	trackListSelectiveModalApp.body = []
 	$('#modal_trackListSelective').modal('open')
-	socket.emit('getTrackList', {id: getIDFromLink(link), type: getTypeFromLink(link)})
+	let type = getTypeFromLink(link)
+	let id = getIDFromLink(link, type)
+	socket.emit('getTrackList', {id: id, type: type})
 }
 
 $('#download_track_selection').click(function(e){
@@ -717,7 +719,9 @@ function showTrackList(link) {
 	trackListModalApp.head = []
 	trackListModalApp.body = []
 	$('#modal_trackList').modal('open')
-	socket.emit("getTrackList", {id: getIDFromLink(link), type: getTypeFromLink(link)})
+	let type = getTypeFromLink(link)
+	let id = getIDFromLink(link, type)
+	socket.emit('getTrackList', {id: id, type: type})
 }
 
 socket.on("getTrackList", function (data) {
