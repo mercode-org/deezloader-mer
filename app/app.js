@@ -652,10 +652,16 @@ io.sockets.on('connection', function (s) {
 			try{
 				let creds = await Spotify.clientCredentialsGrant()
 				Spotify.setAccessToken(creds.body['access_token'])
-				var resp = await Spotify.getTrack(data.id, {fields: "external_ids"})
+				var resp = await Spotify.getTrack(data.id, {fields: "external_ids,artists,album,name"})
 				deezerId = await convertSpotify2Deezer(resp.body)
-				data.id = deezerId
-				downloadTrack(data)
+				if (deezerId != 0){
+					data.id = deezerId
+					downloadTrack(data)
+				}else{
+					s.emit("toast", "Can't find the track on Deezer!")
+					s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+					logger.error(`Can't find the track on Deezer!`)
+				}
 			}catch(err){
 				logger.error(`downloadSpotifyPlaylist failed: ${err.stack ? err.stack : err}`)
 				return

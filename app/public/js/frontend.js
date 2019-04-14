@@ -20,6 +20,10 @@ socket.on("message", function(desc){
 	message(desc.title, desc.msg)
 })
 
+socket.on("toast", function(message){
+	M.toast({html: '<i class="material-icons left">error</i>'+message, displayLength: 5000, classes: 'rounded'})
+})
+
 socket.on("messageUpdate", function(desc){
 	if (localStorage.getItem('updateModal') != desc.lastVersion){
 		message(desc.title, desc.msg)
@@ -1182,6 +1186,11 @@ socket.on("cancelDownload", function (data) {
 		$(this).remove()
 		if (!data.cleanAll) M.toast({html: '<i class="material-icons left">clear</i>One download removed!', displayLength: 5000, classes: 'rounded'})
 	})
+})
+
+socket.on("silentlyCancelDownload", function(id){
+	if (downloadQueue.indexOf(id)>-1)
+		downloadQueue.splice( downloadQueue.indexOf(id), 1)
 })
 
 $('#clearTracksTable').click(function (ev) {
