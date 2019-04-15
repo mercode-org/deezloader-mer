@@ -1296,8 +1296,7 @@ io.sockets.on('connection', function (s) {
 			// Autoremoves (Album Version) from the title
 			if (settings.removeAlbumVersion){
 				if(track.title.indexOf("Album Version")>-1){
-					track.title = track.title.replace(/\(Album Version\)/g,"")
-					track.title.trim()
+					track.title = track.title.replace(/ ?\(Album Version\)/g,"")
 				}
 			}
 			if (!track.album.artist.picture && !settings.plName){
