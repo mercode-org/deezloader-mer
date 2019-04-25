@@ -2,6 +2,7 @@
 
 // Variables & constants
 const socket = io.connect(window.location.href)
+const serverMode = typeof require === "undefined"
 var defaultUserSettings = {}
 var defaultDownloadLocation = ""
 const localStorage = window.localStorage
@@ -17,6 +18,10 @@ let preview_stopped = true
 // Popup message listener
 socket.on("message", function(desc){
 	message(desc.title, desc.msg)
+})
+
+socket.on("toast", function(message){
+	M.toast({html: '<i class="material-icons left">error</i>'+message, displayLength: 5000, classes: 'rounded'})
 })
 
 socket.on("messageUpdate", function(desc){
@@ -41,19 +46,37 @@ socket.on("getDefaultSettings", function(defaultSettings, defaultDownloadFolder)
 $('#modal_login_btn_login').click(function () {
 	$('#modal_login_btn_login').attr("disabled", true)
 	$('#modal_login_btn_login').html("Logging in...")
-	/*
-	var username = $('#modal_login_input_username').val()
-	var password = $('#modal_login_input_password').val()
-	var autologin = $('#modal_login_input_autologin').prop("checked")
-	if (autologin){
-		localStorage.setItem('autologin_email', username)
+	if (serverMode){
+		var userToken = $('#modal_login_input_userToken').val()
+		localStorage.setItem('userToken', userToken)
+		socket.emit('loginViaUserToken', userToken)
+	}else{
+		var captchaWindow = window.open('cap://deezer.com/', '_blank', 'nodeIntegration=no')
+		var timer = setInterval(function() {
+    	if (captchaWindow.closed) {
+      	clearInterval(timer)
+				var username = $('#modal_login_input_username').val()
+				var password = $('#modal_login_input_password').val()
+				var captchaResponse = $('#modal_login_input_captchaResponse').val()
+				if (captchaResponse == ""){
+					$('#login-res-text').text("Error: Captcha wasn't solved.")
+					setTimeout(function(){$('#login-res-text').text("")},3000)
+					$('#modal_login_btn_login').attr("disabled", false)
+					$('#modal_login_btn_login').html("Log in")
+					return
+				}
+				localStorage.setItem('autologin_email', username)
+				//Send to the software
+			  socket.emit('login', username, password, captchaResponse)
+      }
+    }, 500);
 	}
-	//Send to the software
-	socket.emit('login', username, password, autologin)
-	*/
-	var userToken = $('#modal_login_input_userToken').val()
-	localStorage.setItem('userToken', userToken)
-	socket.emit('loginViaUserToken', userToken)
+})
+
+// Get captcha response
+socket.on('getCaptcha', function (data) {
+	$('#modal_login_input_captchaResponse').val(data)
+	console.log('captcha token received')
 })
 
 // New login system (uses cookies)
@@ -68,7 +91,7 @@ socket.on("login", function (data) {
 		$("#modal_settings_picture").attr("src",data.user.picture)
 		$("#side_user").text(data.user.name)
 		$("#side_avatar").attr("src",data.user.picture)
-		$("#side_email").text("id:"+data.user.id)
+		$("#side_email").text(data.user.email ? data.user.email : "id:"+data.user.id)
 		$('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd', function () {
 			$(this).css('display', 'none')
 			$(this).removeClass('animated fadeOut')
@@ -83,7 +106,7 @@ socket.on("login", function (data) {
 		setTimeout(function(){$('#login-res-text').text("")},3000)
 	}
 	$('#modal_login_btn_login').attr("disabled", false)
-	$('#modal_login_btn_login').html("Login")
+	$('#modal_login_btn_login').html("Log in")
 })
 
 // Open downloads folder
@@ -107,12 +130,14 @@ socket.on('checkAutologin', function(){
 	socket.emit("getUserSettings")
 	if (localStorage.getItem('autologin')){
 		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
-		//$('#modal_login_input_autologin').prop('checked', true)
 		$('#modal_login_btn_login').attr("disabled", true)
 		$('#modal_login_btn_login').html("Logging in...")
-		//$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
-		//$('#modal_login_input_password').val("password")
-		$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
+		if (serverMode){
+			$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
+		}else{
+			$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
+			$('#modal_login_input_password').val("password")
+		}
 		M.updateTextFields()
 	}
 })
@@ -361,10 +386,10 @@ $('#modal_login_btn_signup').click(function(){
 
 // Logout Button
 $('#modal_settings_btn_logout').click(function () {
-	//$('#modal_login_input_username').val("")
-	//$('#modal_login_input_password').val("")
-	//$('#modal_login_input_autologin').prop("checked",false)
+	$('#modal_login_input_username').val("")
+	$('#modal_login_input_password').val("")
 	$('#modal_login_input_userToken').val("")
+	$('#modal_login_input_captchaResponse').val("")
 	$('#initializing').css('display', '')
 	$('#initializing').addClass('animated fadeIn').on('webkitAnimationEnd', function () {
 		$(this).removeClass('animated fadeIn')
@@ -374,6 +399,7 @@ $('#modal_settings_btn_logout').click(function () {
 	localStorage.removeItem("userToken")
 	localStorage.removeItem("autologin_email")
 	socket.emit('logout')
+	M.updateTextFields()
 })
 
 // Populate settings fields
@@ -653,7 +679,9 @@ function showTrackListSelective(link) {
 	trackListSelectiveModalApp.head = []
 	trackListSelectiveModalApp.body = []
 	$('#modal_trackListSelective').modal('open')
-	socket.emit('getTrackList', {id: getIDFromLink(link), type: getTypeFromLink(link)})
+	let type = getTypeFromLink(link)
+	let id = getIDFromLink(link, type)
+	socket.emit('getTrackList', {id: id, type: type})
 }
 
 $('#download_track_selection').click(function(e){
@@ -691,7 +719,9 @@ function showTrackList(link) {
 	trackListModalApp.head = []
 	trackListModalApp.body = []
 	$('#modal_trackList').modal('open')
-	socket.emit("getTrackList", {id: getIDFromLink(link), type: getTypeFromLink(link)})
+	let type = getTypeFromLink(link)
+	let id = getIDFromLink(link, type)
+	socket.emit('getTrackList', {id: id, type: type})
 }
 
 socket.on("getTrackList", function (data) {
@@ -1020,12 +1050,6 @@ $('#tab_url_form_url').submit(function (ev) {
 		if (url.indexOf('?') > -1) {
 			url = url.substring(0, url.indexOf("?"))
 		}
-		if (url.indexOf('open.spotify.com/') >= 0 ||  url.indexOf('spotify:') >= 0){
-			if (url.indexOf('playlist') < 0){
-				message('Playlist not found', 'Deezloader for now can only download Spotify playlists.')
-				return false
-			}
-		}
 		addToQueue(url)
 	}
 })
@@ -1034,7 +1058,8 @@ $('#tab_url_form_url').submit(function (ev) {
 function addToQueue(url, forceBitrate=null) {
 	bitrate = forceBitrate ? forceBitrate : userSettings.maxBitrate
 	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
-	if (['track', 'playlist', 'spotifyplaylist', 'artisttop', 'album', 'artist'].indexOf(type) == -1) {
+	console.log(type, id)
+	if (['track', 'spotifytrack', 'playlist', 'spotifyplaylist', 'album', 'spotifyalbum', 'artist', 'artisttop'].indexOf(type) == -1) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong Type!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
@@ -1042,7 +1067,7 @@ function addToQueue(url, forceBitrate=null) {
 		M.toast({html: '<i class="material-icons left">playlist_add_check</i> Already in download-queue!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
-	if (id.match(/^-?[0-9]+$/) == null && type != 'spotifyplaylist') {
+	if (id.match(/^-?[0-9]+$/) == null && type.indexOf("spotify")<-1) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong ID!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
@@ -1167,6 +1192,11 @@ socket.on("cancelDownload", function (data) {
 	})
 })
 
+socket.on("silentlyCancelDownload", function(id){
+	if (downloadQueue.indexOf(id)>-1)
+		downloadQueue.splice( downloadQueue.indexOf(id), 1)
+})
+
 $('#clearTracksTable').click(function (ev) {
 	$('#tab_downloads_table_downloads').find('tbody').find('.finished, .error').addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
 		downloadQueue.splice( downloadQueue.indexOf($(this).data('deezerid')), 1)
@@ -1222,9 +1252,30 @@ function getIDFromLink(link, type) {
 	}
 	// Spotify
 	if ((link.startsWith("http") && link.indexOf('open.spotify.com/') >= 0)){
-		return link.slice(link.indexOf("/playlist/")+10)
+		switch (type){
+			case "spotifyplaylist":
+				return link.slice(link.indexOf("/playlist/")+10)
+				break
+			case "spotifytrack":
+				return link.slice(link.indexOf("/track/")+7)
+				break
+			case "spotifyalbum":
+				return link.slice(link.indexOf("/album/")+7)
+				break
+		}
 	} else if (link.startsWith("spotify:")){
-		return link.slice(link.indexOf("playlist:")+9)
+		switch (type){
+			case "spotifyplaylist":
+				return link.slice(link.indexOf("playlist:")+9)
+				break
+			case "spotifytrack":
+				return link.slice(link.indexOf("track:")+6)
+				break
+			case "spotifyalbum":
+				return link.slice(link.indexOf("album:")+6)
+				break
+		}
+
 
 	// Deezer
 	} else if(type == "artisttop") {
@@ -1237,7 +1288,10 @@ function getIDFromLink(link, type) {
 function getTypeFromLink(link) {
 	var type
 	if (link.indexOf('spotify') > -1){
-		type = "spotifyplaylist"
+		type = "spotify"
+		if (link.indexOf('playlist') > -1) type += "playlist"
+		else if (link.indexOf('track') > -1) type += "track"
+		else if (link.indexOf('album') > -1) type += "album"
 	} else	if (link.indexOf('/track') > -1) {
 		type = "track"
 	} else if (link.indexOf('/playlist') > -1) {

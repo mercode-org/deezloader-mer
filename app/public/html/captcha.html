@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>captcha</title>
+  <style>
+html{
+  font-family: -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Oxygen-Sans,Ubuntu,Cantarell,"Helvetica Neue",sans-serif;
+}
+.resize-padding{
+	-webkit-app-region: no-drag !important;
+	margin:0px;
+}
+
+.btn-input{
+	height: 43px;
+	line-height: 43px;
+	font-size: 15px;
+	padding: 0 28px;
+	margin: 0px;
+}
+
+#title-bar {
+	-webkit-user-select: none;
+	-webkit-app-region: drag;
+	overflow: hidden !important;
+	position: fixed;
+	width: 100%;
+	left: 0;
+	top: 0;
+	right: 0;
+	z-index: 99;
+	height: 32px;
+	line-height: 32px;
+	padding: 0;
+	margin: 0;
+	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  color: white;
+}
+
+#title-bar #title {
+	position: absolute;
+	top: 0px;
+	left: 6px;
+	color: #fff;
+}
+
+#title-bar #title-bar-btns {
+	-webkit-user-select: none;
+	-webkit-app-region: no-drag;
+	position: absolute;
+	top: 0px;
+	right: 6px;
+}
+
+#title-bar #title-bar-btns button {
+	line-height: 0px;
+	height: 32px;
+	background-color: transparent;
+	border: none;
+	color: #F1F1F1;
+	font-size: 14px;
+	padding: 0 3px;
+	-webkit-transition: 0.2s;
+	-o-transition: 0.2s;
+	transition: 0.2s;
+}
+
+#title-bar #title-bar-btns button:hover {
+	background: rgba(255, 255, 255, 0.1);
+}
+
+#title-bar #title-bar-btns {
+	right: 0px !important;
+}
+#title-bar #title-bar-btns span{
+  font-size: 20px;
+  padding: 0 10px;
+}
+#container{
+  margin-top: 32px;
+  padding-top: 16px
+}
+  </style>
+</head>
+<body>
+  <div id="title-bar" class="deezloader-black">
+  	<div class="resize-padding" style="width: 100%; height: 3px;"></div>
+  	<div class="resize-padding" style="width: 3px; height: 31px;"></div>
+  	<div id="title">Complete the captcha</div>
+
+  	<div id="title-bar-btns">
+  		<button id="close-btn"><span>&#x2715;</span></button>
+  	</div>
+
+  	<div class="resize-padding" style="position: absolute; top:0; right:0px; width: 3px; height: 31px;"></div>
+  </div>
+  <div id="container">
+    <form id="modal_captcha_form" action="/submit" method="get">
+      <div class="g-recaptcha" data-sitekey="6Lf4g34UAAAAAF2O2sScZKutelN7GM1FYVBmMom4" data-callback="onCaptchaSolved"></div>
+      <script type="text/javascript" src="https://www.google.com/recaptcha/api.js"></script>
+    </form>
+  </div>
+  <!-- the following src ends in cap://deezer.com/js/jquery-3.3.1.min.js -->
+  <!--<script type="text/javascript" src="./../js/jquery-3.3.1.min.js"></script>-->
+  <!-- therefore we use the http protocol, possible fix: https://github.com/electron/electron/issues/4506#issuecomment-299645031 -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8=" crossorigin="anonymous"></script>
+  <script>
+    function onCaptchaSolved() {
+      $.get("/submit", $("#modal_captcha_form").serialize());
+      window.close()
+    }
+    $("#close-btn").click(()=>{
+      window.close()
+    })
+  </script>
+</body>
+</html>

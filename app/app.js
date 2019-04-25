@@ -125,18 +125,21 @@ io.sockets.on('connection', function (s) {
 	s.emit("getDefaultSettings", defaultSettings, defaultDownloadFolder)
 	s.emit("populateDownloadQueue", downloadQueue)
 
+	const captcha = require('./public/js/captcha');
+	captcha.callbackResponse = function (data) {
+		s.emit("getCaptcha", data)
+	};
+
 	// Function for logging in
-	s.on("login", async function (username, password, autologin) {
+	s.on("login", async function (username, password, captchaResponse) {
 		try{
 			logger.info("Logging in");
-			await s.Deezer.login(username, password)
+			await s.Deezer.login(username, password, captchaResponse)
 			s.emit("login", {user: s.Deezer.user})
 			logger.info("Logged in successfully")
-			if (autologin){
-				// Save session login so next time login is not needed
-				// This is the same method used by the official website
-				s.emit('getCookies', s.Deezer.getCookies())
-			}
+			// Save session login so next time login is not needed
+			// This is the same method used by the official website
+			s.emit('getCookies', s.Deezer.getCookies())
 		}catch(err){
 			s.emit("login", {error: err.message})
 			logger.error(`Login failed: ${err.message}`)
@@ -327,6 +330,7 @@ io.sockets.on('connection', function (s) {
 
 	// Returns list of tracks from an album/playlist or the list of albums from an artist
 	s.on("getTrackList", async function (data) {
+		console.log(data)
 		if (!data.type || (["playlist", "album", "artist", "spotifyplaylist"].indexOf(data.type) == -1) || !data.id) {
 			s.emit("getTrackList", {err: -1, response: {}, id: data.id, reqType: data.type})
 			return
@@ -642,6 +646,60 @@ io.sockets.on('connection', function (s) {
 	}
 	s.on("downloadspotifyplaylist", data=>{downloadSpotifyPlaylist(data)})
 
+	// Gets data from the frontend and creates data for the deezer track object
+	async function downloadSpotifyTrack(data){
+		logger.info(`Added to Queue ${data.id}`)
+		if (spotifySupport){
+			try{
+				let creds = await Spotify.clientCredentialsGrant()
+				Spotify.setAccessToken(creds.body['access_token'])
+				var resp = await Spotify.getTrack(data.id, {fields: "external_ids,artists,album,name"})
+				deezerId = await convertSpotify2Deezer(resp.body)
+				if (deezerId != 0){
+					data.id = deezerId
+					downloadTrack(data)
+				}else{
+					s.emit("toast", "Can't find the track on Deezer!")
+					s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+					logger.error(`Can't find the track on Deezer!`)
+				}
+			}catch(err){
+				logger.error(`downloadSpotifyTrack failed: ${err.stack ? err.stack : err}`)
+				return
+			}
+		}else{
+			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+		}
+	}
+	s.on("downloadspotifytrack", data=>{downloadSpotifyTrack(data)})
+
+	// Gets data from the frontend and creates data for the deezer track object
+	async function downloadSpotifyAlbum(data){
+		logger.info(`Added to Queue ${data.id}`)
+		if (spotifySupport){
+			try{
+				let creds = await Spotify.clientCredentialsGrant()
+				Spotify.setAccessToken(creds.body['access_token'])
+				var resp = await Spotify.getAlbum(data.id, {fields: "external_ids,artists,name"})
+				deezerId = await convertSpotifyAlbum2Deezer(resp.body)
+				if (deezerId != 0){
+					data.id = deezerId
+					downloadAlbum(data)
+				}else{
+					s.emit("toast", "Can't find the album on Deezer!")
+					s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+					logger.error(`Can't find the album on Deezer!`)
+				}
+			}catch(err){
+				logger.error(`downloadSpotifyAlbum failed: ${err.stack ? err.stack : err}`)
+				return
+			}
+		}else{
+			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+		}
+	}
+	s.on("downloadspotifyalbum", data=>{downloadSpotifyAlbum(data)})
+
 	// Converts the spotify track to a deezer one
 	// It tries first with the isrc (best way of conversion)
 	// Fallbacks to the old way, using search
@@ -650,7 +708,10 @@ io.sockets.on('connection', function (s) {
 		try{
 			if (track.external_ids.isrc){
 				let resp = await s.Deezer.legacyGetTrackByISRC(track.external_ids.isrc)
-				return resp.id
+				if (resp.title)
+					return resp.id
+				else
+					logger.warn("ISRC track is not on Deezer, falling back to old method")
 			}
 		}catch(err){
 			logger.warn("ISRC not found, falling back to old method")
@@ -669,22 +730,54 @@ io.sockets.on('connection', function (s) {
 		}catch(err){logger.err(`ConvertFromMetadata: ${err.stack ? err.stack : err}`)}
 		if (resp.data[0]) return resp.data[0].id
 		try{
-			resp = await s.Deezer.legacySearch(`artist:"${artist}" track:"${track}"`, "track", 1)
+			resp = await s.Deezer.legacySearch(encodeURIComponent(`artist:"${artist}" track:"${track}"`), "track", 1)
 		}catch(err){logger.err(`ConvertFromMetadata: ${err.stack ? err.stack : err}`)}
 		if (resp.data[0]) return resp.data[0].id
 		if (track.indexOf("(") < track.indexOf(")")){
 			try{
-				resp = await s.Deezer.legacySearch(`artist:"${artist}" track:"${track.split("(")[0]}"`, "track", 1)
+				resp = await s.Deezer.legacySearch(encodeURIComponent(`artist:"${artist}" track:"${track.split("(")[0]}"`), "track", 1)
 			}catch(err){logger.err(`ConvertFromMetadata: ${err.stack ? err.stack : err}`)}
 			if (resp.data[0]) return resp.data[0].id
 		}else if (track.indexOf(" - ")>0){
 			try{
-				resp = await s.Deezer.legacySearch(`artist:"${artist}" track:"${track.split(" - ")[0]}"`, "track", 1)
+				resp = await s.Deezer.legacySearch(encodeURIComponent(`artist:"${artist}" track:"${track.split(" - ")[0]}"`), "track", 1)
 			}catch(err){logger.err(`ConvertFromMetadata: ${err.stack ? err.stack : err}`)}
 			if (resp.data[0]) return resp.data[0].id
 		}else{
 			return 0
 		}
+		return 0
+	}
+
+	// Converts the spotify album to a deezer one
+	// It tries first with the upc (best way of conversion)
+	// Fallbacks to the old way, using search
+	async function convertSpotifyAlbum2Deezer(album){
+		if (!album) return 0
+		try{
+			if (album.external_ids.upc){
+				if (! isNaN(album.external_ids.upc)) album.external_ids.upc = parseInt(album.external_ids.upc)
+				let resp = await s.Deezer.legacyGetAlbumByUPC(album.external_ids.upc)
+				if (resp.title)
+					return resp.id
+				else
+					logger.warn("UPC album is not on Deezer, falling back to old method")
+			}
+		}catch(err){
+			logger.warn("UPC not found, falling back to old method")
+		}
+		return convertAlbumMetadata2Deezer(album.artists[0].name, album.name)
+	}
+
+	// Tries to get album id from pure luck
+	async function convertAlbumMetadata2Deezer(artist, album){
+		let resp
+		artist = artist.replace(/–/g,"-").replace(/’/g, "'")
+		album = album.replace(/–/g,"-").replace(/’/g, "'")
+		try{
+			resp = await s.Deezer.legacySearch(`artist:"${artist}" album:"${album}"`, "album", 1)
+		}catch(err){logger.err(`ConvertAlbumFromMetadata: ${err.stack ? err.stack : err}`)}
+		if (resp.data[0]) return resp.data[0].id
 		return 0
 	}
 
@@ -1012,6 +1105,7 @@ io.sockets.on('connection', function (s) {
 				logger.info("Waiting for all tracks to be converted");
 				const convert = async () =>{
 					await asyncForEach(downloading.obj.tracks, async (t,i)=>{
+						if (!downloadQueue[downloading.queueId]) return false
 						try{
 							downloading.playlistContent[i] = await convertSpotify2Deezer(t)
 						}catch(err){
@@ -1435,13 +1529,15 @@ io.sockets.on('connection', function (s) {
 		// TODO: Move to a separate function
 		// Generating file name
 		if (settings.saveFullArtists && settings.multitagSeparator != null){
-			let filename = fixName(`${track.artistsString} - ${track.title}`);
+			let filename = antiDot(fixName(`${track.artistsString} - ${track.title}`));
 		}else{
-			let filename = fixName(`${track.artist.name} - ${track.title}`);
+			let filename = antiDot(fixName(`${track.artist.name} - ${track.title}`));
 		}
 		if (settings.filename) {
-			filename = settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize, settings.plName && !settings.numplaylistbyalbum);
+			filename = antiDot(fixName(settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize, settings.plName && !settings.numplaylistbyalbum)))
 		}
+
+		filename = antiDot(fixName(filename))
 
 		// TODO: Move to a separate function
 		// Generating file path
@@ -1464,15 +1560,15 @@ io.sockets.on('connection', function (s) {
 
 			if (settings.createAlbumFolder) {
 				if(settings.artName){
-					filepath += antiDot(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre)) + path.sep;
+					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
 				}else{
-					filepath += antiDot(settingsRegexAlbum(settings.foldername,track.album.artist.name,track.album.title,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre)) + path.sep;
+					filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,track.album.artist.name,track.album.title,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
 				}
 			}
 		} else if (settings.plName) {
 			filepath += antiDot(fixName(settings.plName)) + path.sep;
 		} else if (settings.artName) {
-			filepath += antiDot(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre)) + path.sep;
+			filepath += antiDot(fixName(settingsRegexAlbum(settings.foldername,settings.artName,settings.albName,track.date.year,track.recordType,track.album.explicit,track.publisher,track.genre))) + path.sep;
 		}
 		let coverpath = filepath;
 		if (track.discTotal > 1 && (settings.artName || settings.createAlbumFolder) && settings.createCDFolder){

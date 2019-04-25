@@ -6,6 +6,9 @@ const {app, BrowserWindow, ipcMain, Menu, Tray, Notification} = require('electro
 const os = require('os');
 loadSettings();
 
+const captcha = require('./public/js/captcha');
+captcha.registerScheme();
+
 const theApp = require('./app');
 const WindowStateManager = require('electron-window-state-manager');
 const url = require('url');
@@ -38,9 +41,7 @@ app.isQuiting = false;
 
 app.serverMode = (process.argv.indexOf("-s")>-1 || process.argv.indexOf("--server")>-1);
 
-require('electron-context-menu')({
-	showInspectElement: false
-});
+require('electron-context-menu')()
 
 function loadSettings(){
 	var userdata = "";
@@ -159,6 +160,7 @@ app.on('ready', function(){
 	if (!app.serverMode){
 		createWindow();
 		createTray();
+		captcha.registerProtocol();
 	}
 });
 
