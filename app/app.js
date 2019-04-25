@@ -663,7 +663,7 @@ io.sockets.on('connection', function (s) {
 					logger.error(`Can't find the track on Deezer!`)
 				}
 			}catch(err){
-				logger.error(`downloadSpotifyPlaylist failed: ${err.stack ? err.stack : err}`)
+				logger.error(`downloadSpotifyTrack failed: ${err.stack ? err.stack : err}`)
 				return
 			}
 		}else{
@@ -671,6 +671,33 @@ io.sockets.on('connection', function (s) {
 		}
 	}
 	s.on("downloadspotifytrack", data=>{downloadSpotifyTrack(data)})
+
+	// Gets data from the frontend and creates data for the deezer track object
+	async function downloadSpotifyAlbum(data){
+		logger.info(`Added to Queue ${data.id}`)
+		if (spotifySupport){
+			try{
+				let creds = await Spotify.clientCredentialsGrant()
+				Spotify.setAccessToken(creds.body['access_token'])
+				var resp = await Spotify.getAlbum(data.id, {fields: "external_ids,artists,name"})
+				deezerId = await convertSpotifyAlbum2Deezer(resp.body)
+				if (deezerId != 0){
+					data.id = deezerId
+					downloadAlbum(data)
+				}else{
+					s.emit("toast", "Can't find the album on Deezer!")
+					s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+					logger.error(`Can't find the album on Deezer!`)
+				}
+			}catch(err){
+				logger.error(`downloadSpotifyAlbum failed: ${err.stack ? err.stack : err}`)
+				return
+			}
+		}else{
+			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+		}
+	}
+	s.on("downloadspotifyalbum", data=>{downloadSpotifyAlbum(data)})
 
 	// Converts the spotify track to a deezer one
 	// It tries first with the isrc (best way of conversion)
@@ -718,6 +745,38 @@ io.sockets.on('connection', function (s) {
 		}else{
 			return 0
 		}
+		return 0
+	}
+
+	// Converts the spotify album to a deezer one
+	// It tries first with the upc (best way of conversion)
+	// Fallbacks to the old way, using search
+	async function convertSpotifyAlbum2Deezer(album){
+		if (!album) return 0
+		try{
+			if (album.external_ids.upc){
+				if (! isNaN(album.external_ids.upc)) album.external_ids.upc = parseInt(album.external_ids.upc)
+				let resp = await s.Deezer.legacyGetAlbumByUPC(album.external_ids.upc)
+				if (resp.title)
+					return resp.id
+				else
+					logger.warn("UPC album is not on Deezer, falling back to old method")
+			}
+		}catch(err){
+			logger.warn("UPC not found, falling back to old method")
+		}
+		return convertAlbumMetadata2Deezer(album.artists[0].name, album.name)
+	}
+
+	// Tries to get album id from pure luck
+	async function convertAlbumMetadata2Deezer(artist, album){
+		let resp
+		artist = artist.replace(/–/g,"-").replace(/’/g, "'")
+		album = album.replace(/–/g,"-").replace(/’/g, "'")
+		try{
+			resp = await s.Deezer.legacySearch(`artist:"${artist}" album:"${album}"`, "album", 1)
+		}catch(err){logger.err(`ConvertAlbumFromMetadata: ${err.stack ? err.stack : err}`)}
+		if (resp.data[0]) return resp.data[0].id
 		return 0
 	}
 

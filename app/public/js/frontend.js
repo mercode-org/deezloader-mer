@@ -1059,7 +1059,7 @@ function addToQueue(url, forceBitrate=null) {
 	bitrate = forceBitrate ? forceBitrate : userSettings.maxBitrate
 	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
 	console.log(type, id)
-	if (['track', 'spotifytrack', 'playlist', 'spotifyplaylist', 'album', 'artist', 'artisttop'].indexOf(type) == -1) {
+	if (['track', 'spotifytrack', 'playlist', 'spotifyplaylist', 'album', 'spotifyalbum', 'artist', 'artisttop'].indexOf(type) == -1) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong Type!', displayLength: 5000, classes: 'rounded'})
 		return false
 	}
