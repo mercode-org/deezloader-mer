@@ -1132,7 +1132,7 @@ io.sockets.on('connection', function (s) {
 								return false
 							}
 							t.position = index
-							if (t.id==0){
+							if (t.id==0 && downloading.obj.tracks[t.position] != null){
 								t.title = downloading.obj.tracks[t.position].name
 					      t.album = {id: 0, title: downloading.obj.tracks[t.position].album.name}
 					      t.artist = {id: 0, name: downloading.obj.tracks[t.position].artists[0].name}
