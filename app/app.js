@@ -1287,7 +1287,7 @@ io.sockets.on('connection', function (s) {
 			}
 			if (!ajson.fromNewAPI){
 				// Aquiring discTotal (only if necessary)
-				if ((settings.tags.discTotal || settings.createCDFolder) && parseInt(track.id)>0){
+				if (settings.tags.discTotal || settings.createCDFolder){
 					if (!ajson.discTotal){
 						logger.info(`[${track.artist.name} - ${track.title}] Getting total disc number`);
 						var discTotal = await s.Deezer.getAlbum(ajson.id)
@@ -1299,21 +1299,19 @@ io.sockets.on('connection', function (s) {
 				track.album.artist = {
 					id: ajson.artist.id,
 					name: ajson.artist.name,
-					picture: ajson.artist.picture_small.split("/56x56-000000-80-0-0.jpg")[0].split(s.Deezer.artistPictureHost)[1],
+					picture: ajson.artist.picture_small.substring(46,ajson.artist.picture_small.length-24),
 				}
 				track.trackTotal = ajson.nb_tracks
 				track.album.barcode = ajson.upc
-				if (!ajson.record_type){
-					track.recordType = swichReleaseType(track.recordType)
-				}else{
+				if (ajson.record_type){
 					track.recordType = ajson.record_type
+				}else{
+					track.recordType = switchReleaseType(track.recordType)
 				}
-				if (ajson.explicit_lyrics){
+				if (ajson.explicit_lyrics)
 					track.album.explicit = ajson.explicit_lyrics;
-				}
-				if(ajson.label){
+				if(ajson.label)
 					track.publisher = ajson.label;
-				}
 				if (ajson.release_date) {
 					track.date = {
 						day: ajson.release_date.slice(8,10),
@@ -1330,19 +1328,18 @@ io.sockets.on('connection', function (s) {
 					}
 				}
 				if(ajson.genres && ajson.genres.data[0] && ajson.genres.data[0].name){
-					track.genre = [];
-					genreArray = [];
+					track.genre = []
 					ajson.genres.data.forEach(function(genre){
-						genreArray.push(genre.name);
-					});
-					track.genre = uniqueArray(genreArray, false)
+						if (track.genre.indexOf(genre.name) == -1)
+							track.genre.push(genre.name)
+					})
 				}
 			}else{
 				// Missing barcode, genre
 				track.album = ajson
 				track.date = track.album.date
 				track.trackTotal = track.album.trackTotal
-				track.recordType = swichReleaseType(track.recordType)
+				track.recordType = switchReleaseType(track.recordType)
 				// TODO: Make a loop for each artist
 			}
 
@@ -1368,7 +1365,7 @@ io.sockets.on('connection', function (s) {
 				logger.info(`[${track.artist.name} - ${track.title}] Getting track gain`);
 				if (!track.legacyTrack) track.legacyTrack = await s.Deezer.legacyGetTrack(track.id)
 				try{
-					track.replayGain = gain.gain
+					track.replayGain = track.legacyTrack.gain
 				}catch(err){
 					track.replayGain = 0
 				}
@@ -1384,7 +1381,7 @@ io.sockets.on('connection', function (s) {
 			}
 
 			let separator = settings.multitagSeparator
-			if (separator == "null") separator = String.fromCharCode(parseInt("\u0000",16))
+			if (separator == "null") separator = String.fromCharCode(0)
 
 			// Autoremoves (Album Version) from the title
 			if (settings.removeAlbumVersion){
@@ -1407,7 +1404,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if(settings.saveArtworkArtist && !found){
 						artist = await s.Deezer.legacyGetArtist(track.album.artist.id)
-						track.album.artist.picture = artist.picture_small.split("/56x56-000000-80-0-0.jpg")[0].split(s.Deezer.artistPictureHost)[1]
+						track.album.artist.picture = artist.picture_small.substring(46,ajson.artist.picture_small.length-24)
 					}
 				}
 			}
@@ -1416,67 +1413,55 @@ io.sockets.on('connection', function (s) {
 			track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
 
 			// Auto detect aviable track format from settings
-			if (parseInt(track.id)>0){
-				switch(downloadQueue[queueId].bitrate.toString()){
-					case "9":
-						track.selectedFormat = 9
-						track.selectedFilesize = track.filesize.flac
-						if (track.filesize.flac>0) break
-						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
-					case "3":
-						track.selectedFormat = 3
-						track.selectedFilesize = track.filesize.mp3_320
-						if (track.filesize.mp3_320>0) break
-						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
-					case "1":
-						track.selectedFormat = 1
-						track.selectedFilesize = track.filesize.mp3_128
-						if (track.filesize.mp3_128>0) break
-						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
-					default:
-						track.selectedFormat = 8
-						track.selectedFilesize = track.filesize.default
-				}
-			}else{
-				track.selectedFilesize = track.filesize
-				track.selectedFormat = 3
+			switch(downloadQueue[queueId].bitrate.toString()){
+				case "9":
+					track.selectedFormat = 9
+					track.selectedFilesize = track.filesize.flac
+					if (track.filesize.flac>0) break
+					if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+				case "3":
+					track.selectedFormat = 3
+					track.selectedFilesize = track.filesize.mp3_320
+					if (track.filesize.mp3_320>0) break
+					if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+				case "1":
+					track.selectedFormat = 1
+					track.selectedFilesize = track.filesize.mp3_128
+					if (track.filesize.mp3_128>0) break
+					if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+				default:
+					track.selectedFormat = 8
+					track.selectedFilesize = track.filesize.default
 			}
 
 			if(track.contributor){
 				if(track.contributor.composer){
-					track.composerString = []
 					track.composerString = uniqueArray(track.contributor.composer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.composerString = track.composerString.join(separator)
+					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.composerString = track.composerString.join(separator)
 				}
 				if(track.contributor.musicpublisher){
-					track.musicpublisherString = []
 					track.musicpublisherString = uniqueArray(track.contributor.musicpublisher)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.musicpublisherString = track.musicpublisherString.join(separator)
+					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.musicpublisherString = track.musicpublisherString.join(separator)
 				}
 				if(track.contributor.producer){
-					track.producerString = []
 					track.producerString = uniqueArray(track.contributor.producer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.producerString = track.producerString.join(separator)
+					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.producerString = track.producerString.join(separator)
 				}
 				if(track.contributor.engineer){
-					track.engineerString = []
 					track.engineerString = uniqueArray(track.contributor.engineer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.engineerString = track.engineerString.join(separator)
+					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.engineerString = track.engineerString.join(separator)
 				}
 				if(track.contributor.writer){
-					track.writerString = []
 					track.writerString = uniqueArray(track.contributor.writer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.writerString = track.writerString.join(separator)
+					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.writerString = track.writerString.join(separator)
 				}
 				if(track.contributor.author){
-					track.authorString = []
 					track.authorString = uniqueArray(track.contributor.author)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.authorString = track.authorString.join(separator)
+					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.authorString = track.authorString.join(separator)
 				}
 				if(track.contributor.mixer){
-					track.mixerString = [];
 					track.mixerString = uniqueArray(track.contributor.mixer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.mixerString = track.mixerString.join(separator)
+					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.mixerString = track.mixerString.join(separator)
 				}
 			}
 
@@ -1500,10 +1485,10 @@ io.sockets.on('connection', function (s) {
 		  		track.artistsString.splice(posMainArtist, 1)
 		  		track.artistsString.splice(0, 0, element)
 				}
-				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16)))) track.artistsString = track.artistsString.join(separator)
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.artistsString = track.artistsString.join(separator)
 			}
 			if (track.genre){
-				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(parseInt("\u0000",16))))
+				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0)))
 					track.genreString = track.genre.join(separator)
 				else
 					track.genreString = track.genre
@@ -1523,6 +1508,8 @@ io.sockets.on('connection', function (s) {
 			}
 		}else{
 			track.date = {year: 0,day: 0,month: 0}
+			track.selectedFilesize = track.filesize
+			track.selectedFormat = 3
 		}
 
 		// TODO: Move to a separate function
@@ -2139,7 +2126,7 @@ function splitNumber(str,total){
 	return i > 0 ? str.slice(0, i) : str;
 }
 
-function swichReleaseType(id){
+function switchReleaseType(id){
 	switch (id.toString()) {
 		case "0":
 			return "Album";
