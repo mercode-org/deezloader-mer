@@ -330,7 +330,6 @@ io.sockets.on('connection', function (s) {
 
 	// Returns list of tracks from an album/playlist or the list of albums from an artist
 	s.on("getTrackList", async function (data) {
-		console.log(data)
 		if (!data.type || (["playlist", "album", "artist", "spotifyplaylist"].indexOf(data.type) == -1) || !data.id) {
 			s.emit("getTrackList", {err: -1, response: {}, id: data.id, reqType: data.type})
 			return
