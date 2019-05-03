@@ -1167,6 +1167,15 @@ socket.on('updateQueue', function (data) {
 		$('#' + data.queueId).addClass('error')
 		M.toast({html: `<i class="material-icons left">warning</i>${quoteattr(data.name)} - Completed with errors!`, displayLength: 5000, classes: 'rounded'})
 	}
+	if (data.errorLog != ""){
+		var errorLog = "<table><tr><th>ID</th><th>Song</th><th>Error</th></tr><tr><td>"
+		errorLog += data.errorLog.split("\r\n").join("</td></tr><tr><td>").split(" | ").join("</td><td>")
+		errorLog = errorLog.slice(0, errorLog.length-8)+"</table>"
+		console.log(errorLog)
+		$('#' + data.queueId).find('.eventBtn').click(()=>{
+			message(`Errors for ${quoteattr(data.name)}`, errorLog)
+		})
+	}
 })
 
 socket.on("downloadProgress", function (data) {

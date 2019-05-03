@@ -939,6 +939,7 @@ io.sockets.on('connection', function (s) {
 						downloading.downloaded++
 					}catch(err){
 						logger.error(`[${downloading.obj.artist.name} - ${downloading.obj.title}] ${err}`)
+						downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 						downloading.failed++
 					}
 					io.sockets.emit("updateQueue", {
@@ -950,6 +951,7 @@ io.sockets.on('connection', function (s) {
 						queueId: downloading.queueId,
 						id: downloading.id,
 						type: downloading.type,
+						errorLog: downloading.errorLog,
 					})
 					io.sockets.emit("downloadProgress", {
 						queueId: downloading.queueId,
@@ -1029,6 +1031,7 @@ io.sockets.on('connection', function (s) {
 								queueId: downloading.queueId,
 								id: downloading.id,
 								type: downloading.type,
+								errorLog: downloading.errorLog,
 							})
 							if (downloading.downloaded + downloading.failed >= downloading.size) resolve()
 							cb()
@@ -1107,6 +1110,7 @@ io.sockets.on('connection', function (s) {
 								queueId: downloading.queueId,
 								id: downloading.id,
 								type: downloading.type,
+								errorLog: downloading.errorLog,
 							})
 							if (downloading.downloaded + downloading.failed >= downloading.size) resolve()
 							cb()
@@ -1231,6 +1235,7 @@ io.sockets.on('connection', function (s) {
 								queueId: downloading.queueId,
 								id: downloading.id,
 								type: downloading.type,
+								errorLog: downloading.errorLog,
 							})
 							if (downloading.downloaded + downloading.failed >= downloading.size) resolve()
 							cb()
