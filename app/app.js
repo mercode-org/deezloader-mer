@@ -707,6 +707,7 @@ io.sockets.on('connection', function (s) {
 				}else{
 					s.emit("toast", `SpotifyPlaylist ${data.id} failed: ${err.message ? err.message : err}`)
 				}
+				
 				s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 				return
 			}
