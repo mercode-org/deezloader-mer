@@ -463,6 +463,19 @@ io.sockets.on('connection', function (s) {
 			addToQueue(_track)
 		}catch(err){
 			logger.error(`downloadTrack failed: ${err.stack ? err.stack : err}`)
+			message = ""
+			if err.message{
+				switch (err.message){
+					case "DataException: no data":
+						message = "Error 404"
+					break
+					default:
+						message = err.message
+					break
+				}
+			}
+			s.emit("toast", `Track ${data.id} download failed: ${message}`)
+			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 			return
 		}
 	}
@@ -518,6 +531,19 @@ io.sockets.on('connection', function (s) {
 			return
 		}catch(err){
 			logger.error(`downloadAlbum failed: ${err.stack ? err.stack : err}`)
+			message = ""
+			if err.message{
+				switch (err.message){
+					case "DataException: no data":
+						message = "Error 404"
+					break
+					default:
+						message = err.message
+					break
+				}
+			}
+			s.emit("toast", `Album ${data.id} download failed: ${message}`)
+			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 			return
 		}
 	}
@@ -537,6 +563,19 @@ io.sockets.on('connection', function (s) {
 			})(albums.data.length-1)
 		}catch(err){
 			logger.error(`downloadArtist failed: ${err.stack ? err.stack : err}`)
+			message = ""
+			if err.message{
+				switch (err.message){
+					case "DataException: no data":
+						message = "Error 404"
+					break
+					default:
+						message = err.message
+					break
+				}
+			}
+			s.emit("toast", `Artist ${data.id} download failed: ${message}`)
+			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 			return
 		}
 	}
@@ -566,6 +605,19 @@ io.sockets.on('connection', function (s) {
 			addToQueue(_playlist)
 		}catch(err){
 			logger.error(`downloadPlaylist failed: ${err.stack ? err.stack : err}`)
+			message = ""
+			if err.message{
+				switch (err.message){
+					case "DataException: no data":
+						message = "Error 404"
+					break
+					default:
+						message = err.message
+					break
+				}
+			}
+			s.emit("toast", `Playlist ${data.id} download failed: ${message}`)
+			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 			return
 		}
 	}
@@ -595,6 +647,19 @@ io.sockets.on('connection', function (s) {
 			addToQueue(_playlist)
 		}catch(err){
 			logger.error(`downloadArtistTop failed: ${err.stack ? err.stack : err}`)
+			message = ""
+			if err.message{
+				switch (err.message){
+					case "DataException: no data":
+						message = "Error 404"
+					break
+					default:
+						message = err.message
+					break
+				}
+			}
+			s.emit("toast", `ArtistTop ${data.id} download failed: ${message}`)
+			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 			return
 		}
 	}
