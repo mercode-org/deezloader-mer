@@ -703,16 +703,15 @@ io.sockets.on('connection', function (s) {
 			}catch(err){
 				logger.error(`downloadSpotifyPlaylist failed: ${err.stack ? err.stack : err}`)
 				if (err.message && err.message == "Bad Request"){
-					s.emit("message", {title: "You setted it up wrong!", msg: "It seems like you setted the authCredentials.js file wrong...<br>Make sure you keep the ' around the IDs and that the Secret and Client ID are copied correctly<br><br>If you need the guide again <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">Here it is</a>"})
+					s.emit("message", {title: "You setted it up wrong!", msg: "It seems like you setted the authCredentials.js file wrong...<br>Make sure you keep the ' around the IDs and that the Secret and Client ID are copied correctly<br>After that you should restart the app to make it work.<br><br>If you need the guide again <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">Here it is</a>"})
 				}else{
 					s.emit("toast", `SpotifyPlaylist ${data.id} failed: ${err.message ? err.message : err}`)
 				}
-				
 				s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 				return
 			}
 		}else{
-			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files and then restart the app to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
 		}
 	}
 	s.on("downloadspotifyplaylist", data=>{downloadSpotifyPlaylist(data)})
@@ -739,7 +738,7 @@ io.sockets.on('connection', function (s) {
 				return
 			}
 		}else{
-			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files and then restart the app to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
 		}
 	}
 	s.on("downloadspotifytrack", data=>{downloadSpotifyTrack(data)})
@@ -766,7 +765,7 @@ io.sockets.on('connection', function (s) {
 				return
 			}
 		}else{
-			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files and then restart the app to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
 		}
 	}
 	s.on("downloadspotifyalbum", data=>{downloadSpotifyAlbum(data)})
