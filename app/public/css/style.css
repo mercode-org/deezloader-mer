@@ -396,3 +396,12 @@ a[href^="ftp://"] {
 	cursor:pointer;
 	text-decoration: underline;
 }
+
+input[type=search]::-webkit-search-cancel-button {
+	-webkit-appearance: none;
+	height: 18px;
+	width: 18px;
+	background: #AAAAAA;
+	-webkit-mask-image: url("../img/cancel.svg");
+  mask-image: url("../img/cancel.svg");
+}
