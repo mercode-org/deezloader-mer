@@ -69,7 +69,6 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 
 	// Ready state of the page
 	document.onreadystatechange = function () {
-		console.log(document.readyState)
 		if (document.readyState == "interactive") {
 			initTitleBar()
 			$('#application_version_about').text(version)

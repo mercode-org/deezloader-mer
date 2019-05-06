@@ -188,6 +188,24 @@ nav {
   margin-bottom: 8px;
 }
 
+/* Link Analyzer*/
+.link_analyzer_info{
+	display: flex;
+	padding-top: 16px;
+}
+
+.link_analyzer_maininfo{
+	display: inline;
+	padding-left: 16px;
+	width: -webkit-fill-available;
+}
+
+.link_analyzer_sideinfo{
+    width: 250px;
+    min-width: 250px;
+    display: inline-block;
+}
+
 @media only screen and (max-width: 992px) {
 	#nav-mobile .left{
 		margin-right: 0px;
@@ -228,6 +246,14 @@ nav {
 	}
 	#modal_login_btn_signup, #modal_login_btn_login{
 		margin-top: 8px;
+	}
+
+	#link_analyzer_song_maininfo{
+		padding: 0px 8px;
+	}
+
+	.link_analyzer_maininfo{
+		padding: 0px 8px;
 	}
 }
 

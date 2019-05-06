@@ -436,6 +436,14 @@ io.sockets.on('connection', function (s) {
 		});
 	});
 
+	s.on("analyzetrack", async (id)=>{
+		s.emit("analyzetrack", await s.Deezer.legacyGetTrack(id))
+	})
+
+	s.on("analyzealbum", async (id)=>{
+		s.emit("analyzealbum", await s.Deezer.legacyGetAlbum(id))
+	})
+
 	/*
 	 * Downloading section of the app
 	*/

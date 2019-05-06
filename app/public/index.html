@@ -851,6 +851,29 @@
 	</div>
 </div>
 
+<!--##########################################MODAL_ANALYZER_COUNTRY###########################################-->
+<div id="modal_link_analyzer_country" class="modal modal-fixed-footer">
+	<div class="modal-content">
+		<h4 class="col s12">Available Countries for {{ title }}</h4>
+		<table class="striped col s12">
+			<thead>
+				<tr>
+					<th style="width:24px;"></th>
+					<th>Country</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr v-for="cc in countries">
+					<td v-for="val in cc">{{ val }}</td>
+				</tr>
+			</tbody>
+		</table>
+	</div>
+	<div class="modal-footer">
+		<a href="#" class="modal-close waves-effect waves-light btn">Close</a>
+	</div>
+</div>
+
 <!--********************************************MAIN-CONTENT********************************************-->
 <nav>
   <div class="nav-wrapper">
@@ -894,6 +917,7 @@
   <li><a href="#!" tab-id="tab_search" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">search</i>Search</a></li>
   <li><a href="#!" tab-id="tab_charts" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">bubble_chart</i>Charts</a></li>
   <li><a href="#!" tab-id="tab_playlists" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">playlist_play</i>Playlists</a></li>
+	<li><a href="#!" tab-id="tab_link" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i>Link Analyzer</a></li>
   <li><a href="#!" tab-id="tab_url" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i>Download from URL</a></li>
   <li><a href="#!" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i>Downloads</a></li>
   <li><div class="divider"></div></li>
@@ -908,6 +932,7 @@
     <li class="tab"><a class="active" href="#tab_search">Search</a></li>
     <li class="tab"><a href="#tab_charts">Charts</a></li>
     <li class="tab"><a href="#tab_playlists">Playlists</a></li>
+		<li class="tab"><a href="#tab_link">Link Analyzer</a></li>
     <li class="tab"><a href="#tab_url">Download from URL</a></li>
     <li class="tab"><a href="#tab_downloads">Downloads</a></li>
   </ul>
@@ -1061,6 +1086,77 @@
           </tbody>
         </table>
       </div>
+    </div>
+
+		<div id="tab_link">
+			<div class="inline-input-group">
+				<input autocomplete="off" type="search" id="link_analyzer_url" class="input" placeholder="Song/Album URL">
+				<button id="link_analyzer_go" class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">search</i></button>
+			</div>
+
+			<div id="link_analyzer_loading" class="center" hidden>
+				<div class="preloader-wrapper big active">
+					<div class="spinner-layer spinner-blue-only">
+						<!-- Spinner Code -->
+						<div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div>
+					</div>
+				</div>
+			</div>
+
+			<div id="link_analyzer_start">
+				<p class="secondary-text center">You can use this section to find out more information about the link you are trying to download<br/>
+				This is usefull if you're trying to download some tracks that are not available in your country and want to know where they are available</p>
+			</div>
+
+			<div v-if="d.title" id="link_analyzer_song" class="link_analyzer_info">
+				<div id="link_analyzer_song_sideinfo" class="hide-on-small-only link_analyzer_sideinfo">
+					<img v-bind:src=" d.album.cover_medium "/>
+					<a href="#modal_link_analyzer_country" class="modal-trigger waves-effect waves-light btn" style="width:100%;">See Available Countries</a>
+				</div>
+				<div id="link_analyzer_song_maininfo" class="link_analyzer_maininfo">
+					<h5 style="margin-bottom:8px; margin-top:0px;">{{ d.title }} {{ d.version }}<i v-if="d.explicit_lyrics" class="material-icons valignicon materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i></h5>
+					<p style="margin-top:0px;">by <b>{{ d.artist.name }}</b></br>
+					in <b>{{ d.album.title }}</b></p>
+					<hr class="hide-on-small-only">
+					<a v-if="d.alternative" v-bind:href="'d.alternative.link'"><b>Alternative Link</b></a>
+					<table class="striped">
+						<tbody>
+							<tr v-if="d.isrc"><td><b>ISRC</b></td><td>{{ d.isrc }}</td></tr>
+							<tr v-if="d.duration"><td><b>Duration</b></td><td>{{ d.duration_string }}</td></tr>
+							<tr v-if="d.disk_number"><td><b>Disc Number</b></td><td>{{ d.disk_number }}</td></tr>
+							<tr v-if="d.track_position"><td><b>Track Number</b></td><td>{{ d.track_position }}</td></tr>
+							<tr v-if="d.release_date"><td><b>Release Date</b></td><td>{{ d.release_date }}</td></tr>
+							<tr v-if="d.bpm"><td><b>BPM</b></td><td>{{ d.bpm }}</td></tr>
+						</tbody>
+					</table>
+					<a href="#modal_link_analyzer_country" class="modal-trigger waves-effect waves-light btn hide-on-med-and-up" style="width:100%;">See Available Countries</a>
+				</div>
+			</div>
+
+			<div v-if="d.title" id="link_analyzer_album" class="link_analyzer_info">
+				<div id="link_analyzer_album_sideinfo" class="hide-on-small-only link_analyzer_sideinfo">
+					<img v-bind:src=" d.cover_medium "/>
+					<a v-on:click="showTrackListSelective(d.link)" class="waves-effect waves-light btn" style="width:100%;">Show Tracklist</a>
+				</div>
+				<div id="link_analyzer_album_maininfo" class="link_analyzer_maininfo">
+					<h5 style="margin-bottom:8px; margin-top:0px;">{{ d.title }} <i v-if="d.explicit_lyrics" class="material-icons valignicon materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i></h5>
+					<p style="margin-top:0px;">by <b>{{ d.artist.name }}</b></br>
+					<b>{{ d.nb_tracks }}</b> {{ d.nb_tracks==1 ? 'track' : 'tracks' }}</p>
+					<hr class="hide-on-small-only">
+					<a v-if="d.alternative" v-bind:href="'d.alternative.link'"><b>Alternative Link</b></a>
+					<table class="striped">
+						<tbody>
+							<tr v-if="d.upc"><td><b>UPC</b></td><td>{{ d.upc }}</td></tr>
+							<tr v-if="d.duration"><td><b>Duration</b></td><td>{{ d.duration_string }}</td></tr>
+							<tr v-if="d.release_date"><td><b>Release Date</b></td><td>{{ d.release_date }}</td></tr>
+							<tr v-if="d.label"><td><b>Label</b></td><td>{{ d.label }}</td></tr>
+							<tr v-if="d.record_type"><td><b>Record Type</b></td><td>{{ d.record_type.substring(0,1).toUpperCase()+ d.record_type.substring(1) }}</td></tr>
+							<tr v-if="d.genres_string"><td><b>Genres</b></td><td>{{ d.genres_string }}</td></tr>
+						</tbody>
+					</table>
+					<a v-on:click="showTrackListSelective(d.link)" class="waves-effect waves-light btn hide-on-med-and-up" style="width:100%;">Show Tracklist</a>
+				</div>
+			</div>
     </div>
 
     <div id="tab_url">
