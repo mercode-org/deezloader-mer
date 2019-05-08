@@ -2131,6 +2131,7 @@ function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize, 
 		} else {
 			filename = filename.replace(/%number%/g, '');
 		}
+		filename = filename.replace(/%disc%/g, fixName(track.discNumber));
 		filename = filename.replace(/%explicit%/g, fixName((track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : "")));
 		filename = filename.replace(/%label%/g, fixName(track.genre ? (Array.isArray(track.genre) ? track.genre[0] : track.genre) : "Unknown"));
 		filename = filename.replace(/[/\\]/g, path.sep)
