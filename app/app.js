@@ -44,12 +44,12 @@ var coverArtFolder = 'deezloader-imgs' + path.sep
 var defaultDownloadFolder = path.sep + 'Deezloader Music' + path.sep
 
 if(process.platform == "android"){
-    coverArtFolder = localpaths.user + coverArtFolder
-    fs.ensureFileSync(coverArtFolder + '.nomedia');
-    defaultDownloadFolder = localpaths.home + path.sep + 'Music' + defaultDownloadFolder
+	coverArtFolder = localpaths.user + coverArtFolder
+	fs.ensureFileSync(coverArtFolder + '.nomedia');
+	defaultDownloadFolder = localpaths.home + path.sep + 'Music' + defaultDownloadFolder
 }else{
-    coverArtFolder = os.tmpdir() + path.sep + coverArtFolder
-    defaultDownloadFolder = localpaths.home + defaultDownloadFolder
+	coverArtFolder = os.tmpdir() + path.sep + coverArtFolder
+	defaultDownloadFolder = localpaths.home + defaultDownloadFolder
 }
 
 // Default settings
@@ -163,13 +163,13 @@ io.sockets.on('connection', function (s) {
 	// Function for autologin
 	s.on("autologin", async function(jar, email){
 		try{
-      await s.Deezer.loginViaCookies(jar, email)
+			await s.Deezer.loginViaCookies(jar, email)
 			s.emit('login', {user: s.Deezer.user})
-    }catch(err){
-      s.emit('login', {error: err.message})
+		}catch(err){
+			s.emit('login', {error: err.message})
 			logger.error(`Autologin failed: ${err.message}`)
-      return
-    }
+			return
+		}
 	})
 
 	// Function for logout
@@ -870,14 +870,14 @@ io.sockets.on('connection', function (s) {
 	// Wrapper for queue download
 	function addNextDownload(obj, token){
 		return new Promise(async (resolve, reject) => {
-      await queueDownload(obj)
+			await queueDownload(obj)
 			resolve()
-    }).then(() => new Promise((resolve, reject) => {
-      if (token.cancelled)
-        reject()
-      else
-        resolve()
-    }))
+		}).then(() => new Promise((resolve, reject) => {
+			if (token.cancelled)
+				reject()
+			else
+				resolve()
+		}))
 	}
 
 	// Cancels download
@@ -1217,8 +1217,8 @@ io.sockets.on('connection', function (s) {
 							t.position = index
 							if (t.id==0 && downloading.obj.tracks[t.position] != null){
 								t.title = downloading.obj.tracks[t.position].name
-					      t.album = {id: 0, title: downloading.obj.tracks[t.position].album.name}
-					      t.artist = {id: 0, name: downloading.obj.tracks[t.position].artists[0].name}
+								t.album = {id: 0, title: downloading.obj.tracks[t.position].album.name}
+								t.artist = {id: 0, name: downloading.obj.tracks[t.position].artists[0].name}
 							}
 							try{
 								await downloadTrackObject(t, downloading.queueId, downloading.settings)
@@ -1566,8 +1566,8 @@ io.sockets.on('connection', function (s) {
 				let posMainArtist = track.artistsString.indexOf(track.album.artist.name)
 				if (posMainArtist !== -1 && posMainArtist !== 0){
 					let element = track.artistsString[posMainArtist]
-		  		track.artistsString.splice(posMainArtist, 1)
-		  		track.artistsString.splice(0, 0, element)
+					track.artistsString.splice(posMainArtist, 1)
+					track.artistsString.splice(0, 0, element)
 				}
 				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.artistsString = track.artistsString.join(separator)
 			}
@@ -1642,7 +1642,7 @@ io.sockets.on('connection', function (s) {
 		}
 		let coverpath = filepath;
 		if (track.discTotal > 1 && (settings.artName || settings.createAlbumFolder) && settings.createCDFolder){
-			filepath += `CD${track.discNumber +  path.sep}`
+			filepath += `CD${track.discNumber + path.sep}`
 		}
 		let writePath;
 
@@ -2077,10 +2077,10 @@ function updateSettingsFile(config, value) {
 
 function fixName (txt) {
 	txt = txt+""
-  const regEx = /[\0\/\\:*?"<>|]/g;
-  txt = txt.replace(regEx, '_');
-  txt = txt.slice(0,200);
-  return txt;
+	const regEx = /[\0\/\\:*?"<>|]/g;
+	txt = txt.replace(regEx, '_');
+	txt = txt.slice(0,200);
+	return txt;
 }
 
 function antiDot(str){
@@ -2243,9 +2243,9 @@ function uniqueArray(origin, removeDupes=true){
 }
 
 async function asyncForEach(array, callback) {
-  for (let index = 0; index < array.length; index++) {
-    await callback(array[index], index, array);
-  }
+	for (let index = 0; index < array.length; index++) {
+		await callback(array[index], index, array);
+	}
 }
 
 // Show crash error in console for debugging
