@@ -4,7 +4,7 @@ const fs = require('fs');
 const path = require('path');
 
 
-let captchaPage = fs.readFileSync(path.join(__dirname, '..', 'html', 'captcha.html'), 'utf8');
+let captchaPage = fs.readFileSync(path.join(__dirname, '..', 'public', 'html', 'captcha.html'), 'utf8');
 
 
 module.exports = {

@@ -125,10 +125,12 @@ io.sockets.on('connection', function (s) {
 	s.emit("getDefaultSettings", defaultSettings, defaultDownloadFolder)
 	s.emit("populateDownloadQueue", downloadQueue)
 
-	const captcha = require('./public/js/captcha');
-	captcha.callbackResponse = function (data) {
-		s.emit("getCaptcha", data)
-	};
+	if(process.platform != "android"){
+		const captcha = require('./utils/captcha');
+		captcha.callbackResponse = function (data) {
+			s.emit("getCaptcha", data)
+		};
+	}
 
 	// Function for logging in
 	s.on("login", async function (username, password, captchaResponse) {

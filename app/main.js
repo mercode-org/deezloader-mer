@@ -6,8 +6,7 @@ const {app, BrowserWindow, ipcMain, Menu, Tray, Notification} = require('electro
 const os = require('os');
 loadSettings();
 
-const captcha = require('./public/js/captcha');
-captcha.registerScheme();
+const captcha = require('./utils/captcha');
 
 const theApp = require('./app');
 const WindowStateManager = require('electron-window-state-manager');
@@ -99,6 +98,8 @@ function createTray(){
 }
 
 function createWindow () {
+	// Register Captcha Scheme
+	captcha.registerScheme();
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
 		width: mainWindowState.width,
