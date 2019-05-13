@@ -7,6 +7,7 @@ const os = require('os');
 loadSettings();
 
 const captcha = require('./utils/captcha');
+captcha.registerScheme();
 
 const theApp = require('./app');
 const WindowStateManager = require('electron-window-state-manager');
@@ -98,8 +99,6 @@ function createTray(){
 }
 
 function createWindow () {
-	// Register Captcha Scheme
-	captcha.registerScheme();
 	// Create the browser window.
 	mainWindow = new BrowserWindow({
 		width: mainWindowState.width,
