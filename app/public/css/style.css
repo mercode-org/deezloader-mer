@@ -7,6 +7,9 @@ body {
 	background-color: white;
   overflow-x: hidden;
 }
+input{
+	color: black;
+}
 
 td{
 	text-align: left;
