@@ -2059,7 +2059,7 @@ io.sockets.on('connection', function (s) {
 					writer.setFrame('USLT', track.unsyncLyrics);
 				if(track.album.label && settings.tags.publisher)
 					writer.setFrame('TPUB', track.album.label);
-				if(track.genreString && settings.tags.genre)
+				if(track.album.genreString && settings.tags.genre)
 					writer.setFrame('TCON', [track.album.genreString]);
 				if(track.copyright && settings.tags.copyright)
 					writer.setFrame('TCOP', track.copyright);
