@@ -1617,7 +1617,7 @@ io.sockets.on('connection', function (s) {
 					default: date = `${track.date.slicedYear}-${track.date.month}-${track.date.day}`; break;
 				}
 				track.dateString = date;
-				track.id3dateString = `${track.date.month}${track.date.day}`;
+				track.id3dateString = `${track.date.day}${track.date.month}`;
 			}
 		}else{
 			track.date = {year: 0,day: 0,month: 0}
