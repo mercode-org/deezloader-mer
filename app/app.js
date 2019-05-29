@@ -97,6 +97,7 @@ io.sockets.on('connection', function (s) {
 	// Check for updates
 	request({
 		url: "https://notabug.org/RemixDevs/DeezloaderRemix/raw/master/update.json",
+		rejectUnauthorized: false,
 		json: true
 	})
 	.then(body=>{
