@@ -1448,9 +1448,10 @@ io.sockets.on('connection', function (s) {
 			}else{
 				// Missing barcode, genre
 				track.album = ajson
-				track.date = track.date
+				track.date = track.album.date
+				track.date.slicedYear = (settings.dateFormatYear == "2" ? track.date.year.slice(2, 4) : track.date.year.slice(0, 4))
 				track.trackTotal = track.album.trackTotal
-				track.album.recordType = switchReleaseType(track.album.recordType)
+				track.album.recordType = "Album"
 				// TODO: Make a loop for each artist
 			}
 
