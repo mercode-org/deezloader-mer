@@ -311,7 +311,7 @@ io.sockets.on('connection', function (s) {
 		data.type = data.type || "track"
 		if (["track", "playlist", "album", "artist"].indexOf(data.type) == -1) data.type = "track"
 
-		// Remove "feat."  "ft." and "&" (causes only problems)
+		// Remove "feat." "ft." and "&" (causes only problems)
 		data.text = data.text
 			.replace(/ feat[\.]? /g, " ")
 			.replace(/ ft[\.]? /g, " ")

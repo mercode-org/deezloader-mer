@@ -1,19 +1,19 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Deezloader Remix</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
-  <link rel="stylesheet" type="text/css" href="css/materialize.min.css"/>
-  <link rel="stylesheet" type="text/css" href="css/animate.css">
-  <link rel="stylesheet" type="text/css" href="css/style.css"/>
-  <link rel="stylesheet" type="text/css" href="css/darkMode.css" name="darkMode" disabled/>
-  <script type='text/javascript'>
-    if (eval(localStorage.darkMode)){
-      document.getElementsByName("darkMode")[0].removeAttribute("disabled");
-    }
-  </script>
-  <meta charset="utf-8"/>
+	<title>Deezloader Remix</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+	<link rel="stylesheet" type="text/css" href="css/material-icons.css"/>
+	<link rel="stylesheet" type="text/css" href="css/materialize.min.css"/>
+	<link rel="stylesheet" type="text/css" href="css/animate.css">
+	<link rel="stylesheet" type="text/css" href="css/style.css"/>
+	<link rel="stylesheet" type="text/css" href="css/darkMode.css" name="darkMode" disabled/>
+	<script type='text/javascript'>
+		if (eval(localStorage.darkMode)){
+			document.getElementsByName("darkMode")[0].removeAttribute("disabled");
+		}
+	</script>
+	<meta charset="utf-8"/>
 </head>
 <body>
 <span id="appVersionFallback" hidden>4.2.1</span>
@@ -39,25 +39,25 @@
 			<div class="card-content">
 				<span class="card-title">Please login to your deezer account.</span>
 				<h6 class="red-text" id="login-res-text"></h6>
-        <div id="login-form-client-mode">
-  				<div class="input-field col s12">
-  					<input autocomplete="off" type="text" id="modal_login_input_username"/>
-  					<label for="modal_login_input_username">Email</label>
-  				</div>
-  				<div class="input-field col s12">
-  					<input autocomplete="off" type="password" id="modal_login_input_password"/>
-  					<label for="modal_login_input_password">Password</label>
-  				</div>
-  				<input id="modal_login_input_captchaResponse" type="hidden" value=""/>
-  				<!--<iframe id="modal_login_iframe_captcha" src="cap://deezer.com/"></iframe>-->
-        </div>
-        <div id="login-form-server-mode">
-          <div class="input-field col s12">
-  					<input autocomplete="off" type="password" id="modal_login_input_userToken"/>
-  					<label for="modal_login_input_userToken">userToken</label>
-  				</div>
-          <p><a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken" target="_blank">How do I get my userToken?</a></p>
-        </div>
+				<div id="login-form-client-mode">
+					<div class="input-field col s12">
+						<input autocomplete="off" type="text" id="modal_login_input_username"/>
+						<label for="modal_login_input_username">Email</label>
+					</div>
+					<div class="input-field col s12">
+						<input autocomplete="off" type="password" id="modal_login_input_password"/>
+						<label for="modal_login_input_password">Password</label>
+					</div>
+					<input id="modal_login_input_captchaResponse" type="hidden" value=""/>
+					<!--<iframe id="modal_login_iframe_captcha" src="cap://deezer.com/"></iframe>-->
+				</div>
+				<div id="login-form-server-mode">
+					<div class="input-field col s12">
+						<input autocomplete="off" type="password" id="modal_login_input_userToken"/>
+						<label for="modal_login_input_userToken">userToken</label>
+					</div>
+					<p><a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken" target="_blank">How do I get my userToken?</a></p>
+				</div>
 			</div>
 			<div class="card-action row">
 				<a href="#" class="deezloader-primary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_login">Log in</a>
@@ -317,13 +317,15 @@
         <a href="#modal_tags" class="modal-trigger waves-effect waves-light btn btn-large" style="width:100%;">Choose which tags to Save</a>
       </div>
     </div>
+
 		<div class="row">
 			<div class="col s12">
-        <img id="modal_settings_picture" src="" alt="Profile Picture" class="circle left" style="height:125px; margin-right: 12px;"/>
+				<img id="modal_settings_picture" src="" alt="Profile Picture" class="circle left" style="height:125px; margin-right: 12px;"/>
 				<p>You are logged in as <b id="modal_settings_username"></b></p>
 				<a href="#" class="modal-close waves-effect waves-light btn" id="modal_settings_btn_logout">Logout</a>
 			</div>
 		</div>
+
 	</div>
 	<div class="modal-footer">
 		<a href="#" class="modal-close waves-effect waves-light deezloader-primary btn" id="modal_settings_btn_saveSettings"><i
@@ -342,172 +344,172 @@
 		</div>
 		<div class="row">
 			<p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_title" class="filled-in"/>
-  				<span>Title</span>
-        </label>
+				<label>
+					<input type="checkbox" id="modal_tags_title" class="filled-in"/>
+					<span>Title</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_artist" class="filled-in"/>
-  				<span>Artist</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_artist" class="filled-in"/>
+					<span>Artist</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_album" class="filled-in"/>
-  				<span>Album</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_album" class="filled-in"/>
+					<span>Album</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_cover" class="filled-in"/>
-  				<span>Cover</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_cover" class="filled-in"/>
+					<span>Cover</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_trackNumber" class="filled-in"/>
-  				<span>Track Number</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_trackNumber" class="filled-in"/>
+					<span>Track Number</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_trackTotal" class="filled-in"/>
-  				<span>Track Total</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_trackTotal" class="filled-in"/>
+					<span>Track Total</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_discNumber" class="filled-in"/>
-  				<span>Disc Number</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_discNumber" class="filled-in"/>
+					<span>Disc Number</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_discTotal" class="filled-in"/>
-  				<span>Disc Total</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_discTotal" class="filled-in"/>
+					<span>Disc Total</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_albumArtist" class="filled-in"/>
-  				<span>Album Artist</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_albumArtist" class="filled-in"/>
+					<span>Album Artist</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_genre" class="filled-in"/>
-  				<span>Genre</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_genre" class="filled-in"/>
+					<span>Genre</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_year" class="filled-in"/>
-  				<span>Year</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_year" class="filled-in"/>
+					<span>Year</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_date" class="filled-in"/>
-  				<span>Date</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_date" class="filled-in"/>
+					<span>Date</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_explicit" class="filled-in"/>
-  				<span>Explicit</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_explicit" class="filled-in"/>
+					<span>Explicit</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_isrc" class="filled-in"/>
-  				<span>ISRC</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_isrc" class="filled-in"/>
+					<span>ISRC</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_length" class="filled-in"/>
-  				<span>Length</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_length" class="filled-in"/>
+					<span>Length</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_barcode" class="filled-in"/>
-  				<span>Barcode</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_barcode" class="filled-in"/>
+					<span>Barcode</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_bpm" class="filled-in"/>
-  				<span>BPM</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_bpm" class="filled-in"/>
+					<span>BPM</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_replayGain" class="filled-in"/>
-  				<span>Replay Gain</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_replayGain" class="filled-in"/>
+					<span>Replay Gain</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_publisher" class="filled-in"/>
-  				<span>Label</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_publisher" class="filled-in"/>
+					<span>Label</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_unsynchronisedLyrics" class="filled-in"/>
-  				<span>Unsynchronised Lyrics</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_unsynchronisedLyrics" class="filled-in"/>
+					<span>Unsynchronised Lyrics</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_copyright" class="filled-in"/>
-  				<span>Copyright</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_copyright" class="filled-in"/>
+					<span>Copyright</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_musicpublisher" class="filled-in"/>
-  				<span>Publisher</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_musicpublisher" class="filled-in"/>
+					<span>Publisher</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_composer" class="filled-in"/>
-  				<span>Composer</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_composer" class="filled-in"/>
+					<span>Composer</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_mixer" class="filled-in"/>
-  				<span>Mixer</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_mixer" class="filled-in"/>
+					<span>Mixer</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_author" class="filled-in"/>
-  				<span>Author</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_author" class="filled-in"/>
+					<span>Author</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_writer" class="filled-in"/>
-  				<span>Writer</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_writer" class="filled-in"/>
+					<span>Writer</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_engineer" class="filled-in"/>
-  				<span>Engineer</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_engineer" class="filled-in"/>
+					<span>Engineer</span>
+				</label>
 			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_tags_producer" class="filled-in"/>
-  				<span>Producer</span>
-        </label>
+			<p class="col s12 m4">
+				<label>
+					<input type="checkbox" id="modal_tags_producer" class="filled-in"/>
+					<span>Producer</span>
+				</label>
 			</p>
 		</div>
 	</div>
@@ -528,15 +530,15 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">info</i>About</div>
 					<div class="collapsible-body">
 						<p>
-              <b>Branch: </b>Remix</br>
-              <b>Version:</b> <span id="application_version_about"></span><br/>
-              <b>Based on: </b>Deezloader Reborn</br>
-              <b>Maintainers:</b> RemixDevs Group<br/>
-              <b>Repo: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix" target="_blank">Official Repo</a><br/>
-              <b>Interface:</b> <a href="http://materializecss.com/" target="_blank">Materialize CSS</a><br/>
-              <br>
-              <b>Special Thanks to:</b><br>
-              ZzMTV, ParadoxalManiak, snwflake, ExtendLord<br>
+							<b>Branch: </b>Remix</br>
+							<b>Version:</b> <span id="application_version_about"></span><br/>
+							<b>Based on: </b>Deezloader Reborn</br>
+							<b>Maintainers:</b> RemixDevs Group<br/>
+							<b>Repo: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix" target="_blank">Official Repo</a><br/>
+							<b>Interface:</b> <a href="http://materializecss.com/" target="_blank">Materialize CSS</a><br/>
+							<br>
+							<b>Special Thanks to:</b><br>
+							ZzMTV, ParadoxalManiak, snwflake, ExtendLord<br>
 						</p>
 					</div>
 				</li>
@@ -556,14 +558,14 @@
 						</p>
 					</div>
 				</li>
-        <li>
-          <div class="collapsible-header waves-effect"><i class="material-icons">group</i>Contacts</div>
-          <div class="collapsible-body">
-            <p>
-              If you want to discuss or help with the app you can do so in the <a href="https://t.me/DeezloaderRemixCommunity" target="_blank">Telegram group</a>!
-            </p>
-          </div>
-        </li>
+				<li>
+					<div class="collapsible-header waves-effect"><i class="material-icons">group</i>Contacts</div>
+					<div class="collapsible-body">
+						<p>
+							If you want to discuss or help with the app you can do so in the <a href="https://t.me/DeezloaderRemixCommunity" target="_blank">Telegram group</a>!
+						</p>
+					</div>
+				</li>
 				<li>
 					<div class="collapsible-header waves-effect"><i class="material-icons">warning</i>Attention!</div>
 					<div class="collapsible-body">
@@ -578,36 +580,36 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
 					<div class="collapsible-body">
 						<p>
-              <b>Version 4.2.1</b><br/>
-              - Downloads are binded to the server on server mode<br/>
-              - Downloading playlists wont create artist and album folders if options are selected<br/>
-              - Date tag is now enabled by default on new installations<br/>
-              - Now users without propic will have a default one in the settings<br/>
-              - Update message only nags once per client<br/>
-              - Added space after %explicit% if there is text after the tag<br/>
-              - Added label at the end of album viewin the modal<br/>
-              - Fixed forEach error when downloading tracks<br/>
-              - Fixed problem where %type% could be empty<br/>
-              - Fixed macOS copy-paste problem<br/>
-              - Fixed duplicate detection when downloading tracks<br/>
-              - Fixed null separator for multitags on FLACs<br/>
-              - Fixed problem where m3u file on multidisc albums was wrong<br/>
-              <br/>
-              <b>Version 4.2.0</b><br/>
-              - New login workflow<br/>
-              - Improved UI<br/>
-              - Revamped album, artists and playlist modals<br/>
-              - Added option to download the track in a different quality over the one selected (right click on d/l button)<br/>
-              - Added autologin by default to fix re-connection problems<br/>
-              - Re-added fallback on track errors<br/>
-              - Fixed Default Settings button<br/>
-              - Fixed links not working in server mode<br/>
-              - Fixed UI problems when on mobile view (responsive site)<br/>
-              - Fixed Settings menu not being populated on mobile view<br/>
-              - Fixed problem with the artist tag when downloading playlists and albums<br/>
-              - Fixed playlist numbering on files (now it doesn't override the trackNumber tag)<br/>
-              - Fixed aritst artwork not saving<br/>
-              <br/>
+							<b>Version 4.2.1</b><br/>
+							- Downloads are binded to the server on server mode<br/>
+							- Downloading playlists wont create artist and album folders if options are selected<br/>
+							- Date tag is now enabled by default on new installations<br/>
+							- Now users without propic will have a default one in the settings<br/>
+							- Update message only nags once per client<br/>
+							- Added space after %explicit% if there is text after the tag<br/>
+							- Added label at the end of album viewin the modal<br/>
+							- Fixed forEach error when downloading tracks<br/>
+							- Fixed problem where %type% could be empty<br/>
+							- Fixed macOS copy-paste problem<br/>
+							- Fixed duplicate detection when downloading tracks<br/>
+							- Fixed null separator for multitags on FLACs<br/>
+							- Fixed problem where m3u file on multidisc albums was wrong<br/>
+							<br/>
+							<b>Version 4.2.0</b><br/>
+							- New login workflow<br/>
+							- Improved UI<br/>
+							- Revamped album, artists and playlist modals<br/>
+							- Added option to download the track in a different quality over the one selected (right click on d/l button)<br/>
+							- Added autologin by default to fix re-connection problems<br/>
+							- Re-added fallback on track errors<br/>
+							- Fixed Default Settings button<br/>
+							- Fixed links not working in server mode<br/>
+							- Fixed UI problems when on mobile view (responsive site)<br/>
+							- Fixed Settings menu not being populated on mobile view<br/>
+							- Fixed problem with the artist tag when downloading playlists and albums<br/>
+							- Fixed playlist numbering on files (now it doesn't override the trackNumber tag)<br/>
+							- Fixed aritst artwork not saving<br/>
+							<br/>
 							<b>Version 4.1.8</b><br/>
 							- Fix the issue where some people wasn't able to log in from the Netherlands<br/>
 							<br/>
@@ -714,27 +716,27 @@
 						</p>
 					</div>
 				</li>
-        <li>
-          <div class="collapsible-header waves-effect"><i class="material-icons">favorite</i>Contributions</div>
-          <div class="collapsible-body">
-            <h5>You want to contribute to this project? You can do that <b>in different ways!</b></h5>
-            <p>If you know JavaScript, HTML, CSS or Node.js you could contribute writing code, fixing bugs and adding features using the <a href="https://notabug.org/RemixDevs/DeezloaderRemix" target="_blank">Official Repo</a>.</p>
-            <p>If you are good at graphics and design you could help by submitting a new design, you can open a new issue with some design <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new" target="_blank">here</a>.<br>
-            	<p>Keep in mind that we are (sorta) following the <a href="https://material.io/" target="_blank">Material Design Principles</a>.</p>
-            	If you are good at finding bugs you can help Beta Test the app before release.<br>
-            	Join our <a href="https://t.me/DeezloaderRemixCommunity" target="_blank">Telegram Group</a> to be notified when betas come out!</p>
-            <hr>
-            <h5>You want to contribute monetarily? You could make a donation!</h5>
-            <p>If you can donate you can do that with this links.<br>
-              You shoud remember that <b>this is a free project</b> and <b>you should support the artists you love</b> before supporting the developer.<br>
-              Don't feel obligated to donate, I appreciate you anyway!</p>
-            <p>
-              PayPal: <a href="https://paypal.me/RemixDev" target="_blank">PayPal.me/RemixDev</a><br>
-              Bitcoin: 1sdNymSJrMBWyHM4u2m9uco5nv6uV4Qs1<br>
-              Ethereum: 0x1d2aa67e671485CD4062289772B662e0A6Ff976c
-            </p>
-          </div>
-        </li>
+				<li>
+					<div class="collapsible-header waves-effect"><i class="material-icons">favorite</i>Contributions</div>
+					<div class="collapsible-body">
+						<h5>You want to contribute to this project? You can do that <b>in different ways!</b></h5>
+						<p>If you know JavaScript, HTML, CSS or Node.js you could contribute writing code, fixing bugs and adding features using the <a href="https://notabug.org/RemixDevs/DeezloaderRemix" target="_blank">Official Repo</a>.</p>
+						<p>If you are good at graphics and design you could help by submitting a new design, you can open a new issue with some design <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new" target="_blank">here</a>.<br>
+							<p>Keep in mind that we are (sorta) following the <a href="https://material.io/" target="_blank">Material Design Principles</a>.</p>
+							If you are good at finding bugs you can help Beta Test the app before release.<br>
+							Join our <a href="https://t.me/DeezloaderRemixCommunity" target="_blank">Telegram Group</a> to be notified when betas come out!</p>
+						<hr>
+						<h5>You want to contribute monetarily? You could make a donation!</h5>
+						<p>If you can donate you can do that with this links.<br>
+							You shoud remember that <b>this is a free project</b> and <b>you should support the artists you love</b> before supporting the developer.<br>
+							Don't feel obligated to donate, I appreciate you anyway!</p>
+						<p>
+							PayPal: <a href="https://paypal.me/RemixDev" target="_blank">PayPal.me/RemixDev</a><br>
+							Bitcoin: 1sdNymSJrMBWyHM4u2m9uco5nv6uV4Qs1<br>
+							Ethereum: 0x1d2aa67e671485CD4062289772B662e0A6Ff976c
+						</p>
+					</div>
+				</li>
 			</ul>
 		</div>
 	</div>
@@ -746,12 +748,12 @@
 <!--##########################################MODAL_TRACKLIST###########################################-->
 <div id="modal_trackList" class="modal modal-fixed-footer modal-custom-header">
 	<div class="modal-content">
-    <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
-      <h4>{{ title }}</h4>
-      <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
-      <span class="right hide-on-small-only" v-if="release_date"> {{ release_date }} </span>
-    </div>
-    <div class="modal-container">
+		<div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
+			<h4>{{ title }}</h4>
+			<h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
+			<span class="right hide-on-small-only" v-if="release_date"> {{ release_date }} </span>
+		</div>
+		<div class="modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
@@ -783,7 +785,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-    <a href="#" id="download_all_tracks" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
+		<a href="#" id="download_all_tracks" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
 		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
 	</div>
 </div>
@@ -791,12 +793,12 @@
 <!--##########################################MODAL_TRACKLISTALBUM###########################################-->
 <div id="modal_trackListSelective" class="modal modal-fixed-footer modal-custom-header">
 	<div class="modal-content">
-    <div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
-      <h4>{{ title }} <i v-if="explicit" class="material-icons valignicon materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i></h4>
-      <h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
-      <span class="right hide-on-small-only" v-if="release_date">{{ release_date }}</span>
-    </div>
-    <div class="modal-container">
+		<div class="trackList-header" v-bind:style="{ 'background-image': `linear-gradient(to bottom, transparent 0%, var(--main-modal-background) 100%), url('${image}')` }">
+			<h4>{{ title }} <i v-if="explicit" class="material-icons valignicon materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i></h4>
+			<h6 v-if="metadata" style="display: inline;">{{ metadata }}</h6>
+			<span class="right hide-on-small-only" v-if="release_date">{{ release_date }}</span>
+		</div>
+		<div class="modal-container">
 			<table class="highlight col s12">
 				<thead>
 				<tr>
@@ -825,13 +827,13 @@
 				<tbody id="modal_trackListSelective_table_trackListSelective_tbody_trackListSelective" class="hide">
 				</tbody>
 			</table>
-      <span v-if="label" style="opacity: 0.40;margin-top: 8px;display: inline-block;font-size: 13px;">{{ label }}</span>
+			<span v-if="label" style="opacity: 0.40;margin-top: 8px;display: inline-block;font-size: 13px;">{{ label }}</span>
 		</div>
 	</div>
 	<div class="modal-footer">
-    <a href="#" id="download_all_tracks_selective" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
+		<a href="#" id="download_all_tracks_selective" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
 		<a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><span class="hide-on-small-only">Download selection<i class="material-icons right">file_download</i></span><i class="material-icons hide-on-med-and-up">file_download</i></a>
-    <a href="#" class="modal-close waves-effect btn-flat">Close</a>
+		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
 	</div>
 </div>
 
@@ -875,22 +877,22 @@
 
 <!--********************************************MAIN-CONTENT********************************************-->
 <nav>
-  <div class="nav-wrapper">
-    <div class="brand-logo center hide-on-small-only">Deezloader <b>Remix</b></div>
-    <ul class="left hide-on-small-only">
-      <li>
-        <div class="switch">
-          <label>
-            <i class="material-icons left white-text" style="margin-right: 0px; margin-left: 15px;">brightness_2</i>
-            <input id="nightTimeSwitcher" type="checkbox">
-            <span class="lever"></span>
-          </label>
-        </div>
-      </li>
-    </ul>
-    <a href="#" data-target="slide-out" class="sidenav-trigger hide-on-med-and-up right"><i class="material-icons">menu</i></a>
-    <ul id="nav-mobile" class="right hide-on-small-only">
-      <li>
+	<div class="nav-wrapper">
+		<div class="brand-logo center hide-on-small-only">Deezloader <b>Remix</b></div>
+		<ul class="left hide-on-small-only">
+			<li>
+				<div class="switch">
+					<label>
+						<i class="material-icons left white-text" style="margin-right: 0px; margin-left: 15px;">brightness_2</i>
+						<input id="nightTimeSwitcher" type="checkbox">
+						<span class="lever"></span>
+					</label>
+				</div>
+			</li>
+		</ul>
+		<a href="#" data-target="slide-out" class="sidenav-trigger hide-on-med-and-up right"><i class="material-icons">menu</i></a>
+		<ul id="nav-mobile" class="right hide-on-small-only">
+			<li>
 				<a href="#modal_settings" id="nav_btn_openSettingsModal" class="waves-effect waves-light modal-trigger">
 					<i class="material-icons left">settings</i> <span class="hide-on-med-and-down">Settings</span>
 				</a>
@@ -900,192 +902,192 @@
 					<i class="material-icons left">star</i> <span class="hide-on-med-and-down">More</span>
 				</a>
 			</li>
-    </ul>
-  </div>
+		</ul>
+	</div>
 </nav>
 
 <img src="img/icon.svg" class="circle" id="main_icon"></img>
 
 <ul id="slide-out" class="sidenav">
-  <li><div class="user-view">
-    <div class="background"></div>
-    <a href="#user"><img class="circle" id="side_avatar"></a>
-    <a href="#name"><span class="white-text name" id="side_user"></span></a>
-    <a href="#email"><span class="white-text email" id="side_email"></span></a>
-  </div></li>
-  <li><a href="#!" tab-id="tab_search" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">search</i>Search</a></li>
-  <li><a href="#!" tab-id="tab_charts" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">bubble_chart</i>Charts</a></li>
-  <li><a href="#!" tab-id="tab_playlists" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">playlist_play</i>Playlists</a></li>
+	<li><div class="user-view">
+		<div class="background"></div>
+		<a href="#user"><img class="circle" id="side_avatar"></a>
+		<a href="#name"><span class="white-text name" id="side_user"></span></a>
+		<a href="#email"><span class="white-text email" id="side_email"></span></a>
+	</div></li>
+	<li><a href="#!" tab-id="tab_search" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">search</i>Search</a></li>
+	<li><a href="#!" tab-id="tab_charts" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">bubble_chart</i>Charts</a></li>
+	<li><a href="#!" tab-id="tab_playlists" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">playlist_play</i>Playlists</a></li>
 	<li><a href="#!" tab-id="tab_link" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i>Link Analyzer</a></li>
-  <li><a href="#!" tab-id="tab_url" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i>Download from URL</a></li>
-  <li><a href="#!" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i>Downloads</a></li>
-  <li><div class="divider"></div></li>
-  <li><a href="#modal_settings" id="sidenav_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i>Settings</a></li>
-  <li><a href="#modal_about" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">star</i>About</a></li>
-  <li><a href="#!" id="nightModeSwitch2"><i class="material-icons">brightness_2</i>Enable Night Mode</a>
-  </li>
+	<li><a href="#!" tab-id="tab_url" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i>Download from URL</a></li>
+	<li><a href="#!" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i>Downloads</a></li>
+	<li><div class="divider"></div></li>
+	<li><a href="#modal_settings" id="sidenav_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i>Settings</a></li>
+	<li><a href="#modal_about" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">star</i>About</a></li>
+	<li><a href="#!" id="nightModeSwitch2"><i class="material-icons">brightness_2</i>Enable Night Mode</a>
+	</li>
 </ul>
 
 <main class="container">
-  <ul id="tab-nav" class="row tabs tabs-fixed-width hide-on-small-only">
-    <li class="tab"><a class="active" href="#tab_search">Search</a></li>
-    <li class="tab"><a href="#tab_charts">Charts</a></li>
-    <li class="tab"><a href="#tab_playlists">Playlists</a></li>
+	<ul id="tab-nav" class="row tabs tabs-fixed-width hide-on-small-only">
+		<li class="tab"><a class="active" href="#tab_search">Search</a></li>
+		<li class="tab"><a href="#tab_charts">Charts</a></li>
+		<li class="tab"><a href="#tab_playlists">Playlists</a></li>
 		<li class="tab"><a href="#tab_link">Link Analyzer</a></li>
-    <li class="tab"><a href="#tab_url">Download from URL</a></li>
-    <li class="tab"><a href="#tab_downloads">Downloads</a></li>
-  </ul>
+		<li class="tab"><a href="#tab_url">Download from URL</a></li>
+		<li class="tab"><a href="#tab_downloads">Downloads</a></li>
+	</ul>
 
-  <div id="main-content" class="row">
+	<div id="main-content" class="row">
 
-    <div id="tab_search">
-      <form id="tab_search_form_search">
-        <div class="inline-input-group col s12">
-          <input autocomplete="off" id="tab_search_form_search_input_searchString" type="search" class="input" placeholder="Start searching ...">
+		<div id="tab_search">
+			<form id="tab_search_form_search">
+				<div class="inline-input-group col s12">
+					<input autocomplete="off" id="tab_search_form_search_input_searchString" type="search" class="input" placeholder="Start searching ...">
 					<button class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">search</i></button>
-        </div>
-        <div class="row center">
-          <p class="col s3">
-            <label>
-            <input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_song" value="track" checked/>
-            <span><i class="material-icons show-on-small-only left deezloader-primary-text">music_note</i><span class="hide-on-med-and-down">Song</span></span>
-            </label>
-          </p>
-          <p class="col s3">
-            <label>
-            <input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_album" value="album"/>
-            <span><i class="material-icons show-on-small-only left deezloader-primary-text">album</i><span class="hide-on-med-and-down">Album</span></span>
-            </label>
-          </p>
-          <p class="col s3">
-            <label>
-            <input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_artist" value="artist"/>
-            <span><i class="material-icons show-on-small-only left deezloader-primary-text">person</i><span class="hide-on-med-and-down">Artist</span></span>
-            </label>
-          </p>
-          <p class="col s3">
-            <label>
-              <input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_playlist" value="playlist"/>
-              <span><i class="material-icons show-on-small-only left deezloader-primary-text">playlist_play</i><span class="hide-on-med-and-down">Playlist</span></span>
-            </label>
-          </p>
-        </div>
-      </form>
-      <div id="tab_search_results">
+				</div>
+				<div class="row center">
+					<p class="col s3">
+						<label>
+						<input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_song" value="track" checked/>
+						<span><i class="material-icons show-on-small-only left deezloader-primary-text">music_note</i><span class="hide-on-med-and-down">Song</span></span>
+						</label>
+					</p>
+					<p class="col s3">
+						<label>
+						<input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_album" value="album"/>
+						<span><i class="material-icons show-on-small-only left deezloader-primary-text">album</i><span class="hide-on-med-and-down">Album</span></span>
+						</label>
+					</p>
+					<p class="col s3">
+						<label>
+						<input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_artist" value="artist"/>
+						<span><i class="material-icons show-on-small-only left deezloader-primary-text">person</i><span class="hide-on-med-and-down">Artist</span></span>
+						</label>
+					</p>
+					<p class="col s3">
+						<label>
+							<input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_playlist" value="playlist"/>
+							<span><i class="material-icons show-on-small-only left deezloader-primary-text">playlist_play</i><span class="hide-on-med-and-down">Playlist</span></span>
+						</label>
+					</p>
+				</div>
+			</form>
+			<div id="tab_search_results">
 				<table id="tab_search_table_results" class="striped col s12">
 					<thead class="hide-on-small-only">
-  					<tr class="hide" id="tab_search_table_results_thead_track">
-  						<th style="width: 56px;"><!--cover--></th>
-  						<th>Song</th>
-  						<th>Artist</th>
-  						<th>Album</th>
-  						<th><i class="material-icons">timer</i></th>
-  						<th style="width: 56px;"><!--download_link--></th>
-  					</tr>
-  					<tr class="hide" id="tab_search_table_results_thead_album">
-  						<th style="width: 56px;"><!--cover--></th>
-  						<th>Album</th>
-  						<th>Artist</th>
-  						<th>Songs</th>
-  						<th>Type</th>
-  						<th><!--space--></th>
-  						<th style="width: 56px;"><!--download_link--></th>
-  					</tr>
-  					<tr class="hide" id="tab_search_table_results_thead_artist">
-  						<th style="width: 56px;"><!--cover--></th>
-  						<th>Artist</th>
-  						<th>Albums</th>
-  						<th><!--space--></th>
-  						<th style="width: 56px;"><!--download_link--></th>
-  					</tr>
-  					<tr class="hide" id="tab_search_table_results_thead_playlist">
-  						<th style="width: 56px;"><!--cover--></th>
-  						<th>Name</th>
-  						<th>Songs</th>
-              <th style="width: 56px;"><!--space--></th>
-  						<th style="width: 56px;"><!--download_link--></th>
-  					</tr>
+						<tr class="hide" id="tab_search_table_results_thead_track">
+							<th style="width: 56px;"><!--cover--></th>
+							<th>Song</th>
+							<th>Artist</th>
+							<th>Album</th>
+							<th><i class="material-icons">timer</i></th>
+							<th style="width: 56px;"><!--download_link--></th>
+						</tr>
+						<tr class="hide" id="tab_search_table_results_thead_album">
+							<th style="width: 56px;"><!--cover--></th>
+							<th>Album</th>
+							<th>Artist</th>
+							<th>Songs</th>
+							<th>Type</th>
+							<th><!--space--></th>
+							<th style="width: 56px;"><!--download_link--></th>
+						</tr>
+						<tr class="hide" id="tab_search_table_results_thead_artist">
+							<th style="width: 56px;"><!--cover--></th>
+							<th>Artist</th>
+							<th>Albums</th>
+							<th><!--space--></th>
+							<th style="width: 56px;"><!--download_link--></th>
+						</tr>
+						<tr class="hide" id="tab_search_table_results_thead_playlist">
+							<th style="width: 56px;"><!--cover--></th>
+							<th>Name</th>
+							<th>Songs</th>
+							<th style="width: 56px;"><!--space--></th>
+							<th style="width: 56px;"><!--download_link--></th>
+						</tr>
 					</thead>
 					<tbody id="tab_search_table_results_tbody_loadingIndicator" class="hide loadingTab">
-  					<tr>
-  						<td class="center">
-							  <div class="preloader-wrapper big active">
-							    <div class="spinner-layer spinner-blue-only">
-							      <!-- Spinner Code -->
-							      <div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div>
-							    </div>
-							  </div>
-  						</td>
-  					</tr>
+						<tr>
+							<td class="center">
+								<div class="preloader-wrapper big active">
+									<div class="spinner-layer spinner-blue-only">
+										<!-- Spinner Code -->
+										<div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div>
+									</div>
+								</div>
+							</td>
+						</tr>
 					</tbody>
 					<tbody id="tab_search_table_results_tbody_results"></tbody>
 					<tbody id="tab_search_table_results_tbody_noResults" class="hide">
-  					<tr>
-  						<td class="center">Nothing found!</td>
-  					</tr>
+						<tr>
+							<td class="center">Nothing found!</td>
+						</tr>
 					</tbody>
 				</table>
 			</div>
-    </div>
+		</div>
 
-    <div id="tab_charts">
-      <div class="input-field col s12">
-        <select id="tab_charts_select_country" class="icons">
-          <!--All country selects have to be like the following example:
-          <option value="example" data-icon="images/sample.jpg" class="left circle">Example</option>
-          -->
-        </select>
-        <label>Country</label>
-      </div>
-      <button id="downloadChartPlaylist" class="col s12 btn btn-input btn-flat deezloader-primary white-text" style="margin-bottom:8px;">Download Playlist</button>
-      <table id="tab_charts_table_charts" class="striped">
-        <thead class="hide-on-small-only">
-          <tr>
-            <th>#</th>
-            <th style="width: 56px;"><!--cover--></th>
-            <th>Song</th>
-            <th>Artist</th>
-            <th>Album</th>
-            <th><i class="material-icons">timer</i></th>
-            <th style="width: 56px;"><!--download_link--></th>
-          </tr>
-        </thead>
-        <tbody id="tab_charts_table_charts_tbody_loadingIndicator" class="loadingTab">
-          <tr>
-            <td colspan="7" class="center">
+		<div id="tab_charts">
+			<div class="input-field col s12">
+				<select id="tab_charts_select_country" class="icons">
+					<!--All country selects have to be like the following example:
+					<option value="example" data-icon="images/sample.jpg" class="left circle">Example</option>
+					-->
+				</select>
+				<label>Country</label>
+			</div>
+			<button id="downloadChartPlaylist" class="col s12 btn btn-input btn-flat deezloader-primary white-text" style="margin-bottom:8px;">Download Playlist</button>
+			<table id="tab_charts_table_charts" class="striped">
+				<thead class="hide-on-small-only">
+					<tr>
+						<th>#</th>
+						<th style="width: 56px;"><!--cover--></th>
+						<th>Song</th>
+						<th>Artist</th>
+						<th>Album</th>
+						<th><i class="material-icons">timer</i></th>
+						<th style="width: 56px;"><!--download_link--></th>
+					</tr>
+				</thead>
+				<tbody id="tab_charts_table_charts_tbody_loadingIndicator" class="loadingTab">
+					<tr>
+						<td colspan="7" class="center">
 							<div class="preloader-wrapper big active">
-							  <div class="spinner-layer spinner-blue-only">
-							    <!-- Spinner Code -->
-							    <div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div>
-							  </div>
+								<div class="spinner-layer spinner-blue-only">
+									<!-- Spinner Code -->
+									<div class="circle-clipper left"><div class="circle"></div></div><div class="gap-patch"><div class="circle"></div></div><div class="circle-clipper right"><div class="circle"></div></div>
+								</div>
 							</div>
-            </td>
-          </tr>
-        </tbody>
-        <tbody id="tab_charts_table_charts_tbody_charts"></tbody>
-      </table>
-    </div>
+						</td>
+					</tr>
+				</tbody>
+				<tbody id="tab_charts_table_charts_tbody_charts"></tbody>
+			</table>
+		</div>
 
-    <div id="tab_playlists" class="row">
-      <div class="col s12">
-        <button class="btn-flat btn-large waves-effect deezloader-primary white-text" id="button_refresh_playlist_tab" style="width:100%;">Refresh Playlists</button>
-      </div>
-      <div class="col s12">
-        <table class="striped">
-          <thead>
-            <tr>
-              <th style="width: 56px;"><!--cover--></th>
-              <th>Name</th>
-              <th>Songs</th>
-              <th style="width: 56px;"><!--inspect_playlist--></th>
-              <th style="width: 56px;"><!--download_link--></th>
-            </tr>
-          </thead>
-          <tbody id="table_personal_playlists">
-          </tbody>
-        </table>
-      </div>
-    </div>
+		<div id="tab_playlists" class="row">
+			<div class="col s12">
+				<button class="btn-flat btn-large waves-effect deezloader-primary white-text" id="button_refresh_playlist_tab" style="width:100%;">Refresh Playlists</button>
+			</div>
+			<div class="col s12">
+				<table class="striped">
+					<thead>
+						<tr>
+							<th style="width: 56px;"><!--cover--></th>
+							<th>Name</th>
+							<th>Songs</th>
+							<th style="width: 56px;"><!--inspect_playlist--></th>
+							<th style="width: 56px;"><!--download_link--></th>
+						</tr>
+					</thead>
+					<tbody id="table_personal_playlists">
+					</tbody>
+				</table>
+			</div>
+		</div>
 
 		<div id="tab_link">
 			<div class="inline-input-group">
@@ -1156,73 +1158,73 @@
 					<a v-on:click="showTrackListSelective(d.link)" class="waves-effect waves-light btn hide-on-med-and-up" style="width:100%;">Show Tracklist</a>
 				</div>
 			</div>
-    </div>
+		</div>
 
-    <div id="tab_url">
-      <form id="tab_url_form_url" class="row">
-        <div class="inline-input-group">
-          <input autocomplete="off" type="text" id="song_url" class="input" placeholder="Song/Playlist/Album/Artist URL, separated by ';'">
-          <button class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">get_app</i></button>
-        </div>
-      </form>
-    </div>
+		<div id="tab_url">
+			<form id="tab_url_form_url" class="row">
+				<div class="inline-input-group">
+					<input autocomplete="off" type="text" id="song_url" class="input" placeholder="Song/Playlist/Album/Artist URL, separated by ';'">
+					<button class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">get_app</i></button>
+				</div>
+			</form>
+		</div>
 
-    <div id="tab_downloads">
-      <div class="row">
-        <div class="col s12 m4">
-          <button id="openDownloadsFolder" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
-            Open Downloads Folder
-          </button>
-        </div>
-        <div class="col s12 m4">
-          <button id="cancelAllTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
-            Cancel All Downloads
-          </button>
-        </div>
-        <div class="col s12 m4">
-          <button id="clearTracksTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
-            Clear List
-          </button>
-        </div>
-      </div>
-      <table id="tab_downloads_table_downloads" class="row">
-        <thead>
-          <tr>
-            <th>Name</th>
-            <th>Size</th>
-            <th>Downloaded</th>
-            <th>Failed</th>
-            <th style="width: 25%;"><!--progress--></th>
-            <th style="width: 56px;"><!--event buttons--></th>
-          </tr>
-        </thead>
-        <tbody></tbody>
-      </table>
-    </div>
+		<div id="tab_downloads">
+			<div class="row">
+				<div class="col s12 m4">
+					<button id="openDownloadsFolder" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
+						Open Downloads Folder
+					</button>
+				</div>
+				<div class="col s12 m4">
+					<button id="cancelAllTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
+						Cancel All Downloads
+					</button>
+				</div>
+				<div class="col s12 m4">
+					<button id="clearTracksTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
+						Clear List
+					</button>
+				</div>
+			</div>
+			<table id="tab_downloads_table_downloads" class="row">
+				<thead>
+					<tr>
+						<th>Name</th>
+						<th>Size</th>
+						<th>Downloaded</th>
+						<th>Failed</th>
+						<th style="width: 25%;"><!--progress--></th>
+						<th style="width: 56px;"><!--event buttons--></th>
+					</tr>
+				</thead>
+				<tbody></tbody>
+			</table>
+		</div>
 
-  </div>
+	</div>
 </main>
 
 <div class="fixed-action-btn" id="btn_scrollToTop" style="bottom: 45px; right: 24px;">
-  <a class="btn-floating btn-large deezloader-primary scale-transition scale-out">
-    <i class="large material-icons">keyboard_arrow_up</i>
-  </a>
+	<a class="btn-floating btn-large deezloader-primary scale-transition scale-out">
+		<i class="large material-icons">keyboard_arrow_up</i>
+	</a>
 </div>
 <audio id="preview-track">
-  <source id="preview-track_source" src="" type="audio/mpeg">
+	<source id="preview-track_source" src="" type="audio/mpeg">
 </audio>
 
 <div id="modal_quality" class="smallmodal">
-  <!-- Modal content -->
-  <div class="smallmodal-content">
-    <a onclick="modalQualityButton(9)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download FLAC</a><br>
-    <a onclick="modalQualityButton(3)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download MP3 320kbps</a><br>
-    <a onclick="modalQualityButton(1)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download MP3 128kbps</a><br>
-  </div>
+	<!-- Modal content -->
+	<div class="smallmodal-content">
+		<a onclick="modalQualityButton(9)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download FLAC</a><br>
+		<a onclick="modalQualityButton(3)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download MP3 320kbps</a><br>
+		<a onclick="modalQualityButton(1)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download MP3 128kbps</a><br>
+	</div>
 </div>
 
 <footer class="deezloader-black darken-1 left page-footer hide-on-med-and-down valign-wrapper">
-      <p><span style="position: relative;display: inline-block;transform: rotateY(180deg);">&copy;</span> Deezloader original code by ZzMTV.</p>
+			<p><span style="position: relative;display: inline-block;transform: rotateY(180deg);">&copy;</span> Deezloader original code by ZzMTV.</p>
 </footer>
 
 <script>if (typeof module === 'object') {
