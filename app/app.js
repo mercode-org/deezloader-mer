@@ -2086,7 +2086,6 @@ io.sockets.on('connection', function (s) {
 				fs.remove(tempPath);
 			}
 		}
-		s.emit("printObj", track)
 		logger.info(`[${track.artist.name} - ${track.title}] Downloaded`)
 	}
 })

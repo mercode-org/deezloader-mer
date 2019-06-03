@@ -1132,7 +1132,6 @@ $('#tab_url_form_url').submit(function (ev) {
 function addToQueue(url, forceBitrate=null) {
 	bitrate = forceBitrate ? forceBitrate : userSettings.maxBitrate
 	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
-	console.log(type, id)
 	if (['track', 'spotifytrack', 'playlist', 'spotifyplaylist', 'album', 'spotifyalbum', 'artist', 'artisttop'].indexOf(type) == -1) {
 		M.toast({html: '<i class="material-icons left">error</i> Wrong Type!', displayLength: 5000, classes: 'rounded'})
 		return false
@@ -1245,7 +1244,6 @@ socket.on('updateQueue', function (data) {
 		var errorLog = "<table><tr><th>ID</th><th>Song</th><th>Error</th></tr><tr><td>"
 		errorLog += data.errorLog.split("\r\n").join("</td></tr><tr><td>").split(" | ").join("</td><td>")
 		errorLog = errorLog.slice(0, errorLog.length-8)+"</table>"
-		console.log(errorLog)
 		$('#' + data.queueId).find('.eventBtn').click(()=>{
 			message(`Errors for ${quoteattr(data.name)}`, errorLog)
 		})
