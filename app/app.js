@@ -1417,7 +1417,7 @@ io.sockets.on('connection', function (s) {
 				if (ajson.record_type){
 					track.album.recordType = ajson.record_type
 				}else{
-					track.album.recordType = switchReleaseType(track.recordType)
+					track.album.recordType = switchReleaseType(track.album.recordType)
 				}
 				if (ajson.explicit_lyrics)
 					track.album.explicit = ajson.explicit_lyrics;
