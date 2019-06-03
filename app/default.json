@@ -5,7 +5,7 @@
 		"trackNameTemplate": "%artist% - %title%",
 		"albumTrackNameTemplate": "%number% - %title%",
 		"albumNameTemplate": "%artist% - %album%",
-		"playlistTrackNameTemplate": "%number% - %artist% - %title%",
+		"playlistTrackNameTemplate": "%position% - %artist% - %title%",
 		"createArtistFolder": false,
 		"createAlbumFolder": false,
 		"createCDFolder": false,

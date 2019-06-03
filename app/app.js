@@ -1636,7 +1636,7 @@ io.sockets.on('connection', function (s) {
 			let filename = antiDot(fixName(`${track.artist.name} - ${track.title}`));
 		}
 		if (settings.filename) {
-			filename = antiDot(fixName(settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize, settings.plName)))
+			filename = antiDot(fixName(settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize)))
 		}
 
 		filename = antiDot(fixName(filename))
@@ -1696,7 +1696,7 @@ io.sockets.on('connection', function (s) {
 
 		track.playlistData = [0,""]
 		if (settings.createM3UFile && (settings.plName || settings.albName)) {
-			if (track.position){
+			if (typeof track.position != 'undefined'){
 				track.playlistData = [parseInt(track.position), writePath];
 			}else{
 				track.playlistData = [track.trackNumber-1, writePath];
@@ -2145,23 +2145,30 @@ function initFolders() {
  * @param playlist
  * @returns {XML|string|*}
  */
-function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize, playlistNumbering) {
+function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) {
 	try{
 		filename = filename.replace(/%title%/g, fixName(track.title));
 		filename = filename.replace(/%album%/g, fixName(track.album.title));
 		filename = filename.replace(/%artist%/g, fixName((saveFullArtists ? track.artistsString : track.artist.name)));
 		filename = filename.replace(/%year%/g, fixName(track.date.year));
 		filename = filename.replace(/%label%/g, fixName(track.album.label));
-		let tNumber = playlistNumbering ? track.position+1 : track.trackNumber
-		let tTotal = playlistNumbering ? playlist.fullSize : track.album.trackTotal
-		if(typeof tNumber != 'undefined'){
+		if(typeof track.trackNumber != 'undefined'){
 			if(configFile.userDefined.padtrck){
-				 filename = filename.replace(/%number%/g, fixName(pad(tNumber, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : tTotal))));
+				 filename = filename.replace(/%number%/g, fixName(pad(track.trackNumber, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : track.album.trackTotal))));
 			}else{
-				filename = filename.replace(/%number%/g, fixName(tNumber));
+				filename = filename.replace(/%number%/g, fixName(track.trackNumber));
 			}
 		} else {
 			filename = filename.replace(/%number%/g, '');
+		}
+		if (playlist && typeof track.position != 'undefined'){
+			if(configFile.userDefined.padtrck){
+				 filename = filename.replace(/%position%/g, fixName(pad(track.position+1, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : playlist.fullSize))));
+			}else{
+				filename = filename.replace(/%position%/g, fixName(track.position+1));
+			}
+		} else {
+			filename = filename.replace(/%position%/g, '');
 		}
 		filename = filename.replace(/%disc%/g, fixName(track.discNumber));
 		filename = filename.replace(/%explicit%/g, fixName((track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : "")));
