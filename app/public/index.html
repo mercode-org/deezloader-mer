@@ -70,83 +70,220 @@
 <!--#############################################MODAL_SETTINGS############################################-->
 <div id="modal_settings" class="modal modal-fixed-footer">
 	<div class="modal-content">
+		<h4 class="col s12">Settings</h4>
+
+		<h6 class="col s12 secondary-text">Path Settings</h6><hr>
 		<div class="row">
-			<h4 class="col s12">Settings</h4>
+			<div class="input-field col s12">
+				<input autocomplete="off" type="text" id="modal_settings_input_downloadTracksLocation"/>
+				<label for="modal_settings_input_downloadTracksLocation">Download folder path</label>
+			</div>
 		</div>
+
 		<div class="row">
-			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
+			<div class="input-field col s12">
 				<input autocomplete="off" type="text" id="modal_settings_input_trackNameTemplate"/>
-				<label for="modal_settings_input_trackNameTemplate">Track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %number%, %disc%, %year%, %artist%, %title%, %album%, %explicit%, %label% and %genre%">info_outline</i></label>
+				<label for="modal_settings_input_trackNameTemplate">Tracknames template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="Supported variables are: %number%, %disc%, %year%, %artist%, %title%, %album%, %explicit%, %label% and %genre%">info_outline</i></label>
 			</div>
-			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
-				<input autocomplete="off" type="text" id="modal_settings_input_playlistTrackNameTemplate"/>
-				<label for="modal_settings_input_playlistTrackNameTemplate">Playlist track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %number%, %disc%, %year%, %artist%, %title%, %album%, %explicit%, %label% and %genre%">info_outline</i></label>
-			</div>
+			<p class="col s12 path-example">path/to/file/example</p>
 		</div>
-    <div class="row">
-			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
-				<input autocomplete="off" type="text" id="modal_settings_input_albumTrackNameTemplate"/>
-				<label for="modal_settings_input_albumTrackNameTemplate">Album track names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %number%, %disc%, %year%, %artist%, %title%, %album%, %explicit%, %label% and %genre%">info_outline</i></label>
-			</div>
-			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
-				<input autocomplete="off" type="text" id="modal_settings_input_albumNameTemplate"/>
-				<label for="modal_settings_input_albumNameTemplate">Album names <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %year%, %artist%, %type%, %album%, %explicit%, %label% and %genre%">info_outline</i></label>
-			</div>
-		</div>
-    <div class="row">
-			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
-				<input autocomplete="off" type="text" id="modal_settings_input_coverImageTemplate"/>
-				<label for="modal_settings_input_albumTrackNameTemplate">Cover Image name <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %artist% and %name%">info_outline</i></label>
-			</div>
-			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
-				<input autocomplete="off" type="text" id="modal_settings_input_artistImageTemplate"/>
-				<label for="modal_settings_input_albumNameTemplate">Artist Image name <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-          data-tooltip="Supported variables are: %artist%">info_outline</i></label>
-			</div>
-		</div>
+
 		<div class="row">
 			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
-				<select name="artworkSize" id="modal_settings_select_artworkSize">
-          <option value="1400">1400x1400</option>
-          <option value="1200">1200x1200</option>
-          <option value="1000">1000x1000</option>
-          <option value="800">800x800</option>
-          <option value="500">500x500</option>
-          <option value="250">250x250</option>
-				</select>
-				<label for="modal_settings_select_artworkSize">Artwork size</label>
+				<input autocomplete="off" type="text" id="modal_settings_input_albumTrackNameTemplate"/>
+				<label for="modal_settings_input_albumTrackNameTemplate">Album tracknames template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="Supported variables are: %number%, %disc%, %year%, %artist%, %title%, %album%, %explicit%, %label% and %genre%">info_outline</i></label>
 			</div>
-      <div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
+			<div class="input-field col s12 m6">
+				<input autocomplete="off" type="text" id="modal_settings_input_albumNameTemplate"/>
+				<label for="modal_settings_input_albumNameTemplate">Album names template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="Supported variables are: %year%, %artist%, %type%, %album%, %explicit%, %label% and %genre%">info_outline</i></label>
+			</div>
+			<p class="col s12 path-example">path/to/file/example</p>
+		</div>
+
+		<div class="row">
+			<div class="input-field col s12">
+				<input autocomplete="off" type="text" id="modal_settings_input_playlistTrackNameTemplate"/>
+				<label for="modal_settings_input_playlistTrackNameTemplate">Playlist tracknames template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="Supported variables are: %number%, %disc%, %year%, %artist%, %title%, %album%, %explicit%, %label% and %genre%">info_outline</i></label>
+			</div>
+			<p class="col s12 path-example">path/to/file/example</p>
+		</div>
+
+		<h6 class="col s12 secondary-text">More Path Settings</h6><hr>
+		<div class="row">
+			<div class="col s12 switch settings_switch">
+				<span>Create folders for Artists</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_createArtistFolder"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Create folders for Albums</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_createAlbumFolder"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Create folders for CDs</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_createCDFolder" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Create Artist and Albums folders for Playlists</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_createFoldersPlaylist" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Write all Artists in track filename</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_saveFullArtists" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span class="tooltipped" data-position="top" data-delay="500"
+					data-tooltip="Adds 0s before %number% to have the same character length">Add padding to track numbers</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_padtrck" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="input-field col s12">
+				<input autocomplete="off" type="number" id="modal_settings_number_paddingSize" min="0"/>
+				<label for="modal_settings_number_paddingSize">Overwrite padding size</label>
+			</div>
+		</div>
+
+		<h6 class="col s12 secondary-text">App Settings</h6><hr>
+		<div class="row">
+			<div class="input-field col s12 m6">
+				<input autocomplete="off" type="number" id="modal_settings_number_queueConcurrency" min="1"/>
+				<label for="modal_settings_number_queueConcurrency">Concurrent download limit</label>
+			</div>
+			<div class="input-field col s12 m6">
 				<select name="maxBitrate" id="modal_settings_select_maxBitrate">
-          <option value="9">FLAC 1411kbps</option>
-          <option value="3">MP3 320kbps</option>
-          <option value="1">MP3 128kbps</option>
+					<option value="9">FLAC 1411kbps</option>
+					<option value="3">MP3 320kbps</option>
+					<option value="1">MP3 128kbps</option>
 				</select>
 				<label for="modal_settings_select_maxBitrate">Preferred bitrate</label>
 			</div>
-		</div>
-    <div class="row">
-			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
-				<select name="chartsCountry" id="modal_settings_select_chartsCounrty">
-				</select>
-				<label for="modal_settings_select_chartsCounrty">Default Country for Charts</label>
+			<div class="col s12 switch settings_switch">
+				<span>Fallback to lower bitrates if preferred is not available</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_fallbackBitrate" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
 			</div>
-    	<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
+			<div class="col s12 switch settings_switch">
+				<span>Fallback to search if song is not available</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_fallbackSearch" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Download albums with one track as a single track</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_downloadSinglesAsTracks" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Create log file for Errors inside download folder</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_logErrors" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Create log file for Alternatives inside download folder</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_logSearched" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div><div class="col s12 switch settings_switch">
+				<span>Create M3U8 (Playlist) File</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_createM3UFile" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span class="tooltipped" data-position="top" data-delay="500"
+					data-tooltip="Downloads lyrics .lrc file">Download Synced Lyrics File (.lyr)</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_syncedlyrics" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Minimize to system tray</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_minimizeToTray" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+		</div>
+
+		<h6 class="col s12 secondary-text">Artworks</h6><hr>
+		<div class="row">
+			<div class="input-field col s12">
+				<select name="artworkSize" id="modal_settings_select_artworkSize">
+					<option value="1400">1400x1400</option>
+					<option value="1200">1200x1200</option>
+					<option value="1000">1000x1000</option>
+					<option value="800">800x800</option>
+					<option value="500">500x500</option>
+					<option value="250">250x250</option>
+				</select>
+				<label for="modal_settings_select_artworkSize">Artwork Size</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Save Album Artwork</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_saveArtwork" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="input-field col s12">
+				<input autocomplete="off" type="text" id="modal_settings_input_coverImageTemplate"/>
+				<label for="modal_settings_input_albumTrackNameTemplate">Album Artwork Name Template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="Supported variables are: %artist% and %name%">info_outline</i></label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Save Artist Artwork</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_saveArtworkArtist" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="input-field col s12">
+				<input autocomplete="off" type="text" id="modal_settings_input_artistImageTemplate"/>
+				<label for="modal_settings_input_albumNameTemplate">Artist Artwork Name Template<i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="Supported variables are: %artist%">info_outline</i></label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Download images as PNGs</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_PNGcovers" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+		</div>
+
+		<h6 class="col s12 secondary-text">Tags</h6><hr>
+		<div class="row">
+			<div class="input-field col s12">
 				<select name="multitagSeparator" id="modal_settings_select_multitagSeparator">
 					<option value="null">Null Character</option>
 					<option value=",">,</option>
@@ -158,10 +295,7 @@
 				</select>
 				<label for="modal_settings_select_multitagSeparator">Multitag Separator</label>
 			</div>
-		</div>
-    <div class="row">
 			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
 				<select name="dateFormat" id="modal_settings_select_dateFormat">
 					<option value="0">YMD</option>
 					<option value="1">DMY</option>
@@ -170,153 +304,51 @@
 				</select>
 				<label for="modal_settings_select_dateFormat">Date Format</label>
 			</div>
-    	<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
+			<div class="input-field col s12 m6">
 				<select name="dateFormatYear" id="modal_settings_select_dateFormatYear">
 					<option value="2">2 digit</option>
 					<option value="4">4 digit</option>
 				</select>
-				<label for="modal_settings_select_dateFormatYear">Date Tag Year Format</label>
+				<label for="modal_settings_select_dateFormatYear">Year Format</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span class="tooltipped" data-position="top" data-delay="500"
+					data-tooltip="Replaces albums tags with the playlist ones">Save Playlist as Compilation</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_savePlaylistAsCompilation" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span>Remove "(Album Version)" from tracknames</span>
+				<label class="right">
+					<input type="checkbox" id="modal_settings_cbox_removeAlbumVersion" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
 			</div>
 		</div>
+
 		<div class="row">
-			<div class="input-field col s12">
-				<i class="material-icons prefix">label</i>
-				<input autocomplete="off" type="text" id="modal_settings_input_downloadTracksLocation"/>
-				<label for="modal_settings_input_downloadTracksLocation">Download location</label>
+			<div class="col s12">
+				<a href="#modal_tags" class="modal-trigger waves-effect waves-light btn btn-large" style="width:100%;">Choose Which Tags To Save</a>
 			</div>
 		</div>
-    <div class="row">
-			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
-				<input autocomplete="off" type="number" id="modal_settings_number_queueConcurrency" min="1"/>
-				<label for="modal_settings_number_queueConcurrency">Concurrent Download Limit</label>
-			</div>
-			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
-				<input autocomplete="off" type="number" id="modal_settings_number_paddingSize" min="0"/>
-				<label for="modal_settings_number_paddingSize">Padding Size Overwrite</label>
-			</div>
-		</div>
+
+		<h6 class="col s12 secondary-text">Spotify Features</h6><hr>
 		<div class="row">
 			<div class="input-field col s12 m6">
-				<i class="material-icons prefix">label</i>
+				<input autocomplete="off" type="text" id="modal_settings_input_spotifyClientID"/>
+				<label for="modal_settings_input_spotifyClientID">Client ID</label>
+			</div>
+			<div class="input-field col s12 m6">
+				<input autocomplete="off" type="password" id="modal_settings_input_spotifyClientSecret"/>
+				<label for="modal_settings_input_spotifyClientSecret">Client Secret</label>
+			</div>
+			<div class="input-field col s12 m6">
 				<input autocomplete="off" type="text" id="modal_settings_input_spotifyUser"/>
-				<label for="modal_settings_input_spotifyUser">Spotify Username</label>
+				<label for="modal_settings_input_spotifyUser">Spotify Username (for the Playlists Tab)</label>
 			</div>
 		</div>
-		<div class="row">
-			<p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_createM3UFile" class="filled-in"/>
-  				<span>Create M3U (Playlist) file</span>
-        </label>
-			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_syncedlyrics" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500"
-            data-tooltip="Downloads lyrics .lrc file">Download synced lyrics file</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_numplaylistbyalbum" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500"
-            data-tooltip="Track numbers when downloading a Playlist will be the original ones">Number playlist by album</span>
-        </label>
-      </p>
-			<p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_createArtistFolder" class="filled-in"/>
-  				<span>Create folder for artists</span>
-        </label>
-			</p>
-			<p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_createAlbumFolder" class="filled-in"/>
-  				<span>Create folder for albums</span>
-        </label>
-			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_createCDFolder" class="filled-in"/>
-  				<span>Create folder for CDs</span>
-        </label>
-      </p>
-			<p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_padtrck" class="filled-in"/>
-  				<span class="tooltipped" data-position="top" data-delay="500"
-            data-tooltip="Adds 0s before %number% to have the same character length">Pad track numbers</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_logErrors" class="filled-in"/>
-  				<span>Create log file for Errors</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_logSearched" class="filled-in"/>
-  				<span>Create log file for alternatives</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_saveArtwork" class="filled-in"/>
-  				<span>Save Album Artwork</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_saveArtworkArtist" class="filled-in"/>
-  				<span>Save Artist Artwork</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_PNGcovers" class="filled-in"/>
-  				<span>Download images as PNGs</span>
-        </label>
-			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_removeAlbumVersion" class="filled-in"/>
-  				<span>Remove "(Album Version)" from track title</span>
-        </label>
-			</p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_fallbackBitrate" class="filled-in"/>
-  				<span>Fallback to lower bitrates</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-          <input type="checkbox" id="modal_settings_cbox_minimizeToTray" class="filled-in"/>
-          <span>Minimize to system tray</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_saveFullArtists" class="filled-in"/>
-  				<span>Save file with full artists</span>
-        </label>
-      </p>
-      <p class="col s12 m4">
-        <label>
-  				<input type="checkbox" id="modal_settings_cbox_downloadSinglesAsTracks" class="filled-in"/>
-  				<span>Download albums with one track as a single track</span>
-        </label>
-      </p>
-		</div>
-    <div class="row">
-      <div class="col s12">
-        <a href="#modal_tags" class="modal-trigger waves-effect waves-light btn btn-large" style="width:100%;">Choose which tags to Save</a>
-      </div>
-    </div>
 
 		<div class="row">
 			<div class="col s12">

@@ -98,10 +98,13 @@ socket.on("login", function (data) {
 			$(this).removeClass('animated fadeOut')
 		})
 		// Load top charts list for countries
-		socket.emit("getChartsCountryList", {selected: userSettings.chartsCountry})
-		socket.emit("getChartsTrackListByCountry", {country: userSettings.chartsCountry})
+		if (localStorage.getItem('chartsCountry') == null)
+			localStorage.setItem('chartsCountry', "Worldwide")
+		chartCountry = localStorage.getItem('chartsCountry')
+		socket.emit("getChartsCountryList", {selected: chartCountry})
+		socket.emit("getChartsTrackListByCountry", {country: chartCountry})
 		// Load personal pubblic playlists
-		socket.emit("getMyPlaylistList", {})
+		socket.emit("getMyPlaylistList", {spotifyUser: localStorage.getItem('spotifyUser')})
 	}else{
 		$('#login-res-text').text(data.error)
 		setTimeout(function(){$('#login-res-text').text("")},3000)
@@ -180,7 +183,7 @@ $(document).ready(function () {
 	// Playlist Stuff
 	$("#button_refresh_playlist_tab").click(function(){
 		$("table_personal_playlists").html("")
-		socket.emit("getMyPlaylistList", {})
+		socket.emit("getMyPlaylistList", {spotifyUser: localStorage.getItem('spotifyUser')})
 	})
 
 	$('#downloadChartPlaylist').click(function(){
@@ -303,40 +306,39 @@ $('#modal_settings_btn_saveSettings').click(function () {
 	let settings = {}
 	// Save
 	settings.userDefined = {
+		downloadLocation: $('#modal_settings_input_downloadTracksLocation').val(),
 		trackNameTemplate: $('#modal_settings_input_trackNameTemplate').val(),
-		playlistTrackNameTemplate: $('#modal_settings_input_playlistTrackNameTemplate').val(),
 		albumTrackNameTemplate: $('#modal_settings_input_albumTrackNameTemplate').val(),
 		albumNameTemplate: $('#modal_settings_input_albumNameTemplate').val(),
-		coverImageTemplate: $('#modal_settings_input_coverImageTemplate').val(),
-		artistImageTemplate: $('#modal_settings_input_artistImageTemplate').val(),
-		createM3UFile: $('#modal_settings_cbox_createM3UFile').is(':checked'),
+		playlistTrackNameTemplate: $('#modal_settings_input_playlistTrackNameTemplate').val(),
 		createArtistFolder: $('#modal_settings_cbox_createArtistFolder').is(':checked'),
 		createAlbumFolder: $('#modal_settings_cbox_createAlbumFolder').is(':checked'),
 		createCDFolder: $('#modal_settings_cbox_createCDFolder').is(':checked'),
-		downloadLocation: $('#modal_settings_input_downloadTracksLocation').val(),
-		artworkSize: parseInt($('#modal_settings_select_artworkSize').val()),
-		hifi: $('#modal_settings_cbox_hifi').is(':checked'),
+		createFoldersPlaylist: $('#modal_settings_cbox_createFoldersPlaylist').is(':checked'),
+		saveFullArtists : $('#modal_settings_cbox_saveFullArtists').is(':checked'),
 		padtrck: $('#modal_settings_cbox_padtrck').is(':checked'),
-		syncedlyrics: $('#modal_settings_cbox_syncedlyrics').is(':checked'),
-		numplaylistbyalbum: $('#modal_settings_cbox_numplaylistbyalbum').is(':checked'),
-		chartsCountry: $('#modal_settings_select_chartsCounrty').val(),
-		spotifyUser: $('#modal_settings_input_spotifyUser').val(),
-		saveArtwork: $('#modal_settings_cbox_saveArtwork').is(':checked'),
-		saveArtworkArtist: $('#modal_settings_cbox_saveArtworkArtist').is(':checked'),
+		paddingSize: $('#modal_settings_number_paddingSize').val(),
+		queueConcurrency: parseInt($('#modal_settings_number_queueConcurrency').val()),
+		maxBitrate: $('#modal_settings_select_maxBitrate').val(),
+		fallbackBitrate : $('#modal_settings_cbox_fallbackBitrate').is(':checked'),
+		fallbackSearch : $('#modal_settings_cbox_fallbackSearch').is(':checked'),
+		downloadSinglesAsTracks: $('#modal_settings_cbox_downloadSinglesAsTracks').is(':checked'),
 		logErrors: $('#modal_settings_cbox_logErrors').is(':checked'),
 		logSearched: $('#modal_settings_cbox_logSearched').is(':checked'),
-		queueConcurrency: parseInt($('#modal_settings_number_queueConcurrency').val()),
-		paddingSize: $('#modal_settings_number_paddingSize').val(),
-		multitagSeparator: $('#modal_settings_select_multitagSeparator').val(),
-		maxBitrate: $('#modal_settings_select_maxBitrate').val(),
+		createM3UFile: $('#modal_settings_cbox_createM3UFile').is(':checked'),
+		syncedlyrics: $('#modal_settings_cbox_syncedlyrics').is(':checked'),
+		minimizeToTray : $('#modal_settings_cbox_minimizeToTray').is(':checked'),
+		artworkSize: parseInt($('#modal_settings_select_artworkSize').val()),
+		saveArtwork: $('#modal_settings_cbox_saveArtwork').is(':checked'),
+		coverImageTemplate: $('#modal_settings_input_coverImageTemplate').val(),
+		saveArtworkArtist: $('#modal_settings_cbox_saveArtworkArtist').is(':checked'),
+		artistImageTemplate: $('#modal_settings_input_artistImageTemplate').val(),
 		PNGcovers: $('#modal_settings_cbox_PNGcovers').is(':checked'),
-		removeAlbumVersion : $('#modal_settings_cbox_removeAlbumVersion').is(':checked'),
+		multitagSeparator: $('#modal_settings_select_multitagSeparator').val(),
 		dateFormat: $('#modal_settings_select_dateFormat').val(),
 		dateFormatYear: $('#modal_settings_select_dateFormatYear').val(),
-		fallbackBitrate : $('#modal_settings_cbox_fallbackBitrate').is(':checked'),
-		minimizeToTray : $('#modal_settings_cbox_minimizeToTray').is(':checked'),
-		saveFullArtists : $('#modal_settings_cbox_saveFullArtists').is(':checked'),
-		downloadSinglesAsTracks: $('#modal_settings_cbox_downloadSinglesAsTracks').is(':checked'),
+		savePlaylistAsCompilation: $('#modal_settings_cbox_savePlaylistAsCompilation').is(':checked'),
+		removeAlbumVersion : $('#modal_settings_cbox_removeAlbumVersion').is(':checked'),
 		tags: {
 			title: $('#modal_tags_title').is(':checked'),
 			artist: $('#modal_tags_artist').is(':checked'),
@@ -368,8 +370,10 @@ $('#modal_settings_btn_saveSettings').click(function () {
 			producer: $('#modal_tags_producer').is(':checked')
 		}
 	}
+	let spotifyUser = $('#modal_settings_input_spotifyUser').val()
+	localStorage.setItem('spotifyUser', spotifyUser)
 	// Send updated settings to be saved into config file
-	socket.emit('saveSettings', settings)
+	socket.emit('saveSettings', settings, spotifyUser)
 	socket.emit('getUserSettings')
 })
 
@@ -410,40 +414,41 @@ $('#modal_settings_btn_logout').click(function () {
 
 // Populate settings fields
 function fillSettingsModal(settings) {
+	$('#modal_settings_input_downloadTracksLocation').val(settings.downloadLocation)
 	$('#modal_settings_input_trackNameTemplate').val(settings.trackNameTemplate)
-	$('#modal_settings_input_playlistTrackNameTemplate').val(settings.playlistTrackNameTemplate)
 	$('#modal_settings_input_albumTrackNameTemplate').val(settings.albumTrackNameTemplate)
 	$('#modal_settings_input_albumNameTemplate').val(settings.albumNameTemplate)
-	$('#modal_settings_input_coverImageTemplate').val(settings.coverImageTemplate)
-	$('#modal_settings_input_artistImageTemplate').val(settings.artistImageTemplate)
-	$('#modal_settings_cbox_createM3UFile').prop('checked', settings.createM3UFile)
+	$('#modal_settings_input_playlistTrackNameTemplate').val(settings.playlistTrackNameTemplate)
 	$('#modal_settings_cbox_createArtistFolder').prop('checked', settings.createArtistFolder)
 	$('#modal_settings_cbox_createAlbumFolder').prop('checked', settings.createAlbumFolder)
 	$('#modal_settings_cbox_createCDFolder').prop('checked', settings.createCDFolder)
-	$('#modal_settings_cbox_hifi').prop('checked', settings.hifi)
+	$('#modal_settings_cbox_createFoldersPlaylist').prop('checked', settings.createFoldersPlaylist)
+	$('#modal_settings_cbox_saveFullArtists').prop('checked', settings.saveFullArtists)
 	$('#modal_settings_cbox_padtrck').prop('checked', settings.padtrck)
-	$('#modal_settings_cbox_syncedlyrics').prop('checked', settings.syncedlyrics)
-	$('#modal_settings_cbox_numplaylistbyalbum').prop('checked', settings.numplaylistbyalbum)
-	$('#modal_settings_input_downloadTracksLocation').val(settings.downloadLocation)
-	$('#modal_settings_select_artworkSize').val(settings.artworkSize).formSelect()
-	$('#modal_settings_select_chartsCounrty').val(settings.chartsCountry).formSelect()
-	$('#modal_settings_input_spotifyUser').val(settings.spotifyUser)
-	$('#modal_settings_cbox_saveArtwork').prop('checked', settings.saveArtwork)
-	$('#modal_settings_cbox_saveArtworkArtist').prop('checked', settings.saveArtworkArtist)
+	$('#modal_settings_number_paddingSize').val(settings.paddingSize)
+	$('#modal_settings_number_queueConcurrency').val(settings.queueConcurrency)
+	$('#modal_settings_select_maxBitrate').val(settings.maxBitrate).formSelect()
+	$('#modal_settings_cbox_fallbackBitrate').prop('checked', settings.fallbackBitrate)
+	$('#modal_settings_cbox_fallbackSearch').prop('checked', settings.fallbackSearch)
+	$('#modal_settings_cbox_downloadSinglesAsTracks').prop('checked', settings.downloadSinglesAsTracks)
 	$('#modal_settings_cbox_logErrors').prop('checked', settings.logErrors)
 	$('#modal_settings_cbox_logSearched').prop('checked', settings.logSearched)
-	$('#modal_settings_number_queueConcurrency').val(settings.queueConcurrency)
-	$('#modal_settings_number_paddingSize').val(settings.paddingSize)
-	$('#modal_settings_select_multitagSeparator').val(settings.multitagSeparator).formSelect()
-	$('#modal_settings_select_maxBitrate').val(settings.maxBitrate).formSelect()
+	$('#modal_settings_cbox_createM3UFile').prop('checked', settings.createM3UFile)
+	$('#modal_settings_cbox_syncedlyrics').prop('checked', settings.syncedlyrics)
+	$('#modal_settings_cbox_minimizeToTray').prop('checked', settings.minimizeToTray)
+	$('#modal_settings_select_artworkSize').val(settings.artworkSize).formSelect()
+	$('#modal_settings_cbox_saveArtwork').prop('checked', settings.saveArtwork)
+	$('#modal_settings_input_coverImageTemplate').val(settings.coverImageTemplate)
+	$('#modal_settings_cbox_saveArtworkArtist').prop('checked', settings.saveArtworkArtist)
+	$('#modal_settings_input_artistImageTemplate').val(settings.artistImageTemplate)
 	$('#modal_settings_cbox_PNGcovers').prop('checked', settings.PNGcovers)
-	$('#modal_settings_cbox_removeAlbumVersion').prop('checked', settings.removeAlbumVersion)
+	$('#modal_settings_select_multitagSeparator').val(settings.multitagSeparator).formSelect()
 	$('#modal_settings_select_dateFormat').val(settings.dateFormat).formSelect()
 	$('#modal_settings_select_dateFormatYear').val(settings.dateFormatYear).formSelect()
-	$('#modal_settings_cbox_fallbackBitrate').prop('checked', settings.fallbackBitrate)
-	$('#modal_settings_cbox_minimizeToTray').prop('checked', settings.minimizeToTray)
-	$('#modal_settings_cbox_saveFullArtists').prop('checked', settings.saveFullArtists)
-	$('#modal_settings_cbox_downloadSinglesAsTracks').prop('checked', settings.downloadSinglesAsTracks)
+	$('#modal_settings_cbox_savePlaylistAsCompilation').prop('checked', settings.savePlaylistAsCompilation)
+	$('#modal_settings_cbox_removeAlbumVersion').prop('checked', settings.removeAlbumVersion)
+
+	$('#modal_settings_input_spotifyUser').val(localStorage.getItem('spotifyUser'))
 
 	$('#modal_tags_title').prop('checked', settings.tags.title)
 	$('#modal_tags_artist').prop('checked', settings.tags.artist)
@@ -959,18 +964,12 @@ socket.on("getChartsCountryList", function (data) {
 		$('#modal_settings_select_chartsCounrty').append('<option value="' + data.countries[i]['country'] + '" data-icon="' + data.countries[i]['picture_small'] + '" class="left rounded">' + data.countries[i]['country'] + '</option>')
 	}
 	$('#tab_charts_select_country').find('option[value="' + data.selected + '"]').attr("selected", true)
-	$('#modal_settings_select_chartsCounrty').find('option[value="' + data.selected + '"]').attr("selected", true)
-	$('select').formSelect()
-})
-
-socket.on("setChartsCountry", function (data) {
-	$('#tab_charts_select_country').find('option[value="' + data.selected + '"]').attr("selected", true)
-	$('#modal_settings_select_chartsCounrty').find('option[value="' + data.selected + '"]').attr("selected", true)
 	$('select').formSelect()
 })
 
 $('#tab_charts_select_country').on('change', function () {
 	var country = $(this).find('option:selected').val()
+	localStorage.setItem('chartsCountry', country)
 	$('#tab_charts_table_charts_tbody_charts').addClass('hide')
 	$('#tab_charts_table_charts_tbody_loadingIndicator').removeClass('hide')
 	socket.emit("getChartsTrackListByCountry", {country: country})

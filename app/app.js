@@ -121,6 +121,7 @@ io.sockets.on('connection', function (s) {
 
 	// Connection dependet variables
 	s.Deezer = new deezerApi()
+	s.spotifyUser = null
 
 	s.emit("checkAutologin")
 	s.emit("getDefaultSettings", defaultSettings, defaultDownloadFolder)
@@ -252,7 +253,8 @@ io.sockets.on('connection', function (s) {
 	s.on("getChartsTrackListByCountry", function (data) {getChartsTrackListByCountry(data.country)})
 
 	// Returns list of playlists
-	async function getMyPlaylistList(){
+	async function getMyPlaylistList(spotUser=null){
+		if (spotUser && s.spotifyUser != spotUser) s.spotifyUser = spotUser
 		try{
 			logger.info("Loading Personal Playlists")
 			let data = await s.Deezer.legacyGetUserPlaylists(s.Deezer.user.id)
@@ -267,14 +269,14 @@ io.sockets.on('connection', function (s) {
 				}
 				playlists.push(obj)
 			}
-			if (configFile.userDefined.spotifyUser && spotifySupport){
+			if (s.spotifyUser && spotifySupport){
 				try{
 					let creds = await Spotify.clientCredentialsGrant()
 					Spotify.setAccessToken(creds.body['access_token'])
 					let first = true
 					let offset = 0
 					do{
-						let data = await Spotify.getUserPlaylists(configFile.userDefined.spotifyUser, {fields: "items(images,name,owner.id,tracks.total,uri),total", offset: offset*20})
+						let data = await Spotify.getUserPlaylists(s.spotifyUser, {fields: "items(images,name,owner.id,tracks.total,uri),total", offset: offset*20})
 						if (first){
 							var total = data.body.total
 							var numPages=Math.floor((total-1)/20)
@@ -304,7 +306,7 @@ io.sockets.on('connection', function (s) {
 			return
 		}
 	}
-	s.on("getMyPlaylistList", function (d) {getMyPlaylistList()})
+	s.on("getMyPlaylistList", function (d) {getMyPlaylistList(d.spotifyUser)})
 
 	// Returns search results from a query
 	s.on("search", async function (data) {
@@ -408,7 +410,7 @@ io.sockets.on('connection', function (s) {
 	});
 
 	// Saves locally the settings comming from the frontend
-	s.on("saveSettings", function (settings) {
+	s.on("saveSettings", function (settings, spotifyUser) {
 		if (settings.userDefined.downloadLocation == defaultDownloadFolder) {
 			settings.userDefined.downloadLocation = ""
 		} else {
@@ -422,13 +424,9 @@ io.sockets.on('connection', function (s) {
 			trackQueue.concurrency = settings.userDefined.queueConcurrency
 		}
 
-		if (settings.userDefined.chartsCountry != configFile.userDefined.chartsCountry){
-			s.emit("setChartsCountry", {selected: settings.userDefined.chartsCountry})
-			getChartsTrackListByCountry(settings.userDefined.chartsCountry)
-		}
-
-		if (settings.userDefined.spotifyUser != configFile.userDefined.spotifyUser){
-			getMyPlaylistList(settings.userDefined.spotifyUser)
+		if (spotifyUser != s.spotifyUser){
+			s.spotifyUser = spotifyUser
+			getMyPlaylistList(spotifyUser)
 		}
 
 		configFile.userDefined = settings.userDefined;
@@ -1098,7 +1096,7 @@ io.sockets.on('connection', function (s) {
 						}
 					}
 					if (downloading.settings.createM3UFile){
-						fs.writeFileSync(filePath+"playlist.m3u", downloading.playlistArr.join("\r\n"));
+						fs.writeFileSync(filePath+"playlist.m3u8", downloading.playlistArr.join("\r\n"));
 					}
 				}catch(err){
 					if (err) logger.error(`queueDownload:album failed: ${err.stack ? err.stack : err}`)
@@ -1177,7 +1175,7 @@ io.sockets.on('connection', function (s) {
 						}
 					}
 					if (downloading.settings.createM3UFile){
-						fs.writeFileSync(filePath + "playlist.m3u", downloading.playlistArr.join("\r\n"));
+						fs.writeFileSync(filePath + "playlist.m3u8", downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
@@ -1302,7 +1300,7 @@ io.sockets.on('connection', function (s) {
 						}
 					}
 					if (downloading.settings.createM3UFile){
-						fs.writeFileSync(filePath + "playlist.m3u", downloading.playlistArr.join("\r\n"));
+						fs.writeFileSync(filePath + "playlist.m3u8", downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(filePath)) fs.mkdirSync(filePath);
@@ -1638,7 +1636,7 @@ io.sockets.on('connection', function (s) {
 			let filename = antiDot(fixName(`${track.artist.name} - ${track.title}`));
 		}
 		if (settings.filename) {
-			filename = antiDot(fixName(settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize, settings.plName && !settings.numplaylistbyalbum)))
+			filename = antiDot(fixName(settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize, settings.plName)))
 		}
 
 		filename = antiDot(fixName(filename))

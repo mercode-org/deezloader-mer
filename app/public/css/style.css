@@ -17,12 +17,26 @@ td{
 th{
 	text-align: left;
 }
+
+.settings_switch{
+	margin: 14px 0px;
+}
+
 .remove-margin{
 	margin:0px;
 	padding-bottom: 3px;
 }
 .secondary-text{
 	opacity: 0.75;
+}
+
+.path-example{
+	opacity: 0.75;
+	margin:0px;
+	margin-bottom: 12px;
+}
+hr{
+	opacity: 0.5;
 }
 
 #initializing {
