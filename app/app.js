@@ -1374,7 +1374,7 @@ io.sockets.on('connection', function (s) {
 							logger.warn(`[${track.artist.name} - ${track.title}] Failed to download track, falling on alternative`)
 							track = await s.Deezer.getTrack(track.fallbackId)
 							return downloadTrackObject(track, queueId, settings)
-						}else if(!track.searched){
+						}else if(!track.searched && settings.fallbackSearch){
 							logger.warn(`[${track.artist.name} - ${track.title}] Failed to download track, searching for alternative`)
 							var _trackID = await convertMetadata2Deezer(track.artist.name, track.title, track.album.title)
 							if (_trackID != "0"){
@@ -1838,7 +1838,7 @@ io.sockets.on('connection', function (s) {
 					track.MD5 = _track.MD5
 					track.mediaVersion = _track.mediaVersion
 					return downloadTrackObject(track, queueId, settings)
-				}else if(!track.searched){
+				}else if(!track.searched && settings.fallbackSearch){
 					logger.warn(`[${track.artist.name} - ${track.title}] Track is empty, searching for alternative`)
 					_trackId = await convertMetadata2Deezer(track.artist.name, track.title, track.album.title)
 					if (_trackId != "0"){
