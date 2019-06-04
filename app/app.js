@@ -2153,6 +2153,7 @@ function settingsRegex(track, filename, playlist) {
 		filename = filename.replace(/%album%/g, fixName(track.album.title));
 		filename = filename.replace(/%artist%/g, fixName(((configFile.userDefined.saveFullArtists && configFile.userDefined.multitagSeparator != null) ? track.artistsString : track.artist.name)));
 		filename = filename.replace(/%year%/g, fixName(track.date.year));
+		filename = filename.replace(/%date%/g, fixName(track.album.date));
 		filename = filename.replace(/%label%/g, fixName(track.album.label));
 		if(typeof track.trackNumber != 'undefined'){
 			if(configFile.userDefined.padtrck){
