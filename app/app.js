@@ -2194,6 +2194,19 @@ function settingsRegexAlbum(album, foldername) {
 		foldername = foldername.replace(/%artist%/g, fixName(album.artist.name))
 		foldername = foldername.replace(/%year%/g, fixName(album.year))
 		foldername = foldername.replace(/%date%/g, fixName(album.date))
+		switch(album.bitrate){
+			case 9:
+				foldername = foldername.replace(/%bitrate%/g, "FLAC")
+			break
+			case 3:
+				foldername = foldername.replace(/%bitrate%/g, "320")
+			break
+			case 1:
+				foldername = foldername.replace(/%bitrate%/g, "128")
+			break
+			default:
+				foldername = foldername.replace(/%bitrate%/g, "128")
+		}
 		if (album.recordType){
 			foldername = foldername.replace(/%type%/g, fixName(album.recordType[0].toUpperCase() + album.recordType.substring(1)))
 		}else{
