@@ -1637,7 +1637,7 @@ io.sockets.on('connection', function (s) {
 			let filename = antiDot(fixName(`${track.artist.name} - ${track.title}`));
 		}
 		if (settings.filename) {
-			filename = antiDot(fixName(settingsRegex(track, settings.filename, settings.playlist, settings.saveFullArtists && settings.multitagSeparator != null, settings.paddingSize)))
+			filename = antiDot(fixName(settingsRegex(track, settings.filename, settings.playlist)))
 		}
 
 		filename = antiDot(fixName(filename))
@@ -1646,9 +1646,9 @@ io.sockets.on('connection', function (s) {
 		// Generating file path
 		let filepath = mainFolder;
 		let artistPath;
-		if ((settings.createArtistFolder || settings.createAlbumFolder) && !settings.plName) {
+		if ((settings.createArtistFolder || settings.createAlbumFolder) && (!settings.plName || settings.createFoldersPlaylist && settings.plName)) {
 
-			if(settings.plName){
+			if(settings.plName && settings.createFoldersPlaylist){
 				filepath += antiDot(fixName(settings.plName)) + path.sep;
 			}
 
@@ -1674,7 +1674,7 @@ io.sockets.on('connection', function (s) {
 			filepath += antiDot(fixName(settingsRegexAlbum(track.album, settings.foldername))) + path.sep;
 		}
 		let coverpath = filepath;
-		if (track.album.discTotal > 1 && (settings.artName || settings.createAlbumFolder) && settings.createCDFolder){
+		if (track.album.discTotal > 1 && (settings.artName || settings.createAlbumFolder) && settings.createCDFolder && (!settings.plName || settings.createFoldersPlaylist && settings.plName)){
 			filepath += `CD${track.discNumber + path.sep}`
 		}
 
@@ -2146,16 +2146,16 @@ function initFolders() {
  * @param playlist
  * @returns {XML|string|*}
  */
-function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) {
+function settingsRegex(track, filename, playlist) {
 	try{
 		filename = filename.replace(/%title%/g, fixName(track.title));
 		filename = filename.replace(/%album%/g, fixName(track.album.title));
-		filename = filename.replace(/%artist%/g, fixName((saveFullArtists ? track.artistsString : track.artist.name)));
+		filename = filename.replace(/%artist%/g, fixName(((configFile.userDefined.saveFullArtists && configFile.userDefined.multitagSeparator != null) ? track.artistsString : track.artist.name)));
 		filename = filename.replace(/%year%/g, fixName(track.date.year));
 		filename = filename.replace(/%label%/g, fixName(track.album.label));
 		if(typeof track.trackNumber != 'undefined'){
 			if(configFile.userDefined.padtrck){
-				 filename = filename.replace(/%number%/g, fixName(pad(track.trackNumber, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : track.album.trackTotal))));
+				 filename = filename.replace(/%number%/g, fixName(pad(track.trackNumber, (parseInt(configFile.userDefined.paddingSize)>0 ? parseInt(configFile.userDefined.paddingSize) : track.album.trackTotal))));
 			}else{
 				filename = filename.replace(/%number%/g, fixName(track.trackNumber));
 			}
@@ -2164,7 +2164,7 @@ function settingsRegex(track, filename, playlist, saveFullArtists, paddingSize) 
 		}
 		if (playlist && typeof track.position != 'undefined'){
 			if(configFile.userDefined.padtrck){
-				 filename = filename.replace(/%position%/g, fixName(pad(track.position+1, (parseInt(paddingSize)>0 ? parseInt(paddingSize) : playlist.fullSize))));
+				 filename = filename.replace(/%position%/g, fixName(pad(track.position+1, (parseInt(configFile.userDefined.paddingSize)>0 ? parseInt(configFile.userDefined.paddingSize) : playlist.fullSize))));
 			}else{
 				filename = filename.replace(/%position%/g, fixName(track.position+1));
 			}
