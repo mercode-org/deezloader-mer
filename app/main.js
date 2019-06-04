@@ -56,15 +56,6 @@ function loadSettings(){
 	}
 
 	appConfig = require(userdata+path.sep+"config.json");
-
-	if( typeof appConfig.userDefined.numplaylistbyalbum != "boolean" ||
-			typeof appConfig.userDefined.syncedlyrics != "boolean" ||
-		 	typeof appConfig.userDefined.padtrck != "boolean" ||
-	 		typeof appConfig.userDefined.albumNameTemplate != "string"
-		){
-		fs.outputFileSync(userdata+"config.json",fs.readFileSync(__dirname+path.sep+"default.json",'utf8'));
-		appConfig = require(userdata+path.sep+"config.json");
-	}
 }
 
 function createTray(){

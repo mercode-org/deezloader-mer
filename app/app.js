@@ -31,11 +31,6 @@ const localpaths = require('./utils/localpaths.js')
 const package = require('./package.json')
 const stq = require('sequential-task-queue')
 
-// First run, create config file
-if(!fs.existsSync(localpaths.user+"config.json")){
-	fs.outputFileSync(localpaths.user+"config.json",fs.readFileSync(__dirname+path.sep+"default.json",'utf8'))
-}
-
 // Main Constants
 // Files
 const configFileLocation = localpaths.user+"config.json"
@@ -64,8 +59,14 @@ if (spotifySupport){
 // Setup the folders START
 var mainFolder = defaultDownloadFolder
 
+// First run, create config file
+if(!fs.existsSync(configFileLocation)){
+	logger.info("Can't find config.json, creating one now!")
+	fs.outputFileSync(configFileLocation, fs.readFileSync(__dirname+path.sep+"default.json",'utf8'))
+}
+
 // See if all settings are there after update
-var configFile = require(localpaths.user+path.sep+"config.json");
+var configFile = require(configFileLocation);
 for (let x in defaultSettings){
 	if (typeof configFile.userDefined[x] != typeof defaultSettings[x]){
 		configFile.userDefined[x] = defaultSettings[x]
