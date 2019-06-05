@@ -20,6 +20,17 @@ th{
 
 .settings_switch{
 	margin: 14px 0px;
+	vertical-align: middle;
+	display: flex;
+}
+
+.settings_switch > span{
+	width: calc(100% - 68px);
+	display: inline-block;
+}
+.settings_switch > label{
+	display: inline-block;
+	vertical-align: middle;
 }
 
 .remove-margin{
