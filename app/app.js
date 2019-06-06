@@ -1483,7 +1483,7 @@ io.sockets.on('connection', function (s) {
 				}
 			}
 
-			let separator = settings.multitagSeparator
+			var separator = settings.multitagSeparator
 			if (separator == "null") separator = String.fromCharCode(0)
 
 			// Autoremoves (Album Version) from the title
@@ -1547,31 +1547,31 @@ io.sockets.on('connection', function (s) {
 			if(track.contributor){
 				if(track.contributor.composer){
 					track.composerString = uniqueArray(track.contributor.composer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.composerString = track.composerString.join(separator)
+					if (!(track.selectedFormat == 9 && settings.multitagSeparator == "null")) track.composerString = track.composerString.join(separator)
 				}
 				if(track.contributor.musicpublisher){
 					track.musicpublisherString = uniqueArray(track.contributor.musicpublisher)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.musicpublisherString = track.musicpublisherString.join(separator)
+					if (!(track.selectedFormat == 9 && settings.multitagSeparator == "null")) track.musicpublisherString = track.musicpublisherString.join(separator)
 				}
 				if(track.contributor.producer){
 					track.producerString = uniqueArray(track.contributor.producer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.producerString = track.producerString.join(separator)
+					if (!(track.selectedFormat == 9 && settings.multitagSeparator == "null")) track.producerString = track.producerString.join(separator)
 				}
 				if(track.contributor.engineer){
 					track.engineerString = uniqueArray(track.contributor.engineer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.engineerString = track.engineerString.join(separator)
+					if (!(track.selectedFormat == 9 && settings.multitagSeparator == "null")) track.engineerString = track.engineerString.join(separator)
 				}
 				if(track.contributor.writer){
 					track.writerString = uniqueArray(track.contributor.writer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.writerString = track.writerString.join(separator)
+					if (!(track.selectedFormat == 9 && settings.multitagSeparator == "null")) track.writerString = track.writerString.join(separator)
 				}
 				if(track.contributor.author){
 					track.authorString = uniqueArray(track.contributor.author)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.authorString = track.authorString.join(separator)
+					if (!(track.selectedFormat == 9 && settings.multitagSeparator == "null")) track.authorString = track.authorString.join(separator)
 				}
 				if(track.contributor.mixer){
 					track.mixerString = uniqueArray(track.contributor.mixer)
-					if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.mixerString = track.mixerString.join(separator)
+					if (!(track.selectedFormat == 9 && settings.multitagSeparator == "null")) track.mixerString = track.mixerString.join(separator)
 				}
 			}
 
@@ -1595,10 +1595,10 @@ io.sockets.on('connection', function (s) {
 					track.artistsString.splice(posMainArtist, 1)
 					track.artistsString.splice(0, 0, element)
 				}
-				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0))) track.artistsString = track.artistsString.join(separator)
+				if (!(track.selectedFormat == 9 && settings.multitagSeparator == "null")) track.artistsString = track.artistsString.join(separator)
 			}
 			if (track.album.genre){
-				if (!(track.selectedFormat == 9 && separator==String.fromCharCode(0)))
+				if (!(track.selectedFormat == 9 && settings.multitagSeparator == "null"))
 					track.album.genreString = track.album.genre.join(separator)
 				else
 					track.album.genreString = track.album.genre
@@ -1627,8 +1627,12 @@ io.sockets.on('connection', function (s) {
 
 		// TODO: Move to a separate function
 		// Generating file name
-		if (settings.saveFullArtists && settings.multitagSeparator != null){
-			let filename = antiDot(fixName(`${track.artistsString} - ${track.title}`));
+		if (settings.saveFullArtists){
+			if (settings.multitagSeparator != "null"){
+				let filename = antiDot(fixName(`${track.artistsString.join(", ")} - ${track.title}`));
+			}else{
+				let filename = antiDot(fixName(`${track.artistsString} - ${track.title}`));
+			}
 		}else{
 			let filename = antiDot(fixName(`${track.artist.name} - ${track.title}`));
 		}
@@ -2151,7 +2155,19 @@ function settingsRegex(track, filename, playlist) {
 	try{
 		filename = filename.replace(/%title%/g, fixName(track.title));
 		filename = filename.replace(/%album%/g, fixName(track.album.title));
-		filename = filename.replace(/%artist%/g, fixName(((configFile.userDefined.saveFullArtists && configFile.userDefined.multitagSeparator != null) ? track.artistsString : track.artist.name)));
+		if (configFile.userDefined.saveFullArtists){
+			let artistString
+			if (Array.isArray(track.artistsString)){
+				artistString = track.artistsString.join(", ")
+			}else if (configFile.userDefined.multitagSeparator == "null"){
+				artistString = track.artistsString.split(String.fromCharCode(0)).join(", ")
+			}else{
+				artistString = track.artistsString
+			}
+			filename = filename.replace(/%artist%/g, fixName(artistString));
+		}else{
+			filename = filename.replace(/%artist%/g, fixName(track.artist.name));
+		}
 		filename = filename.replace(/%year%/g, fixName(track.date.year));
 		filename = filename.replace(/%date%/g, fixName(track.album.date));
 		filename = filename.replace(/%label%/g, fixName(track.album.label));
