@@ -186,8 +186,15 @@ $(document).ready(function () {
 		socket.emit("getMyPlaylistList", {spotifyUser: localStorage.getItem('spotifyUser')})
 	})
 
-	$('#downloadChartPlaylist').click(function(){
-		addToQueue(`https://www.deezer.com/playlist/${$(this).data("id")}`)
+	$('#downloadChartPlaylist').on('contextmenu', function(e){
+    e.preventDefault();
+		$(modalQuality).data("url", `https://www.deezer.com/playlist/${$(this).data("id")}`)
+		$(modalQuality).css('display', 'block')
+		$(modalQuality).addClass('animated fadeIn')
+    return false;
+	}).on('click', function(e){
+    e.preventDefault();
+    addToQueue(`https://www.deezer.com/playlist/${$(this).data("id")}`)
 	})
 
 	// Track Preview Feature
@@ -249,7 +256,14 @@ $(document).ready(function () {
 	})
 
 	// Button download all tracks in selective modal
-	$('#download_all_tracks_selective, #download_all_tracks').click(function(){
+	$('#download_all_tracks_selective, #download_all_tracks').on('contextmenu', function(e){
+    e.preventDefault();
+		$(modalQuality).data("url", $(this).attr("data-link"))
+		$(modalQuality).css('display', 'block')
+		$(modalQuality).addClass('animated fadeIn')
+    return false;
+	}).on('click', function(e){
+    e.preventDefault();
 		addToQueue($(this).attr("data-link"))
 		$(this).parent().parent().modal("close")
 	})
@@ -695,7 +709,20 @@ function showTrackListSelective(link) {
 	socket.emit('getTrackList', {id: id, type: type})
 }
 
-$('#download_track_selection').click(function(e){
+$('#download_track_selection').on('contextmenu', function(e){
+	e.preventDefault();
+	var urls = []
+	$("input:checkbox.trackCheckbox:checked").each(function(){
+		urls.push($(this).val())
+	})
+	if(urls.length != 0){
+		urls = urls.join(";")
+		$(modalQuality).data("url", urls)
+		$(modalQuality).css('display', 'block')
+		$(modalQuality).addClass('animated fadeIn')
+	}
+	return false;
+}).on('click', function(e){
 	e.preventDefault()
 	var urls = []
 	$("input:checkbox.trackCheckbox:checked").each(function(){
@@ -705,8 +732,8 @@ $('#download_track_selection').click(function(e){
 		for (var ia = 0; ia < urls.length; ia++) {
 			addToQueue(urls[ia])
 		}
-	}
 	$('#modal_trackListSelective').modal('close')
+	}
 })
 
 // Generate Button for tracklist without selection
@@ -1105,9 +1132,18 @@ socket.on("analyzealbum", (data)=>{
 })
 
 //###############################################TAB_URL##############################################\\
-$('#tab_url_form_url').submit(function (ev) {
-
-	ev.preventDefault()
+$('#download_from_url_button').on('contextmenu', function(e){
+	e.preventDefault();
+	var urls = $("#song_url").val()
+	let urlsArray = urls.split(";")
+	if(urlsArray.length != 0){
+		$(modalQuality).data("url", urls)
+		$(modalQuality).css('display', 'block')
+		$(modalQuality).addClass('animated fadeIn')
+	}
+	return false;
+}).on('click', function(e){
+	e.preventDefault()
 	var urls = $("#song_url").val().split(";")
 	for(var i = 0; i < urls.length; i++){
 		var url = urls[i]
@@ -1403,7 +1439,15 @@ function generateDownloadLink(url) {
 
 function modalQualityButton(bitrate){
 	var url=$(modalQuality).data("url")
-	addToQueue(url, bitrate)
+	if (url.indexOf(";") != -1){
+		urls = url.split(";")
+		urls.forEach(url=>{
+			addToQueue(url, bitrate)
+		})
+	}else{
+		addToQueue(url, bitrate)
+	}
+	$('#modal_trackListSelective').modal('close')
 	$(modalQuality).addClass('animated fadeOut')
 }
 
