@@ -2174,7 +2174,7 @@ function settingsRegex(track, filename, playlist) {
 			filename = filename.replace(/%position%/g, '');
 		}
 		filename = filename.replace(/%disc%/g, fixName(track.discNumber));
-		filename = filename.replace(/%explicit%/g, fixName((track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit Version)") : "")));
+		filename = filename.replace(/%explicit%/g, fixName((track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : "")));
 		filename = filename.replace(/%genre%/g, fixName(track.album.genre ? (Array.isArray(track.album.genre) ? track.album.genre[0] : track.album.genre) : "Unknown"));
 		filename = filename.replace(/[/\\]/g, path.sep)
 		return filename.trim();
