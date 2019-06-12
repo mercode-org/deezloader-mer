@@ -30,7 +30,7 @@
 		"artistImageTemplate": "folder",
 		"PNGcovers": false,
 		"multitagSeparator": "; ",
-		"dateFormat": "0",
+		"dateFormat": "4",
 		"dateFormatYear": "4",
 		"savePlaylistAsCompilation": false,
 		"removeAlbumVersion": false,
