@@ -1218,7 +1218,7 @@ io.sockets.on('connection', function (s) {
 							}catch(err){
 								downloading.failed++
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
-								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
+								logger.error(`[${t.artist.name} - ${t.title}] ${err.stack ? err.stack : err}`)
 							}
 							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
@@ -2195,6 +2195,7 @@ function settingsRegex(track, filename, playlist) {
 			filename = filename.replace(/%position%/g, '');
 		}
 		filename = filename.replace(/%disc%/g, fixName(track.discNumber));
+		filename = filename.replace(/%isrc%/g, fixName(track.ISRC ? track.ISRC : "Unknown"));
 		filename = filename.replace(/%explicit%/g, fixName((track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : "")));
 		filename = filename.replace(/%genre%/g, fixName(track.album.genre ? (Array.isArray(track.album.genre) ? track.album.genre[0] : track.album.genre) : "Unknown"));
 		filename = filename.replace(/[/\\]/g, path.sep)
@@ -2235,6 +2236,7 @@ function settingsRegexAlbum(album, foldername) {
 			foldername = foldername.replace(/%type%/g, "")
 		}
 		foldername = foldername.replace(/%label%/g, fixName(album.label))
+		foldername = foldername.replace(/%upc%/g, fixName(album.barcode ? album.barcode : "Unknown"));
 		foldername = foldername.replace(/%explicit%/g, fixName((album.explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit) ") : "")))
 		foldername = foldername.replace(/%genre%/g, fixName(album.genres ? (Array.isArray(album.genres) ? album.genres[0] : album.genres) : "Unknown"))
 		foldername = foldername.replace(/[/\\]/g, path.sep)
