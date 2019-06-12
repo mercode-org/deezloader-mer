@@ -948,7 +948,7 @@ io.sockets.on('connection', function (s) {
 						downloading.downloaded++
 					}catch(err){
 						logger.error(`[${downloading.obj.artist.name} - ${downloading.obj.title}] ${err}`)
-						downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
+						downloading.errorLog += `${downloading.obj.id} | ${downloading.obj.artist.name} - ${downloading.obj.title} | ${err}\r\n`
 						downloading.failed++
 					}
 					io.sockets.emit("updateQueue", {
