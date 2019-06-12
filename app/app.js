@@ -1627,14 +1627,19 @@ io.sockets.on('connection', function (s) {
 
 		// TODO: Move to a separate function
 		// Generating file name
+		let filename = ""
 		if (settings.saveFullArtists){
-			if (settings.multitagSeparator != "null"){
-				let filename = antiDot(fixName(`${track.artistsString.join(", ")} - ${track.title}`));
+			if (settings.multitagSeparator == "null"){
+				if (Array.isArray(track.artistsString)){
+					filename = antiDot(fixName(`${track.artistsString.join(", ")} - ${track.title}`));
+				}else{
+					filename = antiDot(fixName(`${track.artistsString.split(String.fromCharCode(0)).join(", ")} - ${track.title}`))
+				}
 			}else{
-				let filename = antiDot(fixName(`${track.artistsString} - ${track.title}`));
+				filename = antiDot(fixName(`${track.artistsString} - ${track.title}`));
 			}
 		}else{
-			let filename = antiDot(fixName(`${track.artist.name} - ${track.title}`));
+			filename = antiDot(fixName(`${track.artist.name} - ${track.title}`));
 		}
 		if (settings.filename) {
 			filename = antiDot(fixName(settingsRegex(track, settings.filename, settings.playlist)))
