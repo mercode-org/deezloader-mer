@@ -2237,6 +2237,7 @@ function settingsRegexAlbum(album, foldername) {
 		}
 		foldername = foldername.replace(/%label%/g, fixName(album.label))
 		foldername = foldername.replace(/%upc%/g, fixName(album.barcode ? album.barcode : "Unknown"));
+		foldername = foldername.replace(/%album_id%/g, fixName(album.id));
 		foldername = foldername.replace(/%explicit%/g, fixName((album.explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit) ") : "")))
 		foldername = foldername.replace(/%genre%/g, fixName(album.genres ? (Array.isArray(album.genres) ? album.genres[0] : album.genres) : "Unknown"))
 		foldername = foldername.replace(/[/\\]/g, path.sep)
