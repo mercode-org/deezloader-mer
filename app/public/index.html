@@ -16,7 +16,7 @@
 	<meta charset="utf-8"/>
 </head>
 <body>
-<span id="appVersionFallback" hidden>4.2.1</span>
+<span id="appVersionFallback" hidden>4.2.2</span>
 
 <div id="title-bar" class="deezloader-black">
 	<div class="resize-padding" style="width: 100%; height: 3px;"></div>
@@ -332,7 +332,7 @@
 		</div>
 
 		<h6 class="col s12 secondary-text">Spotify Features</h6><hr>
-		<p class="secondary-text">"Spotify Features" will <b>NOT</b> donwload music from Spotify.<br/>
+		<p class="secondary-text">"Spotify Features" will <b>NOT</b> download music from Spotify.<br/>
 		This just enables a practical in app metadata converter. If a song is not on Deezer it can't be downloaded<br>
 		You can see how to get the Client and Secret IDs <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features">here</a>
 		</p>
@@ -555,7 +555,7 @@
 <div id="modal_about" class="modal modal-fixed-footer">
 	<div class="modal-content">
 		<div class="row">
-			<h4 class="col s12">More</h4>
+			<h4 class="col s12">About the App</h4>
 		</div>
 		<div class="row">
 			<ul class="collapsible" data-collapsible="accordion">
@@ -568,7 +568,14 @@
 							<b>Based on: </b>Deezloader Reborn</br>
 							<b>Maintainers:</b> RemixDevs Group<br/>
 							<b>Repo: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix" target="_blank">Official Repo</a><br/>
+							<b>FAQ: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/FAQ" target="_blank">Link</a><br/>
+							<b>Official mirrors: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Downloads" target="_blank">Link</a><br/>
 							<b>Interface:</b> <a href="http://materializecss.com/" target="_blank">Materialize CSS</a><br/>
+							<br/>
+							<b>Telegram Contacts</b><br/>
+							<b><a href="https://t.me/RemixDevs" target="_blank">News Channel</a></b><br/>
+							<b><a href="https://t.me/DeezloaderRemixBeta" target="_blank">Betas Channel</a></b><br/>
+							<b><a href="https://t.me/DeezloaderRemix" target="_blank">Stable Releases Channel</a></b><br/>
 							<br>
 							<b>Special Thanks to:</b><br>
 							ZzMTV, ParadoxalManiak, snwflake, ExtendLord<br>
@@ -587,7 +594,7 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">bug_report</i>Reporting Bugs</div>
 					<div class="collapsible-body">
 						<p>
-							If you experience any bugs, open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new" target="_blank">new issue</a> and send the bug report there, thank you.
+							If you experience any bugs first of all chech the <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/FAQ" target="_blank">FAQ page</a>.<br> If you can't find a solution for your problem, open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new" target="_blank">new issue</a> and send the bug report there, thank you.
 						</p>
 					</div>
 				</li>
@@ -595,7 +602,12 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">group</i>Contacts</div>
 					<div class="collapsible-body">
 						<p>
-							If you want to discuss or help with the app you can do so in the <a href="https://t.me/DeezloaderRemixCommunity" target="_blank">Telegram group</a>!
+							If you want to discuss or help with the app you can do so in the <a href="https://t.me/DeezloaderRemixCommunity" target="_blank">Telegram group</a>!<br>
+							<ul>
+								<li><a href="https://t.me/DeezloaderItalia">Gruppo in Italiano</a></li>
+								<li><a href="https://t.me/joinchat/Ed1JxEn3_Bx1et6SCeLurg">Grupo en español</a></li>
+								<li><a href="https://t.me/deezloaderpt">Grupo em Português</a></li>
+						</ul>
 						</p>
 					</div>
 				</li>
@@ -613,6 +625,27 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
 					<div class="collapsible-body">
 						<p>
+							<b>Version 4.2.2</b><br/>
+							- Re-added login with email / password with captcha popup (Doesn't work on Server Mode)<br/>
+							- Reorganized Settings<br/>
+							- ID3 default is now the only option for MP3 date format (If you had that selected you should change that or do a clean install)<br/>
+							- Added link analyzer<br/>
+							- Added support for spotify tracks and albums via urls and uri<br/>
+							- Added %bitrate% and %date% to album folder name<br/>
+							- Added %date% to tracknames<br/>
+							- Added %position% for playlist tracknames<br/>
+							- Added %isrc%, %upc% and %album_id%<br/>
+							- Added option to enable or disable search fallback<br/>
+							- Added option to create album/artist/cd folders for playlists as well<br/>
+							- Added option to save playlist as a compilation (it overwrites original tags with the playlist one)<br/>
+							- Added more UI elements to display errors<br/>
+							- Added error log when clicking on error sign in the Download Tab<br/>
+							- Added quality selection to remaining download buttons<br/>
+							- Fixed certificate error while looking for updates<br/>
+							- Fixed spotify playlist conversion problems<br/>
+							- Fixed tags problems<br/>
+							- Other Minor improvments<br/>
+							<br/>
 							<b>Version 4.2.1</b><br/>
 							- Downloads are binded to the server on server mode<br/>
 							- Downloading playlists wont create artist and album folders if options are selected<br/>
@@ -932,7 +965,7 @@
 			</li>
 			<li>
 				<a href="#modal_about" class="waves-effect waves-light modal-trigger">
-					<i class="material-icons left">star</i> <span class="hide-on-med-and-down">More</span>
+					<i class="material-icons left">info</i> <span class="hide-on-med-and-down">About</span>
 				</a>
 			</li>
 		</ul>
@@ -956,7 +989,7 @@
 	<li><a href="#!" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i>Downloads</a></li>
 	<li><div class="divider"></div></li>
 	<li><a href="#modal_settings" id="sidenav_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i>Settings</a></li>
-	<li><a href="#modal_about" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">star</i>About</a></li>
+	<li><a href="#modal_about" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">info</i>About</a></li>
 	<li><a href="#!" id="nightModeSwitch2"><i class="material-icons">brightness_2</i>Enable Night Mode</a>
 	</li>
 </ul>
