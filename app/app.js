@@ -1464,7 +1464,7 @@ io.sockets.on('connection', function (s) {
 				logger.info(`[${track.artist.name} - ${track.title}] Getting track gain`);
 				if (!track.legacyTrack) track.legacyTrack = await s.Deezer.legacyGetTrack(track.id)
 				try{
-					track.replayGain = track.legacyTrack.gain
+					track.replayGain = ((track.legacyTrack.gain + 18.4) * -1).toFixed(2)+" dB"
 				}catch(err){
 					track.replayGain = 0
 				}
