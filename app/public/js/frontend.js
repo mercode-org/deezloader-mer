@@ -8,7 +8,8 @@ var defaultDownloadLocation = ""
 const localStorage = window.localStorage
 var modalQuality = document.getElementById('modal_quality');
 modalQuality.open = false
-let userSettings = []
+let userSettings = {}
+let spotifySettings = {}
 
 var downloadQueue = []
 
@@ -295,6 +296,7 @@ $(document).ready(function () {
 // Load settings
 socket.on('getUserSettings', function (data) {
 	userSettings = data.settings
+	spotifySettings = data.spotify
 	console.log('Settings refreshed')
 })
 
@@ -312,7 +314,7 @@ const $settingsAreaParent = $('#modal_settings')
 
 // Open settings panel
 $('#nav_btn_openSettingsModal, #sidenav_settings').click(function () {
-	fillSettingsModal(userSettings)
+	fillSettingsModal(userSettings, spotifySettings)
 })
 
 // Save settings button
@@ -385,9 +387,14 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		}
 	}
 	let spotifyUser = $('#modal_settings_input_spotifyUser').val()
+	let spotifyFeatures = {
+		clientId: $('#modal_settings_input_spotifyClientID').val(),
+		clientSecret: $('#modal_settings_input_spotifyClientSecret').val()
+	}
 	localStorage.setItem('spotifyUser', spotifyUser)
 	// Send updated settings to be saved into config file
 	socket.emit('saveSettings', settings, spotifyUser)
+	socket.emit('saveSpotifyFeatures', spotifyFeatures)
 	socket.emit('getUserSettings')
 })
 
@@ -427,7 +434,7 @@ $('#modal_settings_btn_logout').click(function () {
 })
 
 // Populate settings fields
-function fillSettingsModal(settings) {
+function fillSettingsModal(settings, spotifySettings = {clientId: "", clientSecret: ""}) {
 	$('#modal_settings_input_downloadTracksLocation').val(settings.downloadLocation)
 	$('#modal_settings_input_trackNameTemplate').val(settings.trackNameTemplate)
 	$('#modal_settings_input_albumTrackNameTemplate').val(settings.albumTrackNameTemplate)
@@ -463,6 +470,8 @@ function fillSettingsModal(settings) {
 	$('#modal_settings_cbox_removeAlbumVersion').prop('checked', settings.removeAlbumVersion)
 
 	$('#modal_settings_input_spotifyUser').val(localStorage.getItem('spotifyUser'))
+	$('#modal_settings_input_spotifyClientID').val(spotifySettings.clientId)
+	$('#modal_settings_input_spotifyClientSecret').val(spotifySettings.clientSecret)
 
 	$('#modal_tags_title').prop('checked', settings.tags.title)
 	$('#modal_tags_artist').prop('checked', settings.tags.artist)

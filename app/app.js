@@ -31,6 +31,8 @@ const localpaths = require('./utils/localpaths.js')
 const package = require('./package.json')
 const stq = require('sequential-task-queue')
 
+const spotifyFeaturesMessage = "You should add spotify's clientId and clientSecret in the settings and then restart the app to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a><br><br>THIS FEATURE DOES'T LET YOU DOWNLOAD FROM SPOTIFY. This just enables a practical in app metadata converter. If a song is not on Deezer it can't be downloaded"
+
 // Main Constants
 // Files
 const configFileLocation = localpaths.user+"config.json"
@@ -49,12 +51,6 @@ if(process.platform == "android"){
 
 // Default settings
 const defaultSettings = require('./default.json').userDefined
-// Spotify Files
-const spotifySupport = fs.existsSync(localpaths.user+"authCredentials.js")
-if (spotifySupport){
-	var authCredentials = require(localpaths.user+'authCredentials.js')
-	var Spotify = new spotifyApi(authCredentials)
-}
 
 // Setup the folders START
 var mainFolder = defaultDownloadFolder
@@ -63,6 +59,20 @@ var mainFolder = defaultDownloadFolder
 if(!fs.existsSync(configFileLocation)){
 	logger.info("Can't find config.json, creating one now!")
 	fs.outputFileSync(configFileLocation, fs.readFileSync(__dirname+path.sep+"default.json",'utf8'))
+}
+
+if(!fs.existsSync(localpaths.user+"authCredentials.json")){
+	logger.info("Can't find authCredentials.json, creating one now!")
+	fs.outputFileSync(localpaths.user+"authCredentials.json", JSON.stringify({clientId: "", clientSecret: ""}, null, 2))
+}
+
+// Spotify Files
+var authCredentials = require(localpaths.user+'authCredentials.json')
+if (authCredentials.clientId == "" || authCredentials.clientSecret == ""){
+	spotifySupport = false
+}else{
+	spotifySupport = true
+	var Spotify = new spotifyApi(authCredentials)
 }
 
 // See if all settings are there after update
@@ -407,7 +417,7 @@ io.sockets.on('connection', function (s) {
 		if (!settings.downloadLocation) {
 			settings.downloadLocation = mainFolder
 		}
-		s.emit('getUserSettings', {settings: settings})
+		s.emit('getUserSettings', {settings: settings, spotify: spotifySupport ? authCredentials : {clientId:"", clientSecret:""}})
 	});
 
 	// Saves locally the settings comming from the frontend
@@ -437,6 +447,28 @@ io.sockets.on('connection', function (s) {
 			initFolders()
 		});
 	});
+
+	// Save spotify features settings
+	s.on("saveSpotifyFeatures", function (settings){
+		if (spotifySupport){
+			if (authCredentials.clientId != settings.clientId || authCredentials.clientSecret != settings.clientSecret){
+				fs.outputFile(localpaths.user+"authCredentials.json", JSON.stringify(settings, null, 2), function (err) {
+					if (err) return
+					logger.info("Spotify Features settings updated")
+					initFolders()
+				})
+			}
+		}else{
+			if (settings.clientId != "" || settings.clientSecret != ""){
+				fs.outputFile(localpaths.user+"authCredentials.json", JSON.stringify(settings, null, 2), function (err) {
+					if (err) return
+					logger.info("Spotify Features settings updated")
+					initFolders()
+				})
+				s.emit("message", {title: "You need to restart the app to apply the changes", msg: "Changing the spotify settings id and secret requires an app restart"})
+			}
+		}
+	})
 
 	s.on("analyzetrack", async (id)=>{
 		s.emit("analyzetrack", await s.Deezer.legacyGetTrack(id))
@@ -713,7 +745,7 @@ io.sockets.on('connection', function (s) {
 			}catch(err){
 				logger.error(`downloadSpotifyPlaylist failed: ${err.stack ? err.stack : err}`)
 				if (err.message && err.message == "Bad Request"){
-					s.emit("message", {title: "You setted it up wrong!", msg: "It seems like you setted the authCredentials.js file wrong...<br>Make sure you keep the ' around the IDs and that the Secret and Client ID are copied correctly<br>After that you should restart the app to make it work.<br><br>If you need the guide again <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">Here it is</a>"})
+					s.emit("message", {title: "You setted it up wrong!", msg: "Somehow you managed to fuck it up. Good job.<br>Now go do the guide again.<br><br>If you need the link again <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">Here it is</a>"})
 				}else{
 					s.emit("toast", `SpotifyPlaylist ${data.id} failed: ${err.message ? err.message : err}`)
 				}
@@ -721,7 +753,8 @@ io.sockets.on('connection', function (s) {
 				return
 			}
 		}else{
-			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files and then restart the app to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+			s.emit("message", {title: "Spotify Features is not enabled", msg: spotifyFeaturesMessage})
+			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 		}
 	}
 	s.on("downloadspotifyplaylist", data=>{downloadSpotifyPlaylist(data)})
@@ -748,7 +781,8 @@ io.sockets.on('connection', function (s) {
 				return
 			}
 		}else{
-			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files and then restart the app to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+			s.emit("message", {title: "Spotify Features is not enabled", msg: spotifyFeaturesMessage})
+			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 		}
 	}
 	s.on("downloadspotifytrack", data=>{downloadSpotifyTrack(data)})
@@ -775,7 +809,8 @@ io.sockets.on('connection', function (s) {
 				return
 			}
 		}else{
-			s.emit("message", {title: "Spotify Support is not enabled", msg: "You should add authCredentials.js in your config files and then restart the app to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a>"})
+			s.emit("message", {title: "Spotify Features is not enabled", msg: spotifyFeaturesMessage})
+			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 		}
 	}
 	s.on("downloadspotifyalbum", data=>{downloadSpotifyAlbum(data)})
@@ -1711,12 +1746,14 @@ io.sockets.on('connection', function (s) {
 				track.playlistData = [track.trackNumber-1, writePath];
 			}
 		}
+		
 		if (fs.existsSync(writePath)) {
 			logger.info(`[${track.artist.name} - ${track.title}] Already downloaded`);
 			return;
 		}else{
 			logger.info(`[${track.artist.name} - ${track.title}] Downloading file to ${writePath}`);
 		}
+
 		// Get cover image
 		if (track.album.pictureUrl) {
 			let imgPath;
