@@ -256,6 +256,18 @@ $(document).ready(function () {
 		$('#tab_search_form_search').submit()
 	})
 
+	// Enter on Link Analyzer and Link Download
+	$('#link_analyzer_url').on("keyup", function(e) {
+		if (e.keyCode == 13) {
+			parseLinkAnalyzer($("#link_analyzer_url").val())
+		}
+	});
+	$('#song_url').on("keyup", function(e) {
+		if (e.keyCode == 13) {
+			parseDownloadFromURL($("#song_url").val())
+		}
+	});
+
 	// Button download all tracks in selective modal
 	$('#download_all_tracks_selective, #download_all_tracks').on('contextmenu', function(e){
     e.preventDefault();
@@ -1153,7 +1165,11 @@ $('#download_from_url_button').on('contextmenu', function(e){
 	return false;
 }).on('click', function(e){
 	e.preventDefault()
-	var urls = $("#song_url").val().split(";")
+	parseDownloadFromURL($("#song_url").val())
+})
+
+function parseDownloadFromURL(urlsString){
+	urls = urlsString.split(";")
 	for(var i = 0; i < urls.length; i++){
 		var url = urls[i]
 		if (url.length == 0) {
@@ -1170,7 +1186,7 @@ $('#download_from_url_button').on('contextmenu', function(e){
 		}
 		addToQueue(url)
 	}
-})
+}
 
 //############################################TAB_DOWNLOADS###########################################\\
 function addToQueue(url, forceBitrate=null) {
