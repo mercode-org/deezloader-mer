@@ -11,6 +11,8 @@ if(process.env.APPDATA){
 }else if(process.platform == "android"){
   homedata = "/sdcard";
   userdata = homedata + "/Deezloader Remix/";
+}else if (process.env.XDG_CONFIG_HOME){
+	userdata = process.env.XDG_CONFIG_HOME + '/Deezloader Remix/';
 }else{
 	userdata = homedata + '/.config/Deezloader Remix/';
 }
