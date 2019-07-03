@@ -109,6 +109,8 @@ socket.on("login", function (data) {
 	}else{
 		$('#login-res-text').text(data.error)
 		setTimeout(function(){$('#login-res-text').text("")},3000)
+		$('#modal_login_input_password').val("")
+		$('#modal_login_input_userToken').val("")
 	}
 	$('#modal_login_btn_login').attr("disabled", false)
 	$('#modal_login_btn_login').html("Log in")
