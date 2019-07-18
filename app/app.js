@@ -1177,7 +1177,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
-						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
+						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+".jpg";
 						if (downloading.obj.picture_small){
 							downloading.cover = downloading.obj.picture_small.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
 							request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
@@ -1304,7 +1304,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
-						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
+						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+".jpg");
 						if (downloading.obj.images){
 							downloading.cover = downloading.obj.images[0].url.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
 							request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
@@ -1549,11 +1549,11 @@ io.sockets.on('connection', function (s) {
 				}
 			}
 			if (!track.album.artist.picture) track.album.artist.picture = ""
-			track.album.artist.pictureUrl = `${s.Deezer.artistPicturesHost}${track.album.artist.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
+			track.album.artist.pictureUrl = `${s.Deezer.artistPicturesHost}${track.album.artist.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0.jpg`
 			if (settings.savePlaylistAsCompilation && settings.plName){
 				track.album.pictureUrl = settings.playlist.cover
 			}else{
-				track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
+				track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0.jpg`
 			}
 
 			// Auto detect aviable track format from settings
@@ -1746,7 +1746,7 @@ io.sockets.on('connection', function (s) {
 				track.playlistData = [track.trackNumber-1, writePath];
 			}
 		}
-		
+
 		if (fs.existsSync(writePath)) {
 			logger.info(`[${track.artist.name} - ${track.title}] Already downloaded`);
 			return;
@@ -1760,11 +1760,11 @@ io.sockets.on('connection', function (s) {
 			//If its not from an album but a playlist.
 			if(settings.albName || settings.createAlbumFolder){
 				if (settings.saveArtwork && !settings.plName)
-					imgPath = coverpath + settingsRegexCover(settings.coverImageTemplate,track.album.artist.name,track.album.title)+(settings.PNGcovers ? ".png" : ".jpg")
+					imgPath = coverpath + settingsRegexCover(settings.coverImageTemplate,track.album.artist.name,track.album.title)+".jpg"
 				else
-					imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg")
+					imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+".jpg"
 			}else{
-				imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+(settings.PNGcovers ? ".png" : ".jpg")
+				imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+".jpg"
 			}
 			if(fs.existsSync(imgPath)){
 				track.album.picturePath = (imgPath).replace(/\\/g, "/")
@@ -1791,7 +1791,7 @@ io.sockets.on('connection', function (s) {
 		if (parseInt(track.id)>0 && track.album.artist.pictureUrl && settings.saveArtworkArtist) {
 			let imgPath;
 			if(settings.createArtistFolder && artistPath){
-				imgPath = artistPath + antiDot(settingsRegexArtistCover(settings.artistImageTemplate,track.album.artist.name))+(settings.PNGcovers ? ".png" : ".jpg");
+				imgPath = artistPath + antiDot(settingsRegexArtistCover(settings.artistImageTemplate,track.album.artist.name))+".jpg";
 				if(!fs.existsSync(imgPath)){
 					try{
 						var body = await request.get(track.album.artist.pictureUrl, {strictSSL: false,encoding: 'binary'})
@@ -2049,7 +2049,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (mdb.isLast) {
 						if(cover){
-							mdbVorbisPicture = mflac.data.MetaDataBlockPicture.create(true, 3, `image/${(settings.PNGcovers ? "png" : "jpeg")}`, '', settings.artworkSize, settings.artworkSize, 24, 0, cover);
+							mdbVorbisPicture = mflac.data.MetaDataBlockPicture.create(true, 3, `image/jpeg`, '', settings.artworkSize, settings.artworkSize, 24, 0, cover);
 						}
 						mdbVorbisComment = mflac.data.MetaDataBlockVorbisComment.create(!cover, vendor, flacComments);
 						mdb.isLast = false;

@@ -28,7 +28,6 @@
 		"coverImageTemplate": "cover",
 		"saveArtworkArtist": false,
 		"artistImageTemplate": "folder",
-		"PNGcovers": false,
 		"multitagSeparator": "; ",
 		"dateFormat": "0",
 		"dateFormatYear": "4",
