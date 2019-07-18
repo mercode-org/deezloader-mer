@@ -1762,9 +1762,9 @@ io.sockets.on('connection', function (s) {
 				if (settings.saveArtwork && !settings.plName)
 					imgPath = coverpath + settingsRegexCover(settings.coverImageTemplate,track.album.artist.name,track.album.title)+".jpg"
 				else
-					imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+".jpg"
+					imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+"_"+settings.artworkSize+".jpg"
 			}else{
-				imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+".jpg"
+				imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+"_"+settings.artworkSize+".jpg"
 			}
 			if(fs.existsSync(imgPath)){
 				track.album.picturePath = (imgPath).replace(/\\/g, "/")
