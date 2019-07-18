@@ -1,17 +1,22 @@
 :root {
-  --main-modal-background: #212121; 
+  --main-modal-background: #212121;
 }
 
 body, .tabs, .card, .modal, input, .collapsible-header{
   background-color: #212121;
   color: white;
 }
-nav{
+/*nav{
   filter: hue-rotate(220deg);
 }
 #slide-out div.user-view>div.background{
   filter: hue-rotate(220deg);
+}*/
+
+#initializing{
+  background-color: #23232c;
 }
+
 .sidenav, .dropdown-content li>span{
   background-color: #212121;
 }
@@ -44,8 +49,24 @@ table.striped>tbody>tr:nth-child(odd){
   background-color: #1d1d1d;
 }
 
+::-webkit-scrollbar-thumb {
+	background: #4373E8;
+}
+
+body::-webkit-scrollbar-track {
+	background: #1d1d1d;
+}
+body::-webkit-scrollbar-thumb {
+	background: #4373E8;
+}
+
+
 .modal-footer{
   background-color: #212121 !important;
+}
+#page_footer{
+  background-color: #1e1e1e;
+  color: white
 }
 .btn-flat{
   color: #c3c3c3;

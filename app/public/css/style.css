@@ -53,8 +53,10 @@ hr{
 #initializing {
 	z-index: 98;
 	position: fixed;
+  margin-top: 32px;
 	width: 100%;
 	height: 100%;
+  background-color: #f5f5f5;
 }
 #modal_login_autologin{
 	line-height: 36px;
@@ -96,6 +98,7 @@ hr{
 	margin: 0;
 	-webkit-box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
 	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
+  background: rgba(0, 0, 0, 0.25);
 }
 
 #title-bar #title {
@@ -154,7 +157,9 @@ hr{
 }
 
 #slide-out .background{
-	background-image: url("../img/bg.png");
+  background: rgb(184,53,106);
+  background: linear-gradient(150deg, rgba(240,161,0,1) 0%, rgba(184,53,106,1) 25%, rgba(91,43,137,1) 50%, rgba(46,85,206,1) 75%, rgba(68,188,103,1) 100%);
+  background: linear-gradient(150deg, rgba(240,161,0,0.80) 0%, rgba(184,53,106,0.80) 25%, rgba(91,43,137,0.80) 50%, rgba(46,85,206,0.80) 75%, rgba(68,188,103,0.80) 100%), url("../img/bg.jpg");
 	-webkit-background-size: cover;
 	background-size: cover;
 	overflow: hidden;
@@ -170,14 +175,16 @@ hr{
 }
 
 nav {
-	background-image: url("../img/bg.png");
+  background: rgb(184,53,106);
+  background: linear-gradient(150deg, rgba(240,161,0,1) 0%, rgba(184,53,106,1) 25%, rgba(91,43,137,1) 50%, rgba(46,85,206,1) 75%, rgba(68,188,103,1) 100%);
+  background: linear-gradient(150deg, rgba(240,161,0,0.85) 0%, rgba(184,53,106,0.85) 25%, rgba(91,43,137,0.85) 50%, rgba(46,85,206,0.85) 75%, rgba(68,188,103,0.85) 100%), url("../img/bg.jpg");
 	-webkit-background-size: cover;
 	background-size: cover;
 	overflow: auto;
 	position: relative;
 	height: auto;
 	top: -1px;
-	margin-top: 32px;
+	padding-top: 32px;
 	padding-bottom: 60px;
 	-webkit-clip-path: polygon(0 0, 0 60%, 100% 100%, 100% 0);
 	width: 100%;
@@ -234,6 +241,14 @@ nav {
     display: inline-block;
 }
 
+#page_footer{
+  background-color: #f5f5f5;
+  color: #000000;
+}
+#page_footer p{
+  opacity: 0.75;
+}
+
 @media only screen and (max-width: 992px) {
 	#nav-mobile .left{
 		margin-right: 0px;
@@ -245,7 +260,7 @@ nav {
 
 @media only screen and (max-width: 600px) {
 	nav {
-		padding-top: 0px;
+		padding-top: 32px;
 		padding-bottom: 0px;
 	}
 	.container{
@@ -366,7 +381,7 @@ nav .brand-logo.left{
 ::-webkit-scrollbar-thumb {
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
-	background: #2692b7;
+	background: #4373E8;
 }
 
 body::-webkit-scrollbar {
@@ -374,11 +389,11 @@ body::-webkit-scrollbar {
 }
 
 body::-webkit-scrollbar-track {
-	background: #23232c;
+	background: #ffffff;
 }
 
 body::-webkit-scrollbar-thumb {
-	background: #2692b7;
+	background: #4373E8;
 }
 
 footer.page-footer{

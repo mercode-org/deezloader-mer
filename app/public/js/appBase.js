@@ -60,8 +60,9 @@ const version = (typeof packageFile === 'undefined') ? $("#appVersionFallback").
 		}else{
 			$mainEl.css('display','none')
 			$('nav').css('top','0')
-			$('nav').css('margin-top','0')
+			$('nav').css('padding-top','0')
 			$('#main_icon').css('margin-top','0')
+			$('#initializing').css('margin-top','0')
 			document.documentElement.style.setProperty('--appbar-height', "0px")
 		}
 		$mainEl.find('#application_version').text(version)
