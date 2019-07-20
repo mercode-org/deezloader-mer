@@ -363,6 +363,7 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		coverImageTemplate: $('#modal_settings_input_coverImageTemplate').val(),
 		saveArtworkArtist: $('#modal_settings_cbox_saveArtworkArtist').is(':checked'),
 		artistImageTemplate: $('#modal_settings_input_artistImageTemplate').val(),
+		PNGcovers: $('#modal_settings_cbox_PNGcovers').is(':checked'),
 		multitagSeparator: $('#modal_settings_select_multitagSeparator').val(),
 		dateFormat: $('#modal_settings_select_dateFormat').val(),
 		dateFormatYear: $('#modal_settings_select_dateFormatYear').val(),
@@ -475,6 +476,7 @@ function fillSettingsModal(settings, spotifySettings = {clientId: "", clientSecr
 	$('#modal_settings_input_coverImageTemplate').val(settings.coverImageTemplate)
 	$('#modal_settings_cbox_saveArtworkArtist').prop('checked', settings.saveArtworkArtist)
 	$('#modal_settings_input_artistImageTemplate').val(settings.artistImageTemplate)
+	$('#modal_settings_cbox_PNGcovers').prop('checked', settings.PNGcovers)
 	$('#modal_settings_select_multitagSeparator').val(settings.multitagSeparator).formSelect()
 	$('#modal_settings_select_dateFormat').val(settings.dateFormat).formSelect()
 	$('#modal_settings_select_dateFormatYear').val(settings.dateFormatYear).formSelect()
