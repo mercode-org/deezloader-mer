@@ -1549,11 +1549,11 @@ io.sockets.on('connection', function (s) {
 				}
 			}
 			if (!track.album.artist.picture) track.album.artist.picture = ""
-			track.album.artist.pictureUrl = `${s.Deezer.artistPicturesHost}${track.album.artist.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0.${(settings.PNGcovers ? ".png" : ".jpg")}`
+			track.album.artist.pictureUrl = `${s.Deezer.artistPicturesHost}${track.album.artist.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
 			if (settings.savePlaylistAsCompilation && settings.plName){
 				track.album.pictureUrl = settings.playlist.cover
 			}else{
-				track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0.${(settings.PNGcovers ? ".png" : ".jpg")}`
+				track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
 			}
 
 			// Auto detect aviable track format from settings
