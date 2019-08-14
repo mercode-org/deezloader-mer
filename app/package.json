@@ -14,6 +14,7 @@
 		"electron-window-state-manager": "latest",
 		"express": "latest",
 		"fs-extra": "latest",
+		"metaflac-js": "git+https://notabug.org/Generalo/metaflac-js.git#master",
 		"queue": "^5.0.1",
 		"request": "^2.87.0",
 		"request-promise": "^4.2.4",
