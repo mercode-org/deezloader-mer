@@ -976,7 +976,7 @@ io.sockets.on('connection', function (s) {
 		logger.info(`Registered ${downloading.type}: ${downloading.id} | ${downloading.artist} - ${downloading.name}`);
 		switch(downloading.type){
 			/*
-			*  TRACK DOWNLOAD
+			* TRACK DOWNLOAD
 			*/
 			case "track":
 				var downloadPromise = new Promise(async (resolve,reject)=>{
@@ -1013,7 +1013,7 @@ io.sockets.on('connection', function (s) {
 				}
 			break
 			/*
-			*  ALBUM DOWNLOAD
+			* ALBUM DOWNLOAD
 			*/
 			case "album":
 				downloading.settings.albName = downloading.name;
@@ -1102,7 +1102,7 @@ io.sockets.on('connection', function (s) {
 				}
 			break
 			/*
-			*  PLAYLIST DOWNLOAD
+			* PLAYLIST DOWNLOAD
 			*/
 			case "playlist":
 				downloading.settings.plName = downloading.name;
@@ -1203,7 +1203,7 @@ io.sockets.on('connection', function (s) {
 				}
 			break
 			/*
-			*  SPOTIFY PLAYLIST DOWNLOAD
+			* SPOTIFY PLAYLIST DOWNLOAD
 			*/
 			case "spotifyplaylist":
 				downloading.settings.plName = downloading.name
@@ -1812,11 +1812,11 @@ io.sockets.on('connection', function (s) {
 			if (!fs.existsSync(`${filepath}`)) fs.mkdirSync(`${filepath}`, {recursive: true}, err => {})
 			let url = new URL(track.getDownloadUrl(track.selectedFormat));
 			let options = {
-			    host: url.hostname,
-			    path: url.pathname,
-			    headers: s.Deezer.httpHeaders,
-			    rejectUnauthorized: false,
-			    strictSSL: false
+				host: url.hostname,
+				path: url.pathname,
+				headers: s.Deezer.httpHeaders,
+				rejectUnauthorized: false,
+				strictSSL: false
 			}
 
 			let req = https.get(options, function (response) {
@@ -1827,6 +1827,7 @@ io.sockets.on('connection', function (s) {
 					}else{
 						fileStream.write(getID3(track, settings));
 					}
+					
 					let i = 0;
 					let chunkLength = 0;
 					let tagSize = 0;
@@ -1835,6 +1836,8 @@ io.sockets.on('connection', function (s) {
 						let chunk;
 						while (chunk = response.read(2048)) {
 							chunkLength += 2048;
+
+							// Progress bar advancement for single tracks
 							if((downloadQueue[queueId]) && downloadQueue[queueId].type == "track"){
 								if (!downloadQueue[queueId]){
 									reject("Not in Queue")
@@ -1855,6 +1858,7 @@ io.sockets.on('connection', function (s) {
 								}catch(err){}
 							}
 
+							// Thanks to Generalo for the improved download function
 							if (track.selectedFormat == 9){
 								if (i % 3 > 0 || chunk.length < 2048) {
 									if (i < 1000){
@@ -1934,8 +1938,8 @@ io.sockets.on('connection', function (s) {
 						track.searched = true
 						return downloadTrackObject(track, queueId, settings)
 					}else{
-						logger.error(`[${track.artist.name} - ${track.title}] No alternative found`)
-						throw new Error("No Alternative Found")
+						logger.error(`[${track.artist.name} - ${track.title}] Track is empty and no alternative found`)
+						throw new Error("Track is empty and no alternative found")
 						return
 					}
 				}else{
@@ -1948,9 +1952,6 @@ io.sockets.on('connection', function (s) {
 				return
 			}
 		}
-
-		logger.info(`[${track.artist.name} - ${track.title}] Adding Tags`)
-
 		logger.info(`[${track.artist.name} - ${track.title}] Downloaded`)
 	}
 })
@@ -1974,6 +1975,7 @@ function updateSettingsFile(config, value) {
 	});
 }
 
+// Fixes the name removing characters that could cause problems on the system
 function fixName (txt) {
 	txt = txt+""
 	const regEx = /[\0\/\\:*?"<>|]/g;
@@ -2147,6 +2149,8 @@ function splitNumber(str,total){
 	return i > 0 ? str.slice(0, i) : str;
 }
 
+// Using gwlight api this changes the int into the correct string
+// Defaults to Album
 function switchReleaseType(id){
 	switch (id.toString()) {
 		case "0":
@@ -2160,6 +2164,7 @@ function switchReleaseType(id){
 	}
 }
 
+// removes all duplicate entries from an array
 function uniqueArray(origin, removeDupes=true){
 	destination = []
 	Array.from(new Set(origin)).forEach(function(x){
@@ -2191,6 +2196,7 @@ function saveChunk(tagSize, chunkLength, chunk, fileStream){
 	return tagSize;
 }
 
+// Tag creator function for FLACs
 function getMetadata(buf, track, settings){
 	const flac = new metaflac(buf);
 	flac.removeAllTags();
@@ -2311,6 +2317,7 @@ function getMetadata(buf, track, settings){
 	return Buffer.from(flac.save());
 }
 
+// Tag creator function for MP3s
 function getID3(track, settings){
 	const writer = new ID3Writer(Buffer.alloc(0));
 	if (settings.tags.title)
@@ -2370,6 +2377,7 @@ function getID3(track, settings){
 	return Buffer.from(writer.arrayBuffer);
 }
 
+// Like for each but async
 async function asyncForEach(array, callback) {
 	for (let index = 0; index < array.length; index++) {
 		await callback(array[index], index, array);
@@ -2379,7 +2387,6 @@ async function asyncForEach(array, callback) {
 // Show crash error in console for debugging
 process.on('unhandledRejection', function (err) {
 	if (err) logger.error(err.stack ? err.stack : err)
-
 })
 process.on('uncaughtException', function (err) {
 	if (err) logger.error(err.stack ? err.stack : err)
