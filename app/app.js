@@ -1827,7 +1827,7 @@ io.sockets.on('connection', function (s) {
 					}else{
 						fileStream.write(getID3(track, settings));
 					}
-					
+
 					let i = 0;
 					let chunkLength = 0;
 					let tagSize = 0;
@@ -1852,7 +1852,7 @@ io.sockets.on('connection', function (s) {
 										downloadQueue[queueId].percentage = percentage
 										io.sockets.emit("downloadProgress", {
 											queueId: queueId,
-											percentage: downloadQueue[queueId].percentage-5
+											percentage: downloadQueue[queueId].percentage
 										})
 									}
 								}catch(err){}
