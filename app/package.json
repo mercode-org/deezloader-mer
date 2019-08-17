@@ -20,6 +20,9 @@
 		"request-promise": "^4.2.4",
 		"sequential-task-queue": "^1.2.1",
 		"socket.io": "latest",
-		"spotify-web-api-node": "latest"
+		"spotify-web-api-node": "latest",
+		"i18n": "latest",
+		"ejs": "latest",
+		"cookie-parser": "latest"
 	}
 }

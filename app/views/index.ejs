@@ -37,16 +37,16 @@
 	<div class="modal-content container" id="login-page">
 		<div class="card">
 			<div class="card-content">
-				<span class="card-title">Please login to your deezer account.</span>
+				<span class="card-title"><%= __('Please login to your deezer account')%>.</span>
 				<h6 class="red-text" id="login-res-text"></h6>
 				<div id="login-form-client-mode">
 					<div class="input-field col s12">
 						<input autocomplete="off" type="text" id="modal_login_input_username"/>
-						<label for="modal_login_input_username">Email</label>
+						<label for="modal_login_input_username"><%= __('Email')%></label>
 					</div>
 					<div class="input-field col s12">
 						<input autocomplete="off" type="password" id="modal_login_input_password"/>
-						<label for="modal_login_input_password">Password</label>
+						<label for="modal_login_input_password"><%= __('Password')%></label>
 					</div>
 					<input id="modal_login_input_captchaResponse" type="hidden" value=""/>
 					<!--<iframe id="modal_login_iframe_captcha" src="cap://deezer.com/"></iframe>-->
@@ -54,14 +54,14 @@
 				<div id="login-form-server-mode">
 					<div class="input-field col s12">
 						<input autocomplete="off" type="password" id="modal_login_input_userToken"/>
-						<label for="modal_login_input_userToken">userToken</label>
+						<label for="modal_login_input_userToken"><%= __('userToken')%></label>
 					</div>
-					<p><a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken" target="_blank">How do I get my userToken?</a></p>
+					<p><a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken" target="_blank"><%= __('How do I get my userToken?')%></a></p>
 				</div>
 			</div>
 			<div class="card-action row">
-				<a href="#" class="deezloader-primary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_login">Log in</a>
-				<a href="#" class="deezloader-secondary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_signup">Sign up</a>
+				<a href="#" class="deezloader-primary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_login"><%= __('Log in')%></a>
+				<a href="#" class="deezloader-secondary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_signup"><%= __('Sign up')%></a>
 			</div>
 		</div>
 	</div>
@@ -70,77 +70,77 @@
 <!--#############################################MODAL_SETTINGS############################################-->
 <div id="modal_settings" class="modal modal-fixed-footer">
 	<div class="modal-content">
-		<h4 class="col s12">Settings</h4>
+		<h4 class="col s12"><%= __('Settings')%></h4>
 
-		<h6 class="col s12 secondary-text">Path Settings</h6><hr>
+		<h6 class="col s12 secondary-text"><%= __('Path Settings')%></h6><hr>
 		<div class="row">
 			<div class="input-field col s12">
 				<input autocomplete="off" type="text" id="modal_settings_input_downloadTracksLocation"/>
-				<label for="modal_settings_input_downloadTracksLocation">Download folder path</label>
+				<label for="modal_settings_input_downloadTracksLocation"><%= __('Download folder path')%></label>
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="input-field col s12">
 				<input autocomplete="off" type="text" id="modal_settings_input_trackNameTemplate"/>
-				<label for="modal_settings_input_trackNameTemplate">Tracknames template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-					data-tooltip="Supported variables are: %title%, %album%, %artist%, %year%, %date%, %label%, %number%, %disc%, %isrc%, %explicit% and %genre%">info_outline</i></label>
+				<label for="modal_settings_input_trackNameTemplate"><%= __('Tracknames template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="<%= __('Supported variables are')%>: %title%, %album%, %artist%, %year%, %date%, %label%, %number%, %disc%, %isrc%, %explicit%, %genre%">info_outline</i></label>
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="input-field col s12 m6">
 				<input autocomplete="off" type="text" id="modal_settings_input_albumTrackNameTemplate"/>
-				<label for="modal_settings_input_albumTrackNameTemplate">Album tracknames template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-					data-tooltip="Supported variables are: %title%, %album%, %artist%, %year%, %date%, %label%, %number%, %disc%, %isrc%, %explicit% and %genre%">info_outline</i></label>
+				<label for="modal_settings_input_albumTrackNameTemplate"><%= __('Album tracknames template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="<%= __('Supported variables are')%>: %title%, %album%, %artist%, %year%, %date%, %label%, %number%, %disc%, %isrc%, %explicit%, %genre%">info_outline</i></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<input autocomplete="off" type="text" id="modal_settings_input_albumNameTemplate"/>
-				<label for="modal_settings_input_albumNameTemplate">Album names template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-					data-tooltip="Supported variables are: %album%, %artist%, %year%, %date%, %bitrate%, %type%, %label%, %album_id%, %upc%, %explicit% and %genre%">info_outline</i></label>
+				<label for="modal_settings_input_albumNameTemplate"><%= __('Album names template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="<%= __('Supported variables are')%>: %album%, %artist%, %year%, %date%, %bitrate%, %type%, %label%, %album_id%, %upc%, %explicit%, %genre%">info_outline</i></label>
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="input-field col s12">
 				<input autocomplete="off" type="text" id="modal_settings_input_playlistTrackNameTemplate"/>
-				<label for="modal_settings_input_playlistTrackNameTemplate">Playlist tracknames template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-					data-tooltip="Supported variables are: %title%, %album%, %artist%, %year%, %date%, %label%, %number%, %position%, %disc%, %isrc%, %explicit% and %genre%">info_outline</i></label>
+				<label for="modal_settings_input_playlistTrackNameTemplate"><%= __('Playlist tracknames template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="<%= __('Supported variables are')%>: %title%, %album%, %artist%, %year%, %date%, %label%, %number%, %position%, %disc%, %isrc%, %explicit%, %genre%">info_outline</i></label>
 			</div>
 		</div>
 
-		<h6 class="col s12 secondary-text">More Path Settings</h6><hr>
+		<h6 class="col s12 secondary-text"><%= __('More Path Settings')%></h6><hr>
 		<div class="row">
 			<div class="col s12 switch settings_switch">
-				<span>Create folders for Artists</span>
+				<span><%= __('Create folders for Artists')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_createArtistFolder"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Create folders for Albums</span>
+				<span><%= __('Create folders for Albums')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_createAlbumFolder"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Create folders for CDs</span>
+				<span><%= __('Create folders for CDs')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_createCDFolder" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Create Artist, Albums and CDs folders for Playlists too</span>
+				<span><%= __('Create Artist, Albums and CDs folders for Playlists too')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_createFoldersPlaylist" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Write all Artists in track filename</span>
+				<span><%= __('Write all Artists in track filename')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_saveFullArtists" class="filled-in"/>
 					<span class="lever"></span>
@@ -148,7 +148,7 @@
 			</div>
 			<div class="col s12 switch settings_switch">
 				<span class="tooltipped" data-position="top" data-delay="500"
-					data-tooltip="Adds 0s before %number% to have the same character length">Add padding to track numbers</span>
+					data-tooltip="<%= __('Adds 0s before %number% to have the same character length')%>"><%= __('Add padding to track numbers')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_padtrck" class="filled-in"/>
 					<span class="lever"></span>
@@ -156,15 +156,15 @@
 			</div>
 			<div class="input-field col s12">
 				<input autocomplete="off" type="number" id="modal_settings_number_paddingSize" min="0"/>
-				<label for="modal_settings_number_paddingSize">Overwrite padding size</label>
+				<label for="modal_settings_number_paddingSize"><%= __('Overwrite padding size')%></label>
 			</div>
 		</div>
 
-		<h6 class="col s12 secondary-text">App Settings</h6><hr>
+		<h6 class="col s12 secondary-text"><%= __('App Settings')%></h6><hr>
 		<div class="row">
 			<div class="input-field col s12 m6">
 				<input autocomplete="off" type="number" id="modal_settings_number_queueConcurrency" min="1"/>
-				<label for="modal_settings_number_queueConcurrency">Concurrent download limit</label>
+				<label for="modal_settings_number_queueConcurrency"><%= __('Concurrent download limit')%></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<select name="maxBitrate" id="modal_settings_select_maxBitrate">
@@ -172,59 +172,58 @@
 					<option value="3">MP3 320kbps</option>
 					<option value="1">MP3 128kbps</option>
 				</select>
-				<label for="modal_settings_select_maxBitrate">Preferred bitrate</label>
+				<label for="modal_settings_select_maxBitrate"><%= __('Preferred bitrate')%></label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Fallback to lower bitrates if preferred is not available</span>
+				<span><%= __('Fallback to lower bitrates if preferred is not available')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_fallbackBitrate" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Fallback to search if song is not available</span>
+				<span><%= __('Fallback to search if song is not available')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_fallbackSearch" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Download albums with one track as a single track</span>
+				<span><%= __('Download albums with one track as a single track')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_downloadSinglesAsTracks" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Create log file for Errors inside download folder</span>
+				<span><%= __('Create log file for Errors inside download folder')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_logErrors" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Create log file for Alternatives inside download folder</span>
+				<span><%= __('Create log file for Alternatives inside download folder')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_logSearched" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div><div class="col s12 switch settings_switch">
-				<span>Create M3U8 (Playlist) File</span>
+				<span><%= __('Create M3U8 (Playlist) File')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_createM3UFile" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span class="tooltipped" data-position="top" data-delay="500"
-					data-tooltip="Downloads lyrics .lrc file">Download Synced Lyrics File (.lyr)</span>
+				<span><%= __('Download Synced Lyrics File (.lyr)')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_syncedlyrics" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Minimize to system tray</span>
+				<span><%= __('Minimize to system tray')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_minimizeToTray" class="filled-in"/>
 					<span class="lever"></span>
@@ -232,7 +231,7 @@
 			</div>
 		</div>
 
-		<h6 class="col s12 secondary-text">Artworks</h6><hr>
+		<h6 class="col s12 secondary-text"><%= __('Artworks')%></h6><hr>
 		<div class="row">
 			<div class="input-field col s12">
 				<select name="artworkSize" id="modal_settings_select_artworkSize">
@@ -244,10 +243,10 @@
 					<option value="500">500x500</option>
 					<option value="250">250x250</option>
 				</select>
-				<label for="modal_settings_select_artworkSize">Artwork Size</label>
+				<label for="modal_settings_select_artworkSize"><%= __('Artwork Size')%></label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Save Album Artwork</span>
+				<span><%= __('Save Album Artwork')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_saveArtwork" class="filled-in"/>
 					<span class="lever"></span>
@@ -255,11 +254,11 @@
 			</div>
 			<div class="input-field col s12">
 				<input autocomplete="off" type="text" id="modal_settings_input_coverImageTemplate"/>
-				<label for="modal_settings_input_albumTrackNameTemplate">Album Artwork Name Template <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-					data-tooltip="Supported variables are: %artist% and %name%">info_outline</i></label>
+				<label for="modal_settings_input_albumTrackNameTemplate"><%= __('Album Artwork Name Template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="<%= __('Supported variables are')%>: %artist% and %name%">info_outline</i></label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Save Artist Artwork</span>
+				<span><%= __('Save Artist Artwork')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_saveArtworkArtist" class="filled-in"/>
 					<span class="lever"></span>
@@ -267,11 +266,11 @@
 			</div>
 			<div class="input-field col s12">
 				<input autocomplete="off" type="text" id="modal_settings_input_artistImageTemplate"/>
-				<label for="modal_settings_input_albumNameTemplate">Artist Artwork Name Template<i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-					data-tooltip="Supported variables are: %artist%">info_outline</i></label>
+				<label for="modal_settings_input_albumNameTemplate"><%= __('Artist Artwork Name Template')%><i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="<%= __('Supported variables are')%>: %artist%">info_outline</i></label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Download images as PNGs</span>
+				<span><%= __('Download images as PNGs')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_PNGcovers" class="filled-in"/>
 					<span class="lever"></span>
@@ -279,46 +278,46 @@
 			</div>
 		</div>
 
-		<h6 class="col s12 secondary-text">Tags</h6><hr>
+		<h6 class="col s12 secondary-text"><%= __('Tags')%></h6><hr>
 		<div class="row">
 			<div class="input-field col s12">
 				<select name="multitagSeparator" id="modal_settings_select_multitagSeparator">
-					<option value="null">Null Character</option>
+					<option value="null"><%= __('Null Character')%></option>
 					<option value=",">,</option>
-					<option value=", ">, with space</option>
+					<option value=", ">, <%= __('with space')%></option>
 					<option value="/">/</option>
-					<option value=" / ">/ with space</option>
+					<option value=" / ">/ <%= __('with space')%></option>
 					<option value=";">;</option>
-					<option value="; ">; with space</option>
+					<option value="; ">; <%= __('with space')%></option>
 				</select>
-				<label for="modal_settings_select_multitagSeparator">Multitag Separator</label>
+				<label for="modal_settings_select_multitagSeparator"><%= __('Multitag Separator')%></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<select name="dateFormat" id="modal_settings_select_dateFormat">
-					<option value="0">YMD</option>
-					<option value="1">DMY</option>
-					<option value="2">MDY</option>
-					<option value="3">YDM</option>
+					<option value="0"><%= __('YY')%>/<%= __('MM')%>/<%= __('DD')%></option>
+					<option value="1"><%= __('DD')%>/<%= __('MM')%>/<%= __('YY')%></option>
+					<option value="2"><%= __('MM')%>/<%= __('DD')%>/<%= __('YY')%></option>
+					<option value="3"><%= __('YY')%>/<%= __('DD')%>/<%= __('MM')%></option>
 				</select>
-				<label for="modal_settings_select_dateFormat">Date Format</label>
+				<label for="modal_settings_select_dateFormat"><%= __('Date Format')%></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<select name="dateFormatYear" id="modal_settings_select_dateFormatYear">
-					<option value="2">2 digit</option>
-					<option value="4">4 digit</option>
+					<option value="2">2 <%= __('digit')%></option>
+					<option value="4">4 <%= __('digit')%></option>
 				</select>
-				<label for="modal_settings_select_dateFormatYear">Year Format</label>
+				<label for="modal_settings_select_dateFormatYear"><%= __('Year Format')%></label>
 			</div>
 			<div class="col s12 switch settings_switch">
 				<span class="tooltipped" data-position="top" data-delay="500"
-					data-tooltip="Replaces albums tags with the playlist ones">Save Playlist as Compilation</span>
+					data-tooltip="<%= __('Replaces albums tags with the playlist ones')%>"><%= __('Save Playlist as Compilation')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_savePlaylistAsCompilation" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
 			<div class="col s12 switch settings_switch">
-				<span>Remove "(Album Version)" from tracknames</span>
+				<span><%= __('Remove \"(Album Version)\" from tracknames')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_removeAlbumVersion" class="filled-in"/>
 					<span class="lever"></span>
@@ -328,45 +327,42 @@
 
 		<div class="row">
 			<div class="col s12">
-				<a href="#modal_tags" class="modal-trigger waves-effect waves-light btn btn-large" style="width:100%;">Choose Which Tags To Save</a>
+				<a href="#modal_tags" class="modal-trigger waves-effect waves-light btn btn-large" style="width:100%;"><%= __('Choose Which Tags To Save')%></a>
 			</div>
 		</div>
 
-		<h6 class="col s12 secondary-text">Spotify Features</h6><hr>
-		<p class="secondary-text">"Spotify Features" will <b>NOT</b> download music from Spotify.<br/>
-		This just enables a practical in app metadata converter. If a song is not on Deezer it can't be downloaded<br>
-		You can see how to get the Client and Secret IDs <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features">here</a>
-		</p>
+		<h6 class="col s12 secondary-text"><%= __('Spotify Features')%></h6><hr>
+		<p class="secondary-text"><%- __('SpotifyFeatures_Info')%></p>
 		<div class="row">
 			<div class="input-field col s12 m6">
 				<input autocomplete="off" type="text" id="modal_settings_input_spotifyClientID"/>
-				<label for="modal_settings_input_spotifyClientID">Client ID</label>
+				<label for="modal_settings_input_spotifyClientID"><%= __('Client ID')%></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<input autocomplete="off" type="password" id="modal_settings_input_spotifyClientSecret"/>
-				<label for="modal_settings_input_spotifyClientSecret">Client Secret</label>
+				<label for="modal_settings_input_spotifyClientSecret"><%= __('Client Secret')%></label>
 			</div>
 			<div class="input-field col s12 m6">
 				<input autocomplete="off" type="text" id="modal_settings_input_spotifyUser"/>
-				<label for="modal_settings_input_spotifyUser">Spotify Username (for the Playlists Tab)</label>
+				<label for="modal_settings_input_spotifyUser"><%= __('Spotify Username (for the Playlists Tab)')%></label>
 			</div>
 		</div>
 
 		<div class="row">
 			<div class="col s12">
 				<img id="modal_settings_picture" src="" alt="Profile Picture" class="circle left" style="height:125px; margin-right: 12px;"/>
-				<p>You are logged in as <b id="modal_settings_username"></b></p>
-				<a href="#" class="modal-close waves-effect waves-light btn" id="modal_settings_btn_logout">Logout</a>
+				<p><%= __('You are logged in as')%> <b id="modal_settings_username"></b></p>
+				<a href="#" class="modal-close waves-effect waves-light btn" id="modal_settings_btn_logout"><%= __('Logout')%></a>
 			</div>
 		</div>
 
 	</div>
 	<div class="modal-footer">
 		<a href="#" class="modal-close waves-effect waves-light deezloader-primary btn" id="modal_settings_btn_saveSettings"><i
-			class="material-icons right">save</i>Save</a>
+			class="material-icons right">save</i><%= __('Save')%></a>
 		<a href="#" class="waves-effect btn-flat" id="modal_settings_btn_defaultSettings"><i
-			class="material-icons right">settings_backup_restore</i>Default Settings</a>
-		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+			class="material-icons right">settings_backup_restore</i><%= __('Default Settings')%></a>
+		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
 	</div>
 </div>
 
@@ -374,85 +370,85 @@
 <div id="modal_tags" class="modal modal-fixed-footer">
 	<div class="modal-content">
 		<div class="row">
-			<h4 class="col s12">Saved Tags</h4>
+			<h4 class="col s12"><%= __('Saved Tags')%></h4>
 		</div>
 		<div class="row">
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_title" class="filled-in"/>
-					<span>Title</span>
+					<span><%= __('Title')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_artist" class="filled-in"/>
-					<span>Artist</span>
+					<span><%= __('Artist')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_album" class="filled-in"/>
-					<span>Album</span>
+					<span><%= __('Album')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_cover" class="filled-in"/>
-					<span>Cover</span>
+					<span><%= __('Cover')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_trackNumber" class="filled-in"/>
-					<span>Track Number</span>
+					<span><%= __('Track Number')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_trackTotal" class="filled-in"/>
-					<span>Track Total</span>
+					<span><%= __('Track Total')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_discNumber" class="filled-in"/>
-					<span>Disc Number</span>
+					<span><%= __('Disc Number')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_discTotal" class="filled-in"/>
-					<span>Disc Total</span>
+					<span><%= __('Disc Total')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_albumArtist" class="filled-in"/>
-					<span>Album Artist</span>
+					<span><%= __('Album Artist')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_genre" class="filled-in"/>
-					<span>Genre</span>
+					<span><%= __('Genre')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_year" class="filled-in"/>
-					<span>Year</span>
+					<span><%= __('Year')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_date" class="filled-in"/>
-					<span>Date</span>
+					<span><%= __('Date')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_explicit" class="filled-in"/>
-					<span>Explicit</span>
+					<span><%= __('Explicit')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
@@ -464,13 +460,13 @@
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_length" class="filled-in"/>
-					<span>Length</span>
+					<span><%= __('Length')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_barcode" class="filled-in"/>
-					<span>Barcode</span>
+					<span><%= __('Barcode')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
@@ -482,73 +478,73 @@
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_replayGain" class="filled-in"/>
-					<span>Replay Gain</span>
+					<span><%= __('Replay Gain')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_publisher" class="filled-in"/>
-					<span>Label</span>
+					<span><%= __('Label')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_unsynchronisedLyrics" class="filled-in"/>
-					<span>Unsynchronised Lyrics</span>
+					<span><%= __('Unsynchronised Lyrics')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_copyright" class="filled-in"/>
-					<span>Copyright</span>
+					<span><%= __('Copyright')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_musicpublisher" class="filled-in"/>
-					<span>Publisher</span>
+					<span><%= __('Publisher')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_composer" class="filled-in"/>
-					<span>Composer</span>
+					<span><%= __('Composer')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_mixer" class="filled-in"/>
-					<span>Mixer</span>
+					<span><%= __('Mixer')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_author" class="filled-in"/>
-					<span>Author</span>
+					<span><%= __('Author')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_writer" class="filled-in"/>
-					<span>Writer</span>
+					<span><%= __('Writer')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_engineer" class="filled-in"/>
-					<span>Engineer</span>
+					<span><%= __('Engineer')%></span>
 				</label>
 			</p>
 			<p class="col s12 m4">
 				<label>
 					<input type="checkbox" id="modal_tags_producer" class="filled-in"/>
-					<span>Producer</span>
+					<span><%= __('Producer')%></span>
 				</label>
 			</p>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
 	</div>
 </div>
 
@@ -556,29 +552,29 @@
 <div id="modal_about" class="modal modal-fixed-footer">
 	<div class="modal-content">
 		<div class="row">
-			<h4 class="col s12">About the App</h4>
+			<h4 class="col s12"><%= __('About the App')%></h4>
 		</div>
 		<div class="row">
 			<ul class="collapsible" data-collapsible="accordion">
 				<li>
-					<div class="collapsible-header waves-effect"><i class="material-icons">info</i>About</div>
+					<div class="collapsible-header waves-effect"><i class="material-icons">info</i><%= __('About')%></div>
 					<div class="collapsible-body">
 						<p>
-							<b>Branch: </b>Remix</br>
-							<b>Version:</b> <span id="application_version_about"></span><br/>
-							<b>Based on: </b>Deezloader Reborn</br>
-							<b>Maintainers:</b> RemixDevs Group<br/>
-							<b>Repo: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix" target="_blank">Official Repo</a><br/>
-							<b>FAQ: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/FAQ" target="_blank">Link</a><br/>
-							<b>Official mirrors: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Downloads" target="_blank">Link</a><br/>
-							<b>Interface:</b> <a href="http://materializecss.com/" target="_blank">Materialize CSS</a><br/>
+							<b><%= __('Branch')%>: </b>Remix</br>
+							<b><%= __('Version')%>:</b> <span id="application_version_about"></span><br/>
+							<b><%= __('Based on')%>: </b>Deezloader Reborn</br>
+							<b><%= __('Maintainers')%>:</b> RemixDevs Group<br/>
+							<b><%= __('Repo')%>: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix" target="_blank">Official Repo</a><br/>
+							<b><%= __('FAQ')%>: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/FAQ" target="_blank">Link</a><br/>
+							<b><%= __('Official mirrors')%>: </b> <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Downloads" target="_blank">Link</a><br/>
+							<b><%= __('Interface')%>:</b> <a href="http://materializecss.com/" target="_blank">Materialize CSS</a><br/>
 							<br/>
-							<b>Telegram Contacts</b><br/>
-							<b><a href="https://t.me/RemixDevs" target="_blank">News Channel</a></b><br/>
-							<b><a href="https://t.me/DeezloaderRemixBeta" target="_blank">Betas Channel</a></b><br/>
-							<b><a href="https://t.me/DeezloaderRemix" target="_blank">Stable Releases Channel</a></b><br/>
+							<b><%= __('Telegram Contacts')%></b><br/>
+							<b><a href="https://t.me/RemixDevs" target="_blank"><%= __('News Channel')%></a></b><br/>
+							<b><a href="https://t.me/DeezloaderRemixBeta" target="_blank"><%= __('Betas Channel')%></a></b><br/>
+							<b><a href="https://t.me/DeezloaderRemix" target="_blank"><%= __('Stable Releases Channel')%></a></b><br/>
 							<br>
-							<b>Special Thanks to:</b><br>
+							<b><%= __('Special Thanks to')%>:</b><br>
 							BasCurtiz for the app UI Design<br>
 							ZzMTV for the original Deezloader code<br>
 							ParadoxalManiak, snwflake and ExtendLord for maintaining the previous branches<br>
@@ -586,26 +582,26 @@
 					</div>
 				</li>
 				<li>
-					<div class="collapsible-header waves-effect"><i class="material-icons">feedback</i>Feedback</div>
+					<div class="collapsible-header waves-effect"><i class="material-icons">feedback</i><%= __('Feedback')%></div>
 					<div class="collapsible-body">
 						<p>
-							Do you have some feedback or want to ask for some new features? Open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new" target="_blank">new Issue</a> and add the 'Feature' label.
+							<%- __('Feedback_Text')%>
 						</p>
 					</div>
 				</li>
 				<li>
-					<div class="collapsible-header waves-effect"><i class="material-icons">bug_report</i>Reporting Bugs</div>
+					<div class="collapsible-header waves-effect"><i class="material-icons">bug_report</i><%= __('Reporting Bugs')%></div>
 					<div class="collapsible-body">
 						<p>
-							If you experience any bugs first of all check the <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/FAQ" target="_blank">FAQ page</a>.<br> If you can't find a solution for your problem, open a <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new" target="_blank">new issue</a> and send the bug report there, thank you.
+							<%- __('Bugs_Text')%>
 						</p>
 					</div>
 				</li>
 				<li>
-					<div class="collapsible-header waves-effect"><i class="material-icons">group</i>Contacts</div>
+					<div class="collapsible-header waves-effect"><i class="material-icons">group</i><%= __('Contacts')%></div>
 					<div class="collapsible-body">
 						<p>
-							If you want to discuss or help with the app you can do so in the <a href="https://t.me/DeezloaderRemixCommunity" target="_blank">Telegram group</a>!<br>
+							<%- __('Contacts_Text')%><br>
 							<ul>
 								<li><a href="https://t.me/DeezloaderItalia">Gruppo in Italiano</a></li>
 								<li><a href="https://t.me/joinchat/Ed1JxEn3_Bx1et6SCeLurg">Grupo en español</a></li>
@@ -615,17 +611,13 @@
 					</div>
 				</li>
 				<li>
-					<div class="collapsible-header waves-effect"><i class="material-icons">warning</i>Attention!</div>
+					<div class="collapsible-header waves-effect"><i class="material-icons">warning</i><%= __('Attention!')%></div>
 					<div class="collapsible-body">
-						<p>
-							The authors do not call to commit crimes!<br/>
-							The usage of this tool may be illegal in your country, please inform yourself!<br/>
-							The authors give no guarantees at all and aren't responsible for any damage or harm of any kind resulting from the use of this software!
-						</p>
+						<p><%- __('Attention_Text')%></p>
 					</div>
 				</li>
 				<li>
-					<div class="collapsible-header waves-effect"><i class="material-icons">history</i>Changelog</div>
+					<div class="collapsible-header waves-effect"><i class="material-icons">history</i><%= __('Changelog')%></div>
 					<div class="collapsible-body">
 						<p>
 							<b>Version 4.2.2</b><br/>
@@ -769,12 +761,12 @@
 							- Fixed playlist file not containing tracks<br/>
 							- More precision in Spotify Playlist conversion<br/>
 							<br/>
-							<a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Changelog" target="_blank">Full Changelog Here</a>
+							<a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Changelog" target="_blank"><%= __('Full Changelog Here')%></a>
 						</p>
 					</div>
 				</li>
 				<li>
-					<div class="collapsible-header waves-effect"><i class="material-icons">copyright</i>License</div>
+					<div class="collapsible-header waves-effect"><i class="material-icons">copyright</i><%= __('License')%></div>
 					<div class="collapsible-body">
 						<p>
 							<a rel="license" href="https://www.gnu.org/licenses/gpl-3.0.en.html" target="_blank">
@@ -786,31 +778,16 @@
 					</div>
 				</li>
 				<li>
-					<div class="collapsible-header waves-effect"><i class="material-icons">favorite</i>Contributions</div>
+					<div class="collapsible-header waves-effect"><i class="material-icons">favorite</i><%= __('Contributions')%></div>
 					<div class="collapsible-body">
-						<h5>You want to contribute to this project? You can do that <b>in different ways!</b></h5>
-						<p>If you know JavaScript, HTML, CSS or Node.js you could contribute writing code, fixing bugs and adding features using the <a href="https://notabug.org/RemixDevs/DeezloaderRemix" target="_blank">Official Repo</a>.</p>
-						<p>If you are good at graphics and design you could help by submitting a new design, you can open a new issue with some design <a href="https://notabug.org/RemixDevs/DeezloaderRemix/issues/new" target="_blank">here</a>.<br>
-							<p>Keep in mind that we are (sorta) following the <a href="https://material.io/" target="_blank">Material Design Principles</a>.</p>
-							If you are good at finding bugs you can help Beta Test the app before release.<br>
-							Join our <a href="https://t.me/DeezloaderRemixCommunity" target="_blank">Telegram Group</a> to be notified when betas come out!</p>
-						<hr>
-						<h5>You want to contribute monetarily? You could make a donation!</h5>
-						<p>If you can donate you can do that with this links.<br>
-							You shoud remember that <b>this is a free project</b> and <b>you should support the artists you love</b> before supporting the developer.<br>
-							Don't feel obligated to donate, I appreciate you anyway!</p>
-						<p>
-							PayPal: <a href="https://paypal.me/RemixDev" target="_blank">PayPal.me/RemixDev</a><br>
-							Bitcoin: 1sdNymSJrMBWyHM4u2m9uco5nv6uV4Qs1<br>
-							Ethereum: 0x1d2aa67e671485CD4062289772B662e0A6Ff976c
-						</p>
+						<%- __('Contributions_Text')%>
 					</div>
 				</li>
 			</ul>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
 	</div>
 </div>
 
@@ -855,7 +832,7 @@
 	</div>
 	<div class="modal-footer">
 		<a href="#" id="download_all_tracks" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
-		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
 	</div>
 </div>
 
@@ -902,7 +879,7 @@
 	<div class="modal-footer">
 		<a href="#" id="download_all_tracks_selective" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
 		<a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><span class="hide-on-small-only">Download selection<i class="material-icons right">file_download</i></span><i class="material-icons hide-on-med-and-up">file_download</i></a>
-		<a href="#" class="modal-close waves-effect btn-flat">Close</a>
+		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
 	</div>
 </div>
 
@@ -917,19 +894,19 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect waves-light btn">I got it!</a>
+		<a href="#" class="modal-close waves-effect waves-light btn"><%= __('I got it!')%></a>
 	</div>
 </div>
 
 <!--##########################################MODAL_ANALYZER_COUNTRY###########################################-->
 <div id="modal_link_analyzer_country" class="modal modal-fixed-footer">
 	<div class="modal-content">
-		<h4 class="col s12">Available Countries for {{ title }}</h4>
+		<h4 class="col s12"><%= __('Available Countries for')%> {{ title }}</h4>
 		<table class="striped col s12">
 			<thead>
 				<tr>
 					<th style="width:24px;"></th>
-					<th>Country</th>
+					<th><%= __('Country')%></th>
 				</tr>
 			</thead>
 			<tbody>
@@ -940,7 +917,7 @@
 		</table>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect waves-light btn">Close</a>
+		<a href="#" class="modal-close waves-effect waves-light btn"><%= __('Close')%></a>
 	</div>
 </div>
 
@@ -963,12 +940,12 @@
 		<ul id="nav-mobile" class="right hide-on-small-only">
 			<li>
 				<a href="#modal_settings" id="nav_btn_openSettingsModal" class="waves-effect waves-light modal-trigger">
-					<i class="material-icons left">settings</i> <span class="hide-on-med-and-down">Settings</span>
+					<i class="material-icons left">settings</i> <span class="hide-on-med-and-down"><%= __('Settings')%></span>
 				</a>
 			</li>
 			<li>
 				<a href="#modal_about" class="waves-effect waves-light modal-trigger">
-					<i class="material-icons left">info</i> <span class="hide-on-med-and-down">About</span>
+					<i class="material-icons left">info</i> <span class="hide-on-med-and-down"><%= __('About')%></span>
 				</a>
 			</li>
 		</ul>
@@ -984,27 +961,27 @@
 		<a href="#name"><span class="white-text name" id="side_user"></span></a>
 		<a href="#email"><span class="white-text email" id="side_email"></span></a>
 	</div></li>
-	<li><a href="#!" tab-id="tab_search" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">search</i>Search</a></li>
-	<li><a href="#!" tab-id="tab_charts" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">bubble_chart</i>Charts</a></li>
-	<li><a href="#!" tab-id="tab_playlists" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">playlist_play</i>Playlists</a></li>
-	<li><a href="#!" tab-id="tab_link" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i>Link Analyzer</a></li>
-	<li><a href="#!" tab-id="tab_url" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i>Download from URL</a></li>
-	<li><a href="#!" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i>Downloads</a></li>
+	<li><a href="#!" tab-id="tab_search" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">search</i><%= __('Search')%></a></li>
+	<li><a href="#!" tab-id="tab_charts" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">bubble_chart</i><%= __('Charts')%></a></li>
+	<li><a href="#!" tab-id="tab_playlists" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">playlist_play</i><%= __('Playlists')%></a></li>
+	<li><a href="#!" tab-id="tab_link" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i><%= __('Link Analyzer')%></a></li>
+	<li><a href="#!" tab-id="tab_url" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i><%= __('Download from URL')%></a></li>
+	<li><a href="#!" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i><%= __('Downloads')%></a></li>
 	<li><div class="divider"></div></li>
-	<li><a href="#modal_settings" id="sidenav_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i>Settings</a></li>
-	<li><a href="#modal_about" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">info</i>About</a></li>
-	<li><a href="#!" id="nightModeSwitch2"><i class="material-icons">brightness_2</i>Enable Night Mode</a>
+	<li><a href="#modal_settings" id="sidenav_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i><%= __('Settings')%></a></li>
+	<li><a href="#modal_about" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">info</i><%= __('About')%></a></li>
+	<li><a href="#!" id="nightModeSwitch2"><i class="material-icons">brightness_2</i><%= __('Enable Night Mode')%></a>
 	</li>
 </ul>
 
 <main class="container">
 	<ul id="tab-nav" class="row tabs tabs-fixed-width hide-on-small-only">
-		<li class="tab"><a class="active" href="#tab_search">Search</a></li>
-		<li class="tab"><a href="#tab_charts">Charts</a></li>
-		<li class="tab"><a href="#tab_playlists">Playlists</a></li>
-		<li class="tab"><a href="#tab_link">Link Analyzer</a></li>
-		<li class="tab"><a href="#tab_url">Download from URL</a></li>
-		<li class="tab"><a href="#tab_downloads">Downloads</a></li>
+		<li class="tab"><a class="active" href="#tab_search"><%= __('Search')%></a></li>
+		<li class="tab"><a href="#tab_charts"><%= __('Charts')%></a></li>
+		<li class="tab"><a href="#tab_playlists"><%= __('Playlists')%></a></li>
+		<li class="tab"><a href="#tab_link"><%= __('Link Analyzer')%></a></li>
+		<li class="tab"><a href="#tab_url"><%= __('Download from URL')%></a></li>
+		<li class="tab"><a href="#tab_downloads"><%= __('Downloads')%></a></li>
 	</ul>
 
 	<div id="main-content" class="row">
@@ -1012,32 +989,32 @@
 		<div id="tab_search">
 			<form id="tab_search_form_search">
 				<div class="inline-input-group col s12">
-					<input autocomplete="off" id="tab_search_form_search_input_searchString" type="search" class="input" placeholder="Start searching ...">
+					<input autocomplete="off" id="tab_search_form_search_input_searchString" type="search" class="input" placeholder="<%= __('Start searching...')%>">
 					<button class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">search</i></button>
 				</div>
 				<div class="row center">
 					<p class="col s3">
 						<label>
 						<input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_song" value="track" checked/>
-						<span><i class="material-icons show-on-small-only left deezloader-primary-text">music_note</i><span class="hide-on-med-and-down">Song</span></span>
+						<span><i class="material-icons show-on-small-only left deezloader-primary-text">music_note</i><span class="hide-on-med-and-down"><%= __('Song')%></span></span>
 						</label>
 					</p>
 					<p class="col s3">
 						<label>
 						<input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_album" value="album"/>
-						<span><i class="material-icons show-on-small-only left deezloader-primary-text">album</i><span class="hide-on-med-and-down">Album</span></span>
+						<span><i class="material-icons show-on-small-only left deezloader-primary-text">album</i><span class="hide-on-med-and-down"><%= __('Album')%></span></span>
 						</label>
 					</p>
 					<p class="col s3">
 						<label>
 						<input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_artist" value="artist"/>
-						<span><i class="material-icons show-on-small-only left deezloader-primary-text">person</i><span class="hide-on-med-and-down">Artist</span></span>
+						<span><i class="material-icons show-on-small-only left deezloader-primary-text">person</i><span class="hide-on-med-and-down"><%= __('Artist')%></span></span>
 						</label>
 					</p>
 					<p class="col s3">
 						<label>
 							<input name="searchMode" type="radio" class="with-gap" id="tab_search_radio_searchMode_playlist" value="playlist"/>
-							<span><i class="material-icons show-on-small-only left deezloader-primary-text">playlist_play</i><span class="hide-on-med-and-down">Playlist</span></span>
+							<span><i class="material-icons show-on-small-only left deezloader-primary-text">playlist_play</i><span class="hide-on-med-and-down"><%= __('Playlist')%></span></span>
 						</label>
 					</p>
 				</div>
@@ -1047,32 +1024,32 @@
 					<thead class="hide-on-small-only">
 						<tr class="hide" id="tab_search_table_results_thead_track">
 							<th style="width: 56px;"><!--cover--></th>
-							<th>Song</th>
-							<th>Artist</th>
-							<th>Album</th>
+							<th><%= __('Song')%></th>
+							<th><%= __('Artist')%></th>
+							<th><%= __('Album')%></th>
 							<th><i class="material-icons">timer</i></th>
 							<th style="width: 56px;"><!--download_link--></th>
 						</tr>
 						<tr class="hide" id="tab_search_table_results_thead_album">
 							<th style="width: 56px;"><!--cover--></th>
-							<th>Album</th>
-							<th>Artist</th>
-							<th>Songs</th>
-							<th>Type</th>
+							<th><%= __('Album')%></th>
+							<th><%= __('Artist')%></th>
+							<th><%= __('Songs')%></th>
+							<th><%= __('Type')%></th>
 							<th><!--space--></th>
 							<th style="width: 56px;"><!--download_link--></th>
 						</tr>
 						<tr class="hide" id="tab_search_table_results_thead_artist">
 							<th style="width: 56px;"><!--cover--></th>
-							<th>Artist</th>
-							<th>Albums</th>
+							<th><%= __('Artist')%></th>
+							<th><%= __('Albums')%></th>
 							<th><!--space--></th>
 							<th style="width: 56px;"><!--download_link--></th>
 						</tr>
 						<tr class="hide" id="tab_search_table_results_thead_playlist">
 							<th style="width: 56px;"><!--cover--></th>
-							<th>Name</th>
-							<th>Songs</th>
+							<th><%= __('Name')%></th>
+							<th><%= __('Songs')%></th>
 							<th style="width: 56px;"><!--space--></th>
 							<th style="width: 56px;"><!--download_link--></th>
 						</tr>
@@ -1092,7 +1069,7 @@
 					<tbody id="tab_search_table_results_tbody_results"></tbody>
 					<tbody id="tab_search_table_results_tbody_noResults" class="hide">
 						<tr>
-							<td class="center">Nothing found!</td>
+							<td class="center"><%= __('Nothing found!')%></td>
 						</tr>
 					</tbody>
 				</table>
@@ -1106,17 +1083,17 @@
 					<option value="example" data-icon="images/sample.jpg" class="left circle">Example</option>
 					-->
 				</select>
-				<label>Country</label>
+				<label><%= __('Country')%></label>
 			</div>
-			<button id="downloadChartPlaylist" class="col s12 btn btn-input btn-flat deezloader-primary white-text" style="margin-bottom:8px;">Download Playlist</button>
+			<button id="downloadChartPlaylist" class="col s12 btn btn-input btn-flat deezloader-primary white-text" style="margin-bottom:8px;"><%= __('Download Playlist')%></button>
 			<table id="tab_charts_table_charts" class="striped">
 				<thead class="hide-on-small-only">
 					<tr>
 						<th>#</th>
 						<th style="width: 56px;"><!--cover--></th>
-						<th>Song</th>
-						<th>Artist</th>
-						<th>Album</th>
+						<th><%= __('Song')%></th>
+						<th><%= __('Artist')%></th>
+						<th><%= __('Album')%></th>
 						<th><i class="material-icons">timer</i></th>
 						<th style="width: 56px;"><!--download_link--></th>
 					</tr>
@@ -1139,15 +1116,15 @@
 
 		<div id="tab_playlists" class="row">
 			<div class="col s12">
-				<button class="btn-flat btn-large waves-effect deezloader-primary white-text" id="button_refresh_playlist_tab" style="width:100%;">Refresh Playlists</button>
+				<button class="btn-flat btn-large waves-effect deezloader-primary white-text" id="button_refresh_playlist_tab" style="width:100%;"><%= __('Refresh Playlists')%></button>
 			</div>
 			<div class="col s12">
 				<table class="striped">
 					<thead>
 						<tr>
 							<th style="width: 56px;"><!--cover--></th>
-							<th>Name</th>
-							<th>Songs</th>
+							<th><%= __('Name')%></th>
+							<th><%= __('Songs')%></th>
 							<th style="width: 56px;"><!--inspect_playlist--></th>
 							<th style="width: 56px;"><!--download_link--></th>
 						</tr>
@@ -1160,7 +1137,7 @@
 
 		<div id="tab_link">
 			<div class="inline-input-group">
-				<input autocomplete="off" type="search" id="link_analyzer_url" class="input" placeholder="Song/Album URL">
+				<input autocomplete="off" type="search" id="link_analyzer_url" class="input" placeholder="<%= __('Song/Album URL')%>">
 				<button id="link_analyzer_go" class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">search</i></button>
 			</div>
 
@@ -1174,64 +1151,63 @@
 			</div>
 
 			<div id="link_analyzer_start">
-				<p class="secondary-text center">You can use this section to find out more information about the link you are trying to download<br/>
-				This is usefull if you're trying to download some tracks that are not available in your country and want to know where they are available</p>
+				<p class="secondary-text center"><%- __('LinkAnalyzer_Info')%></p>
 			</div>
 
 			<div v-if="d.title" id="link_analyzer_song" class="link_analyzer_info">
 				<div id="link_analyzer_song_sideinfo" class="hide-on-small-only link_analyzer_sideinfo">
 					<img v-bind:src=" d.album.cover_medium "/>
-					<a href="#modal_link_analyzer_country" class="modal-trigger waves-effect waves-light btn" style="width:100%;">See Available Countries</a>
+					<a href="#modal_link_analyzer_country" class="modal-trigger waves-effect waves-light btn" style="width:100%;"><%= __('See Available Countries')%></a>
 				</div>
 				<div id="link_analyzer_song_maininfo" class="link_analyzer_maininfo">
 					<h5 style="margin-bottom:8px; margin-top:0px;">{{ d.title }} {{ d.version }}<i v-if="d.explicit_lyrics" class="material-icons valignicon materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i></h5>
 					<p style="margin-top:0px;">by <b>{{ d.artist.name }}</b></br>
 					in <b>{{ d.album.title }}</b></p>
 					<hr class="hide-on-small-only">
-					<a v-if="d.alternative" v-bind:href="'d.alternative.link'"><b>Alternative Link</b></a>
+					<a v-if="d.alternative" v-bind:href="'d.alternative.link'"><b><%= __('Alternative Link')%></b></a>
 					<table class="striped">
 						<tbody>
 							<tr v-if="d.isrc"><td><b>ISRC</b></td><td>{{ d.isrc }}</td></tr>
-							<tr v-if="d.duration"><td><b>Duration</b></td><td>{{ d.duration_string }}</td></tr>
-							<tr v-if="d.disk_number"><td><b>Disc Number</b></td><td>{{ d.disk_number }}</td></tr>
-							<tr v-if="d.track_position"><td><b>Track Number</b></td><td>{{ d.track_position }}</td></tr>
-							<tr v-if="d.release_date"><td><b>Release Date</b></td><td>{{ d.release_date }}</td></tr>
+							<tr v-if="d.duration"><td><b><%= __('Duration')%></b></td><td>{{ d.duration_string }}</td></tr>
+							<tr v-if="d.disk_number"><td><b><%= __('Disc Number')%></b></td><td>{{ d.disk_number }}</td></tr>
+							<tr v-if="d.track_position"><td><b><%= __('Track Number')%></b></td><td>{{ d.track_position }}</td></tr>
+							<tr v-if="d.release_date"><td><b><%= __('Release Date')%></b></td><td>{{ d.release_date }}</td></tr>
 							<tr v-if="d.bpm"><td><b>BPM</b></td><td>{{ d.bpm }}</td></tr>
 						</tbody>
 					</table>
-					<a href="#modal_link_analyzer_country" class="modal-trigger waves-effect waves-light btn hide-on-med-and-up" style="width:100%;">See Available Countries</a>
+					<a href="#modal_link_analyzer_country" class="modal-trigger waves-effect waves-light btn hide-on-med-and-up" style="width:100%;"><%= __('See Available Countries')%></a>
 				</div>
 			</div>
 
 			<div v-if="d.title" id="link_analyzer_album" class="link_analyzer_info">
 				<div id="link_analyzer_album_sideinfo" class="hide-on-small-only link_analyzer_sideinfo">
 					<img v-bind:src=" d.cover_medium "/>
-					<a v-on:click="showTrackListSelective(d.link)" class="waves-effect waves-light btn" style="width:100%;">Show Tracklist</a>
+					<a v-on:click="showTrackListSelective(d.link)" class="waves-effect waves-light btn" style="width:100%;"><%= __('Show Tracklist')%></a>
 				</div>
 				<div id="link_analyzer_album_maininfo" class="link_analyzer_maininfo">
 					<h5 style="margin-bottom:8px; margin-top:0px;">{{ d.title }} <i v-if="d.explicit_lyrics" class="material-icons valignicon materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i></h5>
 					<p style="margin-top:0px;">by <b>{{ d.artist.name }}</b></br>
 					<b>{{ d.nb_tracks }}</b> {{ d.nb_tracks==1 ? 'track' : 'tracks' }}</p>
 					<hr class="hide-on-small-only">
-					<a v-if="d.alternative" v-bind:href="'d.alternative.link'"><b>Alternative Link</b></a>
+					<a v-if="d.alternative" v-bind:href="'d.alternative.link'"><b><%= __('Alternative Link')%></b></a>
 					<table class="striped">
 						<tbody>
 							<tr v-if="d.upc"><td><b>UPC</b></td><td>{{ d.upc }}</td></tr>
-							<tr v-if="d.duration"><td><b>Duration</b></td><td>{{ d.duration_string }}</td></tr>
-							<tr v-if="d.release_date"><td><b>Release Date</b></td><td>{{ d.release_date }}</td></tr>
-							<tr v-if="d.label"><td><b>Label</b></td><td>{{ d.label }}</td></tr>
-							<tr v-if="d.record_type"><td><b>Record Type</b></td><td>{{ d.record_type.substring(0,1).toUpperCase()+ d.record_type.substring(1) }}</td></tr>
-							<tr v-if="d.genres_string"><td><b>Genres</b></td><td>{{ d.genres_string }}</td></tr>
+							<tr v-if="d.duration"><td><b><%= __('Duration')%></b></td><td>{{ d.duration_string }}</td></tr>
+							<tr v-if="d.release_date"><td><b><%= __('Release Date')%></b></td><td>{{ d.release_date }}</td></tr>
+							<tr v-if="d.label"><td><b><%= __('Label')%></b></td><td>{{ d.label }}</td></tr>
+							<tr v-if="d.record_type"><td><b><%= __('Record Type')%></b></td><td>{{ d.record_type.substring(0,1).toUpperCase()+ d.record_type.substring(1) }}</td></tr>
+							<tr v-if="d.genres_string"><td><b><%= __('Genres')%></b></td><td>{{ d.genres_string }}</td></tr>
 						</tbody>
 					</table>
-					<a v-on:click="showTrackListSelective(d.link)" class="waves-effect waves-light btn hide-on-med-and-up" style="width:100%;">Show Tracklist</a>
+					<a v-on:click="showTrackListSelective(d.link)" class="waves-effect waves-light btn hide-on-med-and-up" style="width:100%;"><%= __('Show Tracklist')%></a>
 				</div>
 			</div>
 		</div>
 
 		<div id="tab_url">
 			<div class="inline-input-group">
-				<input autocomplete="off" type="search" id="song_url" class="input" placeholder="Song/Playlist/Album/Artist URL, separated by ';'">
+				<input autocomplete="off" type="search" id="song_url" class="input" placeholder="<%= __('DownloadURL_Info')%>">
 				<button id="download_from_url_button" class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">get_app</i></button>
 			</div>
 		</div>
@@ -1240,27 +1216,27 @@
 			<div class="row">
 				<div class="col s12 m4">
 					<button id="openDownloadsFolder" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
-						Open Downloads Folder
+						<%= __('Open Downloads Folder')%>
 					</button>
 				</div>
 				<div class="col s12 m4">
 					<button id="cancelAllTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
-						Cancel All Downloads
+						<%= __('Cancel All Downloads')%>
 					</button>
 				</div>
 				<div class="col s12 m4">
 					<button id="clearTracksTable" style="width: 100%; margin-bottom:8px;" class="btn btn-flat btn-input btn-block deezloader-primary white-text">
-						Clear List
+						<%= __('Clear List')%>
 					</button>
 				</div>
 			</div>
 			<table id="tab_downloads_table_downloads" class="row">
 				<thead>
 					<tr>
-						<th>Name</th>
-						<th>Size</th>
-						<th>Downloaded</th>
-						<th>Failed</th>
+						<th><%= __('Name')%></th>
+						<th><%= __('Size')%></th>
+						<th><%= __('Downloaded')%></th>
+						<th><%= __('Failed')%></th>
 						<th style="width: 25%;"><!--progress--></th>
 						<th style="width: 56px;"><!--event buttons--></th>
 					</tr>
@@ -1291,7 +1267,7 @@
 </div>
 
 <footer id="page_footer" class="darken-1 left page-footer hide-on-med-and-down valign-wrapper">
-			<p><span style="position: relative;display: inline-block;transform: rotateY(180deg);">&copy;</span> Deezloader original code by ZzMTV.</p>
+			<p><span style="position: relative;display: inline-block;transform: rotateY(180deg);">&copy;</span> Deezloader <%= __('original code by ZzMTV')%>.</p>
 </footer>
 
 <script>if (typeof module === 'object') {

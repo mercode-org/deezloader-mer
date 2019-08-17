@@ -13,6 +13,8 @@ const express = require('express')
 const app = express()
 const server = require('http').createServer(app)
 const io = require('socket.io').listen(server, {log: false, wsEngine: 'ws'})
+var cookieParser = require('cookie-parser')
+var i18n = require('./i18n');
 // Music tagging stuff
 const metaflac = require('metaflac-js');
 const ID3Writer = require('./lib/browser-id3-writer')
@@ -93,8 +95,16 @@ initFolders();
 
 // Route and create server
 app.use('/', express.static(__dirname + '/public/'))
+app.set('views', __dirname + '/views');
+app.use(cookieParser());
+app.use(i18n);
 server.listen(configFile.serverPort)
 logger.info('Server is running @ localhost:' + configFile.serverPort)
+
+app.get('/', function(req, res) {
+	console.log(res.__('Settings'));
+  res.render('index.ejs');
+});
 
 var dqueue = new stq.SequentialTaskQueue()
 var downloadQueue = {}
