@@ -44,7 +44,7 @@
 	"Password": "Password",
 	"userToken": "userToken",
 	"How do I get my userToken?": "Come ottengo il mio userToken?",
-	"Log in": "Entra",
+	"Log in": "Login",
 	"Sign up": "Registrati",
 	"Path Settings": "Impostazioni percorsi",
 	"Download folder path": "Percorso cartella di Download",
@@ -98,7 +98,7 @@
 	"Client ID": "Client ID",
 	"Client Secret": "Client Secret",
 	"Spotify Username (for the Playlists Tab)": "Username Spotify (per la sezione Playlist)",
-	"You are logged in as": "Sei loggato come",
+	"You are logged in as": "Hai effettuato l'accesso come",
 	"Logout": "Esci",
 	"Save": "Salva",
 	"Default Settings": "Impostazioni di Default",
@@ -151,10 +151,11 @@
 	"Full Changelog Here": "Changelog Completo Qui",
 	"License": "Licenza",
 	"Contributions": "Contribuisci",
-	"Contributions_Text": "<h5>You want to contribute to this project? You can do that <b>in different ways!</b></h5><p>If you know JavaScript, HTML, CSS or Node.js you could contribute writing code, fixing bugs and adding features using the <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix\" target=\"_blank\">Official Repo</a>.</p><p>If you are good at graphics and design you could help by submitting a new design, you can open a new issue with some design <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/issues/new\" target=\"_blank\">here</a>.<br><p>Keep in mind that we are (sorta) following the <a href=\"https://material.io/\" target=\"_blank\">Material Design Principles</a>.</p>If you are good at finding bugs you can help Beta Test the app before release.<br>Join our <a href=\"https://t.me/DeezloaderRemixCommunity\" target=\"_blank\">Telegram Group</a> to be notified when betas come out!</p><hr><h5>You want to contribute monetarily? You could make a donation!</h5><p>If you can donate you can do that with this links.<br>You shoud remember that <b>this is a free project</b> and <b>you should support the artists you love</b> before supporting the developer.<br>Don't feel obligated to donate, I appreciate you anyway!</p><p>PayPal: <a href=\"https://paypal.me/RemixDev\" target=\"_blank\">PayPal.me/RemixDev</a><br>Bitcoin: 1sdNymSJrMBWyHM4u2m9uco5nv6uV4Qs1<br>Ethereum: 0x1d2aa67e671485CD4062289772B662e0A6Ff976c</p>",
+	"Contributions_Text": "<h5>Vuoi contribuire al progetto? Puoi farlo <b>in modi diversi!</b></h5><p>Se conosci JavaScript, HTML, CSS o Node.js puoi contribuire scrivendo codice, risolvendo bug o aggiungendo feature tramite <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix\" target=\"_blank\">il Repo Ufficiale</a>.</p><p>Se sei bravo a creare UI potresti aiutare inviando nuovi design, puoi aprire un nuovo issue con le tue idee <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/issues/new\" target=\"_blank\">qui</a>.<br><p>Ricorda che stiamo (circa) seguendo il <a href=\"https://material.io/\" target=\"_blank\">Material Design</a>.</p>Se sei bravo a trovare bug puoi aiutare facendo da beta tester.<br>Puoi trovare tutte le informazioni nel <a href=\"https://t.me/DeezloaderRemixCommunity\" target=\"_blank\">Gruppo Telegram</a></p><hr><h5>Vuoi dare un contributo monetario? Fai una donazione!</h5><p>Se hai la possibilità di donare puoi farlo tramite questi link.<br>Ricorda che <b>questo progetto è gratuito</b> e <b>dovresti supportare gli artisti che ami</b> prima di supportare lo sviluppatore.<br>Non sentirti in obbligo di donare, ti apprezzo lo stesso!</p>",
 	"I got it!": "Ho Capito!",
 	"Available Countries for": "Paesi Disponibili per",
 	"Song/Album URL": "URL Brano/Album",
-	"LinkAnalyzer_Info": "You can use this section to find out more information about the link you are trying to download<br/>This is usefull if you're trying to download some tracks that are not available in your country and want to know where they are available",
-	"DownloadURL_Info": "Song/Playlist/Album/Artist URL, separated by ';'"
+	"LinkAnalyzer_Info": "Puoi usare questa sezione per scoprire maggiori informazioni su i link che stai cercando di scaricare<br/>Questo è utile se stai cercando di scaricare un brano non avviabile nel tuo paese e vuoi scoprire dove è avviabile",
+	"DownloadURL_Info": "URL dei Brani/Playlist/Album/Artisti, separati da un ';'",
+	"Download selection": "Scarica selezionati"
 }
