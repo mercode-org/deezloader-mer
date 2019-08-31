@@ -158,5 +158,6 @@
 	"LinkAnalyzer_Info": "Puoi usare questa sezione per scoprire maggiori informazioni su i link che stai cercando di scaricare<br/>Questo è utile se stai cercando di scaricare un brano non avviabile nel tuo paese e vuoi scoprire dove è avviabile",
 	"DownloadURL_Info": "URL dei Brani/Playlist/Album/Artisti, separati da un ';'",
 	"Download selection": "Scarica selezionati",
-	"Save ID3v1 tags as well": "Salva i tag anche in ID3v1"
+	"Save ID3v1 tags as well": "Salva i tag anche in ID3v1",
+	"Language": "Lingua"
 }
