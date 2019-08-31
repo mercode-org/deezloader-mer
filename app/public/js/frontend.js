@@ -369,6 +369,7 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		dateFormatYear: $('#modal_settings_select_dateFormatYear').val(),
 		savePlaylistAsCompilation: $('#modal_settings_cbox_savePlaylistAsCompilation').is(':checked'),
 		removeAlbumVersion : $('#modal_settings_cbox_removeAlbumVersion').is(':checked'),
+		saveID3v1 : $('#modal_settings_cbox_saveID3v1').is(':checked'),
 		tags: {
 			title: $('#modal_tags_title').is(':checked'),
 			artist: $('#modal_tags_artist').is(':checked'),
@@ -482,6 +483,7 @@ function fillSettingsModal(settings, spotifySettings = {clientId: "", clientSecr
 	$('#modal_settings_select_dateFormatYear').val(settings.dateFormatYear).formSelect()
 	$('#modal_settings_cbox_savePlaylistAsCompilation').prop('checked', settings.savePlaylistAsCompilation)
 	$('#modal_settings_cbox_removeAlbumVersion').prop('checked', settings.removeAlbumVersion)
+	$('#modal_settings_cbox_saveID3v1').prop('checked', settings.saveID3v1)
 
 	$('#modal_settings_input_spotifyUser').val(localStorage.getItem('spotifyUser'))
 	$('#modal_settings_input_spotifyClientID').val(spotifySettings.clientId)

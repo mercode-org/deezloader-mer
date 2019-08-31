@@ -34,6 +34,7 @@
 		"dateFormatYear": "4",
 		"savePlaylistAsCompilation": false,
 		"removeAlbumVersion": false,
+		"saveID3v1": true,
 		"tags": {
 			"title": true,
 			"artist": true,
