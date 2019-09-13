@@ -114,7 +114,7 @@ trackQueue.concurrency = configFile.userDefined.queueConcurrency
 io.sockets.on('connection', function (s) {
 	const req = s.request
 	i18n.init(req)
-	s.emit("getLang")
+
 	s.on("getLang", (lang)=>{
 		req.setLocale(lang)
 		logger.info("Connection language set to: "+lang)
