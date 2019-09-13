@@ -42,6 +42,11 @@ socket.on("getLang", ()=>{
 		currentLang = "en"
 	}
 	socket.emit("getLang", currentLang)
+	$.getJSON(`/locales/${currentLang}.json`, function(json) {
+		i18n.translator.add({
+			values: json
+		})
+	})
 })
 
 // Popup message listener
@@ -1595,8 +1600,3 @@ function sleep(milliseconds) {
 		}
   }
 }
-$.getJSON(`/locales/${currentLang}.json`, function(json) {
-	i18n.translator.add({
-		values: json
-	})
-})
