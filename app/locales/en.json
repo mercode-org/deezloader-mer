@@ -159,5 +159,13 @@
 	"DownloadURL_Info": "Song/Playlist/Album/Artist URL, separated by ';'",
 	"Download selection": "Download selection",
 	"Save ID3v1 tags as well": "Save ID3v1 tags as well",
-	"Language": "Language"
+	"Language": "Language",
+	"You setted it up wrong!": "You setted it up wrong!",
+	"Somehow you managed to fuck it up. Good job.<br>Now go do the guide again.<br><br>If you need the link again <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">Here it is</a>": "Somehow you managed to fuck it up. Good job.<br>Now go do the guide again.<br><br>If you need the link again <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">Here it is</a>",
+	"You need to restart the app to apply the changes": "You need to restart the app to apply the changes",
+	"Changing the spotify settings id and secret requires an app restart": "Changing the spotify settings id and secret requires an app restart",
+	"Spotify Features is not enabled": "Spotify Features is not enabled",
+	"spotifyFeaturesMessage": "You should add spotify's clientId and clientSecret in the settings and then restart the app to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a><br><br>THIS FEATURE DOES'T LET YOU DOWNLOAD FROM SPOTIFY. This just enables a practical in app metadata converter. If a song is not on Deezer it can't be downloaded",
+	"Can't find the track on Deezer!": "Can't find the track on Deezer!",
+	"Can't find the album on Deezer!": "Can't find the album on Deezer!"
 }

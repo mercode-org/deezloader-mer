@@ -36,6 +36,13 @@ function getCookie(name){
 	}
 }
 
+socket.on("getLang", ()=>{
+	currentLang = getCookie("lang")
+	if (currentLang === undefined){
+		currentLang = "en"
+	}
+	socket.emit("getLang", currentLang)
+})
 
 // Popup message listener
 socket.on("message", function(desc){
@@ -325,6 +332,8 @@ $(document).ready(function () {
 	$("#link_analyzer_go").click(function(){
 		parseLinkAnalyzer($("#link_analyzer_url").val())
 	})
+
+	// Language options
 	currentLang = getCookie("lang")
 	if (currentLang === undefined){
 		currentLang = "en"

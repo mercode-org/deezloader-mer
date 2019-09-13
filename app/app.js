@@ -35,8 +35,6 @@ const localpaths = require('./utils/localpaths.js')
 const package = require('./package.json')
 const stq = require('sequential-task-queue')
 
-const spotifyFeaturesMessage = "You should add spotify's clientId and clientSecret in the settings and then restart the app to use this feature<br>You can see how to do that in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">this guide</a><br><br>THIS FEATURE DOES'T LET YOU DOWNLOAD FROM SPOTIFY. This just enables a practical in app metadata converter. If a song is not on Deezer it can't be downloaded"
-
 // Main Constants
 // Files
 const configFileLocation = localpaths.user+"config.json"
@@ -97,12 +95,11 @@ initFolders();
 app.use('/', express.static(__dirname + '/public/'))
 app.set('views', __dirname + '/views');
 app.use(cookieParser());
-app.use(i18n);
+app.use(i18n.express);
 server.listen(configFile.serverPort)
 logger.info('Server is running @ localhost:' + configFile.serverPort)
 
 app.get('/', function(req, res) {
-	console.log(res.__('Settings'));
   res.render('index.ejs');
 });
 
@@ -115,8 +112,15 @@ trackQueue.concurrency = configFile.userDefined.queueConcurrency
 
 // START sockets clusterfuck
 io.sockets.on('connection', function (s) {
-	logger.info("Connection received!")
+	const req = s.request
+	i18n.init(req)
+	s.emit("getLang")
+	s.on("getLang", (lang)=>{
+		req.setLocale(lang)
+		logger.info("Connection language set to: "+lang)
+	})
 
+	logger.info("Connection received!")
 	// Check for updates
 	request({
 		url: "https://notabug.org/RemixDevs/DeezloaderRemix/raw/master/update.json",
@@ -190,8 +194,10 @@ io.sockets.on('connection', function (s) {
 	// Function for autologin
 	s.on("autologin", async function(jar, email){
 		try{
+			logger.info("Logging in");
 			await s.Deezer.loginViaCookies(jar, email)
 			s.emit('login', {user: s.Deezer.user})
+			logger.info("Logged in successfully")
 		}catch(err){
 			s.emit('login', {error: err.message})
 			logger.error(`Autologin failed: ${err.message}`)
@@ -477,7 +483,7 @@ io.sockets.on('connection', function (s) {
 					logger.info("Spotify Features settings updated")
 					initFolders()
 				})
-				s.emit("message", {title: "You need to restart the app to apply the changes", msg: "Changing the spotify settings id and secret requires an app restart"})
+				s.emit("message", {title: req.__("You need to restart the app to apply the changes"), msg: req.__("Changing the spotify settings id and secret requires an app restart")})
 			}
 		}
 	})
@@ -757,7 +763,7 @@ io.sockets.on('connection', function (s) {
 			}catch(err){
 				logger.error(`downloadSpotifyPlaylist failed: ${err.stack ? err.stack : err}`)
 				if (err.message && err.message == "Bad Request"){
-					s.emit("message", {title: "You setted it up wrong!", msg: "Somehow you managed to fuck it up. Good job.<br>Now go do the guide again.<br><br>If you need the link again <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">Here it is</a>"})
+					s.emit("message", {title: req.__("You setted it up wrong!"), msg: req.__("Somehow you managed to fuck it up. Good job.<br>Now go do the guide again.<br><br>If you need the link again <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">Here it is</a>")})
 				}else{
 					s.emit("toast", `SpotifyPlaylist ${data.id} failed: ${err.message ? err.message : err}`)
 				}
@@ -765,7 +771,7 @@ io.sockets.on('connection', function (s) {
 				return
 			}
 		}else{
-			s.emit("message", {title: "Spotify Features is not enabled", msg: spotifyFeaturesMessage})
+			s.emit("message", {title: req.__("Spotify Features is not enabled"), msg: req.__("spotifyFeaturesMessage")})
 			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 		}
 	}
@@ -784,7 +790,7 @@ io.sockets.on('connection', function (s) {
 					data.id = deezerId
 					downloadTrack(data)
 				}else{
-					s.emit("toast", "Can't find the track on Deezer!")
+					s.emit("toast", req.__("Can't find the track on Deezer!"))
 					s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 					logger.error(`Can't find the track on Deezer!`)
 				}
@@ -793,7 +799,7 @@ io.sockets.on('connection', function (s) {
 				return
 			}
 		}else{
-			s.emit("message", {title: "Spotify Features is not enabled", msg: spotifyFeaturesMessage})
+			s.emit("message", {title: req.__("Spotify Features is not enabled"), msg: req.__("spotifyFeaturesMessage")})
 			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 		}
 	}
@@ -812,7 +818,7 @@ io.sockets.on('connection', function (s) {
 					data.id = deezerId
 					downloadAlbum(data)
 				}else{
-					s.emit("toast", "Can't find the album on Deezer!")
+					s.emit("toast", req.__("Can't find the album on Deezer!"))
 					s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 					logger.error(`Can't find the album on Deezer!`)
 				}
@@ -821,7 +827,7 @@ io.sockets.on('connection', function (s) {
 				return
 			}
 		}else{
-			s.emit("message", {title: "Spotify Features is not enabled", msg: spotifyFeaturesMessage})
+			s.emit("message", {title: req.__("Spotify Features is not enabled"), msg: req.__("spotifyFeaturesMessage")})
 			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
 		}
 	}
