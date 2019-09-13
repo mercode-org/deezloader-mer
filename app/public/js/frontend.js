@@ -74,7 +74,7 @@ socket.on("getDefaultSettings", function(defaultSettings, defaultDownloadFolder)
 //Login button
 $('#modal_login_btn_login').click(function () {
 	$('#modal_login_btn_login').attr("disabled", true)
-	$('#modal_login_btn_login').html("Logging in...")
+	$('#modal_login_btn_login').html(i18n("Logging in..."))
 	if (serverMode){
 		var userToken = $('#modal_login_input_userToken').val()
 		localStorage.setItem('userToken', userToken)
@@ -88,7 +88,7 @@ $('#modal_login_btn_login').click(function () {
 				var password = $('#modal_login_input_password').val()
 				var captchaResponse = $('#modal_login_input_captchaResponse').val()
 				if (captchaResponse == ""){
-					$('#login-res-text').text("Error: Captcha wasn't solved.")
+					$('#login-res-text').text(i18n("Error: Captcha wasn't solved."))
 					setTimeout(function(){$('#login-res-text').text("")},3000)
 					$('#modal_login_btn_login').attr("disabled", false)
 					$('#modal_login_btn_login').html("Log in")
@@ -148,14 +148,14 @@ $('#openDownloadsFolder').on('click', function () {
 	if(typeof shell !== "undefined"){
 		shell.showItemInFolder(userSettings.downloadLocation + path.sep + '.')
 	}else{
-		alert("For security reasons, this button will do nothing.")
+		alert(i18n("For security reasons, this button will do nothing."))
 	}
 })
 
 // Alert for replayGain tag
 $('#modal_tags_replayGain').on('click', function() {
 	if ($(this).is(':checked')) {
-		message('Warning','Saving replay gain causes tracks to be quieter for some users.')
+		message(i18n('Warning'),i18n('Saving replay gain causes tracks to be quieter for some users.'))
 	}
 })
 
@@ -165,7 +165,7 @@ socket.on('checkAutologin', function(){
 	if (localStorage.getItem('autologin')){
 		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
 		$('#modal_login_btn_login').attr("disabled", true)
-		$('#modal_login_btn_login').html("Logging in...")
+		$('#modal_login_btn_login').html(i18n("Logging in..."))
 		if (serverMode){
 			$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
 		}else{
@@ -259,10 +259,10 @@ $(document).ready(function () {
 	$('#nightTimeSwitcher').change(function(){
 		if(this.checked){
 			document.getElementsByTagName('link')[4].disabled = false
-			$("#nightModeSwitch2").html(`<i class="material-icons">brightness_7</i>Disable Night Mode`)
+			$("#nightModeSwitch2").html(`<i class="material-icons">brightness_7</i>${i18n("Disable Night Mode")}`)
 		}else{
 			document.getElementsByTagName('link')[4].disabled = true
-			$("#nightModeSwitch2").html(`<i class="material-icons">brightness_2</i>Enable Night Mode`)
+			$("#nightModeSwitch2").html(`<i class="material-icons">brightness_2</i>${i18n("Enable Night Mode")}`)
 		}
 		localStorage.darkMode = this.checked
 	})
@@ -345,7 +345,7 @@ $(document).ready(function () {
 		selectedLang = $(this).val()
 		if (currentLang !== selectedLang){
 			setCookie("lang", selectedLang, 60)
-			message('Please restart the app', 'To change the language you need to refresh the page or restart the app!')
+			message(i18n('Please restart the app'), i18n('To change the language you need to refresh the page or restart the app!'))
 		}
 	})
 })
@@ -663,11 +663,11 @@ function showResults_table_album(albums) {
 				`<tr>
 				<td><img style="width:56px;" src="${(currentResultAlbum.cover_small ? currentResultAlbum.cover_small : "img/noCover.jpg")}" class="rounded" /></td>
 				<td class="hide-on-med-and-up">
-					<p class="remove-margin">${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</p>
+					<p class="remove-margin">${(currentResultAlbum.explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')} ${currentResultAlbum.title}</p>
 					<p class="remove-margin secondary-text">${currentResultAlbum.artist.name}</p>
 					<p class="remove-margin secondary-text">${currentResultAlbum.nb_tracks == "1" ? `1 Track` : `${currentResultAlbum.nb_tracks} Tracks`} • ${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</p>
 				</td>
-				<td class="hide-on-small-only">${(currentResultAlbum.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i>' : '')} ${currentResultAlbum.title}</td>
+				<td class="hide-on-small-only">${(currentResultAlbum.explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')} ${currentResultAlbum.title}</td>
 				<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
 				<td class="hide-on-small-only">${currentResultAlbum.nb_tracks}</td>
 				<td class="hide-on-small-only">${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</td>
@@ -762,7 +762,7 @@ function generateShowTracklistSelectiveButton(link) {
 function showTrackListSelective(link) {
 	$('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').addClass('hide')
 	$('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').removeClass('hide')
-	trackListSelectiveModalApp.title = "Loading..."
+	trackListSelectiveModalApp.title = i18n("Loading...")
 	trackListSelectiveModalApp.image = ""
 	trackListSelectiveModalApp.metadata = ""
 	trackListSelectiveModalApp.label = ""
@@ -817,7 +817,7 @@ function generateShowTracklistButton(link) {
 function showTrackList(link) {
 	$('#modal_trackList_table_trackList_tbody_trackList').addClass('hide')
 	$('#modal_trackList_table_trackList_tbody_loadingIndicator').removeClass('hide')
-	trackListModalApp.title = "Loading..."
+	trackListModalApp.title = i18n("Loading...")
 	trackListModalApp.image = ""
 	trackListModalApp.metadata = ""
 	trackListModalApp.release_date = ""
@@ -835,7 +835,7 @@ socket.on("getTrackList", function (data) {
 	//data.id			  -> passed id
 	//data.response -> API response
 	if (data.err){
-		trackListSelectiveModalApp.title = "Can't get data"
+		trackListSelectiveModalApp.title = i18n("Can't get data")
 		console.log(data.err)
 		return
 	}
@@ -843,7 +843,7 @@ socket.on("getTrackList", function (data) {
 		var trackList = data.response.data, content = ''
 		var trackListSelective = data.response.data, content = ''
 		if (typeof trackList == 'undefined') {
-			alert('Well, there seems to be a problem with this part of the app. Please notify the developer.')
+			alert(i18n('Well, there seems to be a problem with this part of the app. Please notify the developer.'))
 			return
 		}
 
@@ -862,19 +862,19 @@ socket.on("getTrackList", function (data) {
 			trackListModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListModalApp.head = [
 				{title: '', smallonly:true},
-				{title: 'Album Title', hideonsmall:true},
-				{title: 'Release Date', hideonsmall:true},
-				{title: 'Record Type', hideonsmall:true},
+				{title: i18n('Album Title'), hideonsmall:true},
+				{title: i18n('Release Date'), hideonsmall:true},
+				{title: i18n('Record Type'), hideonsmall:true},
 				{title: '', width: "56px"}
 			]
 			for (var i = 0; i < trackList.length; i++) {
 				$(tableBody).append(
 					`<tr>
 					<td class="hide-on-med-and-up">
-						<a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</div></a>
+						<a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</div></a>
 						<p class="remove-margin secondary-text">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)} • ${trackList[i].release_date}</p>
 					</td>
-					<td class="hide-on-small-only"><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</div></a></td>
+					<td class="hide-on-small-only"><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</div></a></td>
 					<td class="hide-on-small-only">${trackList[i].release_date}</td>
 					<td class="hide-on-small-only">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)}</td>
 					</tr>`
@@ -894,8 +894,8 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
-				{title: 'Song'},
-				{title: 'Artist', hideonsmall:true},
+				{title: i18n('Song')},
+				{title: i18n('Artist'), hideonsmall:true},
 				{title: '<i class="material-icons">timer</i>', width: "40px"},
 				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "24px"}
 			]
@@ -908,10 +908,10 @@ socket.on("getTrackList", function (data) {
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${(i + 1)}</td>
 					<td class="hide-on-med-and-up">
-						<p class="remove-margin">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</p>
+						<p class="remove-margin">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</p>
 						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
 					</td>
-					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
 					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					<td>
@@ -939,8 +939,8 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
-				{title: 'Song'},
-				{title: 'Artist', hideonsmall:true},
+				{title: i18n('Song')},
+				{title: i18n('Artist'), hideonsmall:true},
 				{title: '<i class="material-icons">timer</i>', width: "40px"},
 				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "24px"}
 			]
@@ -963,10 +963,10 @@ socket.on("getTrackList", function (data) {
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${trackList[i].track_position}</td>
 					<td class="hide-on-med-and-up">
-						<p class="remove-margin">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</p>
+						<p class="remove-margin">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</p>
 						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
 					</td>
-					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
 					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					<td>
@@ -991,8 +991,8 @@ socket.on("getTrackList", function (data) {
 			trackListModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
-				{title: 'Song'},
-				{title: 'Artist', hideonsmall:true},
+				{title: i18n('Song')},
+				{title: i18n('Artist'), hideonsmall:true},
 				{title: '<i class="material-icons">timer</i>', width: "40px"}
 			]
 			let totalDuration = 0
@@ -1003,10 +1003,10 @@ socket.on("getTrackList", function (data) {
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${(i + 1)}</td>
 					<td class="hide-on-med-and-up">
-						<p class="remove-margin">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</p>
+						<p class="remove-margin">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</p>
 						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
 					</td>
-					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
 					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					</tr>`
@@ -1030,7 +1030,7 @@ socket.on("getTrackList", function (data) {
 					`<tr>
 					<td><i class="material-icons ${(trackList[i].preview ? `preview_playlist_controls" preview="${trackList[i].preview}"` : 'grey-text"')}>play_arrow</i></td>
 					<td>${(i + 1)}</td>
-					<td>${(trackList[i].explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${trackList[i].title}</td>
+					<td>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
 					<td>${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					</tr>`
@@ -1084,11 +1084,11 @@ socket.on("getChartsTrackListByCountry", function (data) {
 				<td>${(i + 1)}</td>
 				<td><a href="#" class="rounded ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="rounded" /></a></td>
 				<td class="hide-on-med-and-up">
-					<p class="remove-margin">${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${currentChartTrack.title}</p>
+					<p class="remove-margin">${(currentChartTrack.explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${currentChartTrack.title}</p>
 					<p class="remove-margin secondary-text">${currentChartTrack.artist.name}</p>
 					<p class="remove-margin secondary-text">${currentChartTrack.album.title}</p>
 				</td>
-				<td class="hide-on-small-only">${(currentChartTrack.explicit_lyrics ? '<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i> ' : '')}${currentChartTrack.title}</td>
+				<td class="hide-on-small-only">${(currentChartTrack.explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${currentChartTrack.title}</td>
 				<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentChartTrack.artist.link}">${currentChartTrack.artist.name}</span></td>
 				<td class="hide-on-small-only"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentChartTrack.album.id}">${currentChartTrack.album.title}</span></td>
 				<td>${convertDuration(currentChartTrack.duration)}</td>
@@ -1158,7 +1158,7 @@ var linkAnalyzerCountryModal = new Vue({
 function parseLinkAnalyzer(link){
 	type = getTypeFromLink(link)
 	if (["track","album"].indexOf(type) == -1){
-		toast("Wrong Type")
+		toast(i18n("Wrong Type!"))
 		return False
 	}
 	id = getIDFromLink(link)
@@ -1220,12 +1220,12 @@ function parseDownloadFromURL(urlsString){
 	for(var i = 0; i < urls.length; i++){
 		var url = urls[i]
 		if (url.length == 0) {
-			message('Blank URL Field', 'You need to insert an URL to download it!')
+			message(i18n('Blank URL Field'), i18n('You need to insert an URL to download it!'))
 			return false
 		}
 		//Validate URL
 		if (url.indexOf('deezer.com/') < 0 && url.indexOf('open.spotify.com/') < 0 && url.indexOf('spotify:') < 0) {
-			message('Wrong URL', 'The URL seems to be wrong. Please check it and try it again.')
+			message(i18n('Wrong URL'), i18n('The URL seems to be wrong. Please check it and try it again.'))
 			return false
 		}
 		if (url.indexOf('?') > -1) {
@@ -1240,20 +1240,20 @@ function addToQueue(url, forceBitrate=null) {
 	bitrate = forceBitrate ? forceBitrate : userSettings.maxBitrate
 	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
 	if (['track', 'spotifytrack', 'playlist', 'spotifyplaylist', 'album', 'spotifyalbum', 'artist', 'artisttop'].indexOf(type) == -1) {
-		M.toast({html: '<i class="material-icons left">error</i> Wrong Type!', displayLength: 5000, classes: 'rounded'})
+		M.toast({html: `<i class="material-icons left">error</i> ${i18n("Wrong Type!")}`, displayLength: 5000, classes: 'rounded'})
 		return false
 	}
 	if (alreadyInQueue(id, bitrate)) {
-		M.toast({html: '<i class="material-icons left">playlist_add_check</i> Already in download-queue!', displayLength: 5000, classes: 'rounded'})
+		M.toast({html: `<i class="material-icons left">playlist_add_check</i> ${i18n("Already in download-queue!")}`, displayLength: 5000, classes: 'rounded'})
 		return false
 	}
 	if (id.match(/^-?[0-9]+$/) == null && type.indexOf("spotify")<-1) {
-		M.toast({html: '<i class="material-icons left">error</i> Wrong ID!', displayLength: 5000, classes: 'rounded'})
+		M.toast({html: `<i class="material-icons left">error</i> ${i18n("Wrong ID!")}`, displayLength: 5000, classes: 'rounded'})
 		return false
 	}
 	socket.emit("download" + type, {id: id, settings: userSettings, bitrate: bitrate})
 	downloadQueue.push(`${id}:${bitrate}`)
-	M.toast({html: '<i class="material-icons left">add</i>Added to download-queue', displayLength: 5000, classes: 'rounded'})
+	M.toast({html: `<i class="material-icons left">add</i> ${i18n("Added to download-queue")}`, displayLength: 5000, classes: 'rounded'})
 }
 
 function alreadyInQueue(id, bitrate) {
@@ -1337,18 +1337,18 @@ socket.on('updateQueue', function (data) {
 	if (data.failed == 0 && ((data.downloaded + data.failed) >= data.size)) {
 		$('#' + data.queueId).find('.eventBtn').html('<i class="material-icons">done</i>')
 		$('#' + data.queueId).addClass('finished')
-		M.toast({html: `<i class="material-icons left">done</i>${quoteattr(data.name)} - Completed!`, displayLength: 5000, classes: 'rounded'})
+		M.toast({html: `<i class="material-icons left">done</i>${quoteattr(data.name)} - ${i18n("Completed!")}`, displayLength: 5000, classes: 'rounded'})
 	} else if (data.downloaded == 0 && ((data.downloaded + data.failed) >= data.size)) {
 		$('#' + data.queueId).find('.eventBtn').html('<i class="material-icons">error</i>')
 		$('#' + data.queueId).addClass('error')
-		M.toast({html: `<i class="material-icons left">error</i>${quoteattr(data.name)} - Failed!`, displayLength: 5000, classes: 'rounded'})
+		M.toast({html: `<i class="material-icons left">error</i>${quoteattr(data.name)} - ${i18n("Failed!")}`, displayLength: 5000, classes: 'rounded'})
 	} else if ((data.downloaded + data.failed) >= data.size) {
 		$('#' + data.queueId).find('.eventBtn').html('<i class="material-icons">warning</i>')
 		$('#' + data.queueId).addClass('error')
-		M.toast({html: `<i class="material-icons left">warning</i>${quoteattr(data.name)} - Completed with errors!`, displayLength: 5000, classes: 'rounded'})
+		M.toast({html: `<i class="material-icons left">warning</i>${quoteattr(data.name)} - ${i18n("Completed with errors!")}`, displayLength: 5000, classes: 'rounded'})
 	}
 	if (data.errorLog != ""){
-		var errorLog = "<table><tr><th>ID</th><th>Song</th><th>Error</th></tr><tr><td>"
+		var errorLog = `<table><tr><th>${i18n("ID")}</th><th>${i18n("Song")}</th><th>${i18n("Error")}</th></tr><tr><td>`
 		errorLog += data.errorLog.split("\r\n").join("</td></tr><tr><td>").split(" | ").join("</td><td>")
 		errorLog = errorLog.slice(0, errorLog.length-8)+"</table>"
 		$('#' + data.queueId).find('.eventBtn').click(()=>{
@@ -1368,7 +1368,7 @@ socket.on("downloadProgress", function (data) {
 })
 
 socket.on("emptyDownloadQueue", function () {
-	M.toast({html: '<i class="material-icons left">done_all</i>All downloads completed!', displayLength: 5000, classes: 'rounded'})
+	M.toast({html: `<i class="material-icons left">done_all</i>${i18n("All downloads completed!")}`, displayLength: 5000, classes: 'rounded'})
 })
 
 socket.on("cancelDownload", function (data) {
@@ -1376,7 +1376,7 @@ socket.on("cancelDownload", function (data) {
 	$('#' + data.queueId).addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
 		downloadQueue.splice( downloadQueue.indexOf(data.id), 1)
 		$(this).remove()
-		if (!data.cleanAll) M.toast({html: '<i class="material-icons left">clear</i>One download removed!', displayLength: 5000, classes: 'rounded'})
+		if (!data.cleanAll) M.toast({html: `<i class="material-icons left">clear</i>${i18n("One download removed!")}`, displayLength: 5000, classes: 'rounded'})
 	})
 })
 
@@ -1404,7 +1404,7 @@ $('#cancelAllTable').click(function (ev) {
 })
 
 socket.on("cancelAllDownloads", function () {
-	M.toast({html: '<i class="material-icons left">clear</i>All downloads removed!', displayLength: 5000, classes: 'rounded'})
+	M.toast({html: `<i class="material-icons left">clear</i>${i18n("All downloads removed!")}`, displayLength: 5000, classes: 'rounded'})
 })
 
 //****************************************************************************************************\\
@@ -1595,3 +1595,8 @@ function sleep(milliseconds) {
 		}
   }
 }
+$.getJSON(`/locales/${currentLang}.json`, function(json) {
+	i18n.translator.add({
+		values: json
+	})
+})

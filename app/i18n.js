@@ -5,7 +5,7 @@ i18n.configure({
   locales:['en', 'it', 'de'],
 
   // where to store json files - defaults to './locales' relative to modules directory
-  directory: __dirname + '/locales',
+  directory: __dirname + '/public/locales',
   defaultLocale: 'en',
 
   // sets a custom cookie name to parse locale settings from  - defaults to NULL
