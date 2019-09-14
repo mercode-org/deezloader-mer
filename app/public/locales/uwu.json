@@ -197,7 +197,8 @@
 	"userToken": "usewtoken",
 	"with space": "wif space",
 	"Download {{ type }}": "downwoad {{ type }}",
-	"Download FLAC": "downwoad FLAC",
-	"Download MP3 320kbps": "downwoad MP3 320kbps",
-	"Download MP3 128kbps": "downwoad MP3 128kbps"
+	"Download FLAC": "downwoad fwac",
+	"Download MP3 320kbps": "downwoad mp3 320kbps",
+	"Download MP3 128kbps": "downwoad mp3 128kbps",
+	"Spotify Playlist": "spotify pwaywist"
 }

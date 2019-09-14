@@ -42,7 +42,7 @@
 	"Artist Artwork Name Template": "الگوی نام کاور هنرمند",
 	"Download images as PNGs": "عکس‌ها با فرمت PNG دانلود شوند",
 	"Tags": "برچسب‌ها",
-	"کاراکتر های باطل": "Null Character",
+	"Null Character": "کاراکتر های باطل",
 	"with space": "با فاصله",
 	"Multitag Separator": "جدا‌ساز برچسب‌های چندگانه",
 	"YY": "YY",
@@ -196,9 +196,9 @@
 	"All downloads completed!": "تمامی دانلود‌ها به پایان رسیدند!",
 	"One download removed!": "یک مورد از صف دانلود پاک شد!",
 	"All downloads removed!": "همه موارد از صف دانلود پاک شدند!",
-	"Null Character": "Null Character",
 	"Download {{ type }}": "Download {{ type }}",
-	"Download FLAC": "Download FLAC",
-	"Download MP3 320kbps": "Download MP3 320kbps",
-	"Download MP3 128kbps": "Download MP3 128kbps"
+	"Download FLAC": "دانلود   FLAC",
+	"Download MP3 320kbps": "دانلود MP3 320kbps",
+	"Download MP3 128kbps": "دانلود MP3 128kbps",
+	"Spotify Playlist": "لیست پخش Spotify"
 }

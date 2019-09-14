@@ -862,7 +862,7 @@ socket.on("getTrackList", function (data) {
 		if (data.reqType == 'artist') {
 			trackListModalApp.title = data.response.name
 			trackListModalApp.image = data.response.picture_xl
-			trackListModalApp.type = data.reqType
+			trackListModalApp.type = i18n(data.reqType[0].toUpperCase() + data.reqType.substring(1))
 			trackListModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListModalApp.head = [
 				{title: '', smallonly:true},
@@ -889,7 +889,7 @@ socket.on("getTrackList", function (data) {
 				showTrackListSelective($(this).data('link'), true)
 			})
 		} else if(data.reqType == 'playlist') {
-			trackListSelectiveModalApp.type = data.reqType
+			trackListSelectiveModalApp.type = i18n(data.reqType[0].toUpperCase() + data.reqType.substring(1))
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListSelectiveModalApp.title = data.response.title
 			trackListSelectiveModalApp.image = data.response.picture_xl
@@ -932,7 +932,7 @@ socket.on("getTrackList", function (data) {
 			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
 			trackListSelectiveModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else if(data.reqType == 'album') {
-			trackListSelectiveModalApp.type = data.reqType
+			trackListSelectiveModalApp.type = i18n(data.reqType[0].toUpperCase() + data.reqType.substring(1))
 			trackListSelectiveModalApp.link = `https://www.deezer.com/${data.reqType}/${data.id}`
 			trackListSelectiveModalApp.title = data.response.title
 			trackListSelectiveModalApp.explicit = data.response.explicit_lyrics
@@ -987,7 +987,7 @@ socket.on("getTrackList", function (data) {
 			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
 			trackListSelectiveModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else if(data.reqType == 'spotifyplaylist') {
-			trackListModalApp.type = "Spotify Playlist"
+			trackListModalApp.type = i18n("Spotify Playlist")
 			trackListModalApp.link = 'spotify:playlist:'+data.id
 			trackListModalApp.title = data.response.title
 			trackListModalApp.image = data.response.image

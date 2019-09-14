@@ -199,5 +199,6 @@
 	"Download {{ type }}": "Download {{ type }}",
 	"Download FLAC": "Download FLAC",
 	"Download MP3 320kbps": "Download MP3 320kbps",
-	"Download MP3 128kbps": "Download MP3 128kbps"
+	"Download MP3 128kbps": "Download MP3 128kbps",
+	"Spotify Playlist": "Spotify Playlist"
 }

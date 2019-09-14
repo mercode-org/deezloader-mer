@@ -199,5 +199,6 @@
 	"Download {{ type }}": "Scarica {{ type }}",
 	"Download FLAC": "Scarica FLAC",
 	"Download MP3 320kbps": "Scarica MP3 320kbps",
-	"Download MP3 128kbps": "Scarica MP3 128kbps"
+	"Download MP3 128kbps": "Scarica MP3 128kbps",
+	"Spotify Playlist": "Playlist Spotify"
 }

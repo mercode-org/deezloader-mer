@@ -863,7 +863,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" id="download_all_tracks" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left"><%= __('Download {{ type }}')%></a>
+		<a href="#" id="download_all_tracks" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left"><%= __('Download {{ type }}', {type: '{{ type }}'})%></a>
 		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
 	</div>
 </div>
@@ -909,7 +909,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" id="download_all_tracks_selective" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
+		<a href="#" id="download_all_tracks_selective" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left"><%= __('Download {{ type }}', {type: '{{ type }}'})%></a>
 		<a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><span class="hide-on-small-only"><%= __('Download selection')%><i class="material-icons right">file_download</i></span><i class="material-icons hide-on-med-and-up">file_download</i></a>
 		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
 	</div>
