@@ -196,8 +196,8 @@
 	"spotifyFeaturesMessage": "yuw shouwd add spotify's cwientid and cwientsecwet in de settings and den westawt de app to use dis featuwe<br>yuw can see how to do dat in <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">dis guide</a><br><br>dis featuwe does't wet yuw downwoad fwom spotify. dis just enabwes a pwacticaw in app metadata convewtew. if a song is not on deezew it can't be downwoaded",
 	"userToken": "usewtoken",
 	"with space": "wif space",
-	"Download {{ type }}": "Download {{ type }}",
-	"Download FLAC": "Download FLAC",
-	"Download MP3 320kbps": "Download MP3 320kbps",
-	"Download MP3 128kbps": "Download MP3 128kbps"
+	"Download {{ type }}": "downwoad {{ type }}",
+	"Download FLAC": "downwoad FLAC",
+	"Download MP3 320kbps": "downwoad MP3 320kbps",
+	"Download MP3 128kbps": "downwoad MP3 128kbps"
 }
