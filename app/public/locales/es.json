@@ -32,7 +32,7 @@
 	"Create log file for Errors inside download folder": "Crear un archivo de registro para Errores dentro de la carpeta de Descargas",
 	"Create log file for Alternatives inside download folder": "Crear un archivo de registros para Alternativos dentro de la carpeta de Descargas",
 	"Create M3U8 (Playlist) File": "Crear un archivo M3U8 (Lista de reproducción)",
-	"Download Synced Lyrics File (.lyr)": "Descargar archivo de letras sincronizadas (.lyr)",
+	"Download Synced Lyrics File (.lrc)": "Descargar archivo de letras sincronizadas (.lrc)",
 	"Minimize to system tray": "Minimizar a la bandeja de sistema",
 	"Artworks": "Arte de Álbum",
 	"Artwork Size": "Tamaño del arte de Álbum Size",
