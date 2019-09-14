@@ -200,5 +200,11 @@
 	"Download FLAC": "Download FLAC",
 	"Download MP3 320kbps": "Download MP3 320kbps",
 	"Download MP3 128kbps": "Download MP3 128kbps",
-	"Spotify Playlist": "Spotify Playlist"
+	"Spotify Playlist": "Spotify Playlist",
+	"%n songs":[
+    [0, 0, "%n songs"],
+    [1, 1, "%n song"],
+    [2, null, "%n songs"]
+  ],
+	"by %{name}": "by %{name}"
 }

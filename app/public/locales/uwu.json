@@ -200,5 +200,11 @@
 	"Download FLAC": "downwoad fwac",
 	"Download MP3 320kbps": "downwoad mp3 320kbps",
 	"Download MP3 128kbps": "downwoad mp3 128kbps",
-	"Spotify Playlist": "spotify pwaywist"
+	"Spotify Playlist": "spotify pwaywist",
+	"%n songs":[
+    [0, 0, "%n songs"],
+    [1, 1, "%n song"],
+    [2, null, "%n songs"]
+  ],
+	"by %{name}": "by %{name}"
 }

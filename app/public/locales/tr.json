@@ -133,8 +133,8 @@
 	"Repo": "Depo",
 	"FAQ": "SSS",
 	"Official mirrors": "Resmi indirme adresleri",
-	"Interface": "Interface",
-	"Telegram Contacts": "Telegram Contacts",
+	"Interface": "Arayüz",
+	"Telegram Contacts": "Telegram Bağlantıları",
 	"News Channel": "Haber Kanalı",
 	"Betas Channel": "Beta Sürüm Kanalı",
 	"Stable Releases Channel": "Kararlı Sürüm Kanalı",
@@ -196,9 +196,14 @@
 	"All downloads completed!": "Tüm indirmeler tamamlandı!",
 	"One download removed!": "Bir indirme kaldırıldı!",
 	"All downloads removed!": "Tüm indirmeler kaldırıldı!",
-	"Download {{ type }}": "Download {{ type }}",
-	"Download FLAC": "Download FLAC",
-	"Download MP3 320kbps": "Download MP3 320kbps",
-	"Download MP3 128kbps": "Download MP3 128kbps",
-	"Spotify Playlist": "Spotify Playlist"
+	"Download {{ type }}": "İndİr: {{ type }}",
+	"Download FLAC": "FLAC İndİr",
+	"Download MP3 320kbps": "320kbps MP3 İndİr",
+	"Download MP3 128kbps": "128kbps MP3 İndİr",
+	"%n songs":[
+    [0, 0, "%n songs"],
+    [1, 1, "%n song"],
+    [2, null, "%n songs"]
+  ],
+	"by %{name}": "by %{name}"
 }

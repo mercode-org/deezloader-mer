@@ -894,7 +894,7 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.title = data.response.title
 			trackListSelectiveModalApp.image = data.response.picture_xl
 			trackListSelectiveModalApp.release_date = data.response.creation_date.substring(0,10)
-			trackListSelectiveModalApp.metadata = `by ${data.response.creator.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
+			trackListSelectiveModalApp.metadata = `${i18n("by %{name}", {name: data.response.creator.name})} • ${i18n("%n songs", trackList.length)}`
 			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
@@ -937,7 +937,7 @@ socket.on("getTrackList", function (data) {
 			trackListSelectiveModalApp.title = data.response.title
 			trackListSelectiveModalApp.explicit = data.response.explicit_lyrics
 			trackListSelectiveModalApp.label = data.response.label
-			trackListSelectiveModalApp.metadata = `${data.response.artist.name} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
+			trackListSelectiveModalApp.metadata = `${data.response.artist.name} • ${i18n("%n songs", trackList.length)}`
 			trackListSelectiveModalApp.release_date = data.response.release_date.substring(0,10)
 			trackListSelectiveModalApp.image = data.response.cover_xl
 			trackListSelectiveModalApp.head = [
@@ -991,7 +991,7 @@ socket.on("getTrackList", function (data) {
 			trackListModalApp.link = 'spotify:playlist:'+data.id
 			trackListModalApp.title = data.response.title
 			trackListModalApp.image = data.response.image
-			trackListModalApp.metadata = `by ${data.response.owner} • ${trackList.length == 1 ? "1 song" : `${trackList.length} songs`}`
+			trackListModalApp.metadata = `${i18n("by %{name}", {name: data.response.owner})} • ${i18n("%n songs", trackList.length)}`
 			trackListModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
