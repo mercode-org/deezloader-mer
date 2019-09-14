@@ -863,7 +863,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" id="download_all_tracks" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left">Download {{ type }}</a>
+		<a href="#" id="download_all_tracks" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left"><%= __('Download {{ type }}')%></a>
 		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
 	</div>
 </div>
@@ -1292,9 +1292,9 @@
 <div id="modal_quality" class="smallmodal">
 	<!-- Modal content -->
 	<div class="smallmodal-content">
-		<a onclick="modalQualityButton(9)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download FLAC</a><br>
-		<a onclick="modalQualityButton(3)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download MP3 320kbps</a><br>
-		<a onclick="modalQualityButton(1)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download MP3 128kbps</a><br>
+		<a onclick="modalQualityButton(9)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download FLAC')%></a><br>
+		<a onclick="modalQualityButton(3)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download MP3 320kbps')%></a><br>
+		<a onclick="modalQualityButton(1)" href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download MP3 128kbps')%></a><br>
 	</div>
 </div>
 
