@@ -15,13 +15,15 @@ const server = require('http').createServer(app)
 const io = require('socket.io').listen(server, {log: false, wsEngine: 'ws'})
 var cookieParser = require('cookie-parser')
 var i18n = require('./i18n');
+
 // Music tagging stuff
-const metaflac = require('metaflac-js');
+const metaflac = require('metaflac-js2')
 const ID3Writer = require('./lib/browser-id3-writer')
 const deezerApi = require('deezer-api')
 const getBlowfishKey = require('deezer-api/utils.js').getBlowfishKey
 const decryptChunk = require('deezer-api/utils.js').decryptChunk
 const spotifyApi = require('spotify-web-api-node')
+
 // App stuff
 const fs = require('fs-extra')
 const async = require('async')
@@ -2332,7 +2334,7 @@ function getMetadata(buf, track, settings){
 		flac.setTag('REPLAYGAIN_TRACK_GAIN=' + track.replayGain);
 
 	if(track.album.picturePath && settings.tags.cover){
-		flac.importPictureFrom(track.album.picturePath);
+		flac.importPicture(track.album.picturePath);
 	}
 	return Buffer.from(flac.save());
 }
