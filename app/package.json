@@ -8,21 +8,21 @@
 	"license": "GPL-3.0",
 	"dependencies": {
 		"async": "latest",
+		"cookie-parser": "latest",
 		"dateformat": "latest",
 		"deezer-api": "git+https://notabug.org/RemixDevs/deezer-api.git#master",
-		"electron-context-menu": "^0.12.0",
+		"ejs": "latest",
+		"electron-context-menu": "^0.15.0",
 		"electron-window-state-manager": "latest",
 		"express": "latest",
 		"fs-extra": "latest",
-		"metaflac-js": "git+https://notabug.org/Generalo/metaflac-js.git#master",
-		"queue": "^5.0.1",
+		"i18n": "latest",
+		"metaflac-js2": "git+https://github.com/d-fi/metaflac-js2.git",
+		"queue": "^6.0.1",
 		"request": "^2.87.0",
 		"request-promise": "^4.2.4",
 		"sequential-task-queue": "^1.2.1",
 		"socket.io": "latest",
-		"spotify-web-api-node": "latest",
-		"i18n": "latest",
-		"ejs": "latest",
-		"cookie-parser": "latest"
+		"spotify-web-api-node": "latest"
 	}
 }
