@@ -29,25 +29,6 @@ $.getJSON(`/locales/${currentLang}.json`, function(json) {
 	})
 })
 
-function setCookie(name,value,days){
-  var expires = "";
-  if (days) {
-    var date = new Date();
-    date.setTime(date.getTime() + (days*24*60*60*1000));
-    expires = "; expires=" + date.toUTCString();
-  }
-  document.cookie = name + "=" + (value || "")  + expires + "; path=/";
-}
-function getCookie(name){
-  var nameEQ = name + "=";
-  var ca = document.cookie.split(';');
-  for(var i=0;i < ca.length;i++) {
-	  var c = ca[i];
-	  while (c.charAt(0)==' ') c = c.substring(1,c.length);
-	  if (c.indexOf(nameEQ) == 0) return c.substring(nameEQ.length,c.length);
-	}
-}
-
 // Popup message listener
 socket.on("message", function(desc){
 	message(desc.title, desc.msg)
@@ -338,17 +319,12 @@ $(document).ready(function () {
 	})
 
 	// Language options
-	currentLang = getCookie("lang")
-	if (currentLang === undefined){
-		currentLang = "en"
-	}
-	setCookie("lang", currentLang, 60)
+	setCookie("lang", currentLang, 90)
 	$('#modal_settings_select_lang').val(currentLang).formSelect()
 	$("#modal_settings_select_lang").change(function(){
-		currentLang = getCookie("lang")
 		selectedLang = $(this).val()
 		if (currentLang !== selectedLang){
-			setCookie("lang", selectedLang, 60)
+			setCookie("lang", selectedLang, 90)
 			message(i18n('Please restart the app'), i18n('To change the language you need to refresh the page or restart the app!'))
 		}
 	})

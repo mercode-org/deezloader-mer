@@ -12,8 +12,6 @@
 		"dateformat": "latest",
 		"deezer-api": "git+https://notabug.org/RemixDevs/deezer-api.git#master",
 		"ejs": "latest",
-		"electron-context-menu": "^0.15.0",
-		"electron-window-state-manager": "latest",
 		"express": "latest",
 		"fs-extra": "latest",
 		"i18n": "latest",

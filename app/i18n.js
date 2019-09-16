@@ -1,8 +1,17 @@
-var i18n = require('i18n');
+const i18n = require('i18n');
+const path = require('path');
+const fs = require('fs');
+const directoryPath = path.join(__dirname, '/public/locales');
+var locales = []
+var files = fs.readdirSync(directoryPath)
+files.forEach(function (file) {
+		// Do whatever you want to do with the file
+		locales.push(file.slice(0, -5))
+});
 
 i18n.configure({
   // setup some locales - other locales default to en silently
-  locales:['en', 'it', 'de', 'es', 'tr', 'pt-BR', 'fa', 'th', 'uwu'],
+  locales: locales,
 
   // where to store json files - defaults to './locales' relative to modules directory
   directory: __dirname + '/public/locales',
