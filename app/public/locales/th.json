@@ -206,5 +206,6 @@
     [1, 1, "%n เพลง"],
     [2, null, "%n เพลง"]
   ],
-	"by %{name}": "โดย %{name}"
+	"by %{name}": "โดย %{name}",
+	"Translations": "Translations"
 }

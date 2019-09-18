@@ -206,5 +206,6 @@
     [1, 1, "%n morceau"],
     [2, null, "%n morceaux"]
   ],
-	"by %{name}": "par %{name}"
+	"by %{name}": "par %{name}",
+	"Translations": "Translations"
 }

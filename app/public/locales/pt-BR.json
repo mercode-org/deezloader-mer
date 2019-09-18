@@ -206,5 +206,6 @@
     [1, 1, "%n música"],
     [2, null, "%n músicas"]
   ],
-	"by %{name}": "por %{name}"
+	"by %{name}": "por %{name}",
+	"Translations": "Translations"
 }

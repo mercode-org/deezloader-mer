@@ -95,6 +95,7 @@ function getCookie(name){
 			$('#application_version_about').text(version)
 			$('#application_version_logo').text(version.replace(/\.[^/.]+$/, ""))
 			if(typeof require !== "undefined"){
+				$("#login-form-client-mode").removeClass('hide')
 				$('#modal_settings_input_downloadTracksLocation').on('click', function () {
 					let originalValue = $(this).val()
 					let newValue = dialog.showOpenDialog({
@@ -104,9 +105,8 @@ function getCookie(name){
 						$(this).val(newValue)
 					}
 				})
-				$("#login-form-server-mode").hide()
 			}else{
-				$("#login-form-client-mode").hide()
+				$("#login-form-server-mode").removeClass('hide')
 				$("#openDownloadsFolder").parent().hide()
 				$("#cancelAllTable").parent().removeClass("m4").addClass("m6")
 				$("#clearTracksTable").parent().removeClass("m4").addClass("m6")

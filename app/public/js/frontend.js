@@ -76,7 +76,7 @@ $('#modal_login_btn_login').click(function () {
 					$('#login-res-text').text(i18n("Error: Captcha wasn't solved."))
 					setTimeout(function(){$('#login-res-text').text("")},3000)
 					$('#modal_login_btn_login').attr("disabled", false)
-					$('#modal_login_btn_login').html("Log in")
+					$('#modal_login_btn_login').html(i18n("Log in"))
 					return
 				}
 				localStorage.setItem('autologin_email', username)
@@ -125,7 +125,7 @@ socket.on("login", function (data) {
 		$('#modal_login_input_userToken').val("")
 	}
 	$('#modal_login_btn_login').attr("disabled", false)
-	$('#modal_login_btn_login').html("Log in")
+	$('#modal_login_btn_login').html(i18n("Log in"))
 })
 
 // Open downloads folder

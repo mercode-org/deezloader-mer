@@ -14,7 +14,7 @@
 	"Album tracknames template": "Albüm parça isimleri şablonu",
 	"Album names template": "Albüm isimleri şablonu",
 	"Playlist tracknames template": "Oynatma listesi parça isimleri şablonu",
-	"More Path Settings": "Yol Ayarlarının Daha Fazlası",
+	"More Path Settings": "Konum Ayarlarının Daha Fazlası",
 	"Create folders for Artists": "Sanatçılar için klasör oluştur",
 	"Create folders for Albums": "Albümler için klasör oluştur",
 	"Create folders for CDs": "CD'ler için klasör oluştur",
@@ -98,13 +98,13 @@
 	"Label": "Kayıt Şirketi",
 	"Record Type": "Kayıt Türü",
 	"Genres": "Tarzlar",
-	"Open Downloads Folder": "İndİrmeler Klasörünü Aç",
+	"Open Downloads Folder": "İndİrİlenler Klasörünü Aç",
 	"Cancel All Downloads": "Tüm İndİrmelerİ İptal Et",
 	"Clear List": "Lİsteyİ Temİzle",
-	"Size": "Büyüklük",
+	"Size": "Toplam",
 	"Downloaded": "İndirildi",
 	"Failed": "Başarısız oldu",
-	"original code by ZzMTV": "Orijinal olarak programlayan ZzMTV",
+	"original code by ZzMTV": "Orijinal olarak programlayan: ZzMTV",
 	"Title": "Başlık",
 	"Cover": "Kapak",
 	"Track Total": "Toplam Parça Sayısı",
@@ -205,5 +205,6 @@
     [1, 1, "%n song"],
     [2, null, "%n songs"]
   ],
-	"by %{name}": "by %{name}"
+	"by %{name}": "by %{name}",
+	"Translations": "Translations"
 }

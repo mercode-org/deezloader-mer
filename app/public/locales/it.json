@@ -206,5 +206,6 @@
     [1, 1, "%n brano"],
     [2, null, "%n brani"]
   ],
-	"by %{name}": "di %{name}"
+	"by %{name}": "di %{name}",
+	"Translations": "Traduzioni"
 }

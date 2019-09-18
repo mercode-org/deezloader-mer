@@ -39,7 +39,7 @@
 			<div class="card-content">
 				<span class="card-title"><%= __('Please login to your deezer account')%>.</span>
 				<h6 class="red-text" id="login-res-text"></h6>
-				<div id="login-form-client-mode">
+				<div id="login-form-client-mode" class="hide">
 					<div class="input-field col s12">
 						<input autocomplete="off" type="text" id="modal_login_input_username"/>
 						<label for="modal_login_input_username"><%= __('Email')%></label>
@@ -51,7 +51,7 @@
 					<input id="modal_login_input_captchaResponse" type="hidden" value=""/>
 					<!--<iframe id="modal_login_iframe_captcha" src="cap://deezer.com/"></iframe>-->
 				</div>
-				<div id="login-form-server-mode">
+				<div id="login-form-server-mode" class="hide">
 					<div class="input-field col s12">
 						<input autocomplete="off" type="password" id="modal_login_input_userToken"/>
 						<label for="modal_login_input_userToken"><%= __('userToken')%></label>
@@ -601,14 +601,14 @@
 							ZzMTV for the original Deezloader code<br>
 							ParadoxalManiak, snwflake and ExtendLord for maintaining the previous branches<br>
 							<br>
-							<b>Translations:</b><br>
-							Italian: RemixDev
+							<b><%= __('Translations')%>:</b><br>
+							Italian: RemixDev<br>
 							German: lollilol, Tobs<br>
 							Spanish: Wanamingo<br>
 							Turkish: Metep<br>
 							Brazilian Portuguese: C4RLETH<br>
 							Thai: RadiusGreenhill<br>
-							French: Didiou, kaypa<br>
+							French: LaurentHa, Didiou, kaypa<br>
 						</p>
 					</div>
 				</li>
