@@ -220,6 +220,7 @@ io.sockets.on('connection', function (s) {
 		try{
 			let charts = await s.Deezer.legacyGetChartsTopCountry()
 			charts = charts.data || []
+			charts.sort((a, b) => a.title.localeCompare(b.title));
 			let countries = []
 			for (let i = 0; i < charts.length; i++) {
 				let obj = {
