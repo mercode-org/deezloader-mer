@@ -1127,6 +1127,7 @@ io.sockets.on('connection', function (s) {
 				downloading.settings.plName = downloading.name;
 				downloading.playlistArr = Array(downloading.size);
 				downloading.settings.playlist = {
+					id: downloading.id.split(":")[0],
 					name:	downloading.name,
 					artist: downloading.artist,
 					cover: downloading.obj.picture_small.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`),
@@ -1248,6 +1249,7 @@ io.sockets.on('connection', function (s) {
 				logger.info("All tracks converted, starting download")
 				io.sockets.emit("downloadStarted", {queueId: downloading.queueId})
 				downloading.settings.playlist = {
+					id: downloading.id.split(":")[0],
 					name:	downloading.name,
 					artist: downloading.artist,
 					cover: downloading.obj.images[0].url.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`),
@@ -1438,6 +1440,7 @@ io.sockets.on('connection', function (s) {
 					track.album.title = settings.playlist.name
 					track.album.trackTotal = settings.playlist.fullSize
 					track.album.recordType = "Compilation"
+					track.album.id = settings.playlist.id
 				}else{
 					track.album.artist = {
 						id: ajson.artist.id,
@@ -2062,6 +2065,8 @@ function settingsRegex(track, filename, playlist) {
 		}else{
 			filename = filename.replace(/%artist%/g, fixName(track.artist.name));
 		}
+		filename = filename.replace(/%track_id%/g, fixName(track.id));
+		filename = filename.replace(/%album_id%/g, fixName(track.album.id));
 		filename = filename.replace(/%year%/g, fixName(track.date.year));
 		filename = filename.replace(/%date%/g, fixName(track.album.date));
 		filename = filename.replace(/%label%/g, fixName(track.album.label));
@@ -2073,6 +2078,9 @@ function settingsRegex(track, filename, playlist) {
 			}
 		} else {
 			filename = filename.replace(/%number%/g, '');
+		}
+		if (playlist){
+			filename = filename.replace(/%playlist_id%/g, fixName(playlist.id));
 		}
 		if (playlist && typeof track.position != 'undefined'){
 			if(configFile.userDefined.padtrck){
