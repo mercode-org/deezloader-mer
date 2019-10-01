@@ -80,7 +80,7 @@
 	"Album": "Albüm",
 	"Artist": "Sanatçı",
 	"Playlist": "Oynatma Listeleri",
-	"Songs": "Şarkılar",
+	"Songs": "Şarkı sayısı",
 	"Type": "Tür",
 	"Albums": "Albümler",
 	"Name": "İsim",
@@ -201,10 +201,10 @@
 	"Download MP3 320kbps": "320kbps MP3 İndİr",
 	"Download MP3 128kbps": "128kbps MP3 İndİr",
 	"%n songs":[
-    [0, 0, "%n songs"],
-    [1, 1, "%n song"],
-    [2, null, "%n songs"]
+    [0, 0, "%n şarkı"],
+    [1, 1, "%n şarkı"],
+    [2, null, "%n şarkı"]
   ],
-	"by %{name}": "by %{name}",
-	"Translations": "Translations"
+	"by %{name}": "%{name} tarafından",
+	"Translations": "Çeviriler"
 }
