@@ -1098,7 +1098,7 @@ io.sockets.on('connection', function (s) {
 					});
 					if (downloading.settings.logErrors){
 						if (downloading.errorLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true}, err => {});
 							fs.writeFileSync(downloading.filePath+"notFound.txt",downloading.errorLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"notFound.txt")) fs.unlinkSync(downloading.filePath+"notFound.txt");
@@ -1106,7 +1106,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.logSearched){
 						if (downloading.searchedLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true}, err => {});
 							fs.writeFileSync(downloading.filePath+"alternativeSongs.txt",downloading.searchedLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"alternativeSongs.txt")) fs.unlinkSync(downloading.filePath+"alternativeSongs.txt");
@@ -1179,7 +1179,7 @@ io.sockets.on('connection', function (s) {
 					});
 					if (downloading.settings.logErrors){
 						if (downloading.errorLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true}, err => {});
 							fs.writeFileSync(downloading.filePath+"notFound.txt",downloading.errorLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"notFound.txt")) fs.unlinkSync(downloading.filePath+"notFound.txt");
@@ -1187,7 +1187,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.logSearched){
 						if (downloading.searchedLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true}, err => {});
 							fs.writeFileSync(downloading.filePath+"alternativeSongs.txt",downloading.searchedLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"alternativeSongs.txt")) fs.unlinkSync(downloading.filePath+"alternativeSongs.txt");
@@ -1197,7 +1197,7 @@ io.sockets.on('connection', function (s) {
 						fs.writeFileSync(downloading.filePath + "playlist.m3u8", downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
-						if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
+						if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true}, err => {});
 						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.obj.picture_small){
 							downloading.cover = downloading.obj.picture_small.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
@@ -1306,7 +1306,7 @@ io.sockets.on('connection', function (s) {
 					});
 					if (downloading.settings.logErrors){
 						if (downloading.errorLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true}, err => {});
 							fs.writeFileSync(downloading.filePath+"notFound.txt",downloading.errorLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"notFound.txt")) fs.unlinkSync(downloading.filePath+"notFound.txt");
@@ -1314,7 +1314,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.logSearched){
 						if (downloading.searchedLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true}, err => {});
 							fs.writeFileSync(downloading.filePath+"alternativeSongs.txt",downloading.searchedLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"alternativeSongs.txt")) fs.unlinkSync(downloading.filePath+"alternativeSongs.txt");
@@ -1324,7 +1324,7 @@ io.sockets.on('connection', function (s) {
 						fs.writeFileSync(downloading.filePath + "playlist.m3u8", downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
-						if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath);
+						if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true}, err => {});
 						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.obj.images){
 							downloading.cover = downloading.obj.images[0].url.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
@@ -1538,6 +1538,14 @@ io.sockets.on('connection', function (s) {
 					track.discNumber = track.legacyTrack.disk_number
 				}
 			}
+
+			// Acquiring Explicit tag (only if necessary)
+			if (!track.explicit && (settings.tags.explicit || settings.filename.includes("%explicit%"))){
+				logger.info(`[${track.artist.name} - ${track.title}] Is track explicit? Checking now`);
+				if (!track.legacyTrack) track.legacyTrack = await s.Deezer.legacyGetTrack(track.id)
+				track.explicit = track.legacyTrack.explicit_lyrics;
+			}
+
 
 			var separator = settings.multitagSeparator
 			if (separator == "null") separator = String.fromCharCode(0)
@@ -2077,7 +2085,7 @@ function settingsRegex(track, filename, playlist) {
 		}
 		filename = filename.replace(/%disc%/g, fixName(track.discNumber));
 		filename = filename.replace(/%isrc%/g, fixName(track.ISRC ? track.ISRC : "Unknown"));
-		filename = filename.replace(/%explicit%/g, fixName((track.explicit==="1" ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : "")));
+		filename = filename.replace(/%explicit%/g, fixName((track.explicit ? (filename.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit)") : "")));
 		filename = filename.replace(/%genre%/g, fixName(track.album.genre ? (Array.isArray(track.album.genre) ? track.album.genre[0] : track.album.genre) : "Unknown"));
 		filename = filename.replace(/[/\\]/g, path.sep)
 		return filename.trim();
@@ -2236,7 +2244,7 @@ function getMetadata(buf, track, settings){
 	if (settings.tags.trackTotal)
 		flac.setTag('TRACKTOTAL=' + track.album.trackTotal);
 	if (settings.tags.explicit)
-		flac.setTag('ITUNESADVISORY=' + track.explicit);
+		flac.setTag('ITUNESADVISORY=' + track.explicit ? "1" : "0");
 	if (settings.tags.isrc)
 		flac.setTag('ISRC=' + track.ISRC);
 	if (settings.tags.artist && track.artistsString)
@@ -2395,6 +2403,11 @@ function getID3(track, settings){
 		writer.setFrame('TXXX', {
 			description: 'REPLAYGAIN_TRACK_GAIN',
 			value: track.replayGain
+		});
+	if(track.explicit && settings.tags.explicit)
+		writer.setFrame('TXXX', {
+			description: 'ITUNESADVISORY',
+			value: track.explicit ? "1" : "0"
 		});
 	writer.addTag();
 	return Buffer.from(writer.arrayBuffer);
