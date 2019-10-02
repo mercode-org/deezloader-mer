@@ -2252,7 +2252,7 @@ function getMetadata(buf, track, settings){
 	if (settings.tags.trackTotal)
 		flac.setTag('TRACKTOTAL=' + track.album.trackTotal);
 	if (settings.tags.explicit)
-		flac.setTag('ITUNESADVISORY=' + track.explicit ? "1" : "0");
+		flac.setTag('ITUNESADVISORY=' + (track.explicit ? "1" : "0"));
 	if (settings.tags.isrc)
 		flac.setTag('ISRC=' + track.ISRC);
 	if (settings.tags.artist && track.artistsString)
