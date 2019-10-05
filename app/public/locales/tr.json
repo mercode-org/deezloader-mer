@@ -79,7 +79,7 @@
 	"Song": "Şarkı",
 	"Album": "Albüm",
 	"Artist": "Sanatçı",
-	"Playlist": "Oynatma Listeleri",
+	"Playlist": "Oynatma Listesi",
 	"Songs": "Şarkı sayısı",
 	"Type": "Tür",
 	"Albums": "Albümler",
@@ -207,8 +207,8 @@
   ],
 	"by %{name}": "%{name} tarafından",
 	"Translations": "Çeviriler",
-	"Deezer Login": "Deezer Login",
-	"Update userToken": "Update userToken",
-	"Login with e-mail": "Login with e-mail",
-	"userToken copied to clipboard": "userToken copied to clipboard"
+	"Deezer Login": "Deezer Oturumu",
+	"Update userToken": "kullanıcıJeton(userToken)'u güncelle",
+	"Login with e-mail": "E-posta ile oturum aç",
+	"userToken copied to clipboard": "kullanıcıJeton(userToken) panoya kopyalandı"
 }
