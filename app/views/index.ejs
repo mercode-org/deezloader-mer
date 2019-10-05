@@ -32,32 +32,23 @@
 	<div class="resize-padding" style="position: absolute; top:0; right:0px; width: 3px; height: 31px;"></div>
 </div>
 
-<!--#############################################INITIALIZING-SCREEN############################################-->
-<div id="initializing" class="valign-wrapper">
-	<div class="modal-content container" id="login-page">
+<!--##############################################MODAL_LOGIN##############################################-->
+<div id="modal_login" class="modal valign-wrapper modal-fixed-footer">
+	<div class="modal-content" id="login-page">
 		<div class="card">
 			<div class="card-content">
 				<span class="card-title"><%= __('Please login to your deezer account')%>.</span>
 				<h6 class="red-text" id="login-res-text"></h6>
-				<div id="login-form-client-mode" class="hide">
-					<div class="input-field col s12">
-						<input autocomplete="off" type="text" id="modal_login_input_username"/>
-						<label for="modal_login_input_username"><%= __('Email')%></label>
-					</div>
-					<div class="input-field col s12">
-						<input autocomplete="off" type="password" id="modal_login_input_password"/>
-						<label for="modal_login_input_password"><%= __('Password')%></label>
-					</div>
-					<input id="modal_login_input_captchaResponse" type="hidden" value=""/>
-					<!--<iframe id="modal_login_iframe_captcha" src="cap://deezer.com/"></iframe>-->
+				<div class="input-field col s12">
+					<input autocomplete="off" type="text" id="modal_login_input_username"/>
+					<label for="modal_login_input_username"><%= __('Email')%></label>
 				</div>
-				<div id="login-form-server-mode" class="hide">
-					<div class="input-field col s12">
-						<input autocomplete="off" type="password" id="modal_login_input_userToken"/>
-						<label for="modal_login_input_userToken"><%= __('userToken')%></label>
-					</div>
-					<p><a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken" target="_blank"><%= __('How do I get my userToken?')%></a></p>
+				<div class="input-field col s12">
+					<input autocomplete="off" type="password" id="modal_login_input_password"/>
+					<label for="modal_login_input_password"><%= __('Password')%></label>
 				</div>
+				<input id="modal_login_input_captchaResponse" type="hidden" value=""/>
+				<!--<iframe id="modal_login_iframe_captcha" src="cap://deezer.com/"></iframe>-->
 			</div>
 			<div class="card-action row">
 				<a href="#" class="deezloader-primary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_login"><%= __('Log in')%></a>
@@ -65,12 +56,34 @@
 			</div>
 		</div>
 	</div>
+	<div class="modal-footer">
+		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
+	</div>
 </div>
-
 <!--#############################################MODAL_SETTINGS############################################-->
 <div id="modal_settings" class="modal modal-fixed-footer">
 	<div class="modal-content">
 		<h4 class="col s12"><%= __('Settings')%></h4>
+
+		<h6 class="col s12 secondary-text"><%= __('Deezer Login')%></h6><hr>
+		<div class="row">
+			<div class="col s12 hide" id="logged_in_info">
+				<img id="modal_settings_picture" src="" alt="Profile Picture" class="circle left" style="height:125px; margin-right: 12px;"/>
+				<p><%= __('You are logged in as')%> <b id="modal_settings_username"></b></p>
+				<a href="#" class="waves-effect waves-light btn" id="modal_settings_btn_logout"><%= __('Logout')%></a>
+			</div>
+			<p class="col s12" id="login_email_btn">
+				<a href="#modal_login" class="modal-trigger waves-effect waves-light btn" style="width:100%;"><%= __('Login with e-mail')%></a>
+			</p>
+			<h6 class="red-text" id="login-res-text2"></h6>
+			<div class="inline-input-group col s12">
+				<input autocomplete="off" type="password" id="modal_login_input_userToken" placeholder="<%= __('userToken')%>"/>
+				<label for="modal_login_input_userToken"></label>
+				<button class="btn btn-input btn-flat deezloader-primary white-text" id="modal_settings_btn_copyArl"><i class="material-icons">assignment</i></button>
+			</div>
+			<p class="col s12"><a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken" target="_blank"><%= __('How do I get my userToken?')%></a></p>
+			<p class="col s12"><a href="#" class="deezloader-secondary waves-effect waves-light btn" style="width:100%;" id="modal_settings_btn_updateArl"><%= __('Update userToken')%></a></p>
+		</div>
 
 		<h6 class="col s12 secondary-text"><%= __('Path Settings')%></h6><hr>
 		<div class="row">
@@ -368,14 +381,6 @@
 			<div class="input-field col s12 m6">
 				<input autocomplete="off" type="text" id="modal_settings_input_spotifyUser"/>
 				<label for="modal_settings_input_spotifyUser"><%= __('Spotify Username (for the Playlists Tab)')%></label>
-			</div>
-		</div>
-
-		<div class="row">
-			<div class="col s12">
-				<img id="modal_settings_picture" src="" alt="Profile Picture" class="circle left" style="height:125px; margin-right: 12px;"/>
-				<p><%= __('You are logged in as')%> <b id="modal_settings_username"></b></p>
-				<a href="#" class="modal-close waves-effect waves-light btn" id="modal_settings_btn_logout"><%= __('Logout')%></a>
 			</div>
 		</div>
 
@@ -1011,7 +1016,7 @@
 	</li>
 </ul>
 
-<main class="container">
+<main class="container" style="display: none">
 	<ul id="tab-nav" class="row tabs tabs-fixed-width hide-on-small-only">
 		<li class="tab"><a class="active" href="#tab_search"><%= __('Search')%></a></li>
 		<li class="tab"><a href="#tab_charts"><%= __('Charts')%></a></li>

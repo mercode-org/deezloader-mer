@@ -186,6 +186,8 @@ io.sockets.on('connection', function (s) {
 			await s.Deezer.loginViaArl(userToken)
 			s.emit("login", {user: s.Deezer.user})
 			logger.info("Logged in successfully")
+			// Save session login so next time login is not needed
+			// This is the same method used by the official website
 			s.emit('getCookies', s.Deezer.getCookies())
 		}catch(err){
 			s.emit("login", {error: err.message})
@@ -203,8 +205,13 @@ io.sockets.on('connection', function (s) {
 		}catch(err){
 			s.emit('login', {error: err.message})
 			logger.error(`Autologin failed: ${err.message}`)
-			return
 		}
+	})
+
+	// Function for when there is no autologin
+	s.on("init", async function(){
+		s.emit('login', {user: s.Deezer.user})
+		logger.info("Not logged in")
 	})
 
 	// Function for logout
@@ -289,17 +296,19 @@ io.sockets.on('connection', function (s) {
 		if (spotUser && s.spotifyUser != spotUser) s.spotifyUser = spotUser
 		try{
 			logger.info("Loading Personal Playlists")
-			let data = await s.Deezer.legacyGetUserPlaylists(s.Deezer.user.id)
-			data = data.data || []
 			let playlists = []
-			for (let i = 0; i < data.length; i++) {
-				let obj = {
-					title: data[i].title,
-					image: data[i].picture_small,
-					songs: data[i].nb_tracks,
-					link: data[i].link
+			if (s.Deezer.user.id != 0){
+				let data = await s.Deezer.legacyGetUserPlaylists(s.Deezer.user.id)
+				data = data.data || []
+				for (let i = 0; i < data.length; i++) {
+					let obj = {
+						title: data[i].title,
+						image: data[i].picture_small,
+						songs: data[i].nb_tracks,
+						link: data[i].link
+					}
+					playlists.push(obj)
 				}
-				playlists.push(obj)
 			}
 			if (s.spotifyUser && spotifySupport){
 				try{
@@ -1837,7 +1846,8 @@ io.sockets.on('connection', function (s) {
 				}
 			}
 		}
-
+		if (!track.MD5)
+			track.MD5 = await s.Deezer.getTrackMD5(track.id)
 		logger.info(`[${track.artist.name} - ${track.title}] Starting the download process`)
 		var downloadingPromise = new Promise((resolve, reject)=>{
 			if (!fs.existsSync(`${filepath}`)) fs.mkdirSync(`${filepath}`, {recursive: true})

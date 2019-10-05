@@ -60,31 +60,55 @@ socket.on("getDefaultSettings", function(defaultSettings, defaultDownloadFolder)
 $('#modal_login_btn_login').click(function () {
 	$('#modal_login_btn_login').attr("disabled", true)
 	$('#modal_login_btn_login').html(i18n("Logging in..."))
-	if (serverMode){
-		var userToken = $('#modal_login_input_userToken').val()
-		localStorage.setItem('userToken', userToken)
-		socket.emit('loginViaUserToken', userToken)
-	}else{
-		var captchaWindow = window.open('cap://deezer.com/', '_blank', 'nodeIntegration=no')
-		var timer = setInterval(function() {
-    	if (captchaWindow.closed) {
-      	clearInterval(timer)
-				var username = $('#modal_login_input_username').val()
-				var password = $('#modal_login_input_password').val()
-				var captchaResponse = $('#modal_login_input_captchaResponse').val()
-				if (captchaResponse == ""){
-					$('#login-res-text').text(i18n("Error: Captcha wasn't solved."))
-					setTimeout(function(){$('#login-res-text').text("")},3000)
-					$('#modal_login_btn_login').attr("disabled", false)
-					$('#modal_login_btn_login').html(i18n("Log in"))
-					return
-				}
-				localStorage.setItem('autologin_email', username)
-				//Send to the software
-			  socket.emit('login', username, password, captchaResponse)
-      }
-    }, 500);
+	var username = $('#modal_login_input_username').val()
+	if (username === ""){
+		$('#login-res-text').text(i18n("Error: email field is empty"))
+		setTimeout(function(){$('#login-res-text').text("")},3000)
+		$('#modal_login_btn_login').attr("disabled", false)
+		$('#modal_login_btn_login').html(i18n("Log in"))
+		return
 	}
+	var password = $('#modal_login_input_password').val()
+	if (password === ""){
+		$('#login-res-text').text(i18n("Error: Password field is empty"))
+		setTimeout(function(){$('#login-res-text').text("")},3000)
+		$('#modal_login_btn_login').attr("disabled", false)
+		$('#modal_login_btn_login').html(i18n("Log in"))
+		return
+	}
+	var captchaWindow = window.open('cap://deezer.com/', '_blank', 'nodeIntegration=no')
+	var timer = setInterval(function() {
+  	if (captchaWindow.closed) {
+    	clearInterval(timer)
+			var captchaResponse = $('#modal_login_input_captchaResponse').val()
+			if (captchaResponse == ""){
+				$('#login-res-text').text(i18n("Error: Captcha wasn't solved."))
+				setTimeout(function(){$('#login-res-text').text("")},3000)
+				$('#modal_login_btn_login').attr("disabled", false)
+				$('#modal_login_btn_login').html(i18n("Log in"))
+				return
+			}
+			localStorage.setItem('autologin_email', username)
+			//Send to the software
+		  socket.emit('login', username, password, captchaResponse)
+    }
+  }, 500);
+})
+
+$('#modal_settings_btn_updateArl').click(function () {
+	$('#modal_settings_btn_updateArl').attr("disabled", true)
+	var userToken = $('#modal_login_input_userToken').val()
+	localStorage.setItem('userToken', userToken)
+	socket.emit('loginViaUserToken', userToken)
+	$('#modal_settings_btn_updateArl').attr("disabled", false)
+})
+
+$("#modal_settings_btn_copyArl").click(function(){
+	$("#modal_login_input_userToken").attr("type", "text");
+	document.querySelector("#modal_login_input_userToken").select();
+	document.execCommand("copy");
+	$("#modal_login_input_userToken").attr("type", "password");
+	M.toast({html: '<i class="material-icons left">assignment</i>'+i18n("userToken copied to clipboard"), displayLength: 5000, classes: 'rounded'})
 })
 
 // Get captcha response
@@ -106,26 +130,59 @@ socket.on("login", function (data) {
 		$("#side_user").text(data.user.name)
 		$("#side_avatar").attr("src",data.user.picture)
 		$("#side_email").text(data.user.email ? data.user.email : "id:"+data.user.id)
-		$('#initializing').addClass('animated fadeOut').on('webkitAnimationEnd', function () {
-			$(this).css('display', 'none')
-			$(this).removeClass('animated fadeOut')
-		})
-		// Load top charts list for countries
-		if (localStorage.getItem('chartsCountry') == null)
-			localStorage.setItem('chartsCountry', "Worldwide")
-		chartCountry = localStorage.getItem('chartsCountry')
-		socket.emit("getChartsCountryList", {selected: chartCountry})
-		socket.emit("getChartsTrackListByCountry", {country: chartCountry})
-		// Load personal pubblic playlists
-		socket.emit("getMyPlaylistList", {spotifyUser: localStorage.getItem('spotifyUser')})
+		if (data.user.id != 0){
+			localStorage.setItem('userToken', data.user.arl)
+			$("#modal_login_input_userToken").val(data.user.arl)
+			// Load personal public playlists
+			socket.emit("getMyPlaylistList", {spotifyUser: localStorage.getItem('spotifyUser')})
+			$('#logged_in_info').removeClass('hide')
+			$('#login_email_btn').addClass('hide')
+			$('#modal_login').modal("close")
+		}
 	}else{
 		$('#login-res-text').text(data.error)
 		setTimeout(function(){$('#login-res-text').text("")},3000)
+		$('#login-res-text2').text(data.error)
+		setTimeout(function(){$('#login-res-text2').text("")},3000)
 		$('#modal_login_input_password').val("")
 		$('#modal_login_input_userToken').val("")
 	}
 	$('#modal_login_btn_login').attr("disabled", false)
 	$('#modal_login_btn_login').html(i18n("Log in"))
+	M.updateTextFields()
+})
+
+socket.on('checkAutologin', function(){
+	// Autologin
+	if (localStorage.getItem('autologin')){
+		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
+		$('#modal_login_btn_login').attr("disabled", true)
+		$('#modal_login_btn_login').html(i18n("Logging in..."))
+		if (serverMode){
+			$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
+		}else{
+			$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
+			$('#modal_login_input_password').val("password")
+		}
+		M.updateTextFields()
+	}else{
+		socket.emit('init')
+	}
+})
+
+// Logout Button
+$('#modal_settings_btn_logout').click(function () {
+	$('#modal_login_input_username').val("")
+	$('#modal_login_input_password').val("")
+	$('#modal_login_input_userToken').val("")
+	$('#modal_login_input_captchaResponse').val("")
+	$('#login_email_btn').removeClass('hide')
+	$('#logged_in_info').addClass('hide')
+	localStorage.removeItem("autologin")
+	localStorage.removeItem("userToken")
+	localStorage.removeItem("autologin_email")
+	socket.emit('logout')
+	M.updateTextFields()
 })
 
 // Open downloads folder
@@ -144,23 +201,6 @@ $('#modal_tags_replayGain').on('click', function() {
 	}
 })
 
-socket.on('checkAutologin', function(){
-	// Autologin
-	socket.emit("getUserSettings")
-	if (localStorage.getItem('autologin')){
-		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
-		$('#modal_login_btn_login').attr("disabled", true)
-		$('#modal_login_btn_login').html(i18n("Logging in..."))
-		if (serverMode){
-			$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
-		}else{
-			$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
-			$('#modal_login_input_password').val("password")
-		}
-		M.updateTextFields()
-	}
-})
-
 // Do misc stuff on page load
 $(document).ready(function () {
 	// Page Initializing
@@ -168,6 +208,18 @@ $(document).ready(function () {
 	preview_track.volume = 0
 	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
 	$('.modal').modal()
+
+	// Load top charts list for countries
+	if (localStorage.getItem('chartsCountry') == null)
+		localStorage.setItem('chartsCountry', "Worldwide")
+	chartCountry = localStorage.getItem('chartsCountry')
+	socket.emit("getUserSettings")
+	socket.emit("getChartsCountryList", {selected: chartCountry})
+	socket.emit("getChartsTrackListByCountry", {country: chartCountry})
+	$("main.container").css('display', 'block')
+	$("main.container").addClass('animated fadeIn').on('webkitAnimationEnd', function () {
+		$(this).removeClass('animated fadeOut')
+	})
 
 	// Side Nav Stuff
 	$('.sidenav').sidenav({
@@ -451,24 +503,6 @@ $('#modal_login_btn_signup').click(function(){
 	}else{
 		window.open("https://www.deezer.com/register")
 	}
-})
-
-// Logout Button
-$('#modal_settings_btn_logout').click(function () {
-	$('#modal_login_input_username').val("")
-	$('#modal_login_input_password').val("")
-	$('#modal_login_input_userToken').val("")
-	$('#modal_login_input_captchaResponse').val("")
-	$('#initializing').css('display', '')
-	$('#initializing').addClass('animated fadeIn').on('webkitAnimationEnd', function () {
-		$(this).removeClass('animated fadeIn')
-		$(this).css('display', '')
-	})
-	localStorage.removeItem("autologin")
-	localStorage.removeItem("userToken")
-	localStorage.removeItem("autologin_email")
-	socket.emit('logout')
-	M.updateTextFields()
 })
 
 // Populate settings fields

@@ -50,12 +50,7 @@ hr{
 	opacity: 0.5;
 }
 
-#initializing {
-	z-index: 98;
-	position: fixed;
-  margin-top: 32px;
-	width: 100%;
-	height: 100%;
+#modal_login {
   background-color: #f5f5f5;
 }
 #modal_login_autologin{
@@ -63,10 +58,6 @@ hr{
 }
 *:focus{
 	outline-color: #3f51b5;
-}
-
-#initializing>div {
-	width: 100%;
 }
 
 .resize-padding{

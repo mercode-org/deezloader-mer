@@ -13,7 +13,7 @@ body, .tabs, .card, .modal, input, .collapsible-header{
   filter: hue-rotate(220deg);
 }*/
 
-#initializing{
+#modal_login{
   background-color: #23232c;
 }
 
