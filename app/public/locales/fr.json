@@ -43,7 +43,7 @@
 	"Download images as PNGs": "Télécharger les images en tant que PNG's",
 	"Tags": "Métadonnées",
 	"Null Character": "Caractère nul",
-	"with space": "avec un espace",
+	"with space": "avec une espace",
 	"Multitag Separator": "Séparateur de métadonnées multiples",
 	"YY": "AA",
 	"MM": "MM",
@@ -208,8 +208,8 @@
   ],
 	"by %{name}": "par %{name}",
 	"Translations": "Traductions",
-	"Deezer Login": "Deezer Login",
-	"Update userToken": "Update userToken",
-	"Login with e-mail": "Login with e-mail",
-	"userToken copied to clipboard": "userToken copied to clipboard"
+	"Deezer Login": "Identifiant Deezer",
+	"Update userToken": "Mettre à jour le Token d'utilisateur",
+	"Login with e-mail": "Identification par e-mail",
+	"userToken copied to clipboard": "Le Token d'utilisateur a été copié dans le presse-papiers"
 }
