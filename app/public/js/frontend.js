@@ -207,6 +207,7 @@ $('#modal_tags_replayGain').on('click', function() {
 // Do misc stuff on page load
 $(document).ready(function () {
 	// Page Initializing
+	$("main.container").css('display', 'block')
 	M.AutoInit()
 	preview_track.volume = 0
 	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
@@ -219,7 +220,6 @@ $(document).ready(function () {
 	socket.emit("getUserSettings")
 	socket.emit("getChartsCountryList", {selected: chartCountry})
 	socket.emit("getChartsTrackListByCountry", {country: chartCountry})
-	$("main.container").css('display', 'block')
 	$("main.container").addClass('animated fadeIn').on('webkitAnimationEnd', function () {
 		$(this).removeClass('animated fadeOut')
 	})
