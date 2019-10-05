@@ -212,17 +212,17 @@ $(document).ready(function () {
 	preview_track.volume = 0
 	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
 	$('.modal').modal()
+	socket.emit("getUserSettings")
+	$("main.container").addClass('animated fadeIn').on('webkitAnimationEnd', function () {
+		$(this).removeClass('animated fadeOut')
+	})
 
 	// Load top charts list for countries
 	if (localStorage.getItem('chartsCountry') == null)
 		localStorage.setItem('chartsCountry', "Worldwide")
 	chartCountry = localStorage.getItem('chartsCountry')
-	socket.emit("getUserSettings")
 	socket.emit("getChartsCountryList", {selected: chartCountry})
 	socket.emit("getChartsTrackListByCountry", {country: chartCountry})
-	$("main.container").addClass('animated fadeIn').on('webkitAnimationEnd', function () {
-		$(this).removeClass('animated fadeOut')
-	})
 
 	// Side Nav Stuff
 	$('.sidenav').sidenav({
