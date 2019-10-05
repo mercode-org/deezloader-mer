@@ -207,5 +207,9 @@
     [2, null, "%n brani"]
   ],
 	"by %{name}": "di %{name}",
-	"Translations": "Traduzioni"
+	"Translations": "Traduzioni",
+	"Deezer Login": "Accesso a Deezer",
+	"Update userToken": "Aggiorna l'userToken",
+	"Login with e-mail": "Fai il login con l'email",
+	"userToken copied to clipboard": "userToken copiato negli appunti"
 }

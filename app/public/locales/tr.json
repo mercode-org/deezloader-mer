@@ -206,5 +206,9 @@
     [2, null, "%n şarkı"]
   ],
 	"by %{name}": "%{name} tarafından",
-	"Translations": "Çeviriler"
+	"Translations": "Çeviriler",
+	"Deezer Login": "Deezer Login",
+	"Update userToken": "Update userToken",
+	"Login with e-mail": "Login with e-mail",
+	"userToken copied to clipboard": "userToken copied to clipboard"
 }

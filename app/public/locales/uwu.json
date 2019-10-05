@@ -207,5 +207,9 @@
     [2, null, "%n songs"]
   ],
 	"by %{name}": "by %{name}",
-	"Translations": "twanswations"
+	"Translations": "twanswations",
+	"Deezer Login": "deezew wogin",
+	"Update userToken": "update usewtoken",
+	"Login with e-mail": "wogin wif e-maiw",
+	"userToken copied to clipboard": "usewtoken copied to cwipboawd"
 }

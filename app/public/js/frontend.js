@@ -97,9 +97,12 @@ $('#modal_login_btn_login').click(function () {
 
 $('#modal_settings_btn_updateArl').click(function () {
 	$('#modal_settings_btn_updateArl').attr("disabled", true)
+	var currentArl = localStorage.getItem('userToken')
 	var userToken = $('#modal_login_input_userToken').val()
-	localStorage.setItem('userToken', userToken)
-	socket.emit('loginViaUserToken', userToken)
+	if (currentArl != userToken){
+		socket.emit('logout')
+		socket.emit('loginViaUserToken', userToken)
+	}
 	$('#modal_settings_btn_updateArl').attr("disabled", false)
 })
 

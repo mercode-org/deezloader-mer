@@ -207,5 +207,9 @@
     [2, null, "%n เพลง"]
   ],
 	"by %{name}": "โดย %{name}",
-	"Translations": "Translations"
+	"Translations": "Translations",
+	"Deezer Login": "Deezer Login",
+	"Update userToken": "Update userToken",
+	"Login with e-mail": "Login with e-mail",
+	"userToken copied to clipboard": "userToken copied to clipboard"
 }
