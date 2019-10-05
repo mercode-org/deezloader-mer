@@ -139,7 +139,7 @@ socket.on("login", function (data) {
 			// Load personal public playlists
 			socket.emit("getMyPlaylistList", {spotifyUser: localStorage.getItem('spotifyUser')})
 			$('#logged_in_info').removeClass('hide')
-			$('#login_email_btn').addClass('hide')
+			$('#login_email_btn_container').addClass('hide')
 			$('#modal_login').modal("close")
 		}
 	}else{
@@ -179,7 +179,7 @@ $('#modal_settings_btn_logout').click(function () {
 	$('#modal_login_input_password').val("")
 	$('#modal_login_input_userToken').val("")
 	$('#modal_login_input_captchaResponse').val("")
-	$('#login_email_btn').removeClass('hide')
+	$('#login_email_btn_container').removeClass('hide')
 	$('#logged_in_info').addClass('hide')
 	localStorage.removeItem("autologin")
 	localStorage.removeItem("userToken")
