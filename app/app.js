@@ -1107,7 +1107,7 @@ io.sockets.on('connection', function (s) {
 					});
 					if (downloading.settings.logErrors){
 						if (downloading.errorLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true});
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
 							fs.writeFileSync(downloading.filePath+"notFound.txt",downloading.errorLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"notFound.txt")) fs.unlinkSync(downloading.filePath+"notFound.txt");
@@ -1115,7 +1115,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.logSearched){
 						if (downloading.searchedLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true});
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
 							fs.writeFileSync(downloading.filePath+"alternativeSongs.txt",downloading.searchedLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"alternativeSongs.txt")) fs.unlinkSync(downloading.filePath+"alternativeSongs.txt");
@@ -1189,7 +1189,7 @@ io.sockets.on('connection', function (s) {
 					});
 					if (downloading.settings.logErrors){
 						if (downloading.errorLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true});
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
 							fs.writeFileSync(downloading.filePath+"notFound.txt",downloading.errorLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"notFound.txt")) fs.unlinkSync(downloading.filePath+"notFound.txt");
@@ -1197,7 +1197,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.logSearched){
 						if (downloading.searchedLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true});
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
 							fs.writeFileSync(downloading.filePath+"alternativeSongs.txt",downloading.searchedLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"alternativeSongs.txt")) fs.unlinkSync(downloading.filePath+"alternativeSongs.txt");
@@ -1207,7 +1207,7 @@ io.sockets.on('connection', function (s) {
 						fs.writeFileSync(downloading.filePath + "playlist.m3u8", downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
-						if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true});
+						if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
 						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.obj.picture_small){
 							downloading.cover = downloading.obj.picture_small.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
@@ -1317,7 +1317,7 @@ io.sockets.on('connection', function (s) {
 					});
 					if (downloading.settings.logErrors){
 						if (downloading.errorLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true});
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
 							fs.writeFileSync(downloading.filePath+"notFound.txt",downloading.errorLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"notFound.txt")) fs.unlinkSync(downloading.filePath+"notFound.txt");
@@ -1325,7 +1325,7 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.logSearched){
 						if (downloading.searchedLog != ""){
-							if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true});
+							if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
 							fs.writeFileSync(downloading.filePath+"alternativeSongs.txt",downloading.searchedLog)
 						}else{
 							if (fs.existsSync(downloading.filePath+"alternativeSongs.txt")) fs.unlinkSync(downloading.filePath+"alternativeSongs.txt");
@@ -1335,7 +1335,7 @@ io.sockets.on('connection', function (s) {
 						fs.writeFileSync(downloading.filePath + "playlist.m3u8", downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
-						if (!fs.existsSync(downloading.filePath)) fs.mkdirSync(downloading.filePath, {recursive: true});
+						if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
 						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.obj.images){
 							downloading.cover = downloading.obj.images[0].url.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
@@ -1850,7 +1850,7 @@ io.sockets.on('connection', function (s) {
 			track.MD5 = await s.Deezer.getTrackMD5(track.id)
 		logger.info(`[${track.artist.name} - ${track.title}] Starting the download process`)
 		var downloadingPromise = new Promise((resolve, reject)=>{
-			if (!fs.existsSync(`${filepath}`)) fs.mkdirSync(`${filepath}`, {recursive: true})
+			if (!fs.existsSync(`${filepath}`)) fs.mkdirpSync(`${filepath}`)
 			let url = new URL(track.getDownloadUrl(track.selectedFormat));
 			let options = {
 				host: url.hostname,
