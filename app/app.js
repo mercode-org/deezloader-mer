@@ -1849,6 +1849,7 @@ io.sockets.on('connection', function (s) {
 		if (!track.MD5)
 			track.MD5 = await s.Deezer.getTrackMD5(track.id)
 		logger.info(`[${track.artist.name} - ${track.title}] Starting the download process`)
+		s.emit("printObj", track)
 		var downloadingPromise = new Promise((resolve, reject)=>{
 			if (!fs.existsSync(`${filepath}`)) fs.mkdirpSync(`${filepath}`)
 			let url = new URL(track.getDownloadUrl(track.selectedFormat));
@@ -1948,7 +1949,7 @@ io.sockets.on('connection', function (s) {
 						}
 					});
 				} else {
-					reject("Track is Empty")
+					reject("Track is no longer provided by deezer")
 					return false
 				}
 			})
@@ -1957,9 +1958,9 @@ io.sockets.on('connection', function (s) {
 		try{
 			await downloadingPromise
 		}catch(err){
-			if (err==="Track is Empty"){
+			if (err==="Track is no longer provided by deezer"){
 				if(track.fallbackId && track.fallbackId != "0"){
-					logger.warn(`[${track.artist.name} - ${track.title}] Track is empty, falling on alternative`)
+					logger.warn(`[${track.artist.name} - ${track.title}] Track is no longer provided by deezer, falling on alternative`)
 					var _track = await s.Deezer.getTrack(track.fallbackId)
 					track.id = _track.id
 					track.fallbackId = _track.fallbackId
@@ -1969,7 +1970,7 @@ io.sockets.on('connection', function (s) {
 					track.mediaVersion = _track.mediaVersion
 					return downloadTrackObject(track, queueId, settings)
 				}else if(!track.searched && settings.fallbackSearch){
-					logger.warn(`[${track.artist.name} - ${track.title}] Track is empty, searching for alternative`)
+					logger.warn(`[${track.artist.name} - ${track.title}] Track is no longer provided by deezer, searching for alternative`)
 					_trackId = await convertMetadata2Deezer(track.artist.name, track.title, track.album.title)
 					if (_trackId != "0"){
 						_track = await s.Deezer.getTrack(_trackId)
@@ -1982,13 +1983,13 @@ io.sockets.on('connection', function (s) {
 						track.searched = true
 						return downloadTrackObject(track, queueId, settings)
 					}else{
-						logger.error(`[${track.artist.name} - ${track.title}] Track is empty and no alternative found`)
-						throw new Error("Track is empty and no alternative found")
+						logger.error(`[${track.artist.name} - ${track.title}] Track is no longer provided by deezer and no alternative found`)
+						throw new Error("Track is no longer provided by deezer and no alternative found")
 						return
 					}
 				}else{
-					logger.error(`[${track.artist.name} - ${track.title}] Downloading error: Track is Empty`)
-					throw new Error("Track is Empty")
+					logger.error(`[${track.artist.name} - ${track.title}] Downloading error: Track is no longer provided by deezer`)
+					throw new Error("Track is no longer provided by deezer")
 					return
 				}
 			}else{
