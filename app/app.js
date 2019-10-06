@@ -1849,7 +1849,6 @@ io.sockets.on('connection', function (s) {
 		if (!track.MD5)
 			track.MD5 = await s.Deezer.getTrackMD5(track.id)
 		logger.info(`[${track.artist.name} - ${track.title}] Starting the download process`)
-		s.emit("printObj", track)
 		var downloadingPromise = new Promise((resolve, reject)=>{
 			if (!fs.existsSync(`${filepath}`)) fs.mkdirpSync(`${filepath}`)
 			let url = new URL(track.getDownloadUrl(track.selectedFormat));
