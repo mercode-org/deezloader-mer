@@ -1,9 +1,9 @@
 :root {
-  --main-modal-background: #212121;
+  --main-modal-background: #121212;
 }
 
 body, .tabs, .card, .modal, input, .collapsible-header{
-  background-color: #212121;
+  background-color: #121212;
   color: white;
 }
 /*nav{
@@ -18,7 +18,7 @@ body, .tabs, .card, .modal, input, .collapsible-header{
 }
 
 .sidenav, .dropdown-content li>span{
-  background-color: #212121;
+  background-color: #121212;
 }
 .sidenav li>a{
   color: #d8d8d8
@@ -42,7 +42,7 @@ body, .tabs, .card, .modal, input, .collapsible-header{
 }
 
 table.striped>tbody>tr:nth-child(odd){
-  background-color: #131313
+  background-color: #212121
 }
 
 ::-webkit-scrollbar-track, .progress{
@@ -62,7 +62,7 @@ body::-webkit-scrollbar-thumb {
 
 
 .modal-footer{
-  background-color: #212121 !important;
+  background-color: #121212 !important;
 }
 #page_footer{
   background-color: #1e1e1e;
@@ -76,5 +76,5 @@ body::-webkit-scrollbar-thumb {
   color: white;
 }
 table.highlight>tbody>tr:hover{
-  background-color: #131313;
+  background-color: #212121;
 }
