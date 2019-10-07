@@ -913,6 +913,7 @@ socket.on("getTrackList", function (data) {
 				{title: '#'},
 				{title: i18n('Song')},
 				{title: i18n('Artist'), hideonsmall:true},
+				{title: i18n('Album'), hideonsmall:true},
 				{title: '<i class="material-icons">timer</i>', width: "40px"},
 				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "24px"}
 			]
@@ -929,7 +930,8 @@ socket.on("getTrackList", function (data) {
 						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
 					</td>
 					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
-					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
+					<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${trackList[i].artist.link}">${trackList[i].artist.name}</span></td>
+					<td class="hide-on-small-only"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${trackList[i].album.id}">${trackList[i].album.title}</span></td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					<td>
 						<div class="valign-wrapper">
@@ -941,6 +943,14 @@ socket.on("getTrackList", function (data) {
 					</tr>`
 				)
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'))
+				tableBody.children('tr:last').find('.resultArtist').click(function (ev){
+					ev.preventDefault()
+					showTrackList($(this).data("link"))
+				})
+				tableBody.children('tr:last').find('.resultAlbum').click(function (ev){
+					ev.preventDefault()
+					showTrackListSelective($(this).data("link"))
+				})
 			}
 			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
 			trackListSelectiveModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
@@ -1154,6 +1164,14 @@ var linkAnalyzerSong = new Vue({
 	el: '#link_analyzer_song',
 	data: {
 		d:{}
+	},
+	methods:{
+		showArtist: function(){
+			showTrackList(this.d.artist.link)
+		},
+		showAlbum: function(){
+			showTrackListSelective(`https://www.deezer.com/album/${this.d.album.id}`)
+		}
 	}
 })
 
@@ -1161,6 +1179,11 @@ var linkAnalyzerAlbum = new Vue({
 	el: '#link_analyzer_album',
 	data: {
 		d:{}
+	},
+	methods:{
+		showArtist: function(){
+			showTrackList(`https://www.deezer.com/artist/${this.d.artist.id}`)
+		}
 	}
 })
 
