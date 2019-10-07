@@ -211,5 +211,7 @@
 	"Deezer Login": "deezew wogin",
 	"Update userToken": "update usewtoken",
 	"Login with e-mail": "wogin wif e-maiw",
-	"userToken copied to clipboard": "usewtoken copied to cwipboawd"
+	"userToken copied to clipboard": "usewtoken copied to cwipboawd",
+	"by %s": "by %s",
+	"in %s": "in %s"
 }

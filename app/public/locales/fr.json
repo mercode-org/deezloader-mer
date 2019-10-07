@@ -211,5 +211,7 @@
 	"Deezer Login": "Identifiant Deezer",
 	"Update userToken": "Mettre à jour le Token d'utilisateur",
 	"Login with e-mail": "Identification par e-mail",
-	"userToken copied to clipboard": "Le Token d'utilisateur a été copié dans le presse-papiers"
+	"userToken copied to clipboard": "Le Token d'utilisateur a été copié dans le presse-papiers",
+	"by %s": "par %s",
+	"in %s": "in %s"
 }

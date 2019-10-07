@@ -201,15 +201,29 @@
 	"Download MP3 320kbps": "Scarica MP3 320kbps",
 	"Download MP3 128kbps": "Scarica MP3 128kbps",
 	"Spotify Playlist": "Playlist Spotify",
-	"%n songs":[
-    [0, 0, "%n brani"],
-    [1, 1, "%n brano"],
-    [2, null, "%n brani"]
-  ],
+	"%n songs": [
+		[
+			0,
+			0,
+			"%n brani"
+		],
+		[
+			1,
+			1,
+			"%n brano"
+		],
+		[
+			2,
+			null,
+			"%n brani"
+		]
+	],
 	"by %{name}": "di %{name}",
 	"Translations": "Traduzioni",
 	"Deezer Login": "Accesso a Deezer",
 	"Update userToken": "Aggiorna l'userToken",
 	"Login with e-mail": "Fai il login con l'email",
-	"userToken copied to clipboard": "userToken copiato negli appunti"
+	"userToken copied to clipboard": "userToken copiato negli appunti",
+	"by %s": "di %s",
+	"in %s": "in %s"
 }

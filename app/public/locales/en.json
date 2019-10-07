@@ -223,5 +223,7 @@
 	"Deezer Login": "Deezer Login",
 	"Update userToken": "Update userToken",
 	"Login with e-mail": "Login with e-mail",
-	"userToken copied to clipboard": "userToken copied to clipboard"
+	"userToken copied to clipboard": "userToken copied to clipboard",
+	"by %s": "by %s",
+	"in %s": "in %s"
 }

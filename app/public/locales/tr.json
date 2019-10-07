@@ -210,5 +210,7 @@
 	"Deezer Login": "Deezer Oturumu",
 	"Update userToken": "kullanıcıJeton(userToken)'u güncelle",
 	"Login with e-mail": "E-posta ile oturum aç",
-	"userToken copied to clipboard": "kullanıcıJeton(userToken) panoya kopyalandı"
+	"userToken copied to clipboard": "kullanıcıJeton(userToken) panoya kopyalandı",
+	"by %s": "%s tarafından",
+	"in %s": "in %s"
 }

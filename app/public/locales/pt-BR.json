@@ -223,5 +223,7 @@
 	"Deezer Login": "Login do Deezer",
 	"Update userToken": "Atualizar userToken",
 	"Login with e-mail": "Login com e-mail",
-	"userToken copied to clipboard": "userToken copiado para a Área de Transferência"
+	"userToken copied to clipboard": "userToken copiado para a Área de Transferência",
+	"by %s": "por %s",
+	"in %s": "in %s"
 }

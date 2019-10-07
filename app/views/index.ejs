@@ -1213,8 +1213,8 @@
 				</div>
 				<div id="link_analyzer_song_maininfo" class="link_analyzer_maininfo">
 					<h5 style="margin-bottom:8px; margin-top:0px;">{{ d.title }} {{ d.version }}<i v-if="d.explicit_lyrics" class="material-icons valignicon materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i></h5>
-					<p style="margin-top:0px;">by <b>{{ d.artist.name }}</b></br>
-					in <b>{{ d.album.title }}</b></p>
+					<p style="margin-top:0px;"><%- __('by %s', "<b>{{ d.artist.name }}</b>")%></br>
+					<%- __('in %s', "<b>{{ d.album.title }}</b>")%></p>
 					<hr class="hide-on-small-only">
 					<a v-if="d.alternative" v-bind:href="'d.alternative.link'"><b><%= __('Alternative Link')%></b></a>
 					<table class="striped">
@@ -1238,8 +1238,8 @@
 				</div>
 				<div id="link_analyzer_album_maininfo" class="link_analyzer_maininfo">
 					<h5 style="margin-bottom:8px; margin-top:0px;">{{ d.title }} <i v-if="d.explicit_lyrics" class="material-icons valignicon materialize-red-text tooltipped" data-tooltip="Explicit">explicit</i></h5>
-					<p style="margin-top:0px;">by <b>{{ d.artist.name }}</b></br>
-					<b>{{ d.nb_tracks }}</b> {{ d.nb_tracks==1 ? 'track' : 'tracks' }}</p>
+					<p style="margin-top:0px;"><%- __('by %s', "<b>{{ d.artist.name }}</b>")%></br>
+					{{ d.tracks_string }}</p>
 					<hr class="hide-on-small-only">
 					<a v-if="d.alternative" v-bind:href="'d.alternative.link'"><b><%= __('Alternative Link')%></b></a>
 					<table class="striped">

@@ -206,10 +206,12 @@
     [1, 1, "%n skladba"],
     [2, null, "%n skladeb"]
   ],
-	"by %{name}": "od %{staclu}",
+	"by %{name}": "od %{name}",
 	"Translations": "Překlady",
 	"Deezer Login": "Deezer Login",
 	"Update userToken": "Update userToken",
 	"Login with e-mail": "Login with e-mail",
-	"userToken copied to clipboard": "userToken copied to clipboard"
+	"userToken copied to clipboard": "userToken copied to clipboard",
+	"by %s": "od %s",
+	"in %s": "in %s"
 }

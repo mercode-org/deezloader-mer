@@ -1211,6 +1211,7 @@ socket.on("analyzealbum", (data)=>{
 	})
 	data.genres_string = genres.join(", ")
 	data.duration_string = convertDuration(data.duration)
+	data.tracks_string = i18n("%n songs", parseInt(data.nb_tracks))
 	linkAnalyzerAlbum.d = data
 	$("#link_analyzer_loading").hide()
 	$("#link_analyzer_album").show()
