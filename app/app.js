@@ -1047,6 +1047,7 @@ io.sockets.on('connection', function (s) {
 				downloading.settings.albName = downloading.name;
 				downloading.settings.artName = downloading.artist;
 				downloading.playlistArr = Array(downloading.size);
+				downloading.tracksData = Array(downloading.size);
 				let ajson = {
 					artist : downloading.obj.artist,
 					nb_tracks : downloading.obj.nb_tracks,
@@ -1059,13 +1060,19 @@ io.sockets.on('connection', function (s) {
 					discTotal: downloading.obj.discTotal ? downloading.obj.discTotal : null
 				}
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
-					downloading.obj.tracks.every(function (t) {
+					downloading.obj.tracks.every(function (t, index) {
+						downloading.tracksData[index] = {
+							artist: t.artist.name,
+							title: t.title,
+							progress: 0,
+						}
 						trackQueue.push(async cb=>{
 							if (!downloadQueue[downloading.queueId]) {
 								reject()
 								return false
 							}
 							t.ajson = ajson
+							t.position = index
 							logger.info(`Now downloading: ${t.artist.name} - ${t.title}`)
 							try{
 								await downloadTrackObject(t, downloading.queueId, downloading.settings)
@@ -1077,10 +1084,10 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
-							io.sockets.emit("downloadProgress", {
+							/*io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-							});
+							});*/
 							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
@@ -1091,6 +1098,7 @@ io.sockets.on('connection', function (s) {
 								id: downloading.id,
 								type: downloading.type,
 								errorLog: downloading.errorLog,
+								tracksData: downloading.tracksData
 							})
 							if (downloading.downloaded + downloading.failed >= downloading.size) resolve()
 							cb()
@@ -1135,6 +1143,7 @@ io.sockets.on('connection', function (s) {
 			case "playlist":
 				downloading.settings.plName = downloading.name;
 				downloading.playlistArr = Array(downloading.size);
+				downloading.tracksData = Array(downloading.size);
 				downloading.settings.playlist = {
 					id: downloading.id.split(":")[0],
 					name:	downloading.name,
@@ -1144,6 +1153,11 @@ io.sockets.on('connection', function (s) {
 				};
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.obj.tracks.every(function (t, index) {
+						downloading.tracksData[index] = {
+							artist: t.artist.name,
+							title: t.title,
+							progress: 0,
+						}
 						trackQueue.push(async cb=>{
 							if (!downloadQueue[downloading.queueId]) {
 								reject()
@@ -1159,10 +1173,10 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
-							io.sockets.emit("downloadProgress", {
+							/*io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-							});
+							});*/
 							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
@@ -1173,6 +1187,7 @@ io.sockets.on('connection', function (s) {
 								id: downloading.id,
 								type: downloading.type,
 								errorLog: downloading.errorLog,
+								tracksData: downloading.tracksData
 							})
 							if (downloading.downloaded + downloading.failed >= downloading.size) resolve()
 							cb()
@@ -1237,6 +1252,7 @@ io.sockets.on('connection', function (s) {
 			case "spotifyplaylist":
 				downloading.settings.plName = downloading.name
 				downloading.playlistArr = Array(downloading.size)
+				downloading.tracksData = Array(downloading.size)
 				downloading.playlistContent = new Array(downloading.size)
 				logger.info("Waiting for all tracks to be converted");
 				const convert = async () =>{
@@ -1266,6 +1282,11 @@ io.sockets.on('connection', function (s) {
 				}
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.trackList.every(function (t, index) {
+						downloading.tracksData[index] = {
+							artist: t.artist.name,
+							title: t.title,
+							progress: 0,
+						}
 						trackQueue.push(async cb=>{
 							if (!downloadQueue[downloading.queueId]) {
 								reject()
@@ -1287,10 +1308,10 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err.stack ? err.stack : err}`)
 							}
-							io.sockets.emit("downloadProgress", {
+							/*io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-							});
+							});*/
 							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
@@ -1301,6 +1322,7 @@ io.sockets.on('connection', function (s) {
 								id: downloading.id,
 								type: downloading.type,
 								errorLog: downloading.errorLog,
+								tracksData: downloading.tracksData
 							})
 							if (downloading.downloaded + downloading.failed >= downloading.size) resolve()
 							cb()
@@ -1879,24 +1901,46 @@ io.sockets.on('connection', function (s) {
 							chunkLength += 2048;
 
 							// Progress bar advancement for single tracks
-							if((downloadQueue[queueId]) && downloadQueue[queueId].type == "track"){
-								if (!downloadQueue[queueId]){
-									reject("Not in Queue")
+							if(downloadQueue[queueId]){
+								if (downloadQueue[queueId].type == "track"){
+									if (!downloadQueue[queueId]){
+										reject("Not in Queue")
+									}
+									try{
+										if (!downloadQueue[queueId].percentage) {
+											downloadQueue[queueId].percentage = 0
+										}
+										let complete = track.selectedFilesize
+										let percentage = (chunkLength / complete) * 100;
+										if ((percentage - downloadQueue[queueId].percentage > 1) || (chunkLength == complete)) {
+											downloadQueue[queueId].percentage = percentage
+											io.sockets.emit("downloadProgress", {
+												queueId: queueId,
+												percentage: downloadQueue[queueId].percentage
+											})
+										}
+									}catch(err){}
+								}else{
+									if (!downloadQueue[queueId]){
+										reject("Not in Queue")
+									}
+									try{
+										let complete = track.selectedFilesize
+										let percentage = (chunkLength / complete) * 100;
+										if ((percentage - downloadQueue[queueId].tracksData[track.position].progress > 1) || (chunkLength == complete)) {
+											downloadQueue[queueId].tracksData[track.position].progress = percentage
+											totalProgress = 0
+											for ( var i = 0, _len = downloadQueue[queueId].tracksData.length; i < _len; i++ ) {
+												totalProgress += downloadQueue[queueId].tracksData[i].progress
+											}
+											downloadQueue[queueId].percentage = totalProgress / downloadQueue[queueId].size
+											io.sockets.emit("downloadProgress", {
+												queueId: queueId,
+												percentage: downloadQueue[queueId].percentage
+											})
+										}
+									}catch(err){}
 								}
-								try{
-									if (!downloadQueue[queueId].percentage) {
-										downloadQueue[queueId].percentage = 0
-									}
-									let complete = track.selectedFilesize
-									let percentage = (chunkLength / complete) * 100;
-									if ((percentage - downloadQueue[queueId].percentage > 1) || (chunkLength == complete)) {
-										downloadQueue[queueId].percentage = percentage
-										io.sockets.emit("downloadProgress", {
-											queueId: queueId,
-											percentage: downloadQueue[queueId].percentage
-										})
-									}
-								}catch(err){}
 							}
 
 							// Thanks to Generalo for the improved download function
