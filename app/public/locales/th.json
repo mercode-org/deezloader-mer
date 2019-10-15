@@ -207,11 +207,11 @@
     [2, null, "%n เพลง"]
   ],
 	"by %{name}": "โดย %{name}",
-	"Translations": "Translations",
-	"Deezer Login": "Deezer Login",
-	"Update userToken": "Update userToken",
-	"Login with e-mail": "Login with e-mail",
-	"userToken copied to clipboard": "userToken copied to clipboard",
+	"Translations": "การแปลภาษา",
+	"Deezer Login": "เข้าสู่ระบบ Deezer",
+	"Update userToken": "อัปเดต userToken",
+	"Login with e-mail": "เข้าสู่ระบบด้วยอีเมล",
+	"userToken copied to clipboard": "userToken ถูกคัดลอกไปยังคลิปบอร์ดแล้ว",
 	"by %s": "โดย %s",
-	"in %s": "in %s"
+	"in %s": "ใน %s"
 }
