@@ -486,7 +486,6 @@ input[type=search]::-webkit-search-cancel-button {
 
 .downloadBar td{
 	display: table-cell;
-	height: 16px !important;
 	padding: 0px;
 	width: 100%;
 }
