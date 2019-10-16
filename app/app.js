@@ -102,7 +102,7 @@ server.listen(configFile.serverPort)
 logger.info('Server is running @ localhost:' + configFile.serverPort)
 
 app.get('/', function(req, res) {
-  res.render('index.ejs');
+	res.render('index.ejs');
 });
 
 var dqueue = new stq.SequentialTaskQueue()
@@ -1084,10 +1084,10 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
-							/*io.sockets.emit("downloadProgress", {
+							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-							});*/
+							});
 							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
@@ -1173,10 +1173,10 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
-							/*io.sockets.emit("downloadProgress", {
+							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-							});*/
+							});
 							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
@@ -1308,10 +1308,10 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err.stack ? err.stack : err}`)
 							}
-							/*io.sockets.emit("downloadProgress", {
+							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-							});*/
+							});
 							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
@@ -1925,20 +1925,11 @@ io.sockets.on('connection', function (s) {
 										reject("Not in Queue")
 									}
 									try{
-										if (!downloadQueue[queueId].percentage) {
-											downloadQueue[queueId].percentage = 0
-										}
 										let complete = track.selectedFilesize
 										let percentage = (chunkLength / complete) * 100;
 										if ((percentage - downloadQueue[queueId].tracksData[track.position].progress > 1) || (chunkLength == complete)) {
 											downloadQueue[queueId].tracksData[track.position].progress = percentage
 										}
-										let chunkProgres = ((chunk.length / complete)) / downloadQueue[queueId].size * 100
-										downloadQueue[queueId].percentage += chunkProgres
-										io.sockets.emit("downloadProgress", {
-											queueId: queueId,
-											percentage: downloadQueue[queueId].percentage
-										})
 									}catch(err){}
 								}
 							}
@@ -2524,9 +2515,9 @@ function extAsciiFilter(string){
 	string.split('').forEach((x)=>{
 		if (x.charCodeAt(0) > 255)
 			output += "?"
-  	else
-  		output += x
-  })
+		else
+			output += x
+	})
 	return output
 }
 
