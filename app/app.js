@@ -1084,10 +1084,10 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
-							/*io.sockets.emit("downloadProgress", {
+							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-							});*/
+							});
 							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
@@ -1173,10 +1173,10 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err}`)
 							}
-							/*io.sockets.emit("downloadProgress", {
+							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-							});*/
+							});
 							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
@@ -1308,10 +1308,10 @@ io.sockets.on('connection', function (s) {
 								downloading.errorLog += `${t.id} | ${t.artist.name} - ${t.title} | ${err}\r\n`
 								logger.error(`[${t.artist.name} - ${t.title}] ${err.stack ? err.stack : err}`)
 							}
-							/*io.sockets.emit("downloadProgress", {
+							io.sockets.emit("downloadProgress", {
 								queueId: downloading.queueId,
 								percentage: ((downloading.downloaded+downloading.failed) / downloading.size) * 100
-							});*/
+							});
 							io.sockets.emit("updateQueue", {
 								name: downloading.name,
 								artist: downloading.artist,
@@ -1929,15 +1929,6 @@ io.sockets.on('connection', function (s) {
 										let percentage = (chunkLength / complete) * 100;
 										if ((percentage - downloadQueue[queueId].tracksData[track.position].progress > 1) || (chunkLength == complete)) {
 											downloadQueue[queueId].tracksData[track.position].progress = percentage
-											totalProgress = 0
-											for ( var i = 0, _len = downloadQueue[queueId].tracksData.length; i < _len; i++ ) {
-												totalProgress += downloadQueue[queueId].tracksData[i].progress
-											}
-											downloadQueue[queueId].percentage = totalProgress / downloadQueue[queueId].size
-											io.sockets.emit("downloadProgress", {
-												queueId: queueId,
-												percentage: downloadQueue[queueId].percentage
-											})
 										}
 									}catch(err){}
 								}
