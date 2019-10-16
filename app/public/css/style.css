@@ -13,9 +13,11 @@ input{
 
 td{
 	text-align: left;
+	padding-left: 12px;
 }
 th{
-	text-align: left;
+    text-align: left;
+    padding-left: 12px;
 }
 
 .settings_switch{
@@ -468,4 +470,10 @@ input[type=search]::-webkit-search-cancel-button {
 
 .handlink{
 	cursor: pointer;
+}
+
+.trprog {
+  background-size: 0% 100%;
+  background-image: linear-gradient(rgba(170, 200, 255, 0.5), rgba(170, 200, 255, 0.5));
+  background-repeat: no-repeat;
 }
