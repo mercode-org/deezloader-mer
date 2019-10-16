@@ -531,6 +531,7 @@ io.sockets.on('connection', function (s) {
 				type: 'track',
 				settings: data.settings || {},
 				obj: track,
+				cover: `${s.Deezer.albumPicturesHost}${track.album.picture}/250x250-000000-80-0-0.jpg`,
 			}
 			addToQueue(_track)
 		}catch(err){
@@ -579,6 +580,7 @@ io.sockets.on('connection', function (s) {
 					type: 'track',
 					settings: data.settings || {},
 					obj: track,
+					cover: `${s.Deezer.albumPicturesHost}${track.album.picture}/250x250-000000-80-0-0.jpg`,
 				}
 				addToQueue(_track)
 			}else{
@@ -597,6 +599,7 @@ io.sockets.on('connection', function (s) {
 					type: 'album',
 					settings: data.settings || {},
 					obj: album,
+					cover: album.cover_medium,
 				}
 				addToQueue(_album)
 			}
@@ -673,6 +676,7 @@ io.sockets.on('connection', function (s) {
 				type: "playlist",
 				settings: data.settings || {},
 				obj: playlist,
+				cover: playlist.picture_medium,
 			}
 			addToQueue(_playlist)
 		}catch(err){
@@ -715,6 +719,7 @@ io.sockets.on('connection', function (s) {
 				type: "playlist",
 				settings: data.settings || {},
 				obj: artist,
+				cover: artist.picture_medium,
 			}
 			addToQueue(_playlist)
 		}catch(err){
@@ -759,7 +764,8 @@ io.sockets.on('connection', function (s) {
 					id: `${resp.body.id}:${data.bitrate}`,
 					bitrate: data.bitrate+"",
 					type: "spotifyplaylist",
-					obj: resp.body
+					obj: resp.body,
+					cover: resp.body.images[0].url,
 				}
 				var numPages=Math.floor((_playlist.size-1)/100)
 				var trackList = new Array(_playlist.size)
@@ -1026,6 +1032,7 @@ io.sockets.on('connection', function (s) {
 						id: downloading.id,
 						type: downloading.type,
 						errorLog: downloading.errorLog,
+						cover: downloading.cover,
 					})
 					io.sockets.emit("downloadProgress", {
 						queueId: downloading.queueId,
@@ -1098,7 +1105,8 @@ io.sockets.on('connection', function (s) {
 								id: downloading.id,
 								type: downloading.type,
 								errorLog: downloading.errorLog,
-								tracksData: downloading.tracksData
+								tracksData: downloading.tracksData,
+								cover: downloading.cover
 							})
 							if (downloading.downloaded + downloading.failed >= downloading.size) resolve()
 							cb()
@@ -1187,7 +1195,8 @@ io.sockets.on('connection', function (s) {
 								id: downloading.id,
 								type: downloading.type,
 								errorLog: downloading.errorLog,
-								tracksData: downloading.tracksData
+								tracksData: downloading.tracksData,
+								cover: downloading.cover
 							})
 							if (downloading.downloaded + downloading.failed >= downloading.size) resolve()
 							cb()
@@ -1322,7 +1331,8 @@ io.sockets.on('connection', function (s) {
 								id: downloading.id,
 								type: downloading.type,
 								errorLog: downloading.errorLog,
-								tracksData: downloading.tracksData
+								tracksData: downloading.tracksData,
+								cover: downloading.cover
 							})
 							if (downloading.downloaded + downloading.failed >= downloading.size) resolve()
 							cb()

@@ -1328,11 +1328,21 @@ function addObjToQueue(data){
 	var url_id = ('urlId' in data) ? data.urlId : ''
 
 	$(tableBody).append(
-			`<tr class="trprog" id="${data.queueId}" data-deezerid="${data.id}" data-urlid="${url_id}">
-			<td class="queueTitle">${data.name}</td>
-			<td class="queueSize">${data.size}</td>
-			<td class="queueDownloaded">${data.downloaded}</td>
-			<td class="queueFailed">${data.failed}</td>
+			`<tr class="downloadInfo" id="${data.queueId}" data-deezerid="${data.id}" data-urlid="${url_id}">
+				<td class="downloadInfo-cover">
+					<img width="75px" src="${data.cover}" alt="Cover ${data.name}"/>
+				</td>
+				<td class="downloadInfo-meta">
+					${data.name}<br>
+					<span class="secondary-text">${data.artist}</span>
+				</td>
+				<td class="downloadInfo-info">
+					<span class="queueDownloaded">${data.downloaded}</span>/<span class="queueSize">${data.size}</span><br>
+					<span class="secondary-text"><span class="queueFailed">${data.failed}</span> ${i18n("Failed")}</span>
+				</td>
+			</tr>
+			<tr class="downloadBar" id="bar-${data.queueId}">
+				<td colspan="4" class="progress"><div class="changeThis indeterminate"></div></td>
 			</tr>`)
 
 	var btn_remove = $('<a href="#" class="btn-flat waves-effect"><i class="material-icons">remove</i></a>')
@@ -1342,7 +1352,7 @@ function addObjToQueue(data){
 		socket.emit("cancelDownload", {queueId: data.queueId})
 	})
 
-	btn_remove.appendTo(tableBody.children('tr:last')).wrap('<td class="eventBtn center">')
+	btn_remove.appendTo(tableBody.children('tr.downloadInfo:last')).wrap('<td class="eventBtn center">')
 
 }
 
@@ -1360,7 +1370,7 @@ socket.on("downloadStarted", function (data) {
 	//data.queueId -> queueId of started download
 
 	//Switch progress type indeterminate to determinate
-	$('#' + data.queueId).find('.changeThis').removeClass('indeterminate').addClass('determinate')
+	$('#bar-' + data.queueId).find('.changeThis').removeClass('indeterminate').addClass('determinate')
 	$('#' + data.queueId).find('.eventBtn').find('a').html('<i class="material-icons">clear</i>')
 
 })
@@ -1376,15 +1386,15 @@ socket.on('updateQueue', function (data) {
 
 	if (data.failed == 0 && ((data.downloaded + data.failed) >= data.size)) {
 		$('#' + data.queueId).find('.eventBtn').html('<i class="material-icons">done</i>')
-		$('#' + data.queueId).addClass('finished')
+		$('#' + data.queueId+',#bar-' + data.queueId).addClass('finished')
 		M.toast({html: `<i class="material-icons left">done</i>${quoteattr(data.name)} - ${i18n("Completed!")}`, displayLength: 5000, classes: 'rounded'})
 	} else if (data.downloaded == 0 && ((data.downloaded + data.failed) >= data.size)) {
 		$('#' + data.queueId).find('.eventBtn').html('<i class="material-icons">error</i>')
-		$('#' + data.queueId).addClass('error')
+		$('#' + data.queueId+',#bar-' + data.queueId).addClass('error')
 		M.toast({html: `<i class="material-icons left">error</i>${quoteattr(data.name)} - ${i18n("Failed!")}`, displayLength: 5000, classes: 'rounded'})
 	} else if ((data.downloaded + data.failed) >= data.size) {
 		$('#' + data.queueId).find('.eventBtn').html('<i class="material-icons">warning</i>')
-		$('#' + data.queueId).addClass('error')
+		$('#' + data.queueId+',#bar-' + data.queueId).addClass('error')
 		M.toast({html: `<i class="material-icons left">warning</i>${quoteattr(data.name)} - ${i18n("Completed with errors!")}`, displayLength: 5000, classes: 'rounded'})
 	}
 	if (data.errorLog != ""){
@@ -1401,11 +1411,9 @@ socket.on("downloadProgress", function (data) {
 	//data.queueId -> id (string)
 	//data.percentage -> float/double, percentage
 	//updated in 1% steps
-	//let progressbar = $('#' + data.queueId).find('.changeThis')
-	//if (progressbar.hasClass('indeterminate')) progressbar.removeClass('indeterminate').addClass('determinate')
-	//$('#' + data.queueId).find('.changeThis').css('width', data.percentage + '%')
-
-	$('#' + data.queueId).css('background-size', data.percentage + '% 100%')
+	let progressbar = $('#bar-' + data.queueId).find('.changeThis')
+	if (progressbar.hasClass('indeterminate')) progressbar.removeClass('indeterminate').addClass('determinate')
+	$('#bar-' + data.queueId).find('.changeThis').css('width', data.percentage + '%')
 })
 
 socket.on("emptyDownloadQueue", function () {
@@ -1414,7 +1422,7 @@ socket.on("emptyDownloadQueue", function () {
 
 socket.on("cancelDownload", function (data) {
 	//data.queueId		-> queueId of item which was canceled
-	$('#' + data.queueId).addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
+	$('#' + data.queueId+',#bar-' + data.queueId).addClass('animated fadeOutRight').on('webkitAnimationEnd mozAnimationEnd MSAnimationEnd oanimationend animationend', function () {
 		downloadQueue.splice( downloadQueue.indexOf(data.id), 1)
 		$(this).remove()
 		if (!data.cleanAll) M.toast({html: `<i class="material-icons left">clear</i>${i18n("One download removed!")}`, displayLength: 5000, classes: 'rounded'})

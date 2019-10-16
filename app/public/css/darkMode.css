@@ -78,9 +78,3 @@ body::-webkit-scrollbar-thumb {
 table.highlight>tbody>tr:hover{
   background-color: #212121;
 }
-
-.trprog {
-  background-size: 0% 100%;
-  background-image: linear-gradient(rgba(0, 45, 150, 0.5), rgba(0, 45, 150, 0.5));
-  background-repeat: no-repeat;
-}
