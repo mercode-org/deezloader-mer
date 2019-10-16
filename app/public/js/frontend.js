@@ -1328,12 +1328,11 @@ function addObjToQueue(data){
 	var url_id = ('urlId' in data) ? data.urlId : ''
 
 	$(tableBody).append(
-			`<tr id="${data.queueId}" data-deezerid="${data.id}" data-urlid="${url_id}">
+			`<tr class="trprog" id="${data.queueId}" data-deezerid="${data.id}" data-urlid="${url_id}">
 			<td class="queueTitle">${data.name}</td>
 			<td class="queueSize">${data.size}</td>
 			<td class="queueDownloaded">${data.downloaded}</td>
 			<td class="queueFailed">${data.failed}</td>
-			<td><div class="progress"><div class="changeThis indeterminate"></div></div></td>
 			</tr>`)
 
 	var btn_remove = $('<a href="#" class="btn-flat waves-effect"><i class="material-icons">remove</i></a>')
@@ -1402,10 +1401,11 @@ socket.on("downloadProgress", function (data) {
 	//data.queueId -> id (string)
 	//data.percentage -> float/double, percentage
 	//updated in 1% steps
-	let progressbar = $('#' + data.queueId).find('.changeThis')
-	if (progressbar.hasClass('indeterminate')) progressbar.removeClass('indeterminate').addClass('determinate')
-	$('#' + data.queueId).find('.changeThis').css('width', data.percentage + '%')
+	//let progressbar = $('#' + data.queueId).find('.changeThis')
+	//if (progressbar.hasClass('indeterminate')) progressbar.removeClass('indeterminate').addClass('determinate')
+	//$('#' + data.queueId).find('.changeThis').css('width', data.percentage + '%')
 
+	$('#' + data.queueId).css('background-size', data.percentage + '% 100%')
 })
 
 socket.on("emptyDownloadQueue", function () {
