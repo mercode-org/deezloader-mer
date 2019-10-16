@@ -51,7 +51,7 @@
 	"Date Format": "Tarih Biçimi",
 	"digit": "sayı",
 	"Year Format": "Yıl Biçimi",
-	"Replaces albums tags with the playlist ones": "Albüm etiketlerini çalma listelerindekilerle değiştirir",
+	"Replaces albums tags with the playlist ones": "Albüm etiketlerini oynatma listelerindekilerle değiştirir",
 	"Save Playlist as Compilation": "Parça Listesini Derleme olarak Kaydet",
 	"Remove \"(Album Version)\" from tracknames": "\"(Album Version)\"u parça isimlerinden kaldır",
 	"Choose Which Tags To Save": "Hangİ Etİketlerİn Kaydedİleceğİnİ Seç",
@@ -59,7 +59,7 @@
 	"SpotifyFeatures_Info": "\"Spotify Özellikleri\" Spotify'dan müzik <b>İNDİRMEYECEK</b>.<br>Bu sadece pratik olarak uygulama içi metaveri dönüştürücüsü görevi görür. Eğer şarkı Deezer'da yoksa indirilemez.<br>İstemci(Client) ve Gizli(Secret) ID'leri nasıl alabileceğinizi  görebileceğiniz yer <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features\">burası</a>",
 	"Client ID": "İstemci ID(Client ID)",
 	"Client Secret": "İstemci Gizlisi(Client Secret)",
-	"Spotify Username (for the Playlists Tab)": "Spotify Kullanıcı İsmi (Çalma Listeleri Sekmesi için)",
+	"Spotify Username (for the Playlists Tab)": "Spotify Kullanıcı İsmi (Oynatma Listeleri Sekmesi için)",
 	"You are logged in as": "Oturumu açık olan kişi",
 	"Logout": "Oturumu Kapat",
 	"Save": "Kaydet",
@@ -88,7 +88,7 @@
 	"Country": "Ülke",
 	"Download Playlist": "Oynatma Lİstesİnİ İndİr",
 	"Refresh Playlists": "Oynatma Listelerini Yenile",
-	"See Available Countries": "İçeriğin Mevcut Olduğu Ülkeleri Gör",
+	"See Available Countries": "Bulunduğu Ülkeler",
 	"Alternative Link": "Alternatif Bağlantı",
 	"Duration": "Uzunluk",
 	"Disc Number": "Disk Numarası",
@@ -153,7 +153,7 @@
 	"Contributions": "Katkı Sağlayanlar",
 	"Contributions_Text": "<h5>Bu projeye katkı sağlamak ister misiniz? Bunu <b>farklı şekillerde yapabilirsiniz!</b></h5><p>Eğer JavaScript, HTML, CSS or Node.js biliyorsanız <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix\" target=\"_blank\">Resmi Depo</a> aracılığıyla kod yazımında katkı sağlayabilir, sorunları düzeltebilir ve özellikler ekleyebilirsiniz.</p><p>Eğer grafik ve tasarımda iyiyseniz yeni tasarım sunarak katkıda bulunabilirsiniz, yeni tasarımlarla <a href=\"https://notabug.org/RemixDevs/DeezloaderRemix/issues/new\" target=\"_blank\">buraya</a> konu açabilirsiniz.<br><p>Aklınızda olsun <a href=\"https://material.io/\" target=\"_blank\">Materyal Tasarım İlkeleri</a>'ni takip ederiz (bi nevi).</p>Sorun bulmada iyiyseniz kararlı sürüm çıkmadan önce Beta Test'e yardım edebilirsiniz.<br><a href=\"https://t.me/DeezloaderRemixCommunity\" target=\"_blank\">Telegram Grubu</a>muza katılarak beta sürümlerden haberdar olabilirsiniz!</p><hr><h5>Parasal olarak katkı sağlamak ister misiniz? Bağış yapabilirsiniz!</h5><p>Bağış yapmak isterseniz bu bağlantılardan yapabilirsiniz.<br>Unutmamalısınız ki <b>bu bir ücretsiz projedir</b> ve geliştiriciye destek olmadan önce <b>sevdiğiniz sanatçılara destek olmalısınız</b>.<br>Bağış yapmaya mecbur gibi hissetmeyin, sizi her halükarda takdir ediyorum!</p>",
 	"I got it!": "Anladım!",
-	"Available Countries for": "Mevcut Olan Ülkeler için",
+	"Available Countries for": "Bunun Mevcut Olduğu Ülkeler: ",
 	"Song/Album URL": "Şarkı/Albüm URL",
 	"LinkAnalyzer_Info": "Bu bölümü indirmeye çalıştığınız bağlantıyla ilgili daha fazla bilgi öğrenmek için kullanabilirsiniz.<br/>Bu, ülkenizde mevcut olmayan ve nerelerde erişilebilir olduğunu öğrenmek istediğiniz parçaları indirmek istiyorsanız kullanışlıdır.",
 	"DownloadURL_Info": "Şarkı/Oynatma Listesi/Albüm/Sanatçı URL, ';' ile ayrıldı",
@@ -212,5 +212,5 @@
 	"Login with e-mail": "E-posta ile oturum aç",
 	"userToken copied to clipboard": "kullanıcıJeton(userToken) panoya kopyalandı",
 	"by %s": "%s tarafından",
-	"in %s": "in %s"
+	"in %s": "içinde: %s"
 }
