@@ -1984,6 +1984,10 @@ io.sockets.on('connection', function (s) {
 							if (track.selectedFormat != 9 && settings.saveID3v1){
 								fileStream.write(getID3v1(track, settings))
 							}
+							if (track.selectedFormat == 9 && i < 1000){
+								let buf = Buffer.from(flacBuffer, 'binary');
+								fileStream.write(getMetadata(buf, track, settings));
+							}
 							fileStream.end();
 							resolve()
 						}catch(err){
