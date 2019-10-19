@@ -1337,7 +1337,7 @@ function addObjToQueue(data){
 					<span class="secondary-text">${data.artist}</span>
 				</td>
 				<td class="downloadInfo-info">
-					<span class="queueDownloaded">${data.downloaded}</span>/<span class="queueSize">${data.size}</span><br>
+					<span class="queueDownloaded">${data.downloaded + data.failed}</span>/<span class="queueSize">${data.size}</span><br>
 					<span class="secondary-text"><span class="queueFailed">${data.failed}</span> ${i18n("Failed")}</span>
 				</td>
 			</tr>
@@ -1381,7 +1381,7 @@ socket.on('updateQueue', function (data) {
 		return
 	}
 
-	$('#' + data.queueId).find('.queueDownloaded').html(data.downloaded)
+	$('#' + data.queueId).find('.queueDownloaded').html(data.downloaded + data.failed)
 	$('#' + data.queueId).find('.queueFailed').html(data.failed)
 
 	if (data.failed == 0 && ((data.downloaded + data.failed) >= data.size)) {
