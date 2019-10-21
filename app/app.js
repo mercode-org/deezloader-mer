@@ -1566,10 +1566,10 @@ io.sockets.on('connection', function (s) {
 				try{
 					track.replayGain = ((track.legacyTrack.gain + 18.4) * -1).toFixed(2)+" dB"
 				}catch(err){
-					track.replayGain = 0
+					track.replayGain = false
 				}
 			}else{
-				track.replayGain = 0
+				track.replayGain = false
 			}
 
 			// Acquiring discNumber value (only if necessary)
