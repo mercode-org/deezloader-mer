@@ -13,7 +13,7 @@
 		"saveFullArtists": false,
 		"padtrck": true,
 		"paddingSize": "0",
-		"queueConcurrency": 25,
+		"queueConcurrency": 3,
 		"maxBitrate": "3",
 		"fallbackBitrate": true,
 		"fallbackSearch": true,
