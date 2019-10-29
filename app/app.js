@@ -1630,7 +1630,7 @@ io.sockets.on('connection', function (s) {
 			}
 
 			// Auto detect aviable track format from settings
-			if (parseInt(downloadQueue[queueId].bitrate <= 9)){
+			if (parseInt(downloadQueue[queueId].bitrate) <= 9){
 				switch(downloadQueue[queueId].bitrate.toString()){
 					case "9":
 						track.selectedFormat = 9
