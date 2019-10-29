@@ -1630,25 +1630,47 @@ io.sockets.on('connection', function (s) {
 			}
 
 			// Auto detect aviable track format from settings
-			switch(downloadQueue[queueId].bitrate.toString()){
-				case "9":
-					track.selectedFormat = 9
-					track.selectedFilesize = track.filesize.flac
-					if (track.filesize.flac>0) break
-					if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
-				case "3":
-					track.selectedFormat = 3
-					track.selectedFilesize = track.filesize.mp3_320
-					if (track.filesize.mp3_320>0) break
-					if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
-				case "1":
-					track.selectedFormat = 1
-					track.selectedFilesize = track.filesize.mp3_128
-					if (track.filesize.mp3_128>0) break
-					if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
-				default:
-					track.selectedFormat = 8
-					track.selectedFilesize = track.filesize.default
+			if (parseInt(downloadQueue[queueId].bitrate <= 9)){
+				switch(downloadQueue[queueId].bitrate.toString()){
+					case "9":
+						track.selectedFormat = 9
+						track.selectedFilesize = track.filesize.flac
+						if (track.filesize.flac>0) break
+						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+					case "3":
+						track.selectedFormat = 3
+						track.selectedFilesize = track.filesize.mp3_320
+						if (track.filesize.mp3_320>0) break
+						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+					case "1":
+						track.selectedFormat = 1
+						track.selectedFilesize = track.filesize.mp3_128
+						if (track.filesize.mp3_128>0) break
+						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+					default:
+						track.selectedFormat = 8
+						track.selectedFilesize = track.filesize.default
+				}
+			}else{
+				switch(downloadQueue[queueId].bitrate.toString()){
+					case "15":
+						track.selectedFormat = 15
+						track.selectedFilesize = track.filesize.mp4_ra3
+						if (track.filesize.mp4_ra3>0) break
+						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+					case "14":
+						track.selectedFormat = 14
+						track.selectedFilesize = track.filesize.mp4_ra2
+						if (track.filesize.mp4_ra2>0) break
+						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+					case "13":
+						track.selectedFormat = 13
+						track.selectedFilesize = track.filesize.mp4_ra1
+						if (track.filesize.mp4_ra1>0) break
+						if (!settings.fallbackBitrate) throw new Error("Song not found at desired bitrate.")
+					default:
+						throw new Error("Song is not available in 360 mode.")
+				}
 			}
 			track.album.bitrate = track.selectedFormat
 
@@ -1798,6 +1820,8 @@ io.sockets.on('connection', function (s) {
 		let writePath;
 		if(track.selectedFormat == 9){
 			writePath = filepath + filename + '.flac';
+		}else if (track.selectedFormat == 13 || track.selectedFormat == 14 || track.selectedFormat == 15){
+			writePath = filepath + filename + '.mp4';
 		}else{
 			writePath = filepath + filename + '.mp3';
 		}
@@ -1895,10 +1919,12 @@ io.sockets.on('connection', function (s) {
 			let req = https.get(options, function (response) {
 				if (200 === response.statusCode) {
 					const fileStream = fs.createWriteStream(writePath);
-					if (track.selectedFormat == 9){
-						var flacBuffer = Buffer.alloc(0);
-					}else{
-						fileStream.write(getID3(track, settings));
+					if (track.id > 0){
+						if (track.selectedFormat == 9){
+							var flacBuffer = Buffer.alloc(0);
+						}else if (track.selectedFormat <= 9){
+							fileStream.write(getID3(track, settings));
+						}
 					}
 
 					let i = 0;
@@ -1951,7 +1977,7 @@ io.sockets.on('connection', function (s) {
 										flacBuffer += chunk.toString('binary');
 									}else if (i == 1000){
 										let buf = Buffer.from(flacBuffer, 'binary');
-										fileStream.write(getMetadata(buf, track, settings));
+										if (track.id > 0) fileStream.write(getMetadata(buf, track, settings));
 										fileStream.write(chunk);
 									}else{
 										fileStream.write(chunk, 'binary');
@@ -1981,7 +2007,7 @@ io.sockets.on('connection', function (s) {
 
 					response.on('end', () => {
 						try{
-							if (track.selectedFormat != 9 && settings.saveID3v1){
+							if (track.selectedFormat != 9 && settings.saveID3v1 && track.id > 0 && track.selectedFormat <= 9){
 								fileStream.write(getID3v1(track, settings))
 							}
 							if (track.selectedFormat == 9 && i < 1000){
