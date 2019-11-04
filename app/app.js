@@ -1549,7 +1549,7 @@ io.sockets.on('connection', function (s) {
 			// Acquiring bpm (only if necessary)
 			if (settings.tags.bpm){
 				logger.info(`[${track.artist.name} - ${track.title}] Getting BPM`);
-				track.legacyTrack = await s.Deezer.legacyGetTrack(track.id)
+				if (!track.legacyTrack) track.legacyTrack = await s.Deezer.legacyGetTrack(track.id)
 				try{
 					track.bpm = track.legacyTrack.bpm
 				}catch(err){
@@ -2033,6 +2033,11 @@ io.sockets.on('connection', function (s) {
 			await downloadingPromise
 		}catch(err){
 			if (err==="Track is no longer provided by deezer"){
+				if (track.selectedFormat == 9){
+					track.filesize.flac = 0
+					logger.warn(`[${track.artist.name} - ${track.title}] Track is no longer provided by deezer in FLAC, searching for lower bitrate`)
+					return downloadTrackObject(track, queueId, settings)
+				}
 				if(track.fallbackId && track.fallbackId != "0"){
 					logger.warn(`[${track.artist.name} - ${track.title}] Track is no longer provided by deezer, falling on alternative`)
 					var _track = await s.Deezer.getTrack(track.fallbackId)
