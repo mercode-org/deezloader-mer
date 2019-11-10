@@ -16,8 +16,12 @@ td{
 	padding-left: 12px;
 }
 th{
-    text-align: left;
-    padding-left: 12px;
+  text-align: left;
+  padding-left: 12px;
+}
+
+p, td.breakline{
+  word-break: break-word;
 }
 
 .settings_switch{

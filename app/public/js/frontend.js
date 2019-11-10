@@ -651,9 +651,9 @@ function showResults_table_track(tracks) {
 				<p class="remove-margin secondary-text">${currentResultTrack.artist.name}</p>
 				<p class="remove-margin secondary-text">${currentResultTrack.album.title}</p>
 			</td>
-			<td class="hide-on-small-only">${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</td>
-			<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentResultTrack.artist.link}">${currentResultTrack.artist.name}</span></td>
-			<td class="hide-on-small-only"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentResultTrack.album.id}">${currentResultTrack.album.title}</span></td>
+			<td class="hide-on-small-only breakline">${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</td>
+			<td class="hide-on-small-only breakline"><span class="resultArtist resultLink" data-link="${currentResultTrack.artist.link}">${currentResultTrack.artist.name}</span></td>
+			<td class="hide-on-small-only breakline"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentResultTrack.album.id}">${currentResultTrack.album.title}</span></td>
 			<td>${convertDuration(currentResultTrack.duration)}</td>
 			</tr>`)
 		generateDownloadLink(currentResultTrack.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
@@ -684,8 +684,8 @@ function showResults_table_album(albums) {
 					<p class="remove-margin secondary-text">${currentResultAlbum.artist.name}</p>
 					<p class="remove-margin secondary-text">${currentResultAlbum.nb_tracks == "1" ? `1 Track` : `${currentResultAlbum.nb_tracks} Tracks`} • ${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</p>
 				</td>
-				<td class="hide-on-small-only">${(currentResultAlbum.explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')} ${currentResultAlbum.title}</td>
-				<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
+				<td class="hide-on-small-only breakline">${(currentResultAlbum.explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')} ${currentResultAlbum.title}</td>
+				<td class="hide-on-small-only breakline"><span class="resultArtist resultLink" data-link="${currentResultAlbum.artist.link}">${currentResultAlbum.artist.name}</span></td>
 				<td class="hide-on-small-only">${currentResultAlbum.nb_tracks}</td>
 				<td class="hide-on-small-only">${currentResultAlbum.record_type[0].toUpperCase() + currentResultAlbum.record_type.substring(1)}</td>
 				</tr>`)
@@ -708,7 +708,7 @@ function showResults_table_artist(artists) {
 		$(tableBody).append(
 				`<tr>
 				<td><img style="width:56px;" src="${(currentResultArtist.picture_small ? currentResultArtist.picture_small : "img/noCover.jpg")}" class="rounded" /></td>
-				<td>${currentResultArtist.name}</td>
+				<td class="breakline">${currentResultArtist.name}</td>
 				<td>${currentResultArtist.nb_album}</td>
 				</tr>`)
 		generateShowTracklistButton(currentResultArtist.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
@@ -725,7 +725,7 @@ function showResults_table_playlist(playlists) {
 		$(tableBody).append(
 				`<tr>
 				<td><img style="width:56px;" src="${(currentResultPlaylist.picture_small ? currentResultPlaylist.picture_small : "img/noCover.jpg")}" class="rounded" /></td>
-				<td>${currentResultPlaylist.title}</td>
+				<td class="breakline">${currentResultPlaylist.title}</td>
 				<td>${currentResultPlaylist.nb_tracks}</td>
 				</tr>`)
 		generateShowTracklistSelectiveButton(currentResultPlaylist.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
@@ -891,7 +891,7 @@ socket.on("getTrackList", function (data) {
 						<a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</div></a>
 						<p class="remove-margin secondary-text">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)} • ${trackList[i].release_date}</p>
 					</td>
-					<td class="hide-on-small-only"><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</div></a></td>
+					<td class="hide-on-small-only breakline"><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</div></a></td>
 					<td class="hide-on-small-only">${trackList[i].release_date}</td>
 					<td class="hide-on-small-only">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)}</td>
 					</tr>`
@@ -929,9 +929,9 @@ socket.on("getTrackList", function (data) {
 						<p class="remove-margin">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</p>
 						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
 					</td>
-					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
-					<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${trackList[i].artist.link}">${trackList[i].artist.name}</span></td>
-					<td class="hide-on-small-only"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${trackList[i].album.id}">${trackList[i].album.title}</span></td>
+					<td class="hide-on-small-only breakline">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only breakline"><span class="resultArtist resultLink" data-link="${trackList[i].artist.link}">${trackList[i].artist.name}</span></td>
+					<td class="hide-on-small-only breakline"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${trackList[i].album.id}">${trackList[i].album.title}</span></td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					<td>
 						<div class="valign-wrapper">
@@ -993,8 +993,8 @@ socket.on("getTrackList", function (data) {
 						<p class="remove-margin">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</p>
 						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
 					</td>
-					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
-					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
+					<td class="hide-on-small-only breakline">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only breakline">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					<td>
 						<div class="valign-wrapper">
@@ -1033,8 +1033,8 @@ socket.on("getTrackList", function (data) {
 						<p class="remove-margin">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</p>
 						<p class="remove-margin secondary-text">${trackList[i].artist.name}</p>
 					</td>
-					<td class="hide-on-small-only">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
-					<td class="hide-on-small-only">${trackList[i].artist.name}</td>
+					<td class="hide-on-small-only breakline">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
+					<td class="hide-on-small-only breakline">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
 					</tr>`
 				)
@@ -1115,9 +1115,9 @@ socket.on("getChartsTrackListByCountry", function (data) {
 					<p class="remove-margin secondary-text">${currentChartTrack.artist.name}</p>
 					<p class="remove-margin secondary-text">${currentChartTrack.album.title}</p>
 				</td>
-				<td class="hide-on-small-only">${(currentChartTrack.explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${currentChartTrack.title}</td>
-				<td class="hide-on-small-only"><span class="resultArtist resultLink" data-link="${currentChartTrack.artist.link}">${currentChartTrack.artist.name}</span></td>
-				<td class="hide-on-small-only"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentChartTrack.album.id}">${currentChartTrack.album.title}</span></td>
+				<td class="hide-on-small-only breakline">${(currentChartTrack.explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${currentChartTrack.title}</td>
+				<td class="hide-on-small-only breakline"><span class="resultArtist resultLink" data-link="${currentChartTrack.artist.link}">${currentChartTrack.artist.name}</span></td>
+				<td class="hide-on-small-only breakline"><span class="resultAlbum resultLink" data-link="https://www.deezer.com/album/${currentChartTrack.album.id}">${currentChartTrack.album.title}</span></td>
 				<td>${convertDuration(currentChartTrack.duration)}</td>
 				</tr>`)
 		generateDownloadLink(currentChartTrack.link).appendTo(chartsTableBody.children('tr:last')).wrap('<td>')
