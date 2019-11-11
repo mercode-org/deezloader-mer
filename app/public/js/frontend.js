@@ -434,6 +434,7 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		logErrors: $('#modal_settings_cbox_logErrors').is(':checked'),
 		logSearched: $('#modal_settings_cbox_logSearched').is(':checked'),
 		createM3UFile: $('#modal_settings_cbox_createM3UFile').is(':checked'),
+		changePlaylistName: $('#modal_settings_cbox_changePlaylistName').is(':checked'),
 		syncedlyrics: $('#modal_settings_cbox_syncedlyrics').is(':checked'),
 		minimizeToTray : $('#modal_settings_cbox_minimizeToTray').is(':checked'),
 		artworkSize: parseInt($('#modal_settings_select_artworkSize').val()),
@@ -530,6 +531,7 @@ function fillSettingsModal(settings, spotifySettings = {clientId: "", clientSecr
 	$('#modal_settings_cbox_logErrors').prop('checked', settings.logErrors)
 	$('#modal_settings_cbox_logSearched').prop('checked', settings.logSearched)
 	$('#modal_settings_cbox_createM3UFile').prop('checked', settings.createM3UFile)
+	$('#modal_settings_cbox_changePlaylistName').prop('checked', settings.changePlaylistName)
 	$('#modal_settings_cbox_syncedlyrics').prop('checked', settings.syncedlyrics)
 	$('#modal_settings_cbox_minimizeToTray').prop('checked', settings.minimizeToTray)
 	$('#modal_settings_select_artworkSize').val(settings.artworkSize).formSelect()

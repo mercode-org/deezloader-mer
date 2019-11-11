@@ -21,6 +21,7 @@
 		"logErrors": false,
 		"logSearched": false,
 		"createM3UFile": false,
+		"changePlaylistName": false,
 		"syncedlyrics": false,
 		"minimizeToTray": false,
 		"artworkSize": 800,

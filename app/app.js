@@ -1138,7 +1138,12 @@ io.sockets.on('connection', function (s) {
 						}
 					}
 					if (downloading.settings.createM3UFile){
-						fs.writeFileSync(downloading.filePath+"playlist.m3u8", downloading.playlistArr.join("\r\n"));
+						let path = ""
+						if (downloading.settings.changePlaylistName)
+							path = downloading.filePath + downloading.filePath.match(/([^\/]*)\/*$/)[1]+".m3u8"
+						else
+							path = downloading.filePath+"playlist.m3u8"
+						fs.writeFileSync(path, downloading.playlistArr.join("\r\n"));
 					}
 				}catch(err){
 					if (err) logger.error(`queueDownload:album failed: ${err.stack ? err.stack : err}`)
@@ -1228,7 +1233,12 @@ io.sockets.on('connection', function (s) {
 						}
 					}
 					if (downloading.settings.createM3UFile){
-						fs.writeFileSync(downloading.filePath + "playlist.m3u8", downloading.playlistArr.join("\r\n"));
+						let path = ""
+						if (downloading.settings.changePlaylistName)
+							path = downloading.filePath + downloading.filePath.match(/([^\/]*)\/*$/)[1]+".m3u8"
+						else
+							path = downloading.filePath+"playlist.m3u8"
+						fs.writeFileSync(path, downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
@@ -1364,7 +1374,12 @@ io.sockets.on('connection', function (s) {
 						}
 					}
 					if (downloading.settings.createM3UFile){
-						fs.writeFileSync(downloading.filePath + "playlist.m3u8", downloading.playlistArr.join("\r\n"));
+						let path = ""
+						if (downloading.settings.changePlaylistName)
+							path = downloading.filePath + downloading.filePath.match(/([^\/]*)\/*$/)[1]+".m3u8"
+						else
+							path = downloading.filePath+"playlist.m3u8"
+						fs.writeFileSync(path, downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);

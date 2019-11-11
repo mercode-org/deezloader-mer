@@ -225,5 +225,6 @@
 	"Login with e-mail": "Fai il login con l'email",
 	"userToken copied to clipboard": "userToken copiato negli appunti",
 	"by %s": "di %s",
-	"in %s": "in %s"
+	"in %s": "in %s",
+	"Save Playlist File with folder name": "Salva il file di Playlist con il nome della cartella"
 }
