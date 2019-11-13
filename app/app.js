@@ -1235,7 +1235,7 @@ io.sockets.on('connection', function (s) {
 					if (downloading.settings.createM3UFile){
 						let path = ""
 						if (downloading.settings.changePlaylistName)
-							path = downloading.filePath + downloading.filePath.match(/([^\/]*)\/*$/)[1]+".m3u8"
+							path = downloading.filePath + antiDot(fixName(downloading.name))+".m3u8"
 						else
 							path = downloading.filePath+"playlist.m3u8"
 						fs.writeFileSync(path, downloading.playlistArr.join("\r\n"));
@@ -1376,7 +1376,7 @@ io.sockets.on('connection', function (s) {
 					if (downloading.settings.createM3UFile){
 						let path = ""
 						if (downloading.settings.changePlaylistName)
-							path = downloading.filePath + downloading.filePath.match(/([^\/]*)\/*$/)[1]+".m3u8"
+							path = downloading.filePath + antiDot(fixName(downloading.name))+".m3u8"
 						else
 							path = downloading.filePath+"playlist.m3u8"
 						fs.writeFileSync(path, downloading.playlistArr.join("\r\n"));
