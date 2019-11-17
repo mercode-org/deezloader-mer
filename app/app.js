@@ -1986,10 +1986,7 @@ io.sockets.on('connection', function (s) {
 										}
 										let chunkProgres = ((chunk.length / complete)) / downloadQueue[queueId].size * 100
 										downloadQueue[queueId].percentage += chunkProgres
-										io.sockets.emit("downloadProgress", {
-											queueId: queueId,
-											percentage: downloadQueue[queueId].percentage
-										})
+										updateProgressBar(queueId, downloadQueue[queueId].percentage)
 									}catch(err){}
 								}
 							}
@@ -2576,6 +2573,15 @@ function getID3v1(track, settings){
 			tagBuffer.writeUInt8(255,127)
 	}
 	return tagBuffer
+}
+
+function updateProgressBar(queueId, progress) {
+	if (Math.round(progress) % 5 == 0) {
+		io.sockets.emit("downloadProgress", {
+			queueId: queueId,
+			percentage: progress
+		})
+	}
 }
 
 // Filters only Extended Ascii characters
