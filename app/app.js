@@ -1965,10 +1965,7 @@ io.sockets.on('connection', function (s) {
 										let percentage = (chunkLength / complete) * 100;
 										if ((percentage - downloadQueue[queueId].percentage > 1) || (chunkLength == complete)) {
 											downloadQueue[queueId].percentage = percentage
-											io.sockets.emit("downloadProgress", {
-												queueId: queueId,
-												percentage: downloadQueue[queueId].percentage
-											})
+											updateProgressBar(queueId, downloadQueue[queueId].percentage)
 										}
 									}catch(err){}
 								}else{
