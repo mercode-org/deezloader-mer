@@ -1973,7 +1973,7 @@ io.sockets.on('connection', function (s) {
 														queueId: queueId,
 														percentage: downloadQueue[queueId].lastPercentage
 													})
-													logger.info("Updating download progress to: " + downloadQueue[queueId].lastPercentage)
+													//logger.info("Updating download progress to: " + downloadQueue[queueId].lastPercentage)
 												}
 											}
 										}
@@ -2001,7 +2001,7 @@ io.sockets.on('connection', function (s) {
 													queueId: queueId,
 													percentage: downloadQueue[queueId].lastPercentage
 												})
-												logger.info("Updating download progress to: " + downloadQueue[queueId].lastPercentage)
+												//logger.info("Updating download progress to: " + downloadQueue[queueId].lastPercentage)
 											}
 										}
 									}catch(err){}
