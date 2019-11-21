@@ -212,5 +212,9 @@
 	"Login with e-mail": "E-posta ile oturum aç",
 	"userToken copied to clipboard": "kullanıcıJeton(userToken) panoya kopyalandı",
 	"by %s": "%s tarafından",
-	"in %s": "içinde: %s"
+	"in %s": "içinde: %s",
+	"Save Playlist File with folder name": "Oynatma Listesini klasör adıyla kaydet",
+	"Download 360 Reality Audio High Quality": "Download 360 Reality Audio [HQ]",
+	"Download 360 Reality Audio Medium Quality": "Download 360 Reality Audio [MQ]",
+	"Download 360 Reality Audio Low Quality": "Download 360 Reality Audio [LQ]"
 }

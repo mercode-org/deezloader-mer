@@ -213,5 +213,9 @@
 	"Login with e-mail": "Login with e-mail",
 	"userToken copied to clipboard": "userToken copied to clipboard",
 	"by %s": "od %s",
-	"in %s": "in %s"
+	"in %s": "in %s",
+	"Save Playlist File with folder name": "Save Playlist File with folder name",
+	"Download 360 Reality Audio High Quality": "Download 360 Reality Audio [HQ]",
+	"Download 360 Reality Audio Medium Quality": "Download 360 Reality Audio [MQ]",
+	"Download 360 Reality Audio Low Quality": "Download 360 Reality Audio [LQ]"
 }

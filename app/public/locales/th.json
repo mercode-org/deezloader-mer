@@ -213,5 +213,9 @@
 	"Login with e-mail": "เข้าสู่ระบบด้วยอีเมล",
 	"userToken copied to clipboard": "userToken ถูกคัดลอกไปยังคลิปบอร์ดแล้ว",
 	"by %s": "โดย %s",
-	"in %s": "ใน %s"
+	"in %s": "ใน %s",
+	"Save Playlist File with folder name": "Save Playlist File with folder name",
+	"Download 360 Reality Audio High Quality": "Download 360 Reality Audio [HQ]",
+	"Download 360 Reality Audio Medium Quality": "Download 360 Reality Audio [MQ]",
+	"Download 360 Reality Audio Low Quality": "Download 360 Reality Audio [LQ]"
 }
