@@ -197,9 +197,6 @@
 	"One download removed!": "Ein Download entfernt!",
 	"All downloads removed!": "Alle Downloads wurden entfernt!",
 	"Download {{ type }}": "Download {{ type }}",
-	"Download FLAC": "Download FLAC",
-	"Download MP3 320kbps": "Download MP3 320kbps",
-	"Download MP3 128kbps": "Download MP3 128kbps",
 	"Spotify Playlist": "Spotify Playlist",
 	"%n songs":[
     [0, 0, "%n songs"],
@@ -214,8 +211,5 @@
 	"userToken copied to clipboard": "userToken copied to clipboard",
 	"by %s": "by %s",
 	"in %s": "in %s",
-	"Save Playlist File with folder name": "Save Playlist File with folder name",
-	"Download 360 Reality Audio High Quality": "Download 360 Reality Audio [HQ]",
-	"Download 360 Reality Audio Medium Quality": "Download 360 Reality Audio [MQ]",
-	"Download 360 Reality Audio Low Quality": "Download 360 Reality Audio [LQ]"
+	"Save Playlist File with folder name": "Save Playlist File with folder name"
 }

@@ -197,9 +197,6 @@
 	"userToken": "usewtoken",
 	"with space": "wif space",
 	"Download {{ type }}": "downwoad {{ type }}",
-	"Download FLAC": "downwoad fwac",
-	"Download MP3 320kbps": "downwoad mp3 320kbps",
-	"Download MP3 128kbps": "downwoad mp3 128kbps",
 	"Spotify Playlist": "spotify pwaywist",
 	"%n songs":[
     [0, 0, "%n songs"],
@@ -214,8 +211,5 @@
 	"userToken copied to clipboard": "usewtoken copied to cwipboawd",
 	"by %s": "by %s",
 	"in %s": "in %s",
-	"Save Playlist File with folder name": "save pwaywist fiwe with fowdew name",
-	"Download 360 Reality Audio High Quality": "downwoad 360 reawity Audio [hq]",
-	"Download 360 Reality Audio Medium Quality": "downwoad 360 reawity Audio [mq]",
-	"Download 360 Reality Audio Low Quality": "downwoad 360 reawity Audio [lq]"
+	"Save Playlist File with folder name": "save pwaywist fiwe with fowdew name"
 }

@@ -197,9 +197,6 @@
 	"One download removed!": "Одна загрузка удалена!",
 	"All downloads removed!": "Все загрузки удалены!",
 	"Download {{ type }}": "Скачать {{ type }}",
-	"Download FLAC": "Скачать FLAC",
-	"Download MP3 320kbps": "Скачать MP3 320kbps",
-	"Download MP3 128kbps": "Скачать MP3 128kbps",
 	"Spotify Playlist": "Плейлист Spotify",
 	"%n songs": [
 		[
@@ -231,8 +228,5 @@
 	"userToken copied to clipboard": "Токен скопирован в буфер обмена",
 	"by %s": "by %s",
 	"in %s": "in %s",
-	"Save Playlist File with folder name": "Save Playlist File with folder name",
-	"Download 360 Reality Audio High Quality": "Download 360 Reality Audio [HQ]",
-	"Download 360 Reality Audio Medium Quality": "Download 360 Reality Audio [MQ]",
-	"Download 360 Reality Audio Low Quality": "Download 360 Reality Audio [LQ]"
+	"Save Playlist File with folder name": "Save Playlist File with folder name"
 }

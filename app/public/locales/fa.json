@@ -196,10 +196,7 @@
 	"All downloads completed!" : "تمامی دانلود‌ها به پایان رسیدند!",
 	"One download removed!" : "یک مورد از صف دانلود پاک شد!",
 	"All downloads removed!" : "همه موارد از صف دانلود پاک شدند!",
-	"Download {{ type }}": "Download {{ type }}",
-	"Download FLAC": "دانلود   FLAC",
-	"Download MP3 320kbps": "دانلود MP3 320kbps",
-	"Download MP3 128kbps": "دانلود MP3 128kbps",
+	"Download {{ type }}": "دانلود {{ type }}",
 	"Spotify Playlist": "لیست پخش Spotify",
 	"%n songs":[
     [0, 0, "%n songs"],
@@ -214,8 +211,5 @@
 	"userToken copied to clipboard": "userToken copied to clipboard",
 	"by %s": "by %s",
 	"in %s": "in %s",
-	"Save Playlist File with folder name": "Save Playlist File with folder name",
-	"Download 360 Reality Audio High Quality": "Download 360 Reality Audio [HQ]",
-	"Download 360 Reality Audio Medium Quality": "Download 360 Reality Audio [MQ]",
-	"Download 360 Reality Audio Low Quality": "Download 360 Reality Audio [LQ]"
+	"Save Playlist File with folder name": "Save Playlist File with folder name"
 }

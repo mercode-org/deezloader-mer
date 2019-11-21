@@ -197,9 +197,6 @@
 	"One download removed!": "Um download removido!",
 	"All downloads removed!": "Todos os downloads removidos!",
 	"Download {{ type }}": "Baixar {{ type }}",
-	"Download FLAC": "Baixar FLAC",
-	"Download MP3 320kbps": "Baixar MP3 320kbps",
-	"Download MP3 128kbps": "Baixar MP3 128kbps",
 	"Spotify Playlist": "Playlist do Spotify",
 	"%n músicas": [
 		[
@@ -226,8 +223,5 @@
 	"userToken copied to clipboard": "userToken copiado para a Área de Transferência",
 	"by %s": "por %s",
 	"in %s": "in %s",
-	"Save Playlist File with folder name": "Salvar arquivo de playlist com nome da pasta",
-	"Download 360 Reality Audio High Quality": "Download 360 Reality Audio [HQ]",
-	"Download 360 Reality Audio Medium Quality": "Download 360 Reality Audio [MQ]",
-	"Download 360 Reality Audio Low Quality": "Download 360 Reality Audio [LQ]"
+	"Save Playlist File with folder name": "Salvar arquivo de playlist com nome da pasta"
 }

@@ -197,9 +197,6 @@
 	"One download removed!": "Bir indirme kaldırıldı!",
 	"All downloads removed!": "Tüm indirmeler kaldırıldı!",
 	"Download {{ type }}": "İndİr: {{ type }}",
-	"Download FLAC": "FLAC İndİr",
-	"Download MP3 320kbps": "320kbps MP3 İndİr",
-	"Download MP3 128kbps": "128kbps MP3 İndİr",
 	"%n songs":[
     [0, 0, "%n şarkı"],
     [1, 1, "%n şarkı"],
@@ -213,8 +210,5 @@
 	"userToken copied to clipboard": "kullanıcıJeton(userToken) panoya kopyalandı",
 	"by %s": "%s tarafından",
 	"in %s": "içinde: %s",
-	"Save Playlist File with folder name": "Oynatma Listesini klasör adıyla kaydet",
-	"Download 360 Reality Audio High Quality": "Download 360 Reality Audio [HQ]",
-	"Download 360 Reality Audio Medium Quality": "Download 360 Reality Audio [MQ]",
-	"Download 360 Reality Audio Low Quality": "Download 360 Reality Audio [LQ]"
+	"Save Playlist File with folder name": "Oynatma Listesini klasör adıyla kaydet"
 }

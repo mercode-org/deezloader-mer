@@ -1304,12 +1304,12 @@
 <div id="modal_quality" class="smallmodal">
 	<!-- Modal content -->
 	<div class="smallmodal-content">
-		<a onclick="modalQualityButton(9)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download FLAC')%></a><br>
-		<a onclick="modalQualityButton(3)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download MP3 320kbps')%></a><br>
-		<a onclick="modalQualityButton(1)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download MP3 128kbps')%></a><br>
-		<a onclick="modalQualityButton(15)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download 360 Reality Audio High Quality')%></a><br>
-		<a onclick="modalQualityButton(14)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download 360 Reality Audio Medium Quality')%></a><br>
-		<a onclick="modalQualityButton(13)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download 360 Reality Audio Low Quality')%></a><br>
+		<a onclick="modalQualityButton(9)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: 'FLAC'})%></a><br>
+		<a onclick="modalQualityButton(3)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: 'MP3 320kbps'})%></a><br>
+		<a onclick="modalQualityButton(1)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: 'MP3 128kbps'})%></a><br>
+		<a onclick="modalQualityButton(15)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: '360 Reality Audio [HQ]'})%></a><br>
+		<a onclick="modalQualityButton(14)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: '360 Reality Audio [MQ]'})%></a><br>
+		<a onclick="modalQualityButton(13)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: '360 Reality Audio [LQ]'})%></a><br>
 	</div>
 </div>
 

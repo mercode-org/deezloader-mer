@@ -197,9 +197,6 @@
 	"One download removed!": "ลบการดาวน์โหลดหนึ่งรายการแล้ว!",
 	"All downloads removed!": "ลบการดาวน์โหลดทั้งหมดแล้ว!",
 	"Download {{ type }}": "ดาวน์โหลด {{ type }}",
-	"Download FLAC": "ดาวน์โหลด FLAC",
-	"Download MP3 320kbps": "ดาวน์โหลด MP3 320kbps",
-	"Download MP3 128kbps": "ดาวน์โหลด MP3 128kbps",
 	"Spotify Playlist": "เพลย์ลิสต์ Spotify",
 	"%n songs":[
     [0, 0, "%n เพลง"],
@@ -214,8 +211,5 @@
 	"userToken copied to clipboard": "userToken ถูกคัดลอกไปยังคลิปบอร์ดแล้ว",
 	"by %s": "โดย %s",
 	"in %s": "ใน %s",
-	"Save Playlist File with folder name": "Save Playlist File with folder name",
-	"Download 360 Reality Audio High Quality": "Download 360 Reality Audio [HQ]",
-	"Download 360 Reality Audio Medium Quality": "Download 360 Reality Audio [MQ]",
-	"Download 360 Reality Audio Low Quality": "Download 360 Reality Audio [LQ]"
+	"Save Playlist File with folder name": "Save Playlist File with folder name"
 }
