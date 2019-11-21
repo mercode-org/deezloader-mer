@@ -1029,7 +1029,6 @@
 	<li><a href="#!" tab-id="tab_charts" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">bubble_chart</i><%= __('Charts')%></a></li>
 	<li><a href="#!" tab-id="tab_playlists" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">playlist_play</i><%= __('Playlists')%></a></li>
 	<li><a href="#!" tab-id="tab_link" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i><%= __('Link Analyzer')%></a></li>
-	<li><a href="#!" tab-id="tab_url" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i><%= __('Download from URL')%></a></li>
 	<li><a href="#!" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i><%= __('Downloads')%></a></li>
 	<li><div class="divider"></div></li>
 	<li><a href="#modal_settings" id="sidenav_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i><%= __('Settings')%></a></li>
@@ -1044,7 +1043,6 @@
 		<li class="tab"><a href="#tab_charts"><%= __('Charts')%></a></li>
 		<li class="tab"><a href="#tab_playlists"><%= __('Playlists')%></a></li>
 		<li class="tab"><a href="#tab_link"><%= __('Link Analyzer')%></a></li>
-		<li class="tab"><a href="#tab_url"><%= __('Download from URL')%></a></li>
 		<li class="tab"><a href="#tab_downloads"><%= __('Downloads')%></a></li>
 	</ul>
 
@@ -1054,7 +1052,7 @@
 			<form id="tab_search_form_search">
 				<div class="inline-input-group col s12">
 					<input autocomplete="off" id="tab_search_form_search_input_searchString" type="search" class="input" placeholder="<%= __('Start searching...')%>" autofocus>
-					<button class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">search</i></button>
+					<button id="tab_search_button" class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">search</i></button>
 				</div>
 				<div class="row center">
 					<p class="col s3">
@@ -1269,13 +1267,6 @@
 			</div>
 		</div>
 
-		<div id="tab_url">
-			<div class="inline-input-group">
-				<input autocomplete="off" type="search" id="song_url" class="input" placeholder="<%= __('DownloadURL_Info')%>">
-				<button id="download_from_url_button" class="btn btn-input btn-flat deezloader-primary white-text"><i class="material-icons">get_app</i></button>
-			</div>
-		</div>
-
 		<div id="tab_downloads">
 			<div class="row">
 				<div class="col s12 m4">
@@ -1316,9 +1307,9 @@
 		<a onclick="modalQualityButton(9)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download FLAC')%></a><br>
 		<a onclick="modalQualityButton(3)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download MP3 320kbps')%></a><br>
 		<a onclick="modalQualityButton(1)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download MP3 128kbps')%></a><br>
-		<a onclick="modalQualityButton(15)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download 360 Reality Audio High Quality</a><br>
-		<a onclick="modalQualityButton(14)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download 360 Reality Audio Medium Quality</a><br>
-		<a onclick="modalQualityButton(13)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text">Download 360 Reality Audio Low Quality</a><br>
+		<a onclick="modalQualityButton(15)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download 360 Reality Audio High Quality')%></a><br>
+		<a onclick="modalQualityButton(14)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download 360 Reality Audio Medium Quality')%></a><br>
+		<a onclick="modalQualityButton(13)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download 360 Reality Audio Low Quality')%></a><br>
 	</div>
 </div>
 

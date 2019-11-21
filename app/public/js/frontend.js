@@ -322,18 +322,22 @@ $(document).ready(function () {
 
 	// Search on tab change
 	$('input[name=searchMode][type=radio]').change(()=>{
-		$('#tab_search_form_search').submit()
+		let url = $('#tab_search_form_search_input_searchString').val()
+		if (url.indexOf('deezer.com/') < 0 && url.indexOf('open.spotify.com/') < 0 && url.indexOf('spotify:') < 0)
+			$('#tab_search_form_search').submit()
+	})
+	$('#tab_search_form_search_input_searchString').on('input', function() {
+		let url = $('#tab_search_form_search_input_searchString').val()
+		if (url.indexOf('deezer.com/') < 0 && url.indexOf('open.spotify.com/') < 0 && url.indexOf('spotify:') < 0)
+			$("#tab_search_button i").text("search")
+		else
+			$("#tab_search_button i").text("get_app")
 	})
 
 	// Enter on Link Analyzer and Link Download
 	$('#link_analyzer_url').on("keyup", function(e) {
 		if (e.keyCode == 13) {
 			parseLinkAnalyzer($("#link_analyzer_url").val())
-		}
-	});
-	$('#song_url').on("keyup", function(e) {
-		if (e.keyCode == 13) {
-			parseDownloadFromURL($("#song_url").val())
 		}
 	});
 
@@ -600,20 +604,54 @@ function message(title, message) {
 // Submit Search Form
 $('#tab_search_form_search').submit(function (ev) {
 	ev.preventDefault()
-
 	var searchString = $('#tab_search_form_search_input_searchString').val().trim()
-	var mode = $('#tab_search_form_search').find('input[name=searchMode]:checked').val()
+	if (searchString.indexOf('deezer.com/') < 0 && searchString.indexOf('open.spotify.com/') < 0 && searchString.indexOf('spotify:') < 0) {
+		var mode = $('#tab_search_form_search').find('input[name=searchMode]:checked').val()
 
-	if (searchString.length == 0) {return}
+		if (searchString.length == 0) {return}
 
-	// Clean Table and show loading indicator
-	$('#tab_search_table_results').find('thead').find('tr').addClass('hide')
-	$('#tab_search_table_results_tbody_results').addClass('hide')
-	$('#tab_search_table_results_tbody_noResults').addClass('hide')
-	$('#tab_search_table_results_tbody_loadingIndicator').removeClass('hide')
+		// Clean Table and show loading indicator
+		$('#tab_search_table_results').find('thead').find('tr').addClass('hide')
+		$('#tab_search_table_results_tbody_results').addClass('hide')
+		$('#tab_search_table_results_tbody_noResults').addClass('hide')
+		$('#tab_search_table_results_tbody_loadingIndicator').removeClass('hide')
 
-	socket.emit("search", {type: mode, text: searchString})
+		socket.emit("search", {type: mode, text: searchString})
+	}else{
+		parseDownloadFromURL($('#tab_search_form_search_input_searchString').val().trim())
+	}
 })
+
+$("#tab_search_button").on('contextmenu', function(e){
+	e.preventDefault();
+	console.log("rightclick")
+	var urls = $("#tab_search_form_search_input_searchString").val()
+	if (urls.indexOf('deezer.com/') < 0 && urls.indexOf('open.spotify.com/') < 0 && urls.indexOf('spotify:') < 0) {
+		return false;
+	}
+	let urlsArray = urls.split(";")
+	if(urlsArray.length != 0){
+		$(modalQuality).data("url", urls)
+		$(modalQuality).css('display', 'block')
+		$(modalQuality).addClass('animated fadeIn')
+	}
+	return false;
+})
+
+function parseDownloadFromURL(urlsString){
+	urls = urlsString.split(";")
+	for(var i = 0; i < urls.length; i++){
+		var url = urls[i]
+		//Validate URL
+		if (url.indexOf('deezer.com/') < 0 && url.indexOf('open.spotify.com/') < 0 && url.indexOf('spotify:') < 0) {
+			return false
+		}
+		if (url.indexOf('?') > -1) {
+			url = url.substring(0, url.indexOf("?"))
+		}
+		addToQueue(url)
+	}
+}
 
 // Parse data from search
 socket.on('search', function (data) {
@@ -1241,42 +1279,6 @@ socket.on("analyzealbum", (data)=>{
 	$("#link_analyzer_loading").hide()
 	$("#link_analyzer_album").show()
 })
-
-//###############################################TAB_URL##############################################\\
-$('#download_from_url_button').on('contextmenu', function(e){
-	e.preventDefault();
-	var urls = $("#song_url").val()
-	let urlsArray = urls.split(";")
-	if(urlsArray.length != 0){
-		$(modalQuality).data("url", urls)
-		$(modalQuality).css('display', 'block')
-		$(modalQuality).addClass('animated fadeIn')
-	}
-	return false;
-}).on('click', function(e){
-	e.preventDefault()
-	parseDownloadFromURL($("#song_url").val())
-})
-
-function parseDownloadFromURL(urlsString){
-	urls = urlsString.split(";")
-	for(var i = 0; i < urls.length; i++){
-		var url = urls[i]
-		if (url.length == 0) {
-			message(i18n('Blank URL Field'), i18n('You need to insert an URL to download it!'))
-			return false
-		}
-		//Validate URL
-		if (url.indexOf('deezer.com/') < 0 && url.indexOf('open.spotify.com/') < 0 && url.indexOf('spotify:') < 0) {
-			message(i18n('Wrong URL'), i18n('The URL seems to be wrong. Please check it and try it again.'))
-			return false
-		}
-		if (url.indexOf('?') > -1) {
-			url = url.substring(0, url.indexOf("?"))
-		}
-		addToQueue(url)
-	}
-}
 
 //############################################TAB_DOWNLOADS###########################################\\
 function addToQueue(url, forceBitrate=null) {
