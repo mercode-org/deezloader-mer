@@ -231,7 +231,7 @@ $(document).ready(function () {
 	})
 
 	$('.sidenav_tab').click((e)=>{
-		e.preventDefault
+		e.preventDefault()
 		$(e.currentTarget).addClass("active")
 		tabs.select($(e.currentTarget).attr('tab-id'))
 		tabs.updateTabIndicator()
@@ -308,7 +308,8 @@ $(document).ready(function () {
 		localStorage.darkMode = this.checked
 	})
 
-	$('#nightModeSwitch2').click(()=>{
+	$('#nightModeSwitch2').click((ev)=>{
+		ev.preventDefault()
 		$('#nightTimeSwitcher').prop('checked', !$('#nightTimeSwitcher').prop('checked'))
 		$('#nightTimeSwitcher').change()
 	})
@@ -624,8 +625,7 @@ $('#tab_search_form_search').submit(function (ev) {
 })
 
 $("#tab_search_button").on('contextmenu', function(e){
-	e.preventDefault();
-	console.log("rightclick")
+	e.preventDefault()
 	var urls = $("#tab_search_form_search_input_searchString").val()
 	if (urls.indexOf('deezer.com/') < 0 && urls.indexOf('open.spotify.com/') < 0 && urls.indexOf('spotify:') < 0) {
 		return false;
@@ -809,7 +809,7 @@ var trackListModalApp = new Vue({
 
 // Generate Button for tracklist with selection
 function generateShowTracklistSelectiveButton(link) {
-	var btn_showTrackListSelective = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
+	var btn_showTrackListSelective = $('<button class="waves-effect btn-flat"><i class="material-icons">list</i></button>')
 	$(btn_showTrackListSelective).click(function (ev){
 		ev.preventDefault()
 		showTrackListSelective(link)
@@ -864,7 +864,7 @@ $('#download_track_selection').on('contextmenu', function(e){
 
 // Generate Button for tracklist without selection
 function generateShowTracklistButton(link) {
-	var btn_showTrackList = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
+	var btn_showTrackList = $('<button class="waves-effect btn-flat"><i class="material-icons">list</i></button>')
 	$(btn_showTrackList).click(function (ev) {
 		ev.preventDefault()
 		showTrackList(link)
@@ -940,6 +940,7 @@ socket.on("getTrackList", function (data) {
 				generateDownloadLink(trackList[i].link).appendTo(tableBody.children('tr:last')).wrap('<td>')
 			}
 			$('.album_chip').click(function(e){
+				e.preventDefault();
 				showTrackListSelective($(this).data('link'), true)
 			})
 		} else if(data.reqType == 'playlist') {
@@ -1350,7 +1351,7 @@ function addObjToQueue(data){
 				<td colspan="4" class="progress"><div class="changeThis indeterminate"></div></td>
 			</tr>`)
 
-	var btn_remove = $('<a href="#" class="btn-flat waves-effect"><i class="material-icons">remove</i></a>')
+	var btn_remove = $('<button class="btn-flat waves-effect"><i class="material-icons">remove</i></button>')
 
 	$(btn_remove).click(function (ev) {
 		ev.preventDefault()
@@ -1549,7 +1550,7 @@ function getTypeFromLink(link) {
 }
 
 function generateDownloadLink(url) {
-	var btn_download = $('<a href="#" class="waves-effect btn-flat" oncontextmenu="return false;"><i class="material-icons">file_download</i></a>')
+	var btn_download = $('<button class="waves-effect btn-flat" oncontextmenu="return false;"><i class="material-icons">file_download</i></button>')
 	$(btn_download).on('contextmenu', function(e){
     e.preventDefault();
 		$(modalQuality).data("url", url)

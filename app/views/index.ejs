@@ -61,13 +61,13 @@
 				<!--<iframe id="modal_login_iframe_captcha" src="cap://deezer.com/"></iframe>-->
 			</div>
 			<div class="card-action row">
-				<a href="#" class="deezloader-primary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_login"><%= __('Log in')%></a>
-				<a href="#" class="deezloader-secondary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_signup"><%= __('Sign up')%></a>
+				<button class="deezloader-primary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_login"><%= __('Log in')%></button>
+				<button class="deezloader-secondary col s12 m2 waves-effect waves-light btn" id="modal_login_btn_signup"><%= __('Sign up')%></button>
 			</div>
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
+		<button class="modal-close waves-effect btn-flat"><%= __('Close')%></button>
 	</div>
 </div>
 <!--#############################################MODAL_SETTINGS############################################-->
@@ -80,7 +80,7 @@
 			<div class="col s12 hide" id="logged_in_info">
 				<img id="modal_settings_picture" src="" alt="Profile Picture" class="circle left" style="height:125px; margin-right: 12px;"/>
 				<p><%= __('You are logged in as')%> <b id="modal_settings_username"></b></p>
-				<a href="#" class="waves-effect waves-light btn" id="modal_settings_btn_logout"><%= __('Logout')%></a>
+				<button class="waves-effect waves-light btn" id="modal_settings_btn_logout"><%= __('Logout')%></button>
 			</div>
 			<p class="col s12" id="login_email_btn_container">
 				<a href="#modal_login" class="modal-trigger waves-effect waves-light btn" id="login_email_btn" style="width:100%;"><%= __('Login with e-mail')%></a>
@@ -92,7 +92,7 @@
 				<button class="btn btn-input btn-flat deezloader-primary white-text" id="modal_settings_btn_copyArl"><i class="material-icons">assignment</i></button>
 			</div>
 			<p class="col s12"><a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Login+via+userToken" target="_blank"><%= __('How do I get my userToken?')%></a></p>
-			<p class="col s12"><a href="#" class="deezloader-secondary waves-effect waves-light btn" style="width:100%;" id="modal_settings_btn_updateArl"><%= __('Update userToken')%></a></p>
+			<p class="col s12"><button class="deezloader-secondary waves-effect waves-light btn" style="width:100%;" id="modal_settings_btn_updateArl"><%= __('Update userToken')%></button></p>
 		</div>
 
 		<h6 class="col s12 secondary-text"><%= __('Path Settings')%></h6><hr>
@@ -406,11 +406,9 @@
 
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect waves-light deezloader-primary btn" id="modal_settings_btn_saveSettings"><i
-			class="material-icons right">save</i><%= __('Save')%></a>
-		<a href="#" class="waves-effect btn-flat" id="modal_settings_btn_defaultSettings"><i
-			class="material-icons right">settings_backup_restore</i><span class="hide-on-small-only"><%= __('Default Settings')%></span></a>
-		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
+		<button class="modal-close waves-effect waves-light deezloader-primary btn" id="modal_settings_btn_saveSettings"><i class="material-icons right">save</i><%= __('Save')%></button>
+		<button class="waves-effect btn-flat" id="modal_settings_btn_defaultSettings"><i class="material-icons right">settings_backup_restore</i><span class="hide-on-small-only"><%= __('Default Settings')%></span></button>
+		<button class="modal-close waves-effect btn-flat"><%= __('Close')%></button>
 	</div>
 </div>
 
@@ -592,7 +590,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
+		<button class="modal-close waves-effect btn-flat"><%= __('Close')%></button>
 	</div>
 </div>
 
@@ -851,7 +849,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
+		<button class="modal-close waves-effect btn-flat"><%= __('Close')%></button>
 	</div>
 </div>
 
@@ -895,8 +893,8 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" id="download_all_tracks" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left"><%= __('Download {{ type }}', {type: '{{ type }}'})%></a>
-		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
+		<button id="download_all_tracks" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left"><%= __('Download {{ type }}', {type: '{{ type }}'})%></button>
+		<button class="modal-close waves-effect btn-flat"><%= __('Close')%></button>
 	</div>
 </div>
 
@@ -941,9 +939,9 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" id="download_all_tracks_selective" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left"><%= __('Download {{ type }}', {type: '{{ type }}'})%></a>
-		<a href="#" id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><span class="hide-on-small-only"><%= __('Download selection')%><i class="material-icons right">file_download</i></span><i class="material-icons hide-on-med-and-up">file_download</i></a>
-		<a href="#" class="modal-close waves-effect btn-flat"><%= __('Close')%></a>
+		<button id="download_all_tracks_selective" v-bind:data-link="link" class="btn btn-flat waves-effect waves-light left"><%= __('Download {{ type }}', {type: '{{ type }}'})%></button>
+		<button id="download_track_selection" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><span class="hide-on-small-only"><%= __('Download selection')%><i class="material-icons right">file_download</i></span><i class="material-icons hide-on-med-and-up">file_download</i></button>
+		<button class="modal-close waves-effect btn-flat"><%= __('Close')%></button>
 	</div>
 </div>
 
@@ -958,7 +956,7 @@
 		</div>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect waves-light btn"><%= __('I got it!')%></a>
+		<button class="modal-close waves-effect waves-light btn"><%= __('I got it!')%></button>
 	</div>
 </div>
 
@@ -981,7 +979,7 @@
 		</table>
 	</div>
 	<div class="modal-footer">
-		<a href="#" class="modal-close waves-effect waves-light btn"><%= __('Close')%></a>
+		<button class="modal-close waves-effect waves-light btn"><%= __('Close')%></button>
 	</div>
 </div>
 
@@ -1025,15 +1023,15 @@
 		<a href="#name"><span class="white-text name" id="side_user"></span></a>
 		<a href="#email"><span class="white-text email" id="side_email"></span></a>
 	</div></li>
-	<li><a href="#!" tab-id="tab_search" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">search</i><%= __('Search')%></a></li>
-	<li><a href="#!" tab-id="tab_charts" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">bubble_chart</i><%= __('Charts')%></a></li>
-	<li><a href="#!" tab-id="tab_playlists" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">playlist_play</i><%= __('Playlists')%></a></li>
-	<li><a href="#!" tab-id="tab_link" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i><%= __('Link Analyzer')%></a></li>
-	<li><a href="#!" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i><%= __('Downloads')%></a></li>
+	<li><a href="#" tab-id="tab_search" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">search</i><%= __('Search')%></a></li>
+	<li><a href="#" tab-id="tab_charts" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">bubble_chart</i><%= __('Charts')%></a></li>
+	<li><a href="#" tab-id="tab_playlists" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">playlist_play</i><%= __('Playlists')%></a></li>
+	<li><a href="#" tab-id="tab_link" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">link</i><%= __('Link Analyzer')%></a></li>
+	<li><a href="#" tab-id="tab_downloads" class="sidenav_tab sidenav-close waves-effect"><i class="material-icons">get_app</i><%= __('Downloads')%></a></li>
 	<li><div class="divider"></div></li>
 	<li><a href="#modal_settings" id="sidenav_settings" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">settings</i><%= __('Settings')%></a></li>
 	<li><a href="#modal_about" class="waves-effect sidenav-close modal-trigger"><i class="material-icons">info</i><%= __('About')%></a></li>
-	<li><a href="#!" id="nightModeSwitch2"><i class="material-icons">brightness_2</i><%= __('Enable Night Mode')%></a>
+	<li><a href="#" id="nightModeSwitch2"><i class="material-icons">brightness_2</i><%= __('Enable Night Mode')%></a>
 	</li>
 </ul>
 
@@ -1304,12 +1302,12 @@
 <div id="modal_quality" class="smallmodal">
 	<!-- Modal content -->
 	<div class="smallmodal-content">
-		<a onclick="modalQualityButton(9)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: 'FLAC'})%></a><br>
-		<a onclick="modalQualityButton(3)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: 'MP3 320kbps'})%></a><br>
-		<a onclick="modalQualityButton(1)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: 'MP3 128kbps'})%></a><br>
-		<a onclick="modalQualityButton(15)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: '360 Reality Audio [HQ]'})%></a><br>
-		<a onclick="modalQualityButton(14)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: '360 Reality Audio [MQ]'})%></a><br>
-		<a onclick="modalQualityButton(13)" href="#" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: '360 Reality Audio [LQ]'})%></a><br>
+		<button onclick="modalQualityButton(9)" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: 'FLAC'})%></button><br>
+		<button onclick="modalQualityButton(3)" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: 'MP3 320kbps'})%></button><br>
+		<button onclick="modalQualityButton(1)" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: 'MP3 128kbps'})%></button><br>
+		<button onclick="modalQualityButton(15)" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: '360 Reality Audio [HQ]'})%></button><br>
+		<button onclick="modalQualityButton(14)" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: '360 Reality Audio [MQ]'})%></button><br>
+		<button onclick="modalQualityButton(13)" class="btn btn-flat waves-effect waves-light deezloader-primary white-text"><%= __('Download {{ type }}', {type: '360 Reality Audio [LQ]'})%></button><br>
 	</div>
 </div>
 
