@@ -10,7 +10,6 @@ var modalQuality = document.getElementById('modal_quality');
 modalQuality.open = false
 let userSettings = {}
 let spotifySettings = {}
-let modalsArray = []
 
 var downloadQueue = []
 
@@ -212,33 +211,7 @@ $(document).ready(function () {
 	M.AutoInit()
 	preview_track.volume = 0
 	var tabs = M.Tabs.getInstance(document.getElementById("tab-nav"))
-	$('.modal').modal({
-		onOpenStart: function(){
-			modalsArray.push('#'+this.id)
-			history.pushState(null,null, '#'+this.id);
-		},
-		onCloseStart: function(){
-			modalsArray.pop()
-			if (!this.$el.attr("fromBack")){
-				console.log("removing")
-				$(modalsArray[modalsArray.length-1]).attr("fromButton", true)
-				history.back()
-			}else{
-				this.$el.removeAttr("fromBack")
-			}
-		}
-	})
-	$(window).on('popstate', function (ev) {
-		if (modalsArray.length > 0){
-			var modal = $(modalsArray[modalsArray.length-1])
-			if (!modal.attr("fromButton")){
-				modal.attr("fromBack", true)
-				modal.modal('close')
-			}else{
-				modal.removeAttr("fromButton")
-			}
-		}
-  });
+	$('.modal').modal()
 	socket.emit("getUserSettings")
 	$("main.container").addClass('animated fadeIn').on('webkitAnimationEnd', function () {
 		$(this).removeClass('animated fadeOut')
@@ -713,7 +686,7 @@ function showResults_table_track(tracks) {
 		var currentResultTrack = tracks[i]
 		$(tableBody).append(
 			`<tr>
-			<td><a href="" class="rounded ${(currentResultTrack.preview ? `single-cover" preview="${currentResultTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" class="rounded" src="${(currentResultTrack.album.cover_small ? currentResultTrack.album.cover_small : "img/noCover.jpg" )}"/></a></td>
+			<td><a href="#" class="rounded ${(currentResultTrack.preview ? `single-cover" preview="${currentResultTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" class="rounded" src="${(currentResultTrack.album.cover_small ? currentResultTrack.album.cover_small : "img/noCover.jpg" )}"/></a></td>
 			<td class="hide-on-med-and-up">
 				<p class="remove-margin">${(currentResultTrack.explicit_lyrics ? ' <i class="material-icons valignicon tiny materialize-red-text">explicit</i>' : '')} ${currentResultTrack.title}</p>
 				<p class="remove-margin secondary-text">${currentResultTrack.artist.name}</p>
@@ -836,7 +809,7 @@ var trackListModalApp = new Vue({
 
 // Generate Button for tracklist with selection
 function generateShowTracklistSelectiveButton(link) {
-	var btn_showTrackListSelective = $('<a href="" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
+	var btn_showTrackListSelective = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
 	$(btn_showTrackListSelective).click(function (ev){
 		ev.preventDefault()
 		showTrackListSelective(link)
@@ -891,7 +864,7 @@ $('#download_track_selection').on('contextmenu', function(e){
 
 // Generate Button for tracklist without selection
 function generateShowTracklistButton(link) {
-	var btn_showTrackList = $('<a href="" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
+	var btn_showTrackList = $('<a href="#" class="waves-effect btn-flat"><i class="material-icons">list</i></a>')
 	$(btn_showTrackList).click(function (ev) {
 		ev.preventDefault()
 		showTrackList(link)
@@ -956,10 +929,10 @@ socket.on("getTrackList", function (data) {
 				$(tableBody).append(
 					`<tr>
 					<td class="hide-on-med-and-up">
-						<a href="" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</div></a>
+						<a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</div></a>
 						<p class="remove-margin secondary-text">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)} • ${trackList[i].release_date}</p>
 					</td>
-					<td class="hide-on-small-only breakline"><a href="" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</div></a></td>
+					<td class="hide-on-small-only breakline"><a href="#" class="album_chip" data-link="${trackList[i].link}"><div class="chip"><img src="${trackList[i].cover_small}"/>${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</div></a></td>
 					<td class="hide-on-small-only">${trackList[i].release_date}</td>
 					<td class="hide-on-small-only">${trackList[i].record_type[0].toUpperCase() + trackList[i].record_type.substring(1)}</td>
 					</tr>`
@@ -1177,7 +1150,7 @@ socket.on("getChartsTrackListByCountry", function (data) {
 		$(chartsTableBody).append(
 				`<tr>
 				<td>${(i + 1)}</td>
-				<td><a href="" class="rounded ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="rounded" /></a></td>
+				<td><a href="#" class="rounded ${(currentChartTrack.preview ? `single-cover" preview="${currentChartTrack.preview}"><i class="material-icons preview_controls white-text">play_arrow</i>` : '">')}<img style="width:56px;" src="${(currentChartTrack.album.cover_small ? currentChartTrack.album.cover_small : "img/noCover.jpg")}" class="rounded" /></a></td>
 				<td class="hide-on-med-and-up">
 					<p class="remove-margin">${(currentChartTrack.explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${currentChartTrack.title}</p>
 					<p class="remove-margin secondary-text">${currentChartTrack.artist.name}</p>
@@ -1377,7 +1350,7 @@ function addObjToQueue(data){
 				<td colspan="4" class="progress"><div class="changeThis indeterminate"></div></td>
 			</tr>`)
 
-	var btn_remove = $('<a href="" class="btn-flat waves-effect"><i class="material-icons">remove</i></a>')
+	var btn_remove = $('<a href="#" class="btn-flat waves-effect"><i class="material-icons">remove</i></a>')
 
 	$(btn_remove).click(function (ev) {
 		ev.preventDefault()
@@ -1576,7 +1549,7 @@ function getTypeFromLink(link) {
 }
 
 function generateDownloadLink(url) {
-	var btn_download = $('<a href="" class="waves-effect btn-flat" oncontextmenu="return false;"><i class="material-icons">file_download</i></a>')
+	var btn_download = $('<a href="#" class="waves-effect btn-flat" oncontextmenu="return false;"><i class="material-icons">file_download</i></a>')
 	$(btn_download).on('contextmenu', function(e){
     e.preventDefault();
 		$(modalQuality).data("url", url)
