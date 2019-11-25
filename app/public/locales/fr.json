@@ -197,9 +197,6 @@
 	"One download removed!": "Un téléchargement a été supprimé !",
 	"All downloads removed!": "Tous les téléchargements ont été supprimés !",
 	"Download {{ type }}": "Télécharger {{ type }}",
-	"Download FLAC": "Télécharger FLAC",
-	"Download MP3 320kbps": "Télécharger MP3 320kbps",
-	"Download MP3 128kbps": "Télécharger MP3 128kbps",
 	"Spotify Playlist": "Playlist Spotify",
 	"%n songs":[
     [0, 0, "%n morceaux"],
@@ -213,5 +210,6 @@
 	"Login with e-mail": "Identification par e-mail",
 	"userToken copied to clipboard": "Le Token d'utilisateur a été copié dans le presse-papiers",
 	"by %s": "par %s",
-	"in %s": "dans %s"
+	"in %s": "en %s",
+	"Save Playlist File with folder name": "Enregistrer le fichier de playlist avec le nom du dossier"
 }
