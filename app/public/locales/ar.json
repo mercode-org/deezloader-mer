@@ -211,5 +211,11 @@
 	"userToken copied to clipboard": "تم نسخ رمز المستخدم userToken في الحافظة",
 	"by %s": "ب %s",
 	"in %s": "في %s",
-	"Save Playlist File with folder name": "حفظ ملف قائمة التشغيل مع إسم المجلد"
+	"Save Playlist File with folder name": "حفظ ملف قائمة التشغيل مع إسم المجلد",
+	"Create folders for Playlists": "Create folders for Playlists",
+	"Embedded Artwork Size": "Embedded Artwork Size",
+	"Local Artwork Size": "Local Artwork Size",
+	"Playlist names template": "Playlist names template",
+	"Artist names template": "Artist names template",
+	"Save single tracks in a folder": "Save single tracks in a folder"
 }

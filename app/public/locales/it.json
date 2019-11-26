@@ -223,5 +223,11 @@
 	"userToken copied to clipboard": "userToken copiato negli appunti",
 	"by %s": "di %s",
 	"in %s": "in %s",
-	"Save Playlist File with folder name": "Salva il file di Playlist con il nome della cartella"
+	"Save Playlist File with folder name": "Salva il file di Playlist con il nome della cartella",
+	"Create folders for Playlists": "Crea cartelle per le Playlist",
+	"Embedded Artwork Size": "Dimensioni Copertine embedded",
+	"Local Artwork Size": "Dimensioni Copertine locali",
+	"Playlist names template": "Template nomi Playlist",
+	"Artist names template": "Template nomi Artisti",
+	"Save single tracks in a folder": "Salva traccie singole in una cartella"
 }
