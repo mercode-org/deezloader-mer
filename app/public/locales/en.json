@@ -223,5 +223,11 @@
 	"userToken copied to clipboard": "userToken copied to clipboard",
 	"by %s": "by %s",
 	"in %s": "in %s",
-	"Save Playlist File with folder name": "Save Playlist File with folder name"
+	"Save Playlist File with folder name": "Save Playlist File with folder name",
+	"Create folders for Playlists": "Create folders for Playlists",
+	"Embedded Artwork Size": "Embedded Artwork Size",
+	"Local Artwork Size": "Local Artwork Size",
+	"Playlist names template": "Playlist names template",
+	"Artist names template": "Artist names template",
+	"Save single tracks in a folder": "Save single tracks in a folder"
 }

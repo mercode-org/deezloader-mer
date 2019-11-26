@@ -112,15 +112,10 @@
 		</div>
 
 		<div class="row">
-			<div class="input-field col s12 m6">
+			<div class="input-field col s12">
 				<input autocomplete="off" type="text" id="modal_settings_input_albumTrackNameTemplate"/>
 				<label for="modal_settings_input_albumTrackNameTemplate"><%= __('Album tracknames template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
 					data-tooltip="<%= __('Supported variables are')%>: %title%, %album%, %artist%, %year%, %date%, %label%, %number%, %disc%, %isrc%, %explicit%, %genre%, %track_id%, %album_id%">info_outline</i></label>
-			</div>
-			<div class="input-field col s12 m6">
-				<input autocomplete="off" type="text" id="modal_settings_input_albumNameTemplate"/>
-				<label for="modal_settings_input_albumNameTemplate"><%= __('Album names template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
-					data-tooltip="<%= __('Supported variables are')%>: %album%, %artist%, %year%, %date%, %bitrate%, %type%, %label%, %album_id%, %upc%, %explicit%, %genre%, %album_id%">info_outline</i></label>
 			</div>
 		</div>
 
@@ -135,11 +130,28 @@
 		<h6 class="col s12 secondary-text"><%= __('More Path Settings')%></h6><hr>
 		<div class="row">
 			<div class="col s12 switch settings_switch">
+				<span><%= __('Create folders for Playlists')%></span>
+				<label>
+					<input type="checkbox" id="modal_settings_cbox_createPlaylistFolder" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="input-field col s12">
+				<input autocomplete="off" type="text" id="modal_settings_input_playlistNameTemplate"/>
+				<label for="modal_settings_input_playlistNameTemplate"><%= __('Playlist names template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="<%= __('Supported variables are')%>: %owner%, %name%, %year%, %date%, %playlist_id%,">info_outline</i></label>
+			</div>
+			<div class="col s12 switch settings_switch">
 				<span><%= __('Create folders for Artists')%></span>
 				<label>
 					<input type="checkbox" id="modal_settings_cbox_createArtistFolder"/>
 					<span class="lever"></span>
 				</label>
+			</div>
+			<div class="input-field col s12">
+				<input autocomplete="off" type="text" id="modal_settings_input_artistNameTemplate"/>
+				<label for="modal_settings_input_artistNameTemplate"><%= __('Artist names template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="<%= __('Supported variables are')%>: %name%, %artist_id%,">info_outline</i></label>
 			</div>
 			<div class="col s12 switch settings_switch">
 				<span><%= __('Create folders for Albums')%></span>
@@ -147,6 +159,11 @@
 					<input type="checkbox" id="modal_settings_cbox_createAlbumFolder"/>
 					<span class="lever"></span>
 				</label>
+			</div>
+			<div class="input-field col s12">
+				<input autocomplete="off" type="text" id="modal_settings_input_albumNameTemplate"/>
+				<label for="modal_settings_input_albumNameTemplate"><%= __('Album names template')%> <i class="material-icons valignicon tiny tooltipped" data-position="right" data-delay="50"
+					data-tooltip="<%= __('Supported variables are')%>: %album%, %artist%, %year%, %date%, %bitrate%, %type%, %label%, %album_id%, %upc%, %explicit%, %genre%">info_outline</i></label>
 			</div>
 			<div class="col s12 switch settings_switch">
 				<span><%= __('Create folders for CDs')%></span>
@@ -158,7 +175,14 @@
 			<div class="col s12 switch settings_switch">
 				<span><%= __('Create Artist, Albums and CDs folders for Playlists too')%></span>
 				<label>
-					<input type="checkbox" id="modal_settings_cbox_createFoldersPlaylist" class="filled-in"/>
+					<input type="checkbox" id="modal_settings_cbox_createStructurePlaylist" class="filled-in"/>
+					<span class="lever"></span>
+				</label>
+			</div>
+			<div class="col s12 switch settings_switch">
+				<span><%= __('Save single tracks in a folder')%></span>
+				<label>
+					<input type="checkbox" id="modal_settings_cbox_createSingleFolder" class="filled-in"/>
 					<span class="lever"></span>
 				</label>
 			</div>
@@ -283,8 +307,8 @@
 
 		<h6 class="col s12 secondary-text"><%= __('Artworks')%></h6><hr>
 		<div class="row">
-			<div class="input-field col s12">
-				<select name="artworkSize" id="modal_settings_select_artworkSize">
+			<div class="input-field col s12 m6">
+				<select name="embeddedArtworkSize" id="modal_settings_select_embeddedArtworkSize">
 					<option value="2000">2000x2000</option>
 					<option value="1400">1400x1400</option>
 					<option value="1200">1200x1200</option>
@@ -293,7 +317,19 @@
 					<option value="500">500x500</option>
 					<option value="250">250x250</option>
 				</select>
-				<label for="modal_settings_select_artworkSize"><%= __('Artwork Size')%></label>
+				<label for="modal_settings_select_embeddedArtworkSize"><%= __('Embedded Artwork Size')%></label>
+			</div>
+			<div class="input-field col s12 m6">
+				<select name="localArtworkSize" id="modal_settings_select_localArtworkSize">
+					<option value="2000">2000x2000</option>
+					<option value="1400">1400x1400</option>
+					<option value="1200">1200x1200</option>
+					<option value="1000">1000x1000</option>
+					<option value="800">800x800</option>
+					<option value="500">500x500</option>
+					<option value="250">250x250</option>
+				</select>
+				<label for="modal_settings_select_localArtworkSize"><%= __('Local Artwork Size')%></label>
 			</div>
 			<div class="col s12 switch settings_switch">
 				<span><%= __('Save Album Artwork')%></span>

@@ -389,6 +389,24 @@ $(document).ready(function () {
 			message(i18n('Please restart the app'), i18n('To change the language you need to refresh the page or restart the app!'))
 		}
 	})
+
+	// Settings cleanup
+	$('#modal_settings_cbox_createPlaylistFolder').change(function(){
+		$('#modal_settings_input_playlistNameTemplate').parent().slideToggle()
+	})
+	$('#modal_settings_cbox_createArtistFolder').change(function(){
+		$('#modal_settings_input_artistNameTemplate').parent().slideToggle()
+	})
+	$('#modal_settings_cbox_createAlbumFolder').change(function(){
+		$('#modal_settings_input_albumNameTemplate').parent().slideToggle()
+	})
+	$('#modal_settings_cbox_saveArtwork').change(function(){
+		$('#modal_settings_input_coverImageTemplate').parent().slideToggle()
+	})
+	$('#modal_settings_cbox_saveArtworkArtist').change(function(){
+		$('#modal_settings_input_artistImageTemplate').parent().slideToggle()
+	})
+
 })
 
 // Load settings
@@ -423,12 +441,16 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		downloadLocation: $('#modal_settings_input_downloadTracksLocation').val(),
 		trackNameTemplate: $('#modal_settings_input_trackNameTemplate').val(),
 		albumTrackNameTemplate: $('#modal_settings_input_albumTrackNameTemplate').val(),
-		albumNameTemplate: $('#modal_settings_input_albumNameTemplate').val(),
 		playlistTrackNameTemplate: $('#modal_settings_input_playlistTrackNameTemplate').val(),
+		createPlaylistFolder: $('#modal_settings_cbox_createPlaylistFolder').is(':checked'),
+		playlistNameTemplate: $('#modal_settings_input_playlistNameTemplate').val(),
 		createArtistFolder: $('#modal_settings_cbox_createArtistFolder').is(':checked'),
+		artistNameTemplate: $('#modal_settings_input_artistNameTemplate').val(),
 		createAlbumFolder: $('#modal_settings_cbox_createAlbumFolder').is(':checked'),
+		albumNameTemplate: $('#modal_settings_input_albumNameTemplate').val(),
 		createCDFolder: $('#modal_settings_cbox_createCDFolder').is(':checked'),
-		createFoldersPlaylist: $('#modal_settings_cbox_createFoldersPlaylist').is(':checked'),
+		createStructurePlaylist: $('#modal_settings_cbox_createStructurePlaylist').is(':checked'),
+		createSingleFolder: $('#modal_settings_cbox_createSingleFolder').is(':checked'),
 		saveFullArtists : $('#modal_settings_cbox_saveFullArtists').is(':checked'),
 		padtrck: $('#modal_settings_cbox_padtrck').is(':checked'),
 		paddingSize: $('#modal_settings_number_paddingSize').val(),
@@ -443,7 +465,8 @@ $('#modal_settings_btn_saveSettings').click(function () {
 		changePlaylistName: $('#modal_settings_cbox_changePlaylistName').is(':checked'),
 		syncedlyrics: $('#modal_settings_cbox_syncedlyrics').is(':checked'),
 		minimizeToTray : $('#modal_settings_cbox_minimizeToTray').is(':checked'),
-		artworkSize: parseInt($('#modal_settings_select_artworkSize').val()),
+		embeddedArtworkSize: parseInt($('#modal_settings_select_embeddedArtworkSize').val()),
+		localArtworkSize: parseInt($('#modal_settings_select_localArtworkSize').val()),
 		saveArtwork: $('#modal_settings_cbox_saveArtwork').is(':checked'),
 		coverImageTemplate: $('#modal_settings_input_coverImageTemplate').val(),
 		saveArtworkArtist: $('#modal_settings_cbox_saveArtworkArtist').is(':checked'),
@@ -520,12 +543,32 @@ function fillSettingsModal(settings, spotifySettings = {clientId: "", clientSecr
 	$('#modal_settings_input_downloadTracksLocation').val(settings.downloadLocation)
 	$('#modal_settings_input_trackNameTemplate').val(settings.trackNameTemplate)
 	$('#modal_settings_input_albumTrackNameTemplate').val(settings.albumTrackNameTemplate)
-	$('#modal_settings_input_albumNameTemplate').val(settings.albumNameTemplate)
 	$('#modal_settings_input_playlistTrackNameTemplate').val(settings.playlistTrackNameTemplate)
+
+	$('#modal_settings_cbox_createPlaylistFolder').prop('checked', settings.createPlaylistFolder)
+	$('#modal_settings_input_playlistNameTemplate').val(settings.playlistNameTemplate)
+	if (settings.createPlaylistFolder)
+		$('#modal_settings_input_playlistNameTemplate').parent().slideDown()
+	else
+		$('#modal_settings_input_playlistNameTemplate').parent().slideUp()
+
 	$('#modal_settings_cbox_createArtistFolder').prop('checked', settings.createArtistFolder)
+	$('#modal_settings_input_artistNameTemplate').val(settings.artistNameTemplate)
+	if (settings.createArtistFolder)
+		$('#modal_settings_input_artistNameTemplate').parent().slideDown()
+	else
+		$('#modal_settings_input_artistNameTemplate').parent().slideUp()
+
 	$('#modal_settings_cbox_createAlbumFolder').prop('checked', settings.createAlbumFolder)
+	$('#modal_settings_input_albumNameTemplate').val(settings.albumNameTemplate)
+	if (settings.createAlbumFolder)
+		$('#modal_settings_input_albumNameTemplate').parent().slideDown()
+	else
+		$('#modal_settings_input_albumNameTemplate').parent().slideUp()
+
 	$('#modal_settings_cbox_createCDFolder').prop('checked', settings.createCDFolder)
-	$('#modal_settings_cbox_createFoldersPlaylist').prop('checked', settings.createFoldersPlaylist)
+	$('#modal_settings_cbox_createStructurePlaylist').prop('checked', settings.createStructurePlaylist)
+	$('#modal_settings_cbox_createSingleFolder').prop('checked', settings.createSingleFolder)
 	$('#modal_settings_cbox_saveFullArtists').prop('checked', settings.saveFullArtists)
 	$('#modal_settings_cbox_padtrck').prop('checked', settings.padtrck)
 	$('#modal_settings_number_paddingSize').val(settings.paddingSize)
@@ -540,11 +583,23 @@ function fillSettingsModal(settings, spotifySettings = {clientId: "", clientSecr
 	$('#modal_settings_cbox_changePlaylistName').prop('checked', settings.changePlaylistName)
 	$('#modal_settings_cbox_syncedlyrics').prop('checked', settings.syncedlyrics)
 	$('#modal_settings_cbox_minimizeToTray').prop('checked', settings.minimizeToTray)
-	$('#modal_settings_select_artworkSize').val(settings.artworkSize).formSelect()
+	$('#modal_settings_select_embeddedArtworkSize').val(settings.embeddedArtworkSize).formSelect()
+	$('#modal_settings_select_localArtworkSize').val(settings.localArtworkSize).formSelect()
+
 	$('#modal_settings_cbox_saveArtwork').prop('checked', settings.saveArtwork)
 	$('#modal_settings_input_coverImageTemplate').val(settings.coverImageTemplate)
+	if (settings.saveArtwork)
+		$('#modal_settings_input_coverImageTemplate').parent().slideDown()
+	else
+		$('#modal_settings_input_coverImageTemplate').parent().slideUp()
+
 	$('#modal_settings_cbox_saveArtworkArtist').prop('checked', settings.saveArtworkArtist)
 	$('#modal_settings_input_artistImageTemplate').val(settings.artistImageTemplate)
+	if (settings.saveArtworkArtist)
+		$('#modal_settings_input_artistImageTemplate').parent().slideDown()
+	else
+		$('#modal_settings_input_artistImageTemplate').parent().slideUp()
+
 	$('#modal_settings_cbox_PNGcovers').prop('checked', settings.PNGcovers)
 	$('#modal_settings_select_multitagSeparator').val(settings.multitagSeparator).formSelect()
 	$('#modal_settings_select_dateFormat').val(settings.dateFormat).formSelect()

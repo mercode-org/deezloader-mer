@@ -518,7 +518,6 @@ io.sockets.on('connection', function (s) {
 		try{
 			var track = await s.Deezer.getTrack(data.id)
 			data.settings.filename = data.settings.trackNameTemplate
-			data.settings.foldername = data.settings.albumNameTemplate
 			let _track = {
 				name: track.title,
 				artist: track.artist.name,
@@ -566,7 +565,6 @@ io.sockets.on('connection', function (s) {
 			if (album.nb_tracks == 1 && data.settings.downloadSinglesAsTracks){
 				var track = await s.Deezer.getTrack(album.tracks.data[0].id)
 				data.settings.filename = data.settings.trackNameTemplate
-				data.settings.foldername = data.settings.albumNameTemplate
 				let _track = {
 					name: track.title,
 					artist: track.artist.name,
@@ -586,7 +584,6 @@ io.sockets.on('connection', function (s) {
 			}else{
 				album.tracks = await s.Deezer.getAlbumTracks(data.id)
 				data.settings.filename = data.settings.albumTrackNameTemplate
-				data.settings.foldername = data.settings.albumNameTemplate
 				let _album = {
 					name: album.title,
 					artist: album.artist.name,
@@ -662,11 +659,11 @@ io.sockets.on('connection', function (s) {
 		try{
 			var playlist = await s.Deezer.legacyGetPlaylist(data.id)
 			data.settings.filename = data.settings.playlistTrackNameTemplate
-			data.settings.foldername = data.settings.albumNameTemplate
 			playlist.tracks = await s.Deezer.getPlaylistTracks(data.id)
 			let _playlist = {
 				name: playlist.title,
 				artist: playlist.creator.name,
+				artistId: playlist.creator.id,
 				size: playlist.tracks.length,
 				downloaded: 0,
 				failed: 0,
@@ -705,11 +702,11 @@ io.sockets.on('connection', function (s) {
 		try{
 			var artist = await s.Deezer.legacyGetArtist(data.id)
 			data.settings.filename = data.settings.playlistTrackNameTemplate
-			data.settings.foldername = data.settings.albumNameTemplate
 			artist.tracks = await s.Deezer.getArtistTopTracks(data.id)
 			let _playlist = {
 				name: artist.name + " Most played tracks",
 				artist: artist.name,
+				artistId: artist.id,
 				size: artist.tracks.length,
 				downloaded: 0,
 				failed: 0,
@@ -751,11 +748,11 @@ io.sockets.on('connection', function (s) {
 				Spotify.setAccessToken(creds.body['access_token'])
 				var offset = 0
 				data.settings.filename = data.settings.playlistTrackNameTemplate
-				data.settings.foldername = data.settings.albumNameTemplate
 				var resp = await Spotify.getPlaylist(data.id, {fields: "id,name,owner,images,tracks(total)"})
 				var _playlist = {
 					name: resp.body.name,
 					artist: (resp.body.owner.display_name ? resp.body.owner.display_name : resp.body.owner.id),
+					artistId: resp.body.owner.id,
 					size: resp.body.tracks.total,
 					downloaded: 0,
 					failed: 0,
@@ -1009,6 +1006,7 @@ io.sockets.on('connection', function (s) {
 			*/
 			case "track":
 				var downloadPromise = new Promise(async (resolve,reject)=>{
+					downloading.settings.singleTrack = true;
 					try{
 						await downloadTrackObject(downloading.obj, downloading.queueId, downloading.settings)
 						downloading.downloaded++
@@ -1152,14 +1150,39 @@ io.sockets.on('connection', function (s) {
 				downloading.settings.plName = downloading.name;
 				downloading.playlistArr = Array(downloading.size);
 				downloading.tracksData = Array(downloading.size);
+				date = {
+					day: downloading.obj.creation_date.slice(8,10),
+					month: downloading.obj.creation_date.slice(5,7),
+					year: downloading.obj.creation_date.slice(0, 4),
+					slicedYear: (downloading.settings.dateFormatYear == "2" ? downloading.obj.creation_date.slice(2, 4) : downloading.obj.creation_date.slice(0, 4))
+				}
+				dateString
+				switch (downloading.settings.dateFormat){
+					case "1": dateString = `${date.day}-${date.month}-${date.slicedYear}`; break;
+					case "2": dateString = `${date.month}-${date.day}-${date.slicedYear}`; break;
+					case "3": dateString = `${date.slicedYear}-${date.day}-${date.month}`; break;
+					case "0":default: dateString = `${date.slicedYear}-${date.month}-${date.day}`; break;
+				}
 				downloading.settings.playlist = {
+					title: downloading.name,
+					artist: {
+						name: downloading.artist,
+						id: downloading.artistId,
+						picture: ""
+					},
+					year: date.year,
+					date: dateString,
+					dateObj: date,
+					recordType: "Playlist",
+					label: "",
+					barcode: "None",
 					id: downloading.id.split(":")[0],
-					name:	downloading.name,
-					artist: downloading.artist,
-					cover: downloading.obj.picture_small.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`),
-					fullSize: downloading.obj.tracks.length,
-					creationDate: downloading.obj.creation_date,
-				};
+					explicit: false,
+					compilation: true,
+					discTotal: 1,
+					cover: downloading.obj.picture_small.replace("56x56",`${downloading.settings.embeddedArtworkSize}x${downloading.settings.embeddedArtworkSize}`),
+					fullSize: downloading.trackList.length,
+				}
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.obj.tracks.every(function (t, index) {
 						downloading.tracksData[index] = {
@@ -1238,9 +1261,9 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
-						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
+						let imgPath = downloading.filePath + antiDot(settingsRegexAlbum(downloading.settings.playlist, downloading.settings.coverImageTemplate))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.obj.picture_small){
-							downloading.cover = downloading.obj.picture_small.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
+							downloading.cover = downloading.obj.picture_small.replace("56x56",`${downloading.settings.localArtworkSize}x${downloading.settings.localArtworkSize}`)
 							request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
 								if(error){
 									logger.error(error.stack);
@@ -1288,13 +1311,38 @@ io.sockets.on('connection', function (s) {
 				downloading.trackList = await s.Deezer.getTracks(downloading.playlistContent)
 				logger.info("All tracks converted, starting download")
 				io.sockets.emit("downloadStarted", {queueId: downloading.queueId})
+				date = {
+					day: downloading.obj.creation_date.slice(8,10),
+					month: downloading.obj.creation_date.slice(5,7),
+					year: downloading.obj.creation_date.slice(0, 4),
+					slicedYear: (downloading.settings.dateFormatYear == "2" ? downloading.obj.creation_date.slice(2, 4) : downloading.obj.creation_date.slice(0, 4))
+				}
+				dateString
+				switch (downloading.settings.dateFormat){
+					case "1": dateString = `${date.day}-${date.month}-${date.slicedYear}`; break;
+					case "2": dateString = `${date.month}-${date.day}-${date.slicedYear}`; break;
+					case "3": dateString = `${date.slicedYear}-${date.day}-${date.month}`; break;
+					case "0":default: dateString = `${date.slicedYear}-${date.month}-${date.day}`; break;
+				}
 				downloading.settings.playlist = {
+					title: downloading.name,
+					artist: {
+						name: downloading.artist,
+						id: downloading.artistId,
+						picture: ""
+					},
+					year: date.year,
+					date: dateString,
+					dateObj: date,
+					recordType: "Playlist",
+					label: "",
+					barcode: "None",
 					id: downloading.id.split(":")[0],
-					name:	downloading.name,
-					artist: downloading.artist,
-					cover: downloading.obj.images[0].url.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`),
+					explicit: false,
+					compilation: true,
+					discTotal: 1,
+					cover: downloading.obj.images[0].url.replace("56x56",`${downloading.settings.embeddedArtworkSize}x${downloading.settings.embeddedArtworkSize}`),
 					fullSize: downloading.trackList.length,
-					creationDate: downloading.obj.creation_date
 				}
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.trackList.every(function (t, index) {
@@ -1380,9 +1428,9 @@ io.sockets.on('connection', function (s) {
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
-						let imgPath = downloading.filePath + antiDot(settingsRegexCover(downloading.settings.coverImageTemplate,downloading.artist,downloading.name))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
+						let imgPath = downloading.filePath + antiDot(settingsRegexAlbum(downloading.settings.playlist, downloading.settings.coverImageTemplate))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.obj.images){
-							downloading.cover = downloading.obj.images[0].url.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`)
+							downloading.cover = downloading.obj.images[0].url.replace("56x56",`${downloading.settings.localArtworkSize}x${downloading.settings.localArtworkSize}`)
 							request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
 								if(error){
 									logger.error(error.stack);
@@ -1486,26 +1534,10 @@ io.sockets.on('connection', function (s) {
 					}
 				}
 				if (settings.savePlaylistAsCompilation && settings.plName){
-					track.album.artist = {
-						name: settings.playlist.artist,
-						picture: "",
-					}
-					track.album.title = settings.playlist.name
-					track.album.trackTotal = settings.playlist.fullSize
-					track.album.recordType = "Compilation"
-					track.album.id = settings.playlist.id
+					track.album = settings.playlist
 					track.trackNumber = track.position+1
-					track.album.explicit = false
-					track.album.barcode = ""
-					track.album.label = ""
-					track.album.compilation = true
-					if (settings.playlist.creationDate) {
-						track.date = {
-							day: settings.playlist.creationDate.slice(8,10),
-							month: settings.playlist.creationDate.slice(5,7),
-							year: settings.playlist.creationDate.slice(0, 4),
-							slicedYear: (settings.dateFormatYear == "2" ? settings.playlist.creationDate.slice(2, 4) : settings.playlist.creationDate.slice(0, 4))
-						}
+					if (track.album.dateObj) {
+						track.date = track.album.dateObj
 					}else if(!track.date){
 						track.date = {
 							day: 0,
@@ -1560,27 +1592,10 @@ io.sockets.on('connection', function (s) {
 				track.date = track.album.date
 				track.date.slicedYear = (settings.dateFormatYear == "2" ? track.date.year.slice(2, 4) : track.date.year.slice(0, 4))
 				if (settings.savePlaylistAsCompilation && settings.plName){
-					track.album.discTotal = 1
-					track.album.artist = {
-						name: settings.playlist.artist,
-						picture: "",
-					}
-					track.album.title = settings.playlist.name
-					track.album.trackTotal = settings.playlist.fullSize
-					track.album.recordType = "Compilation"
-					track.album.id = settings.playlist.id
+					track.album = settings.playlist
 					track.trackNumber = track.position+1
-					track.album.explicit = false
-					track.album.barcode = ""
-					track.album.label = ""
-					track.album.compilation = true
-					if (settings.playlist.creationDate) {
-						track.date = {
-							day: settings.playlist.creationDate.slice(8,10),
-							month: settings.playlist.creationDate.slice(5,7),
-							year: settings.playlist.creationDate.slice(0, 4),
-							slicedYear: (settings.dateFormatYear == "2" ? settings.playlist.creationDate.slice(2, 4) : settings.playlist.creationDate.slice(0, 4))
-						}
+					if (track.album.dateObj) {
+						track.date = track.album.dateObj
 					}else if(!track.date){
 						track.date = {
 							day: 0,
@@ -1676,11 +1691,11 @@ io.sockets.on('connection', function (s) {
 				}
 			}
 			if (!track.album.artist.picture) track.album.artist.picture = ""
-			track.album.artist.pictureUrl = `${s.Deezer.artistPicturesHost}${track.album.artist.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
+			track.album.artist.pictureUrl = `${s.Deezer.artistPicturesHost}${track.album.artist.picture}/${settings.localArtworkSize}x${settings.localArtworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
 			if (settings.savePlaylistAsCompilation && settings.plName){
 				track.album.pictureUrl = settings.playlist.cover
 			}else{
-				track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.artworkSize}x${settings.artworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
+				track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.embeddedArtworkSize}x${settings.embeddedArtworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
 			}
 
 			// Auto detect aviable track format from settings
@@ -1836,38 +1851,40 @@ io.sockets.on('connection', function (s) {
 		// Generating file path
 		let filepath = mainFolder;
 		let artistPath;
-		if ((settings.createArtistFolder || settings.createAlbumFolder) && (!settings.plName || (settings.createFoldersPlaylist || settings.savePlaylistAsCompilation) && settings.plName)) {
+		let coverPath;
 
-			if(settings.plName && settings.createFoldersPlaylist && !settings.savePlaylistAsCompilation){
-				filepath += antiDot(fixName(settings.plName)) + path.sep;
-				downloadQueue[queueId].filePath = filepath
-			}
+		if (settings.createPlaylistFolder && settings.plName && !settings.savePlaylistAsCompilation)
+			filepath += antiDot(fixName(settingsRegexPlaylist(settings.playlist, settings.playlistNameTemplate))) + path.sep;
 
-			if (settings.createArtistFolder) {
-				if(settings.artName){
-					filepath += antiDot(fixName(settings.artName)) + path.sep;
-				}else{
-					filepath += antiDot(fixName(track.album.artist.name)) + path.sep;
-				}
-				artistPath = filepath;
-			}
+		if (settings.plName && !settings.savePlaylistAsCompilation)
+			downloadQueue[queueId].filePath = filepath
 
-			if (settings.createAlbumFolder) {
-				if(settings.artName){
-					filepath += antiDot(fixName(settingsRegexAlbum(track.album, settings.foldername))) + path.sep;
-				}else{
-					filepath += antiDot(fixName(settingsRegexAlbum(track.album, settings.foldername))) + path.sep;
-				}
-			}
-		} else if (settings.plName) {
-			filepath += antiDot(fixName(settings.plName)) + path.sep;
-		} else if (settings.artName) {
-			filepath += antiDot(fixName(settingsRegexAlbum(track.album, settings.foldername))) + path.sep;
+		if (
+			settings.createArtistFolder && !settings.plName ||
+			(settings.createArtistFolder && settings.plName && settings.savePlaylistAsCompilation) ||
+			(settings.createArtistFolder && settings.plName && settings.createStructurePlaylist)
+		){
+			filepath += antiDot(fixName(settingsRegexArtist(track.album.artist, settings.artistNameTemplate))) + path.sep;
+			artistPath = filepath;
 		}
-		let coverpath = filepath;
-		if(!(settings.plName && settings.createFoldersPlaylist && !settings.savePlaylistAsCompilation)) downloadQueue[queueId].filePath = filepath
+		if (settings.createAlbumFolder && (
+			(settings.createSingleFolder && settings.singleTrack) &&
+			!settings.plName ||
+			(settings.plName && settings.savePlaylistAsCompilation) ||
+			(settings.plName && settings.createStructurePlaylist))
+		){
+			filepath += antiDot(fixName(settingsRegexAlbum(track.album, settings.albumNameTemplate))) + path.sep;
+			coverPath = filepath;
+		}
 
-		if (track.album.discTotal > 1 && (settings.artName || settings.createAlbumFolder) && settings.createCDFolder && (!settings.plName || settings.createFoldersPlaylist && settings.plName)){
+		if(!(settings.plName && settings.createStructurePlaylist && !settings.savePlaylistAsCompilation)) downloadQueue[queueId].filePath = filepath
+
+		if (
+			track.album.discTotal > 1 && (
+			(settings.createAlbumFolder && settings.createCDFolder) && (!settings.plName ||
+			(settings.plName && settings.savePlaylistAsCompilation) ||
+			(settings.plName && settings.createStructurePlaylist))
+		)){
 			filepath += `CD${track.discNumber + path.sep}`
 		}
 
@@ -1909,15 +1926,7 @@ io.sockets.on('connection', function (s) {
 		// Get cover image
 		if (track.album.pictureUrl) {
 			let imgPath;
-			//If its not from an album but a playlist.
-			if(settings.albName || settings.createAlbumFolder){
-				if (settings.saveArtwork && !settings.plName)
-					imgPath = coverpath + settingsRegexCover(settings.coverImageTemplate,track.album.artist.name,track.album.title)+(settings.PNGcovers ? ".png" : ".jpg")
-				else
-					imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+"_"+settings.artworkSize+(settings.PNGcovers ? ".png" : ".jpg")
-			}else{
-				imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+"_"+settings.artworkSize+(settings.PNGcovers ? ".png" : ".jpg")
-			}
+			imgPath = coverArtFolder + ((settings.savePlaylistAsCompilation && settings.plName) ? fixName(`${track.album.artist.name} - ${track.album.title}`) : track.album.barcode ? fixName(track.album.barcode) : fixName(`${track.album.artist.name} - ${track.album.title}`))+"_"+settings.embeddedArtworkSize+(settings.PNGcovers ? ".png" : ".jpg")
 			if(fs.existsSync(imgPath)){
 				track.album.picturePath = (imgPath).replace(/\\/g, "/")
 				logger.info(`[${track.artist.name} - ${track.title}] Cover already downloaded`)
@@ -1934,6 +1943,20 @@ io.sockets.on('connection', function (s) {
 					track.album.picturePath = undefined
 				}
 			}
+
+			if (settings.saveArtwork && coverPath){
+				imgPath = coverPath + settingsRegexAlbum(track.album, settings.coverImageTemplate)+(settings.PNGcovers ? ".png" : ".jpg")
+				if (!fs.existsSync(coverPath)) fs.mkdirpSync(coverPath);
+				if(!fs.existsSync(imgPath)){
+					try{
+						var body = await request.get(track.album.pictureUrl.replace(`${settings.embeddedArtworkSize}x${settings.embeddedArtworkSize}`,`${settings.localArtworkSize}x${settings.localArtworkSize}`), {strictSSL: false,encoding: 'binary'})
+						fs.outputFileSync(imgPath,body,'binary')
+						logger.info(`[${track.artist.name} - ${track.title}] Local Cover downloaded!`)
+					}catch(error){
+						logger.error(`[${track.artist.name} - ${track.title}] Cannot download Local Cover: ${error}`)
+					}
+				}
+			}
 		}else{
 			track.album.pictureUrl = undefined
 			logger.info(`[${track.artist.name} - ${track.title}] No cover found`)
@@ -1941,9 +1964,9 @@ io.sockets.on('connection', function (s) {
 
 		// Get Artist Image
 		if (parseInt(track.id)>0 && track.album.artist.pictureUrl && settings.saveArtworkArtist) {
-			let imgPath;
 			if(settings.createArtistFolder && artistPath){
-				imgPath = artistPath + antiDot(settingsRegexArtistCover(settings.artistImageTemplate,track.album.artist.name))+(settings.PNGcovers ? ".png" : ".jpg");
+				let imgPath = artistPath + antiDot(settingsRegexArtist(track.album.artist, settings.artistImageTemplate))+(settings.PNGcovers ? ".png" : ".jpg");
+				if (!fs.existsSync(artistPath)) fs.mkdirpSync(artistPath);
 				if(!fs.existsSync(imgPath)){
 					try{
 						var body = await request.get(track.album.artist.pictureUrl, {strictSSL: false,encoding: 'binary'})
@@ -2281,19 +2304,6 @@ function settingsRegexAlbum(album, foldername) {
 		foldername = foldername.replace(/%artist%/g, fixName(album.artist.name))
 		foldername = foldername.replace(/%year%/g, fixName(album.year))
 		foldername = foldername.replace(/%date%/g, fixName(album.date))
-		switch(album.bitrate){
-			case 9:
-				foldername = foldername.replace(/%bitrate%/g, "FLAC")
-			break
-			case 3:
-				foldername = foldername.replace(/%bitrate%/g, "320")
-			break
-			case 1:
-				foldername = foldername.replace(/%bitrate%/g, "128")
-			break
-			default:
-				foldername = foldername.replace(/%bitrate%/g, "128")
-		}
 		if (album.recordType){
 			foldername = foldername.replace(/%type%/g, fixName(album.recordType[0].toUpperCase() + album.recordType.substring(1)))
 		}else{
@@ -2303,10 +2313,25 @@ function settingsRegexAlbum(album, foldername) {
 		foldername = foldername.replace(/%upc%/g, fixName(album.barcode ? album.barcode : "Unknown"));
 		foldername = foldername.replace(/%album_id%/g, fixName(album.id));
 		foldername = foldername.replace(/%explicit%/g, fixName((album.explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit) ") : "")))
-		if (album.compilation)
+		if (album.compilation){
+			foldername = foldername.replace(/%bitrate%/g, "Variable")
 			foldername = foldername.replace(/%genre%/g, fixName("Compilation"))
-		else
+		}else{
+			switch(album.bitrate){
+				case 9:
+					foldername = foldername.replace(/%bitrate%/g, "FLAC")
+				break
+				case 3:
+					foldername = foldername.replace(/%bitrate%/g, "320")
+				break
+				case 1:
+					foldername = foldername.replace(/%bitrate%/g, "128")
+				break
+				default:
+					foldername = foldername.replace(/%bitrate%/g, "128")
+			}
 			foldername = foldername.replace(/%genre%/g, fixName(album.genre ? (Array.isArray(album.genre) ? album.genre[0] : album.genre) : "Unknown"))
+		}
 		foldername = foldername.replace(/[/\\]/g, path.sep)
 		return foldername.trim();
 	}catch(e){
@@ -2315,17 +2340,21 @@ function settingsRegexAlbum(album, foldername) {
 
 }
 
-function settingsRegexCover(foldername, artist, name) {
-	foldername = foldername.replace(/%name%/g, fixName(name));
-	foldername = foldername.replace(/%artist%/g, fixName(artist));
+function settingsRegexArtist(artist, foldername) {
+	foldername = foldername.replace(/%name%/g, fixName(artist.name));
+	foldername = foldername.replace(/%artist_id%/g, fixName(artist.id));
 	foldername = foldername.replace(/[/\\]/g, path.sep)
-	return foldername;
+	return foldername.trim();
 }
 
-function settingsRegexArtistCover(foldername, artist) {
-	foldername = foldername.replace(/%artist%/g, fixName(artist));
+function settingsRegexPlaylist(playlist, foldername){
+	foldername = foldername.replace(/%owner%/g, fixName(playlist.artist.name));
+	foldername = foldername.replace(/%name%/g, fixName(playlist.title));
+	foldername = foldername.replace(/%year%/g, fixName(playlist.year));
+	foldername = foldername.replace(/%date%/g, fixName(playlist.date));
+	foldername = foldername.replace(/%playlist_id%/g, fixName(playlist.id));
 	foldername = foldername.replace(/[/\\]/g, path.sep)
-	return foldername;
+	return foldername.trim();
 }
 
 /**
