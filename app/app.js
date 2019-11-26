@@ -769,14 +769,20 @@ io.sockets.on('connection', function (s) {
 				}
 				var numPages=Math.floor((_playlist.size-1)/100)
 				var trackList = new Array(_playlist.size)
+				var creationDate = ""
 				do{
-					var resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,album,external_ids))", offset: offset*100})
+					var resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,album,external_ids),added_at)", offset: offset*100})
 					resp.body.items.forEach((track, i) => {
+						if (creationDate === "")
+							creationDate = track.added_at
+						if (Date.parse(track.added_at) < Date.parse(creationDate))
+							creationDate = track.added_at
 						trackList[i+(offset*100)] = track.track
 					})
 					offset++
 				}while(offset<=numPages)
 				_playlist.obj.tracks = trackList
+				_playlist.obj.creation_date = creationDate
 				addToQueue(_playlist)
 			}catch(err){
 				logger.error(`downloadSpotifyPlaylist failed: ${err.stack ? err.stack : err}`)
@@ -984,17 +990,6 @@ io.sockets.on('connection', function (s) {
 		io.sockets.emit("cancelAllDownloads")
 	})
 
-	/*function getNextDownload() {
-		if (s.currentItem != null || Object.keys(downloadQueue).length == 0) {
-			if (Object.keys(downloadQueue).length == 0 && s.currentItem == null) {
-				s.emit("emptyDownloadQueue", {})
-			}
-			return null
-		}
-		s.currentItem = downloadQueue[Object.keys(downloadQueue)[0]]
-		return s.currentItem
-	}*/
-
 	//downloadQueue: the tracks in the queue to be downloaded
 	//queueId: random number generated when user clicks download on something
 	async function queueDownload(downloading) {
@@ -1162,7 +1157,8 @@ io.sockets.on('connection', function (s) {
 					name:	downloading.name,
 					artist: downloading.artist,
 					cover: downloading.obj.picture_small.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`),
-					fullSize: downloading.obj.tracks.length
+					fullSize: downloading.obj.tracks.length,
+					creationDate: downloading.obj.creation_date,
 				};
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.obj.tracks.every(function (t, index) {
@@ -1297,7 +1293,8 @@ io.sockets.on('connection', function (s) {
 					name:	downloading.name,
 					artist: downloading.artist,
 					cover: downloading.obj.images[0].url.replace("56x56",`${downloading.settings.artworkSize}x${downloading.settings.artworkSize}`),
-					fullSize: downloading.trackList.length
+					fullSize: downloading.trackList.length,
+					creationDate: downloading.obj.creation_date
 				}
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.trackList.every(function (t, index) {
@@ -1497,6 +1494,26 @@ io.sockets.on('connection', function (s) {
 					track.album.trackTotal = settings.playlist.fullSize
 					track.album.recordType = "Compilation"
 					track.album.id = settings.playlist.id
+					track.trackNumber = track.position+1
+					track.album.explicit = false
+					track.album.barcode = ""
+					track.album.label = ""
+					track.album.compilation = true
+					if (settings.playlist.creationDate) {
+						track.date = {
+							day: settings.playlist.creationDate.slice(8,10),
+							month: settings.playlist.creationDate.slice(5,7),
+							year: settings.playlist.creationDate.slice(0, 4),
+							slicedYear: (settings.dateFormatYear == "2" ? settings.playlist.creationDate.slice(2, 4) : settings.playlist.creationDate.slice(0, 4))
+						}
+					}else if(!track.date){
+						track.date = {
+							day: 0,
+							month: 0,
+							year: 0,
+							slicedYear: 0
+						}
+					}
 				}else{
 					track.album.artist = {
 						id: ajson.artist.id,
@@ -1509,25 +1526,25 @@ io.sockets.on('connection', function (s) {
 					}else{
 						track.album.recordType = switchReleaseType(track.album.recordType)
 					}
-				}
-				track.album.barcode = ajson.upc
-				if (ajson.explicit_lyrics)
-					track.album.explicit = ajson.explicit_lyrics;
-				if(ajson.label)
-					track.album.label = ajson.label;
-				if (ajson.release_date) {
-					track.date = {
-						day: ajson.release_date.slice(8,10),
-						month: ajson.release_date.slice(5,7),
-						year: ajson.release_date.slice(0, 4),
-						slicedYear: (settings.dateFormatYear == "2" ? ajson.release_date.slice(2, 4) : ajson.release_date.slice(0, 4))
-					}
-				}else if(!track.date){
-					track.date = {
-						day: 0,
-						month: 0,
-						year: 0,
-						slicedYear: 0
+					track.album.barcode = ajson.upc
+					if (ajson.explicit_lyrics)
+						track.album.explicit = ajson.explicit_lyrics;
+					if(ajson.label)
+						track.album.label = ajson.label;
+					if (ajson.release_date) {
+						track.date = {
+							day: ajson.release_date.slice(8,10),
+							month: ajson.release_date.slice(5,7),
+							year: ajson.release_date.slice(0, 4),
+							slicedYear: (settings.dateFormatYear == "2" ? ajson.release_date.slice(2, 4) : ajson.release_date.slice(0, 4))
+						}
+					}else if(!track.date){
+						track.date = {
+							day: 0,
+							month: 0,
+							year: 0,
+							slicedYear: 0
+						}
 					}
 				}
 				if(ajson.genres && ajson.genres.data[0] && ajson.genres.data[0].name){
@@ -1543,6 +1560,7 @@ io.sockets.on('connection', function (s) {
 				track.date = track.album.date
 				track.date.slicedYear = (settings.dateFormatYear == "2" ? track.date.year.slice(2, 4) : track.date.year.slice(0, 4))
 				if (settings.savePlaylistAsCompilation && settings.plName){
+					track.album.discTotal = 1
 					track.album.artist = {
 						name: settings.playlist.artist,
 						picture: "",
@@ -1550,6 +1568,27 @@ io.sockets.on('connection', function (s) {
 					track.album.title = settings.playlist.name
 					track.album.trackTotal = settings.playlist.fullSize
 					track.album.recordType = "Compilation"
+					track.album.id = settings.playlist.id
+					track.trackNumber = track.position+1
+					track.album.explicit = false
+					track.album.barcode = ""
+					track.album.label = ""
+					track.album.compilation = true
+					if (settings.playlist.creationDate) {
+						track.date = {
+							day: settings.playlist.creationDate.slice(8,10),
+							month: settings.playlist.creationDate.slice(5,7),
+							year: settings.playlist.creationDate.slice(0, 4),
+							slicedYear: (settings.dateFormatYear == "2" ? settings.playlist.creationDate.slice(2, 4) : settings.playlist.creationDate.slice(0, 4))
+						}
+					}else if(!track.date){
+						track.date = {
+							day: 0,
+							month: 0,
+							year: 0,
+							slicedYear: 0
+						}
+					}
 				}else{
 					track.trackTotal = track.album.trackTotal
 					track.album.recordType = "Album"
@@ -2264,7 +2303,10 @@ function settingsRegexAlbum(album, foldername) {
 		foldername = foldername.replace(/%upc%/g, fixName(album.barcode ? album.barcode : "Unknown"));
 		foldername = foldername.replace(/%album_id%/g, fixName(album.id));
 		foldername = foldername.replace(/%explicit%/g, fixName((album.explicit ? (foldername.indexOf(/[^%]explicit/g)>-1 ? "" : "(Explicit) ") : "")))
-		foldername = foldername.replace(/%genre%/g, fixName(album.genres ? (Array.isArray(album.genres) ? album.genres[0] : album.genres) : "Unknown"))
+		if (album.compilation)
+			foldername = foldername.replace(/%genre%/g, fixName("Compilation"))
+		else
+			foldername = foldername.replace(/%genre%/g, fixName(album.genre ? (Array.isArray(album.genre) ? album.genre[0] : album.genre) : "Unknown"))
 		foldername = foldername.replace(/[/\\]/g, path.sep)
 		return foldername.trim();
 	}catch(e){
