@@ -15,6 +15,9 @@ const server = require('http').createServer(app)
 const io = require('socket.io').listen(server, {log: false, wsEngine: 'ws'})
 var cookieParser = require('cookie-parser')
 var i18n = require('./i18n');
+// REST API
+const socketclientio = require('socket.io-client')
+const bodyParser = require('body-parser');	//for receiving req.body JSON
 
 // Music tagging stuff
 const metaflac = require('metaflac-js2')
@@ -97,12 +100,38 @@ initFolders();
 app.use('/', express.static(__dirname + '/public/'))
 app.set('views', __dirname + '/views');
 app.use(cookieParser());
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(i18n.express);
 server.listen(configFile.serverPort)
 logger.info('Server is running @ localhost:' + configFile.serverPort)
 
 app.get('/', function(req, res) {
   res.render('index.ejs');
+});
+
+let currentArl = ''	//api auth required, this is usually stored in the Vue app
+app.post('/download/', function (req, res) {
+	//simple api endpoint that accepts a deezer url, and adds it to download
+	//expecting {'url': 'https://www.deezer.com/playlist/xxxxxxxxxx', 'userToken': '<USER_TOKEN>' }
+	//also accepts an array of deezer urls
+	if (currentArl == '') {
+		clientsocket.emit('loginViaUserToken', req.body.userToken)
+	}
+	else if (currentArl != req.body.userToken){
+		clientsocket.emit('logout')
+		clientsocket.emit('loginViaUserToken', req.body.userToken)
+	}
+	if (Array.isArray(req.body.url)) {
+		for (let x in req.body.url) {
+			clientaddToQueue(req.body.url[x])
+		}
+	} else {
+		clientaddToQueue(req.body.url)
+	}
+
+	res.writeHead(200, { 'Content-Type': 'application/json' });
+	res.end(JSON.stringify({'message': 'Added to Queue'}));
 });
 
 var dqueue = new stq.SequentialTaskQueue()
@@ -2180,6 +2209,9 @@ io.sockets.on('connection', function (s) {
 	}
 })
 
+//local client socket for use by rest API
+let clientsocket = socketclientio.connect('http://localhost:' + configFile.serverPort)
+
 // Helper functions
 
 /**
@@ -2690,6 +2722,88 @@ async function asyncForEach(array, callback) {
 	for (let index = 0; index < array.length; index++) {
 		await callback(array[index], index, array);
 	}
+}
+
+// rest API url parsing + adding to queue (taken from frontend.js)
+function clientaddToQueue(url, forceBitrate=null) {
+	let userSettings = configFile.userDefined
+	bitrate = forceBitrate ? forceBitrate : userSettings.maxBitrate
+	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
+	if (['track', 'spotifytrack', 'playlist', 'spotifyplaylist', 'album', 'spotifyalbum', 'artist', 'artisttop'].indexOf(type) == -1) {
+		logger.info("Wrong Type!: " + type)
+		return false
+	}
+	/*if (alreadyInQueue(id, bitrate)) {
+		logger.info("Already in download-queue!: " + id + ':' + bitrate)
+		return false
+	}*/
+	if (id.match(/^-?[0-9]+$/) == null && type.indexOf("spotify")<-1) {
+		logger.info("Wrong ID!: " + id)
+		return false
+	}
+	clientsocket.emit("download" + type, {id: id, settings: userSettings, bitrate: bitrate})
+	//downloadQueue.push(`${id}:${bitrate}`)
+	//logger.info("Added to download-queue")
+}
+
+function getIDFromLink(link, type) {
+	if (link.indexOf('?') > -1) {
+		link = link.substring(0, link.indexOf("?"))
+	}
+	// Spotify
+	if ((link.startsWith("http") && link.indexOf('open.spotify.com/') >= 0)){
+		switch (type){
+			case "spotifyplaylist":
+				return link.slice(link.indexOf("/playlist/")+10)
+				break
+			case "spotifytrack":
+				return link.slice(link.indexOf("/track/")+7)
+				break
+			case "spotifyalbum":
+				return link.slice(link.indexOf("/album/")+7)
+				break
+		}
+	} else if (link.startsWith("spotify:")){
+		switch (type){
+			case "spotifyplaylist":
+				return link.slice(link.indexOf("playlist:")+9)
+				break
+			case "spotifytrack":
+				return link.slice(link.indexOf("track:")+6)
+				break
+			case "spotifyalbum":
+				return link.slice(link.indexOf("album:")+6)
+				break
+		}
+
+
+	// Deezer
+	} else if(type == "artisttop") {
+		return link.match(/\/artist\/(\d+)\/top_track/)[1];
+	} else {
+		return link.substring(link.lastIndexOf("/") + 1)
+	}
+}
+
+function getTypeFromLink(link) {
+	var type
+	if (link.indexOf('spotify') > -1){
+		type = "spotify"
+		if (link.indexOf('playlist') > -1) type += "playlist"
+		else if (link.indexOf('track') > -1) type += "track"
+		else if (link.indexOf('album') > -1) type += "album"
+	} else	if (link.indexOf('/track') > -1) {
+		type = "track"
+	} else if (link.indexOf('/playlist') > -1) {
+		type = "playlist"
+	} else if (link.indexOf('/album') > -1) {
+		type = "album"
+	} else if (link.match(/\/artist\/(\d+)\/top_track/)) {
+		type = "artisttop";
+	} else if (link.indexOf('/artist')) {
+		type = "artist"
+	}
+	return type
 }
 
 // Show crash error in console for debugging
