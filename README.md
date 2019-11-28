@@ -55,9 +55,7 @@ To build the app for other OSs follow the table below
 | macOS              | `npm run dist:macOS` |
 
 ## REST API
-Add URLs to download queue via POST request
-
-Example Request:
+### Add URLs to download queue via POST request:
 ``` JSON
 POST http://localhost:1730/api/download/
 Content-Type: application/json
@@ -68,6 +66,20 @@ Content-Type: application/json
     or
 {
     "url": ["https://www.deezer.com/track/812778162","https://www.deezer.com/playlist/708702152","https://www.deezer.com/track/813185722"]
+}
+```
+
+### Search for a track, album, playlist or artist
+``` JSON
+POST http://localhost:1730/api/search/
+Content-Type: application/json
+
+{
+    "album": "my favourite album - my favouite artist"
+}
+    or
+{
+    "artist": "my favouite artist"
 }
 ```
 
