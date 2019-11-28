@@ -110,7 +110,7 @@ app.get('/', function(req, res) {
   res.render('index.ejs');
 });
 
-app.post('/download/', function (req, res) {
+app.post('/api/download/', function (req, res) {
 	//simple api endpoint that accepts a deezer url, and adds it to download
 	//expecting {"url": "https://www.deezer.com/playlist/xxxxxxxxxx" }
 	//also accepts an array of deezer urls

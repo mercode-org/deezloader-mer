@@ -59,7 +59,7 @@ Add URLs to download queue via POST request
 
 Example Request:
 ``` JSON
-POST http://localhost:1730/download/
+POST http://localhost:1730/api/download/
 Content-Type: application/json
 
 {
