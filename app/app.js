@@ -1177,7 +1177,6 @@ io.sockets.on('connection', function (s) {
 					year: downloading.obj.creation_date.slice(0, 4),
 					slicedYear: (downloading.settings.dateFormatYear == "2" ? downloading.obj.creation_date.slice(2, 4) : downloading.obj.creation_date.slice(0, 4))
 				}
-				dateString
 				switch (downloading.settings.dateFormat){
 					case "1": dateString = `${date.day}-${date.month}-${date.slicedYear}`; break;
 					case "2": dateString = `${date.month}-${date.day}-${date.slicedYear}`; break;
@@ -1202,7 +1201,7 @@ io.sockets.on('connection', function (s) {
 					compilation: true,
 					discTotal: 1,
 					cover: downloading.obj.picture_small.replace("56x56",`${downloading.settings.embeddedArtworkSize}x${downloading.settings.embeddedArtworkSize}`),
-					fullSize: downloading.trackList.length,
+					fullSize: downloading.obj.tracks.length,
 				}
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.obj.tracks.every(function (t, index) {
@@ -1338,7 +1337,6 @@ io.sockets.on('connection', function (s) {
 					year: downloading.obj.creation_date.slice(0, 4),
 					slicedYear: (downloading.settings.dateFormatYear == "2" ? downloading.obj.creation_date.slice(2, 4) : downloading.obj.creation_date.slice(0, 4))
 				}
-				dateString
 				switch (downloading.settings.dateFormat){
 					case "1": dateString = `${date.day}-${date.month}-${date.slicedYear}`; break;
 					case "2": dateString = `${date.month}-${date.day}-${date.slicedYear}`; break;
