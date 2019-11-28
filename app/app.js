@@ -1886,10 +1886,9 @@ io.sockets.on('connection', function (s) {
 			filepath += antiDot(fixName(settingsRegexArtist(track.album.artist, settings.artistNameTemplate))) + path.sep;
 			artistPath = filepath;
 		}
-
-		if (settings.createAlbumFolder && (
-			!settings.singleTrack || (settings.singleTrack && settings.createSingleFolder) &&
-			!settings.plName || (settings.plName && settings.savePlaylistAsCompilation) || (settings.plName && settings.createStructurePlaylist))
+		if (settings.createAlbumFolder &&
+			(!settings.singleTrack || (settings.singleTrack && settings.createSingleFolder)) &&
+			(!settings.plName || (settings.plName && settings.savePlaylistAsCompilation) || (settings.plName && settings.createStructurePlaylist))
 		){
 			filepath += antiDot(fixName(settingsRegexAlbum(track.album, settings.albumNameTemplate))) + path.sep;
 			coverPath = filepath;
