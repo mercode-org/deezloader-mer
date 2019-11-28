@@ -20,6 +20,7 @@ With this app you can download songs, playlists and albums directly from Deezer'
 * Extensive set of options for a personalized ｅｘｐｅｒｉｅｎｃｅ
 * Server mode to launch the app headless
 * MOAR Optimizations
+* REST API
 
 ## Download
 All compiled downloads are on Telegram.<br>
@@ -52,6 +53,23 @@ To build the app for other OSs follow the table below
 | Windows x32 or x86 | `npm run dist:win32` |
 | Linux              | `npm run dist:linux` |
 | macOS              | `npm run dist:macOS` |
+
+## REST API
+Add URLs to download queue via POST request
+
+Example Request:
+``` JSON
+POST http://localhost:1730/download/
+Content-Type: application/json
+
+{
+    "url": "https://www.deezer.com/album/115542362"
+}
+    or
+{
+    "url": ["https://www.deezer.com/track/812778162","https://www.deezer.com/playlist/708702152","https://www.deezer.com/track/813185722"]
+}
+```
 
 ## Disclaimer
 I am not responsible for the usage of this program by other people.<br/>
