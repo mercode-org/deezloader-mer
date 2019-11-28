@@ -126,6 +126,27 @@ app.post('/api/download/', function (req, res) {
 	res.end(JSON.stringify({'message': 'Added to Queue'}));
 });
 
+app.post('/api/search/', function (req, res) {
+	//simple api endpoint that accepts a mode (as a key) and a search strings, returns Deezer JSON
+	//expecting {"album": "discovery - daft punk"}
+	//Returning Deezer JSON instead of URLs puts the onus of figuring out matches on the interfacing software
+	if (Object.keys(req.body).length == 0) {
+		res.writeHead(400, { 'Content-Type': 'application/json' });
+		res.end(JSON.stringify({"Message": "Empty JSON received"}));
+	} else {
+		let mode = Object.keys(req.body)[0] //"album", playlist, album, artist
+		let searchString = req.body[mode]
+		clientsocket.emit("search", {type: mode, text: searchString})
+	
+		clientsocket.on("search", function (data) {	
+			if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
+				res.writeHead(200, { 'Content-Type': 'application/json' });
+			}
+			res.end(JSON.stringify(data));
+		})
+	}
+});
+
 var dqueue = new stq.SequentialTaskQueue()
 var downloadQueue = {}
 var trackQueue = queue({
