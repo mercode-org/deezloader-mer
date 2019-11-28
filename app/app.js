@@ -110,18 +110,10 @@ app.get('/', function(req, res) {
   res.render('index.ejs');
 });
 
-let currentArl = ''	//api auth required, this is usually stored in the Vue app
 app.post('/download/', function (req, res) {
 	//simple api endpoint that accepts a deezer url, and adds it to download
-	//expecting {'url': 'https://www.deezer.com/playlist/xxxxxxxxxx', 'userToken': '<USER_TOKEN>' }
+	//expecting {"url": "https://www.deezer.com/playlist/xxxxxxxxxx" }
 	//also accepts an array of deezer urls
-	if (currentArl == '') {
-		clientsocket.emit('loginViaUserToken', req.body.userToken)
-	}
-	else if (currentArl != req.body.userToken){
-		clientsocket.emit('logout')
-		clientsocket.emit('loginViaUserToken', req.body.userToken)
-	}
 	if (Array.isArray(req.body.url)) {
 		for (let x in req.body.url) {
 			clientaddToQueue(req.body.url[x])
