@@ -1654,6 +1654,86 @@ io.sockets.on('connection', function (s) {
 			if (!track.date.slicedYear){
 				track.date.slicedYear = settings.dateFormatYear == "2" ? track.date.year.slice(2, 4) : track.date.year.slice(0, 4)
 			}
+			// Auto detect aviable track format from settings
+			let bitrateNotFound = false
+			if (parseInt(downloadQueue[queueId].bitrate) <= 9){
+				switch(downloadQueue[queueId].bitrate.toString()){
+					case "9":
+					track.selectedFormat = 9
+					track.selectedFilesize = track.filesize.flac
+					if (track.filesize.flac>0) break
+					if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
+					case "3":
+					track.selectedFormat = 3
+					track.selectedFilesize = track.filesize.mp3_320
+					if (track.filesize.mp3_320>0) break
+					if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
+					case "1":
+					track.selectedFormat = 1
+					track.selectedFilesize = track.filesize.mp3_128
+					if (track.filesize.mp3_128>0) break
+					if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
+					default:
+					track.selectedFormat = 8
+					track.selectedFilesize = track.filesize.default
+				}
+			}else{
+				switch(downloadQueue[queueId].bitrate.toString()){
+					case "15":
+					track.selectedFormat = 15
+					track.selectedFilesize = track.filesize.mp4_ra3
+					if (track.filesize.mp4_ra3>0) break
+					if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
+					case "14":
+					track.selectedFormat = 14
+					track.selectedFilesize = track.filesize.mp4_ra2
+					if (track.filesize.mp4_ra2>0) break
+					if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
+					case "13":
+					track.selectedFormat = 13
+					track.selectedFilesize = track.filesize.mp4_ra1
+					if (track.filesize.mp4_ra1>0) break
+					if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
+					default:
+					throw new Error("Song is not available in 360 mode.")
+				}
+			}
+			if (bitrateNotFound){
+				if(track.fallbackId && track.fallbackId != "0"){
+					logger.warn(`[${track.artist.name} - ${track.title}] Song not found at desired bitrate, falling on alternative`)
+					var _track = await s.Deezer.getTrack(track.fallbackId)
+					track.id = _track.id
+					track.fallbackId = _track.fallbackId
+					track.filesize = _track.filesize
+					track.duration = _track.duration
+					track.MD5 = _track.MD5
+					track.mediaVersion = _track.mediaVersion
+					return downloadTrackObject(track, queueId, settings)
+				}else if(!track.searched && settings.fallbackSearch){
+					logger.warn(`[${track.artist.name} - ${track.title}] Song not found at desired bitrate, searching for alternative`)
+					_trackId = await convertMetadata2Deezer(track.artist.name, track.title, track.album.title)
+					if (_trackId != "0"){
+						_track = await s.Deezer.getTrack(_trackId)
+						track.id = _track.id
+						track.fallbackId = _track.fallbackId
+						track.filesize = _track.filesize
+						track.duration = _track.duration
+						track.MD5 = _track.MD5
+						track.mediaVersion = _track.mediaVersion
+						track.searched = true
+						return downloadTrackObject(track, queueId, settings)
+					}else{
+						logger.error(`[${track.artist.name} - ${track.title}] Song not found at desired bitrate and no alternative found`)
+						throw new Error("Song not found at desired bitrate and no alternative found")
+						return
+					}
+				}else{
+					logger.error(`[${track.artist.name} - ${track.title}] Downloading error: Song not found at desired bitrate.`)
+					throw new Error("Song not found at desired bitrate.")
+					return
+				}
+			}
+			track.album.bitrate = track.selectedFormat
 
 			// Acquiring bpm (only if necessary)
 			if (settings.tags.bpm){
@@ -1738,86 +1818,6 @@ io.sockets.on('connection', function (s) {
 				track.album.pictureUrl = `${s.Deezer.albumPicturesHost}${track.album.picture}/${settings.embeddedArtworkSize}x${settings.embeddedArtworkSize}-000000-80-0-0${(settings.PNGcovers ? ".png" : ".jpg")}`
 			}
 
-			// Auto detect aviable track format from settings
-			let bitrateNotFound = false
-			if (parseInt(downloadQueue[queueId].bitrate) <= 9){
-				switch(downloadQueue[queueId].bitrate.toString()){
-					case "9":
-						track.selectedFormat = 9
-						track.selectedFilesize = track.filesize.flac
-						if (track.filesize.flac>0) break
-						if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
-					case "3":
-						track.selectedFormat = 3
-						track.selectedFilesize = track.filesize.mp3_320
-						if (track.filesize.mp3_320>0) break
-						if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
-					case "1":
-						track.selectedFormat = 1
-						track.selectedFilesize = track.filesize.mp3_128
-						if (track.filesize.mp3_128>0) break
-						if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
-					default:
-						track.selectedFormat = 8
-						track.selectedFilesize = track.filesize.default
-				}
-			}else{
-				switch(downloadQueue[queueId].bitrate.toString()){
-					case "15":
-						track.selectedFormat = 15
-						track.selectedFilesize = track.filesize.mp4_ra3
-						if (track.filesize.mp4_ra3>0) break
-						if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
-					case "14":
-						track.selectedFormat = 14
-						track.selectedFilesize = track.filesize.mp4_ra2
-						if (track.filesize.mp4_ra2>0) break
-						if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
-					case "13":
-						track.selectedFormat = 13
-						track.selectedFilesize = track.filesize.mp4_ra1
-						if (track.filesize.mp4_ra1>0) break
-						if (!settings.fallbackBitrate){bitrateNotFound = true; break;}
-					default:
-						throw new Error("Song is not available in 360 mode.")
-				}
-			}
-			if (bitrateNotFound){
-				if(track.fallbackId && track.fallbackId != "0"){
-					logger.warn(`[${track.artist.name} - ${track.title}] Song not found at desired bitrate, falling on alternative`)
-					var _track = await s.Deezer.getTrack(track.fallbackId)
-					track.id = _track.id
-					track.fallbackId = _track.fallbackId
-					track.filesize = _track.filesize
-					track.duration = _track.duration
-					track.MD5 = _track.MD5
-					track.mediaVersion = _track.mediaVersion
-					return downloadTrackObject(track, queueId, settings)
-				}else if(!track.searched && settings.fallbackSearch){
-					logger.warn(`[${track.artist.name} - ${track.title}] Song not found at desired bitrate, searching for alternative`)
-					_trackId = await convertMetadata2Deezer(track.artist.name, track.title, track.album.title)
-					if (_trackId != "0"){
-						_track = await s.Deezer.getTrack(_trackId)
-						track.id = _track.id
-						track.fallbackId = _track.fallbackId
-						track.filesize = _track.filesize
-						track.duration = _track.duration
-						track.MD5 = _track.MD5
-						track.mediaVersion = _track.mediaVersion
-						track.searched = true
-						return downloadTrackObject(track, queueId, settings)
-					}else{
-						logger.error(`[${track.artist.name} - ${track.title}] Song not found at desired bitrate and no alternative found`)
-						throw new Error("Song not found at desired bitrate and no alternative found")
-						return
-					}
-				}else{
-					logger.error(`[${track.artist.name} - ${track.title}] Downloading error: Song not found at desired bitrate.`)
-					throw new Error("Song not found at desired bitrate.")
-					return
-				}
-			}
-			track.album.bitrate = track.selectedFormat
 
 			if(track.contributor){
 				if(track.contributor.composer){
