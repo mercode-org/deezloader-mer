@@ -1654,6 +1654,7 @@ io.sockets.on('connection', function (s) {
 			if (!track.date.slicedYear){
 				track.date.slicedYear = settings.dateFormatYear == "2" ? track.date.year.slice(2, 4) : track.date.year.slice(0, 4)
 			}
+			
 			// Auto detect aviable track format from settings
 			let bitrateNotFound = false
 			if (parseInt(downloadQueue[queueId].bitrate) <= 9){
