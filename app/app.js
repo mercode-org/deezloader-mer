@@ -355,12 +355,12 @@ io.sockets.on('connection', function (s) {
 	s.on("getMyPlaylistList", function (d) {getMyPlaylistList(d.spotifyUser)})
 
 	// Returns search results from a query
-	s.on("search", async function (data) {
-		data.type = data.type || "track"
-		if (["track", "playlist", "album", "artist"].indexOf(data.type) == -1) data.type = "track"
+	async function search(type, text){
+		type = type || "track"
+		if (["track", "playlist", "album", "artist"].indexOf(type) == -1) type = "track"
 
 		// Remove "feat." "ft." and "&" (causes only problems)
-		data.text = data.text
+		text = text
 			.replace(/ feat[\.]? /g, " ")
 			.replace(/ ft[\.]? /g, " ")
 			.replace(/\(feat[\.]? /g, " ")
@@ -370,13 +370,15 @@ io.sockets.on('connection', function (s) {
 			.replace(/—/g, "-")
 
 		try {
-			let searchObject = await s.Deezer.legacySearch(encodeURIComponent(data.text), data.type)
-			s.emit("search", {type: data.type, items: searchObject.data})
+			let searchObject = await s.Deezer.legacySearch(encodeURIComponent(text), type)
+			return {type: type, items: searchObject.data}
 		} catch (err) {
-			s.emit("search", {type: data.type, items: []})
 			logger.error(`search failed: ${err.stack}`)
-			return
+			return {type: type, items: []}
 		}
+	}
+	s.on("search", async function (data) {
+		s.emit("search", await search(data.type, data.text))
 	})
 
 	// Returns list of tracks from an album/playlist or the list of albums from an artist
@@ -2240,16 +2242,17 @@ let clientsocket = socketclientio.connect('http://localhost:' + configFile.serve
 app.post('/api/download/', function (req, res) {
 	//accepts a deezer url or array of urls, and adds it to download
 	//expecting {"url": "https://www.deezer.com/playlist/xxxxxxxxxx" }
+	response = ""
 	if (Array.isArray(req.body.url)) {
 		for (let x in req.body.url) {
-			clientaddToQueue(req.body.url[x])
+			response += `${req.body.url[x]}: ${clientaddToQueue(req.body.url[x])}\n`
 		}
 	} else {
-		clientaddToQueue(req.body.url)
+		response += clientaddToQueue(req.body.url)
 	}
 
 	res.writeHead(200, { 'Content-Type': 'application/json' });
-	res.end(JSON.stringify({'Message': 'Added to Queue'}));
+	res.end(JSON.stringify({'Message': response}));
 });
 
 app.post('/api/search/', function (req, res) {
@@ -2829,20 +2832,27 @@ function clientaddToQueue(url, forceBitrate=null) {
 	bitrate = forceBitrate ? forceBitrate : userSettings.maxBitrate
 	var type = getTypeFromLink(url), id = getIDFromLink(url, type)
 	if (['track', 'spotifytrack', 'playlist', 'spotifyplaylist', 'album', 'spotifyalbum', 'artist', 'artisttop'].indexOf(type) == -1) {
-		logger.info("Wrong Type!: " + type)
-		return false
+		return "Wrong Type!: " + type
 	}
-	/*if (alreadyInQueue(id, bitrate)) {
-		logger.info("Already in download-queue!: " + id + ':' + bitrate)
-		return false
-	}*/
+	if (alreadyInQueue(id, bitrate)) {
+		return "Already in download-queue!"
+	}
 	if (id.match(/^-?[0-9]+$/) == null && type.indexOf("spotify")<-1) {
-		logger.info("Wrong ID!: " + id)
-		return false
+		return "Wrong ID!: " + id
 	}
 	clientsocket.emit("download" + type, {id: id, settings: userSettings, bitrate: bitrate})
-	//downloadQueue.push(`${id}:${bitrate}`)
-	//logger.info("Added to download-queue")
+	return "Added to queue"
+}
+
+function alreadyInQueue(id, bitrate){
+	var alreadyInQueue = false
+	for (const [key, value] of Object.entries(downloadQueue)) {
+		if(value.id == `${id}:${bitrate}`){
+			alreadyInQueue = true
+			return false
+		}
+	}
+	return alreadyInQueue
 }
 
 function getIDFromLink(link, type) {
@@ -2874,7 +2884,6 @@ function getIDFromLink(link, type) {
 				return link.slice(link.indexOf("album:")+6)
 				break
 		}
-
 
 	// Deezer
 	} else if(type == "artisttop") {
