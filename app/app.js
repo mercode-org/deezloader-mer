@@ -174,6 +174,18 @@ app.post('/api/tracks/', function (req, res) {
 		})
 	}
 });
+
+app.get('/api/queue/', function (req, res) {
+	//accepts nothing, returns length of, and items in download queue
+	let itemsInQueue = Object.keys(downloadQueue).length
+	let queueItems = []
+	for (let item in downloadQueue) {
+		queueItems.push(downloadQueue[item])
+	}
+	res.writeHead(200, { 'Content-Type': 'application/json' });
+	res.end(JSON.stringify({"length": itemsInQueue, "items": queueItems}));
+});
+
 var dqueue = new stq.SequentialTaskQueue()
 var downloadQueue = {}
 var trackQueue = queue({
