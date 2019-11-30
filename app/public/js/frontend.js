@@ -27,10 +27,10 @@ if (currentLang === undefined){
 socket.emit("getLang", currentLang)
 
 window.addEventListener('offline', function(e) {
-	M.toast({html: '<i class="material-icons left">error</i>'+i18n("You are offline!"), displayLength: 5000, classes: 'rounded'})
+	M.toast({html: '<i class="material-icons left">warning</i>'+i18n("You are offline!"), displayLength: 5000, classes: 'rounded'})
 });
 window.addEventListener('online', function(e) {
-	M.toast({html: '<i class="material-icons left">error</i>'+i18n("Back online!"), displayLength: 5000, classes: 'rounded'})
+	M.toast({html: '<i class="material-icons left">check</i>'+i18n("Back online!"), displayLength: 5000, classes: 'rounded'})
 	if (!loggedIn) checkAutologin();
 });
 
@@ -120,7 +120,7 @@ $('#modal_settings_btn_updateArl').click(function () {
 			socket.emit('logout')
 			socket.emit('loginViaUserToken', userToken)
 		}else{
-			M.toast({html: '<i class="material-icons left">error</i>'+i18n("You are offline!"), displayLength: 5000, classes: 'rounded'})
+			M.toast({html: '<i class="material-icons left">warning</i>'+i18n("You are offline!"), displayLength: 5000, classes: 'rounded'})
 		}
 	}
 	$('#modal_settings_btn_updateArl').attr("disabled", false)
@@ -201,7 +201,7 @@ function checkAutologin(){
 	}else{
 		if (localStorage.getItem('autologin'))
 			$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
-		M.toast({html: '<i class="material-icons left">error</i>'+i18n("You are offline!"), displayLength: 5000, classes: 'rounded'})
+		M.toast({html: '<i class="material-icons left">warning</i>'+i18n("You are offline!"), displayLength: 5000, classes: 'rounded'})
 		loggedIn = false;
 		socket.emit('init')
 	}

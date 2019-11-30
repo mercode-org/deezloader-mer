@@ -229,5 +229,11 @@
   "Local Artwork Size": "로컬 아트워크 크기",
   "Playlist names template": "재생목록 이름 템플릿",
   "Artist names template": "아티스트 이름 템플릿",
-  "Save single tracks in a folder": "한 트랙짜리를 폴더에 저장하기"
+  "Save single tracks in a folder": "한 트랙짜리를 폴더에 저장하기",
+	"You are offline!": "You are offline!",
+	"Back online!": "Back online!",
+	"Attempting Autologin...": "Attempting Autologin...",
+	"Logged in successfully": "Logged in successfully",
+	"Deezer is not available in your country": "Deezer is not available in your country",
+	"Search and Login functions won't work. You should use a VPN if you want them.": "Search and Login functions won't work. You should use a VPN if you want them."
 }
