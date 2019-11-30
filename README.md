@@ -20,13 +20,13 @@ With this app you can download songs, playlists and albums directly from Deezer'
 * Extensive set of options for a personalized ｅｘｐｅｒｉｅｎｃｅ
 * Server mode to launch the app headless
 * MOAR Optimizations
-* REST API
+* REST API - [Documentation](https://notabug.org/RemixDevs/DeezloaderRemix/wiki/REST+API)
 
 ## Download
 All compiled downloads are on Telegram.<br>
 News: [@RemixDevs](https://t.me/RemixDevs)<br>
 Downloads: [@DeezloaderRemix](https://t.me/DeezloaderRemix)<br>
-Mirros: [Wiki/Downloads](https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Downloads)<br>
+Mirrors: [Wiki/Downloads](https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Downloads)<br>
 Chat: [@DeezloaderRemixCommunity](https://t.me/DeezloaderRemixCommunity)<br>
 Here are listed the MD5 checksums (so you can be sure the files were not tampered):<br>
 
@@ -53,35 +53,6 @@ To build the app for other OSs follow the table below
 | Windows x32 or x86 | `npm run dist:win32` |
 | Linux              | `npm run dist:linux` |
 | macOS              | `npm run dist:macOS` |
-
-## REST API
-### Add URLs to download queue via POST request:
-``` JSON
-POST http://localhost:1730/api/download/
-Content-Type: application/json
-
-{
-    "url": "https://www.deezer.com/album/115542362"
-}
-    or
-{
-    "url": ["https://www.deezer.com/track/812778162","https://www.deezer.com/playlist/708702152","https://www.deezer.com/track/813185722"]
-}
-```
-
-### Search for a track, album, playlist or artist
-``` JSON
-POST http://localhost:1730/api/search/
-Content-Type: application/json
-
-{
-    "album": "my favourite album - my favouite artist"
-}
-    or
-{
-    "artist": "my favouite artist"
-}
-```
 
 ## Disclaimer
 I am not responsible for the usage of this program by other people.<br/>

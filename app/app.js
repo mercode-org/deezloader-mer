@@ -110,43 +110,6 @@ app.get('/', function(req, res) {
   res.render('index.ejs');
 });
 
-app.post('/api/download/', function (req, res) {
-	//simple api endpoint that accepts a deezer url, and adds it to download
-	//expecting {"url": "https://www.deezer.com/playlist/xxxxxxxxxx" }
-	//also accepts an array of deezer urls
-	if (Array.isArray(req.body.url)) {
-		for (let x in req.body.url) {
-			clientaddToQueue(req.body.url[x])
-		}
-	} else {
-		clientaddToQueue(req.body.url)
-	}
-
-	res.writeHead(200, { 'Content-Type': 'application/json' });
-	res.end(JSON.stringify({'message': 'Added to Queue'}));
-});
-
-app.post('/api/search/', function (req, res) {
-	//simple api endpoint that accepts a mode (as a key) and a search strings, returns Deezer JSON
-	//expecting {"album": "discovery - daft punk"}
-	//Returning Deezer JSON instead of URLs puts the onus of figuring out matches on the interfacing software
-	if (Object.keys(req.body).length == 0) {
-		res.writeHead(400, { 'Content-Type': 'application/json' });
-		res.end(JSON.stringify({"Message": "Empty JSON received"}));
-	} else {
-		let mode = Object.keys(req.body)[0] //"album", playlist, album, artist
-		let searchString = req.body[mode]
-		clientsocket.emit("search", {type: mode, text: searchString})
-
-		clientsocket.on("search", function (data) {
-			if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
-				res.writeHead(200, { 'Content-Type': 'application/json' });
-			}
-			res.end(JSON.stringify(data));
-		})
-	}
-});
-
 var dqueue = new stq.SequentialTaskQueue()
 var downloadQueue = {}
 var trackQueue = queue({
@@ -2272,6 +2235,81 @@ io.sockets.on('connection', function (s) {
 
 //local client socket for use by rest API
 let clientsocket = socketclientio.connect('http://localhost:' + configFile.serverPort)
+
+// REST API
+app.post('/api/download/', function (req, res) {
+	//accepts a deezer url or array of urls, and adds it to download
+	//expecting {"url": "https://www.deezer.com/playlist/xxxxxxxxxx" }
+	if (Array.isArray(req.body.url)) {
+		for (let x in req.body.url) {
+			clientaddToQueue(req.body.url[x])
+		}
+	} else {
+		clientaddToQueue(req.body.url)
+	}
+
+	res.writeHead(200, { 'Content-Type': 'application/json' });
+	res.end(JSON.stringify({'Message': 'Added to Queue'}));
+});
+
+app.post('/api/search/', function (req, res) {
+	//accepts a mode (as a key) and search string, returns Deezer JSON
+	//expecting {"album": "discovery - daft punk"}
+	if (Object.keys(req.body).length == 0) {
+		res.writeHead(400, { 'Content-Type': 'application/json' });
+		res.end(JSON.stringify({"Error": "Empty JSON received"}));
+	} else {
+		let mode = Object.keys(req.body)[0] //"album", playlist, album, artist
+		let searchString = req.body[mode]
+		clientsocket.emit("search", {type: mode, text: searchString})
+	
+		clientsocket.on("search", function (data) {	
+			if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
+				res.writeHead(200, { 'Content-Type': 'application/json' });
+			}
+			res.end(JSON.stringify(data));
+		})
+	}
+});
+
+app.post('/api/tracks/', function (req, res) {
+	//accepts a type (as a key) and an ID, returns tracklist,	format: {"album": "302127"}
+	//expecting "playlist" or "album" or "artist" or "spotifyplaylist"
+	if (Object.keys(req.body).length == 0) {
+		res.writeHead(400, { 'Content-Type': 'application/json' });
+		res.end(JSON.stringify({"Error": "Empty JSON received"}));
+	} else {
+		let type = Object.keys(req.body)[0] //playlist, album, artist, spotifyplaylist
+		let id = req.body[type]
+		clientsocket.emit('getTrackList', {id: id, type: type})
+
+		clientsocket.on("getTrackList", function (data) {
+			//data.err			-> undefined/err
+			//data.id			  -> passed id
+			//data.response -> API response
+			if (data.err){
+				res.writeHead(400, { 'Content-Type': 'application/json' });
+				res.end(JSON.stringify({"Error": data.err}));
+			} else {
+				if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
+					res.writeHead(200, { 'Content-Type': 'application/json' });
+				}
+				res.end(JSON.stringify(data.response));
+			}
+		})
+	}
+});
+
+app.get('/api/queue/', function (req, res) {
+	//accepts nothing, returns length of, and items in download queue
+	let itemsInQueue = Object.keys(downloadQueue).length
+	let queueItems = []
+	for (let item in downloadQueue) {
+		queueItems.push(downloadQueue[item])
+	}
+	res.writeHead(200, { 'Content-Type': 'application/json' });
+	res.end(JSON.stringify({"length": itemsInQueue, "items": queueItems}));
+});
 
 // Helper functions
 
