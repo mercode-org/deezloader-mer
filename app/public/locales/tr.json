@@ -216,5 +216,11 @@
 	"Local Artwork Size": "Yerel Kapak Boyutu",
 	"Playlist names template": "Oynatma listesi isim şablonu",
 	"Artist names template": "Sanatçı isimleri şablonu",
-	"Save single tracks in a folder": "Tek parçaları klasör içine kaydet"
+	"Save single tracks in a folder": "Tek parçaları klasör içine kaydet",
+	"You are offline!": "You are offline!",
+	"Back online!": "Back online!",
+	"Attempting Autologin...": "Attempting Autologin...",
+	"Logged in successfully": "Logged in successfully",
+	"Deezer is not available in your country": "Deezer is not available in your country",
+	"Search and Login functions won't work. You should use a VPN if you want them.": "Search and Login functions won't work. You should use a VPN if you want them."
 }

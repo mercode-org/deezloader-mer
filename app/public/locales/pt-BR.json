@@ -229,5 +229,11 @@
 	"Local Artwork Size": "Tamanho da capa local",
 	"Playlist names template": "Modelo de nomes de playlists",
 	"Artist names template": "Modelo de nomes de artistas",
-	"Save single tracks in a folder": "Salvar faixas únicas em uma pasta"
+	"Save single tracks in a folder": "Salvar faixas únicas em uma pasta",
+	"You are offline!": "You are offline!",
+	"Back online!": "Back online!",
+	"Attempting Autologin...": "Attempting Autologin...",
+	"Logged in successfully": "Logged in successfully",
+	"Deezer is not available in your country": "Deezer is not available in your country",
+	"Search and Login functions won't work. You should use a VPN if you want them.": "Search and Login functions won't work. You should use a VPN if you want them."
 }
