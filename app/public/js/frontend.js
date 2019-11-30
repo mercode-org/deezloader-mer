@@ -12,6 +12,8 @@ let userSettings = {}
 let spotifySettings = {}
 
 var downloadQueue = []
+var loggedIn = false
+var deezerNotAvailable = false
 
 let preview_track = document.getElementById('preview-track')
 let preview_stopped = true
@@ -23,6 +25,15 @@ if (currentLang === undefined){
 	currentLang = "en"
 }
 socket.emit("getLang", currentLang)
+
+window.addEventListener('offline', function(e) {
+	M.toast({html: '<i class="material-icons left">error</i>'+i18n("You are offline!"), displayLength: 5000, classes: 'rounded'})
+});
+window.addEventListener('online', function(e) {
+	M.toast({html: '<i class="material-icons left">error</i>'+i18n("Back online!"), displayLength: 5000, classes: 'rounded'})
+	if (!loggedIn) checkAutologin();
+});
+
 $.getJSON(`/locales/${currentLang}.json`, function(json) {
 	i18n.translator.add({
 		values: json
@@ -43,6 +54,11 @@ socket.on("messageUpdate", function(desc){
 		message(desc.title, desc.msg)
 		localStorage.setItem('updateModal', desc.lastVersion)
 	}
+})
+
+socket.on("deezerNotAvailable", function(){
+	$("#deezerNotAvailable").slideDown()
+	deezerNotAvailable = true
 })
 
 // Prints object obj into console
@@ -100,8 +116,12 @@ $('#modal_settings_btn_updateArl').click(function () {
 	var currentArl = localStorage.getItem('userToken')
 	var userToken = $('#modal_login_input_userToken').val()
 	if (currentArl != userToken){
-		socket.emit('logout')
-		socket.emit('loginViaUserToken', userToken)
+		if (navigator.onLine){
+			socket.emit('logout')
+			socket.emit('loginViaUserToken', userToken)
+		}else{
+			M.toast({html: '<i class="material-icons left">error</i>'+i18n("You are offline!"), displayLength: 5000, classes: 'rounded'})
+		}
 	}
 	$('#modal_settings_btn_updateArl').attr("disabled", false)
 })
@@ -141,37 +161,52 @@ socket.on("login", function (data) {
 			$('#logged_in_info').removeClass('hide')
 			$('#login_email_btn_container').addClass('hide')
 			$('#modal_login').modal("close")
+			M.toast({html: '<i class="material-icons left">check</i>'+i18n("Logged in successfully"), displayLength: 5000, classes: 'rounded'})
+			loggedIn = true;
 		}
 	}else{
+		if (deezerNotAvailable) data.error = "Error: "+i18n("Deezer is not available in your country")
 		$('#login-res-text').text(data.error)
 		setTimeout(function(){$('#login-res-text').text("")},3000)
 		$('#login-res-text2').text(data.error)
 		setTimeout(function(){$('#login-res-text2').text("")},3000)
+		M.toast({html: '<i class="material-icons left">error</i>'+data.error, displayLength: 5000, classes: 'rounded'})
 		$('#modal_login_input_password').val("")
 		$('#modal_login_input_userToken').val("")
+		loggedIn = false;
 	}
 	$('#modal_login_btn_login').attr("disabled", false)
 	$('#modal_login_btn_login').html(i18n("Log in"))
 	M.updateTextFields()
 })
 
-socket.on('checkAutologin', function(){
-	// Autologin
-	if (localStorage.getItem('autologin')){
-		socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
-		$('#modal_login_btn_login').attr("disabled", true)
-		$('#modal_login_btn_login').html(i18n("Logging in..."))
-		if (serverMode){
-			$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
+// Autologin
+function checkAutologin(){
+	if (navigator.onLine){
+		if (localStorage.getItem('autologin')){
+			M.toast({html: '<i class="material-icons left">info</i>'+i18n("Attempting Autologin..."), displayLength: 5000, classes: 'rounded'})
+			socket.emit('autologin', localStorage.getItem('autologin'), localStorage.getItem('autologin_email'))
+			$('#modal_login_btn_login').attr("disabled", true)
+			$('#modal_login_btn_login').html(i18n("Logging in..."))
+			if (serverMode){
+				$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
+			}else{
+				$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
+				$('#modal_login_input_password').val("password")
+			}
+			M.updateTextFields()
 		}else{
-			$('#modal_login_input_username').val(localStorage.getItem('autologin_email'))
-			$('#modal_login_input_password').val("password")
+			socket.emit('init')
 		}
-		M.updateTextFields()
 	}else{
+		if (localStorage.getItem('autologin'))
+			$('#modal_login_input_userToken').val(localStorage.getItem('userToken'))
+		M.toast({html: '<i class="material-icons left">error</i>'+i18n("You are offline!"), displayLength: 5000, classes: 'rounded'})
+		loggedIn = false;
 		socket.emit('init')
 	}
-})
+}
+socket.on('checkAutologin', function(){checkAutologin()})
 
 // Logout Button
 $('#modal_settings_btn_logout').click(function () {
@@ -185,6 +220,7 @@ $('#modal_settings_btn_logout').click(function () {
 	localStorage.removeItem("userToken")
 	localStorage.removeItem("autologin_email")
 	socket.emit('logout')
+	loggedIn = false;
 	M.updateTextFields()
 })
 
@@ -207,6 +243,7 @@ $('#modal_tags_replayGain').on('click', function() {
 // Do misc stuff on page load
 $(document).ready(function () {
 	// Page Initializing
+	console.log("Document ready")
 	$("main.container").css('display', 'block')
 	M.AutoInit()
 	preview_track.volume = 0
@@ -407,6 +444,11 @@ $(document).ready(function () {
 		$('#modal_settings_input_artistImageTemplate').parent().slideToggle()
 	})
 
+	// Close Banner
+	$(".close-banner").click(function(e){
+		e.preventDefault();
+		$(this).parent().slideUp()
+	})
 })
 
 // Load settings
@@ -1383,6 +1425,7 @@ function alreadyInQueue(id, bitrate) {
 }
 
 function addObjToQueue(data){
+	if (!data.id in downloadQueue) downloadQueue.push(data.id)
 	var tableBody = $('#tab_downloads_table_downloads').find('tbody')
 
 	// If we're downloading a single track album, we create a `data-urlid` property

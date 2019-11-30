@@ -122,12 +122,48 @@ io.sockets.on('connection', function (s) {
 	const req = s.request
 	i18n.init(req)
 
+	request({
+		url: "https://www.deezer.com/",
+		rejectUnauthorized: false,
+		headers: {Cookie: `dz_lang=en; Domain=deezer.com; Path=/; Secure; hostOnly=false;`}
+	})
+	.then(body=>{
+		logger.info("Checking for country")
+		let re = /(<\s*title[^>]*>(.+?)<\s*\/\s*title)>/gi;
+		let match = re.exec(body);
+		if (match && match[2]) {
+			let title = match[2]
+			if (title === "Deezer will soon be available in your country."){
+				s.emit("deezerNotAvailable")
+			}
+		}
+	})
+	.catch(err=>{
+		logger.error(`CountryCheck failed: ${err}`)
+	})
+
+	logger.info("Connection received!")
+
+	// Connection dependet variables
+	s.Deezer = new deezerApi()
+	s.spotifyUser = null
+
+	s.emit("getDefaultSettings", defaultSettings, defaultDownloadFolder)
+	s.emit("populateDownloadQueue", downloadQueue)
+	s.emit("checkAutologin")
+
+	if(process.platform != "android"){
+		const captcha = require('./utils/captcha');
+		captcha.callbackResponse = function (data) {
+			s.emit("getCaptcha", data)
+		};
+	}
+
 	s.on("getLang", (lang)=>{
 		req.setLocale(lang)
 		logger.info("Connection language set to: "+lang)
 	})
 
-	logger.info("Connection received!")
 	// Check for updates
 	request({
 		url: "https://notabug.org/RemixDevs/DeezloaderRemix/raw/master/update.json",
@@ -150,23 +186,8 @@ io.sockets.on('connection', function (s) {
 		}
 	})
 	.catch(error=>{
-		logger.error(`UpdateCheck failed: ${error.stack ? error.stack : error}`)
+		logger.error(`UpdateCheck failed: ${error}`)
 	})
-
-	// Connection dependet variables
-	s.Deezer = new deezerApi()
-	s.spotifyUser = null
-
-	s.emit("checkAutologin")
-	s.emit("getDefaultSettings", defaultSettings, defaultDownloadFolder)
-	s.emit("populateDownloadQueue", downloadQueue)
-
-	if(process.platform != "android"){
-		const captcha = require('./utils/captcha');
-		captcha.callbackResponse = function (data) {
-			s.emit("getCaptcha", data)
-		};
-	}
 
 	// Function for logging in
 	s.on("login", async function (username, password, captchaResponse) {

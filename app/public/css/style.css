@@ -169,6 +169,7 @@ hr{
 	left: calc(50% - 37.5px);
 	width: 75px;
 	height: 75px;
+	z-index: 1;
 }
 
 nav {
@@ -501,4 +502,34 @@ input[type=search]::-webkit-search-cancel-button {
 }
 .downloadInfo-info{
 	width: 20%;
+}
+
+.error-banner{
+	padding: 8px;
+	color: white;
+	background-color: rgba(255,59,48,0.75);
+	text-align: center;
+	position:relative;
+}
+.close-banner{
+	position:absolute;
+	top:0;
+	right:0;
+}
+
+.error-banner button {
+	line-height: 0px;
+	height: 32px;
+	background-color: transparent;
+	border: none;
+	color: #F1F1F1;
+	font-size: 14px;
+	padding: 0 3px;
+	-webkit-transition: 0.2s;
+	-o-transition: 0.2s;
+	transition: 0.2s;
+}
+
+.error-banner button:hover {
+	background: rgba(255, 255, 255, 0.1);
 }

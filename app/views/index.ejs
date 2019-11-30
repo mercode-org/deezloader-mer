@@ -1076,6 +1076,11 @@
 </ul>
 
 <main class="container" style="display: none">
+	<div id="deezerNotAvailable" class="error-banner" style="display:none;">
+		<button class="close-banner"><i class="material-icons">close</i></button>
+		<%= __('Deezer is not available in your country')%><br>
+		<%= __('Search and Login functions won\'t work. You should use a VPN if you want them.')%>
+	</div>
 	<ul id="tab-nav" class="row tabs tabs-fixed-width hide-on-small-only">
 		<li class="tab"><a class="active" href="#tab_search"><%= __('Search')%></a></li>
 		<li class="tab"><a href="#tab_charts"><%= __('Charts')%></a></li>
