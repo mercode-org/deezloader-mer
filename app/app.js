@@ -445,7 +445,7 @@ io.sockets.on('connection', function (s) {
 				response.image = resp0.body.images[0].url
 				response.owner = resp0.body.owner.display_name
 				do{
-					let resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit)),total", offset: offset*100})
+					let resp = await Spotify.getPlaylistTracks(data.id, {fields: "items(track(artists,name,duration_ms,preview_url,explicit,uri)),total", offset: offset*100})
 					if (first){
 						var numPages=Math.floor((resp.body.total-1)/100)
 						response.data = new Array(resp.body.total)
@@ -459,7 +459,8 @@ io.sockets.on('connection', function (s) {
 							artist: {
 								name: t.track.artists[0].name
 							},
-							duration: Math.floor(t.track.duration_ms/1000)
+							duration: Math.floor(t.track.duration_ms/1000),
+							link: t.track.uri
 						}
 					})
 					offset++

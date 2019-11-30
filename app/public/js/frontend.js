@@ -961,7 +961,7 @@ socket.on("getTrackList", function (data) {
 		}
 
 		// ########################################
-		if(data.reqType == 'album' || data.reqType == 'playlist'){
+		if(data.reqType == 'album' || data.reqType == 'playlist' || data.reqType == 'spotifyplaylist'){
 			var tableBody = $('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective')
 		} else {
 			var tableBody = $('#modal_trackList_table_trackList_tbody_trackList')
@@ -1107,17 +1107,18 @@ socket.on("getTrackList", function (data) {
 			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
 			trackListSelectiveModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else if(data.reqType == 'spotifyplaylist') {
-			trackListModalApp.type = i18n("Spotify Playlist")
-			trackListModalApp.link = 'spotify:playlist:'+data.id
-			trackListModalApp.title = data.response.title
-			trackListModalApp.image = data.response.image
-			trackListModalApp.metadata = `${i18n("by %{name}", {name: data.response.owner})} • ${i18n("%n songs", trackList.length)}`
-			trackListModalApp.head = [
+			trackListSelectiveModalApp.type = i18n("Spotify Playlist")
+			trackListSelectiveModalApp.link = 'spotify:playlist:'+data.id
+			trackListSelectiveModalApp.title = data.response.title
+			trackListSelectiveModalApp.image = data.response.image
+			trackListSelectiveModalApp.metadata = `${i18n("by %{name}", {name: data.response.owner})} • ${i18n("%n songs", trackList.length)}`
+			trackListSelectiveModalApp.head = [
 				{title: '<i class="material-icons">music_note</i>', width: "24px"},
 				{title: '#'},
 				{title: i18n('Song')},
 				{title: i18n('Artist'), hideonsmall:true},
-				{title: '<i class="material-icons">timer</i>', width: "40px"}
+				{title: '<i class="material-icons">timer</i>', width: "40px"},
+				{title: '<div class="valign-wrapper"><label><input class="selectAll" type="checkbox" id="selectAll"><span></span></label></div>', width: "24px"}
 			]
 			let totalDuration = 0
 			for (var i = 0; i < trackList.length; i++) {
@@ -1133,12 +1134,19 @@ socket.on("getTrackList", function (data) {
 					<td class="hide-on-small-only breakline">${(trackList[i].explicit_lyrics ? `<i class="material-icons valignicon tiny materialize-red-text tooltipped" data-tooltip="${i18n("Explicit")}">explicit</i> ` : '')}${trackList[i].title}</td>
 					<td class="hide-on-small-only breakline">${trackList[i].artist.name}</td>
 					<td>${convertDuration(trackList[i].duration)}</td>
+					<td>
+						<div class="valign-wrapper">
+						<label>
+						<input class="trackCheckbox valign" type="checkbox" id="trackChk${i}" value="${trackList[i].link}"><span></span>
+						</label>
+						</div>
+					</td>
 					</tr>`
 				)
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'))
 			}
 			var [hh,mm,ss] = convertDurationSeparated(totalDuration)
-			trackListModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
+			trackListSelectiveModalApp.metadata += `, ${hh>0 ? `${hh} hr` : ""} ${mm} min`
 		} else {
 			trackListModalApp.type = null
 			trackListModalApp.title = 'Tracklist'
@@ -1162,7 +1170,7 @@ socket.on("getTrackList", function (data) {
 				addPreviewControlsClick(tableBody.children('tr:last').find('.preview_playlist_controls'))
 			}
 		}
-		if(data.reqType == 'album' || data.reqType == 'playlist'){
+		if(data.reqType == 'album' || data.reqType == 'playlist' || data.reqType == 'spotifyplaylist'){
 			$('#modal_trackListSelective_table_trackListSelective_tbody_loadingIndicator').addClass('hide')
 			$('#modal_trackListSelective_table_trackListSelective_tbody_trackListSelective').removeClass('hide')
 		} else {
@@ -1245,10 +1253,7 @@ socket.on("getMyPlaylistList", function (data) {
 				<td>${currentResultPlaylist.title}</td>
 				<td>${currentResultPlaylist.songs}</td>
 				</tr>`)
-		if (currentResultPlaylist.spotify)
-			generateShowTracklistButton(currentResultPlaylist.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
-		else
-			generateShowTracklistSelectiveButton(currentResultPlaylist.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
+		generateShowTracklistSelectiveButton(currentResultPlaylist.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
 
 		generateDownloadLink(currentResultPlaylist.link).appendTo(tableBody.children('tr:last')).wrap('<td>')
 	}
