@@ -1654,7 +1654,7 @@ io.sockets.on('connection', function (s) {
 			if (!track.date.slicedYear){
 				track.date.slicedYear = settings.dateFormatYear == "2" ? track.date.year.slice(2, 4) : track.date.year.slice(0, 4)
 			}
-			
+
 			// Auto detect aviable track format from settings
 			let bitrateNotFound = false
 			if (parseInt(downloadQueue[queueId].bitrate) <= 9){
@@ -1993,6 +1993,20 @@ io.sockets.on('connection', function (s) {
 
 		if (fs.existsSync(writePath)) {
 			logger.info(`[${track.artist.name} - ${track.title}] Already downloaded`);
+			if (!downloadQueue[queueId].percentage) {
+				downloadQueue[queueId].percentage = 0
+				downloadQueue[queueId].lastPercentage = 0
+			}
+			downloadQueue[queueId].percentage += 100/downloadQueue[queueId].size
+			if (Math.round(downloadQueue[queueId].percentage) != downloadQueue[queueId].lastPercentage) {
+				if (Math.round(downloadQueue[queueId].percentage) % 5 == 0) {
+					downloadQueue[queueId].lastPercentage = Math.round(downloadQueue[queueId].percentage)
+					io.sockets.emit("downloadProgress", {
+						queueId: queueId,
+						percentage: downloadQueue[queueId].lastPercentage
+					})
+				}
+			}
 			return;
 		}else{
 			logger.info(`[${track.artist.name} - ${track.title}] Downloading file to ${writePath}`);
