@@ -147,6 +147,33 @@ app.post('/api/search/', function (req, res) {
 	}
 });
 
+app.post('/api/tracks/', function (req, res) {
+	//accepts a type (as a key) and an ID, returns tracklist,	format: {"album": "302127"}
+	//expecting "playlist" or "album" or "artist" or "spotifyplaylist"
+	if (Object.keys(req.body).length == 0) {
+		res.writeHead(400, { 'Content-Type': 'application/json' });
+		res.end(JSON.stringify({"Error": "Empty JSON received"}));
+	} else {
+		let type = Object.keys(req.body)[0] //playlist, album, artist, spotifyplaylist
+		let id = req.body[type]
+		clientsocket.emit('getTrackList', {id: id, type: type})
+
+		clientsocket.on("getTrackList", function (data) {
+			//data.err			-> undefined/err
+			//data.id			  -> passed id
+			//data.response -> API response
+			if (data.err){
+				res.writeHead(400, { 'Content-Type': 'application/json' });
+				res.end(JSON.stringify({"Error": data.err}));
+			} else {
+				if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
+					res.writeHead(200, { 'Content-Type': 'application/json' });
+				}
+				res.end(JSON.stringify(data.response));
+			}
+		})
+	}
+});
 var dqueue = new stq.SequentialTaskQueue()
 var downloadQueue = {}
 var trackQueue = queue({
