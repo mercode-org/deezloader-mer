@@ -525,7 +525,7 @@ $('#modal_settings_btn_saveSettings').click(function () {
 $('#modal_settings_btn_defaultSettings').click(function () {
 	if(typeof defaultDownloadLocation !== 'undefined'){
 		defaultUserSettings.downloadLocation = defaultDownloadLocation
-		fillSettingsModal(defaultUserSettings)
+		fillSettingsModal(defaultUserSettings, spotifySettings)
 	}
 })
 

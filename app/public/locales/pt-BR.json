@@ -103,7 +103,7 @@
 	"Clear List": "Limpar Lista",
 	"Size": "Tamanho",
 	"Downloaded": "Baixado",
-	"Failed": "Falha",
+	"Failed": "falha(s)",
 	"original code by ZzMTV": "código original por ZzMTV",
 	"Title": "Título",
 	"Cover": "Capa",
@@ -198,7 +198,7 @@
 	"All downloads removed!": "Todos os downloads removidos!",
 	"Download {{ type }}": "Baixar {{ type }}",
 	"Spotify Playlist": "Playlist do Spotify",
-	"%n músicas": [
+	"%n songs": [
 		[
 			0,
 			0,
@@ -222,12 +222,12 @@
 	"Login with e-mail": "Login com e-mail",
 	"userToken copied to clipboard": "userToken copiado para a Área de Transferência",
 	"by %s": "por %s",
-	"in %s": "in %s",
+	"in %s": "em %s",
 	"Save Playlist File with folder name": "Salvar arquivo de playlist com nome da pasta",
-	"Create folders for Playlists": "Create folders for Playlists",
-	"Embedded Artwork Size": "Embedded Artwork Size",
-	"Local Artwork Size": "Local Artwork Size",
-	"Playlist names template": "Playlist names template",
-	"Artist names template": "Artist names template",
-	"Save single tracks in a folder": "Save single tracks in a folder"
+	"Create folders for Playlists": "Criar pastas para playlists",
+	"Embedded Artwork Size": "Tamanho da capa embutida",
+	"Local Artwork Size": "Tamanho da capa local",
+	"Playlist names template": "Modelo de nomes de playlists",
+	"Artist names template": "Modelo de nomes de artistas",
+	"Save single tracks in a folder": "Salvar faixas únicas em uma pasta"
 }
