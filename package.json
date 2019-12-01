@@ -13,50 +13,11 @@
 		"electron-builder": "^20.40.2"
 	},
 	"scripts": {
-		"dist:win32": "electron-builder -w --ia32 --config.nsis.artifactName=\"${productName} ${version} Setup x32.${ext}\" --config.portable.artifactName=\"${productName} ${version} x32.${ext}\"",
-		"dist:win64": "electron-builder -w --x64",
-		"dist:linux": "electron-builder -l",
-		"dist:macOS": "electron-builder -m",
-		"pack": "electron-builder --dir",
+		"dist:win32": "node ./builders/win32.js",
+		"dist:win64": "node ./builders/win64.js",
+		"dist:linux": "node ./builders/linux.js",
+		"dist:macOS": "node ./builders/macOS.js",
 		"start": "cross-env NODE_ENV=development electron ./app",
 		"postinstall": "electron-builder install-app-deps"
-	},
-	"build": {
-		"appId": "deezloader-rmx",
-		"productName": "Deezloader Remix",
-		"linux": {
-			"target": [
-				{
-					"target": "AppImage",
-					"arch": [
-						"x64",
-						"ia32"
-					]
-				}
-			],
-			"category": "Network",
-			"artifactName": "Deezloader_Remix_${version}-${arch}.${ext}"
-		},
-		"mac": {
-			"category": "public.app-category.music"
-		},
-		"win": {
-			"target": [
-				"nsis",
-				"portable"
-			]
-		},
-		"nsis": {
-			"artifactName": "${productName} ${version} Setup.${ext}",
-			"oneClick": false,
-			"license": "LICENSE",
-			"allowToChangeInstallationDirectory": true,
-			"uninstallDisplayName": "${productName} ${version}",
-			"deleteAppDataOnUninstall": true
-		},
-		"portable": {
-			"artifactName": "${productName} ${version}.${ext}",
-			"requestExecutionLevel": "user"
-		}
 	}
 }
