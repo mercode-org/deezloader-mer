@@ -2286,8 +2286,8 @@ app.post('/api/search/', function (req, res) {
 		let mode = Object.keys(req.body)[0] //"album", playlist, album, artist
 		let searchString = req.body[mode]
 		clientsocket.emit("search", {type: mode, text: searchString})
-	
-		clientsocket.on("search", function (data) {	
+
+		clientsocket.on("search", function (data) {
 			if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
 				res.writeHead(200, { 'Content-Type': 'application/json' });
 			}
@@ -2814,6 +2814,8 @@ function getID3v1(track, settings){
 			tagBuffer.writeUInt8(id3v1Genres.indexOf(selectedGenre),127)
 		else
 			tagBuffer.writeUInt8(255,127)
+	}else{
+		tagBuffer.writeUInt8(255,127)
 	}
 	return tagBuffer
 }
