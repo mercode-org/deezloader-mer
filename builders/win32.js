@@ -9,10 +9,15 @@ builder.build({
 		"productName": "Deezloader Remix",
 		"win": {
 			"target": [
-				"nsis",
-				"portable"
+				{
+					"target": "nsis",
+					"arch": "ia32"
+				},
+				{
+					"target": "portable",
+					"arch": "ia32"
+				}
 			],
-			"arch": "ia32"
 		},
 		"nsis": {
 			"artifactName": "${productName} ${version} Setup x32.${ext}",

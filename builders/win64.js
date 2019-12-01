@@ -8,11 +8,14 @@ builder.build({
 		"appId": "deezloader-rmx",
 		"productName": "Deezloader Remix",
 		"win": {
-			"target": [
-				"nsis",
-				"portable"
-			],
-			"arch": "x64"
+			{
+				"target": "nsis",
+				"arch": "x64"
+			},
+			{
+				"target": "portable",
+				"arch": "x64"
+			}
 		},
 		"nsis": {
 			"artifactName": "${productName} ${version} Setup.${ext}",
