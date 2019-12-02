@@ -222,5 +222,12 @@
 	"Attempting Autologin...": "Otomatik oturum açmaya çalışılıyor ...",
 	"Logged in successfully": "Oturum açma başarılı",
 	"Deezer is not available in your country": "Deezer ülkenizde mevcut değil",
-	"Search and Login functions won't work. You should use a VPN if you want them.": "Arama ve Oturum Açma fonksiyonları çalışmayacak. Çalışmasını istiyorsanız bir VPN kullanmalısınız."
+	"Search and Login functions won't work. You should use a VPN if you want them.": "Arama ve Oturum Açma fonksiyonları çalışmayacak. Çalışmasını istiyorsanız bir VPN kullanmalısınız.",
+	"Do not change": "Do not change",
+	"UPPER CASE": "UPPER CASE",
+	"lower case": "lower case",
+	"Start Case": "Start Case",
+	"Sentence case": "Sentence case",
+	"Case for Title": "Case for Title",
+	"Case for Artist": "Case for Artist"
 }

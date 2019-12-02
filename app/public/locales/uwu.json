@@ -223,5 +223,12 @@
 	"Attempting Autologin...": "attempting autowogin...",
 	"Logged in successfully": "logged in successfuwwy",
 	"Deezer is not available in your country": "OwO deezew ish not avaiwabwe in youw countwy",
-	"Search and Login functions won't work. You should use a VPN if you want them.": "seawch and login functions won't wowk. u shouwd use a vpn if u want them."
+	"Search and Login functions won't work. You should use a VPN if you want them.": "seawch and login functions won't wowk. u shouwd use a vpn if u want them.",
+	"Do not change": "Do not change",
+	"UPPER CASE": "UPPEW CASE",
+	"lower case": "wowew case",
+	"Start Case": "Stawt Case",
+	"Sentence case": "Sentence case",
+	"Case for Title": "case fow titwe",
+	"Case for Artist": "case fow awtist"
 }

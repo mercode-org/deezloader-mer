@@ -235,5 +235,12 @@
 	"Attempting Autologin...": "Attempting Autologin...",
 	"Logged in successfully": "Logged in successfully",
 	"Deezer is not available in your country": "Deezer is not available in your country",
-	"Search and Login functions won't work. You should use a VPN if you want them.": "Search and Login functions won't work. You should use a VPN if you want them."
+	"Search and Login functions won't work. You should use a VPN if you want them.": "Search and Login functions won't work. You should use a VPN if you want them.",
+	"Do not change": "Do not change",
+	"UPPER CASE": "UPPER CASE",
+	"lower case": "lower case",
+	"Start Case": "Start Case",
+	"Sentence case": "Sentence case",
+	"Case for Title": "Case for Title",
+	"Case for Artist": "Case for Artist"
 }
