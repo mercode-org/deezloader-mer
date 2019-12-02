@@ -2594,11 +2594,11 @@ function getMetadata(buf, track, settings){
 	const flac = new metaflac(buf);
 	flac.removeAllTags();
 	if (settings.tags.title)
-		flac.setTag('TITLE=' + track.title);
+		flac.setTag('TITLE=' + changeCase(track.title, settings.titleCasing));
 	if (settings.tags.album)
 		flac.setTag('ALBUM=' + track.album.title);
 	if (settings.tags.albumArtist)
-		flac.setTag('ALBUMARTIST=' + track.album.artist.name);
+		flac.setTag('ALBUMARTIST=' + changeCase(track.album.artist.name, settings.artistCasing));
 	if (settings.tags.trackNumber)
 		flac.setTag('TRACKNUMBER=' + track.trackNumber);
 	if (settings.tags.discNumber)
@@ -2612,10 +2612,10 @@ function getMetadata(buf, track, settings){
 	if (settings.tags.artist && track.artistsString)
 		if (Array.isArray(track.artistsString)){
 			track.artistsString.forEach(x=>{
-				flac.setTag('ARTIST=' + x);
+				flac.setTag('ARTIST=' + changeCase(x, settings.artistCasing));
 			});
 		}else{
-			flac.setTag('ARTIST=' + track.artistsString);
+			flac.setTag('ARTIST=' + changeCase(track.artistsString, settings.artistCasing));
 		}
 	if (settings.tags.discTotal)
 		flac.setTag('DISCTOTAL='+track.album.discTotal);
@@ -2714,13 +2714,13 @@ function getMetadata(buf, track, settings){
 function getID3(track, settings){
 	const writer = new ID3Writer(Buffer.alloc(0));
 	if (settings.tags.title)
-		writer.setFrame('TIT2', track.title)
+		writer.setFrame('TIT2', changeCase(track.title, settings.titleCasing))
 	if (settings.tags.artist)
-		writer.setFrame('TPE1', [track.artistsString])
+		writer.setFrame('TPE1', [changeCase(track.artistsString, settings.artistCasing)])
 	if (settings.tags.album)
 		writer.setFrame('TALB', track.album.title)
 	if (settings.tags.albumArtist && track.album.artist)
-		writer.setFrame('TPE2', track.album.artist.name)
+		writer.setFrame('TPE2', changeCase(track.album.artist.name, settings.artistCasing))
 	if (settings.tags.trackNumber)
 		writer.setFrame('TRCK', (settings.tags.trackTotal ? track.trackNumber+"/"+track.album.trackTotal : track.trackNumber))
 	if (settings.tags.discNumber)
@@ -2913,6 +2913,49 @@ function getIDFromLink(link, type) {
 		return link.match(/\/artist\/(\d+)\/top_track/)[1];
 	} else {
 		return link.substring(link.lastIndexOf("/") + 1)
+	}
+}
+
+function changeCase(str, type){
+	switch (type) {
+		case "lower":
+			return str.toLowerCase()
+		case "upper":
+			return str.toUpperCase()
+		case "start":
+			if (str.indexOf(String.fromCharCode(0))>-1){
+				artists = str.split(String.fromCharCode(0))
+				artists.forEach((artist, i)=>{
+					artist = artist.split(" ")
+					artist.forEach((value, index)=>{
+						artist[index] = value[0].toUpperCase() + value.substring(1).toLowerCase()
+					})
+					artists[i] = artist.join(" ")
+				})
+				res = artists.join(String.fromCharCode(0))
+			}else{
+				str = str.split(" ")
+				res = []
+				str.forEach((value, index)=>{
+					res.push(value[0].toUpperCase() + value.substring(1).toLowerCase())
+				})
+				res = res.join(" ")
+			}
+			return res
+		case "sentence":
+			if (str.indexOf(String.fromCharCode(0))>-1){
+				artists = str.split(String.fromCharCode(0))
+				artists.forEach((artist, i)=>{
+					artists[i] = artist[0].toUpperCase() + artist.substring(1).toLowerCase()
+				})
+				res = artists.join(String.fromCharCode(0))
+			}else{
+				res = str[0].toUpperCase() + str.substring(1).toLowerCase()
+			}
+			return res
+		case "nothing":
+		default:
+			return str;
 	}
 }
 

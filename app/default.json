@@ -41,6 +41,8 @@
 		"savePlaylistAsCompilation": false,
 		"removeAlbumVersion": false,
 		"saveID3v1": true,
+		"titleCasing": "nothing",
+		"artistCasing": "nothing",
 		"tags": {
 			"title": true,
 			"artist": true,
