@@ -230,10 +230,10 @@
 	"Playlist names template": "Modelo de nomes de playlists",
 	"Artist names template": "Modelo de nomes de artistas",
 	"Save single tracks in a folder": "Salvar faixas únicas em uma pasta",
-	"You are offline!": "You are offline!",
-	"Back online!": "Back online!",
-	"Attempting Autologin...": "Attempting Autologin...",
-	"Logged in successfully": "Logged in successfully",
-	"Deezer is not available in your country": "Deezer is not available in your country",
-	"Search and Login functions won't work. You should use a VPN if you want them.": "Search and Login functions won't work. You should use a VPN if you want them."
+	"You are offline!": "Você está offline!",
+	"Back online!": "Online novamente!",
+	"Attempting Autologin...": "Tentativa de login automático...",
+	"Logged in successfully": "Login bem sucedido",
+	"Deezer is not available in your country": "O Deezer não está disponível no seu país",
+	"Search and Login functions won't work. You should use a VPN if you want them.": "As funções de Pesquisar e Login não irão funcionar. Você deve usar uma VPN se quiser usá-las."
 }
