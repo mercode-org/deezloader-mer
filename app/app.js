@@ -112,6 +112,7 @@ app.get('/', function(req, res) {
 
 var dqueue = new stq.SequentialTaskQueue()
 var downloadQueue = {}
+var localDownloadQueue = []
 var trackQueue = queue({
 	autostart: true
 })
@@ -544,6 +545,7 @@ io.sockets.on('connection', function (s) {
 	// Gets data from the frontend and creates the track object
 	async function downloadTrack(data){
 		logger.info(`Added to Queue ${data.id}`)
+		localDownloadQueue.push(`${data.id}:${data.bitrate}`)
 		try{
 			var track = await s.Deezer.getTrack(data.id)
 			data.settings.filename = data.settings.trackNameTemplate
@@ -561,6 +563,7 @@ io.sockets.on('connection', function (s) {
 				obj: track,
 				cover: `${s.Deezer.albumPicturesHost}${track.album.picture}/250x250-000000-80-0-0.jpg`,
 			}
+			if (data.spotifyId) _track.spotifyId = `${data.spotifyId}:${data.bitrate}`
 			addToQueue(_track)
 		}catch(err){
 			logger.error(`downloadTrack failed: ${err.stack ? err.stack : err}`)
@@ -577,6 +580,7 @@ io.sockets.on('connection', function (s) {
 			}
 			s.emit("toast", `Track ${data.id} download failed: ${message}`)
 			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+			localDownloadQueue.splice(localDownloadQueue.indexOf(`${track.id}:${data.bitrate}`), 1);
 			return
 		}
 	}
@@ -585,6 +589,7 @@ io.sockets.on('connection', function (s) {
 	// Gets data from the frontend and creates the album object
 	async function downloadAlbum(data){
 		logger.info(`Added to Queue ${data.id}`)
+		localDownloadQueue.push(`${data.id}:${data.bitrate}`)
 		try{
 			var album = await s.Deezer.legacyGetAlbum(data.id)
 			if (data.settings.tags.discTotal || data.settings.createCDFolder){
@@ -609,6 +614,7 @@ io.sockets.on('connection', function (s) {
 					obj: track,
 					cover: `${s.Deezer.albumPicturesHost}${track.album.picture}/250x250-000000-80-0-0.jpg`,
 				}
+				if (data.spotifyId) _track.spotifyId = `${data.spotifyId}:${data.bitrate}`
 				addToQueue(_track)
 			}else{
 				album.tracks = await s.Deezer.getAlbumTracks(data.id)
@@ -627,6 +633,7 @@ io.sockets.on('connection', function (s) {
 					obj: album,
 					cover: album.cover_medium,
 				}
+				if (data.spotifyId) _album.spotifyId = `${data.spotifyId}:${data.bitrate}`
 				addToQueue(_album)
 			}
 			return
@@ -645,6 +652,7 @@ io.sockets.on('connection', function (s) {
 			}
 			s.emit("toast", `Album ${data.id} download failed: ${message}`)
 			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+			localDownloadQueue.splice(localDownloadQueue.indexOf(`${track.id}:${data.bitrate}`), 1);
 			return
 		}
 	}
@@ -653,6 +661,7 @@ io.sockets.on('connection', function (s) {
 	// Gets data from the frontend and creates for each album an album object
 	async function downloadArtist(data){
 		logger.info(`Added to Queue ${data.id}`)
+		localDownloadQueue.push(`${data.id}:${data.bitrate}`)
 		try{
 			var albums = await s.Deezer.legacyGetArtistAlbums(data.id);
 			(function sendAllAlbums(i) {
@@ -677,6 +686,7 @@ io.sockets.on('connection', function (s) {
 			}
 			s.emit("toast", `Artist ${data.id} download failed: ${message}`)
 			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+			localDownloadQueue.splice(localDownloadQueue.indexOf(`${track.id}:${data.bitrate}`), 1);
 			return
 		}
 	}
@@ -685,6 +695,7 @@ io.sockets.on('connection', function (s) {
 	// Gets data from the frontend and creates the playlist object
 	async function downloadPlaylist(data){
 		logger.info(`Added to Queue ${data.id}`)
+		localDownloadQueue.push(`${data.id}:${data.bitrate}`)
 		try{
 			var playlist = await s.Deezer.legacyGetPlaylist(data.id)
 			data.settings.filename = data.settings.playlistTrackNameTemplate
@@ -720,6 +731,7 @@ io.sockets.on('connection', function (s) {
 			}
 			s.emit("toast", `Playlist ${data.id} download failed: ${message}`)
 			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+			localDownloadQueue.splice(localDownloadQueue.indexOf(`${track.id}:${data.bitrate}`), 1);
 			return
 		}
 	}
@@ -728,6 +740,7 @@ io.sockets.on('connection', function (s) {
 	// Gets data from the frontend and creates the object fot the artist top tracks
 	async function downloadArtistTop(data){
 		logger.info(`Added to Queue ${data.id}`)
+		localDownloadQueue.push(`${data.id}:${data.bitrate}`)
 		try{
 			var artist = await s.Deezer.legacyGetArtist(data.id)
 			data.settings.filename = data.settings.playlistTrackNameTemplate
@@ -763,6 +776,7 @@ io.sockets.on('connection', function (s) {
 			}
 			s.emit("toast", `ArtistTop ${data.id} download failed: ${message}`)
 			s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+			localDownloadQueue.splice(localDownloadQueue.indexOf(`${track.id}:${data.bitrate}`), 1);
 			return
 		}
 	}
@@ -770,8 +784,9 @@ io.sockets.on('connection', function (s) {
 
 	// Gets data from the frontend and creates the spotify playlist object
 	async function downloadSpotifyPlaylist(data){
-		logger.info(`Added to Queue ${data.id}`)
 		if (spotifySupport){
+			logger.info(`Added to Queue ${data.id}`)
+			localDownloadQueue.push(`${data.id}:${data.bitrate}`)
 			try{
 				let creds = await Spotify.clientCredentialsGrant()
 				Spotify.setAccessToken(creds.body['access_token'])
@@ -818,6 +833,7 @@ io.sockets.on('connection', function (s) {
 					s.emit("toast", `SpotifyPlaylist ${data.id} failed: ${err.message ? err.message : err}`)
 				}
 				s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+				localDownloadQueue.splice(localDownloadQueue.indexOf(`${track.id}:${data.bitrate}`), 1);
 				return
 			}
 		}else{
@@ -829,14 +845,16 @@ io.sockets.on('connection', function (s) {
 
 	// Gets data from the frontend and creates data for the deezer track object
 	async function downloadSpotifyTrack(data){
-		logger.info(`Added to Queue ${data.id}`)
 		if (spotifySupport){
+			logger.info(`Added to Queue ${data.id}, converting...`)
+			localDownloadQueue.push(`${data.id}:${data.bitrate}`)
 			try{
 				let creds = await Spotify.clientCredentialsGrant()
 				Spotify.setAccessToken(creds.body['access_token'])
 				var resp = await Spotify.getTrack(data.id, {fields: "external_ids,artists,album,name"})
 				deezerId = await convertSpotify2Deezer(resp.body)
 				if (deezerId != 0){
+					data.spotifyId = data.id
 					data.id = deezerId
 					downloadTrack(data)
 				}else{
@@ -846,6 +864,8 @@ io.sockets.on('connection', function (s) {
 				}
 			}catch(err){
 				logger.error(`downloadSpotifyTrack failed: ${err.stack ? err.stack : err}`)
+				s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+				localDownloadQueue.splice(localDownloadQueue.indexOf(`${track.id}:${data.bitrate}`), 1);
 				return
 			}
 		}else{
@@ -857,14 +877,16 @@ io.sockets.on('connection', function (s) {
 
 	// Gets data from the frontend and creates data for the deezer track object
 	async function downloadSpotifyAlbum(data){
-		logger.info(`Added to Queue ${data.id}`)
 		if (spotifySupport){
+			logger.info(`Added to Queue ${data.id}, converting...`)
+			localDownloadQueue.push(`${data.id}:${data.bitrate}`)
 			try{
 				let creds = await Spotify.clientCredentialsGrant()
 				Spotify.setAccessToken(creds.body['access_token'])
 				var resp = await Spotify.getAlbum(data.id, {fields: "external_ids,artists,name"})
 				deezerId = await convertSpotifyAlbum2Deezer(resp.body)
 				if (deezerId != 0){
+					data.spotifyId = data.id
 					data.id = deezerId
 					downloadAlbum(data)
 				}else{
@@ -874,6 +896,8 @@ io.sockets.on('connection', function (s) {
 				}
 			}catch(err){
 				logger.error(`downloadSpotifyAlbum failed: ${err.stack ? err.stack : err}`)
+				s.emit("silentlyCancelDownload", `${data.id}:${data.bitrate}`)
+				localDownloadQueue.splice(localDownloadQueue.indexOf(`${track.id}:${data.bitrate}`), 1);
 				return
 			}
 		}else{
@@ -1000,6 +1024,7 @@ io.sockets.on('connection', function (s) {
 					concurrency: trackQueue.concurrency
 				})
 			}
+			localDownloadQueue.splice(localDownloadQueue.indexOf(downloadQueue[queueId].id), 1);
 			delete downloadQueue[queueId]
 		}
 
@@ -1479,7 +1504,11 @@ io.sockets.on('connection', function (s) {
 				}
 			break
 		}
-		if (downloading && downloadQueue[Object.keys(downloadQueue)[0]] && (Object.keys(downloadQueue)[0] == downloading.queueId)) delete downloadQueue[Object.keys(downloadQueue)[0]]
+		if (downloading && downloadQueue[Object.keys(downloadQueue)[0]] && (Object.keys(downloadQueue)[0] == downloading.queueId)){
+			localDownloadQueue.splice(localDownloadQueue.indexOf(downloading.id), 1);
+			if (downloading.spotifyId) localDownloadQueue.splice(localDownloadQueue.indexOf(downloading.spotifyId), 1);
+			delete downloadQueue[Object.keys(downloadQueue)[0]]
+		}
 		if (Object.keys(downloadQueue).length == 0) {
 			io.sockets.emit("emptyDownloadQueue", {})
 		}
@@ -2904,8 +2933,8 @@ function clientaddToQueue(url, forceBitrate=null) {
 }
 
 function alreadyInQueue(id, bitrate){
-	for (const [key, value] of Object.entries(downloadQueue)) {
-		if(value.id == `${id}:${bitrate}`){
+	for (var i of localDownloadQueue) {
+		if(i == `${id}:${bitrate}`){
 			return true
 		}
 	}
