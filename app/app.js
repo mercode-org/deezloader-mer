@@ -2260,67 +2260,113 @@ io.sockets.on('connection', function (s) {
 let clientsocket = socketclientio.connect('http://localhost:' + configFile.serverPort)
 
 // REST API
-app.post('/api/download/', function (req, res) {
+app.all('/api/download/', function (req, res) {
 	//accepts a deezer url or array of urls, and adds it to download
 	//expecting {"url": "https://www.deezer.com/playlist/xxxxxxxxxx" }
-	response = ""
-	if (Array.isArray(req.body.url)) {
-		for (let x in req.body.url) {
-			response += `${req.body.url[x]}: ${clientaddToQueue(req.body.url[x])}\n`
-		}
+	// or &url="https://www.deezer.com/playlist/xxxxxxxxxx"
+	if (req.method != 'POST' && req.method != 'GET') {
+		res.status(400).send({"Error": req.url + " only accepts GET and POST"});
 	} else {
-		response += clientaddToQueue(req.body.url)
+		let receivedData
+		let length
+		if (req.method == 'POST') {
+			length = Object.keys(req.body).length
+			receivedData = req.body
+		} else if (req.method == 'GET') {
+			length = Object.keys(req.query).length
+			receivedData = req.query
+		}
+		if (length == 0) {
+			res.status(200).send({"Error": "Empty " + req.method + " received"});	//returning 200 for "TEST" functions of other software
+		} else {
+			response = ""
+			if (Array.isArray(receivedData.url)) {
+				for (let x in receivedData.url) {
+					response += `${receivedData.url[x]}: ${clientaddToQueue(receivedData.url[x])}\n`
+				}
+			} else {
+				response += clientaddToQueue(receivedData.url)
+			}
+		
+			res.writeHead(200, { 'Content-Type': 'application/json' });
+			res.end(JSON.stringify({'Message': response}));
+		}
 	}
-
-	res.writeHead(200, { 'Content-Type': 'application/json' });
-	res.end(JSON.stringify({'Message': response}));
 });
 
-app.post('/api/search/', function (req, res) {
+app.all('/api/search/', function (req, res) {
 	//accepts a mode (as a key) and search string, returns Deezer JSON
 	//expecting {"album": "discovery - daft punk"}
-	if (Object.keys(req.body).length == 0) {
-		res.writeHead(400, { 'Content-Type': 'application/json' });
-		res.end(JSON.stringify({"Error": "Empty JSON received"}));
+	// or &album=discovery - daft punk
+	if (req.method != 'POST' && req.method != 'GET') {
+		res.status(400).send({"Error": req.url + " only accepts GET and POST"});
 	} else {
-		let mode = Object.keys(req.body)[0] //"album", playlist, album, artist
-		let searchString = req.body[mode]
-		clientsocket.emit("search", {type: mode, text: searchString})
+		let receivedData
+		let length
+		if (req.method == 'POST') {
+			length = Object.keys(req.body).length
+			receivedData = req.body
+		} else if (req.method == 'GET') {
+			length = Object.keys(req.query).length
+			receivedData = req.query
+		}
+		if (length == 0) {
+			res.status(200).send({"Error": "Empty " + req.method + " received"});	//returning 200 for "TEST" functions of other software
+		} else {
+			let mode = Object.keys(receivedData)[0] //"album", playlist, album, artist
+			let searchString = receivedData[mode]
+			clientsocket.emit("search", {type: mode, text: searchString})
 
-		clientsocket.on("search", function (data) {
-			if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
-				res.writeHead(200, { 'Content-Type': 'application/json' });
-			}
-			res.end(JSON.stringify(data));
-		})
-	}
-});
-
-app.post('/api/tracks/', function (req, res) {
-	//accepts a type (as a key) and an ID, returns tracklist,	format: {"album": "302127"}
-	//expecting "playlist" or "album" or "artist" or "spotifyplaylist"
-	if (Object.keys(req.body).length == 0) {
-		res.writeHead(400, { 'Content-Type': 'application/json' });
-		res.end(JSON.stringify({"Error": "Empty JSON received"}));
-	} else {
-		let type = Object.keys(req.body)[0] //playlist, album, artist, spotifyplaylist
-		let id = req.body[type]
-		clientsocket.emit('getTrackList', {id: id, type: type})
-
-		clientsocket.on("getTrackList", function (data) {
-			//data.err			-> undefined/err
-			//data.id			  -> passed id
-			//data.response -> API response
-			if (data.err){
-				res.writeHead(400, { 'Content-Type': 'application/json' });
-				res.end(JSON.stringify({"Error": data.err}));
-			} else {
+			clientsocket.on("search", function (data) {
 				if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
 					res.writeHead(200, { 'Content-Type': 'application/json' });
 				}
-				res.end(JSON.stringify(data.response));
-			}
-		})
+				res.end(JSON.stringify(data));
+			})
+		}
+	}
+});
+
+app.all('/api/tracks/', function (req, res) {
+	//accepts a type (as a key) and an ID, returns tracklist,	format: {"album": "302127"}
+	//expecting "playlist" or "album" or "artist" or "spotifyplaylist"
+	// or &album=302127
+	if (req.method != 'POST' && req.method != 'GET') {
+		res.status(400).send({"Error": req.url + " only accepts GET and POST"});
+	} else {
+		let receivedData
+		let length
+		if (req.method == 'POST') {
+			length = Object.keys(req.body).length
+			receivedData = req.body
+		} else if (req.method == 'GET') {
+			length = Object.keys(req.query).length
+			receivedData = req.query
+		}
+		if (length == 0) {
+			res.status(400).send({"Error": "Empty " + req.method + " received"});
+		} else {
+			let type = Object.keys(receivedData)[0] //"album", playlist, album, artist
+			let id = receivedData[type]
+			clientsocket.emit('getTrackList', {id: id, type: type})
+
+			clientsocket.on("getTrackList", function (data) {
+				//data.err			-> undefined/err
+				//data.id			  -> passed id
+				//data.response -> API response
+				if (data.err){
+					if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
+						res.writeHead(400, { 'Content-Type': 'application/json' });
+					}
+					res.end(JSON.stringify({"Error": data.err}));
+				} else {
+					if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
+						res.writeHead(200, { 'Content-Type': 'application/json' });
+					}
+					res.end(JSON.stringify(data.response));
+				}
+			})
+		}
 	}
 });
 
@@ -2331,8 +2377,7 @@ app.get('/api/queue/', function (req, res) {
 	for (let item in downloadQueue) {
 		queueItems.push(downloadQueue[item])
 	}
-	res.writeHead(200, { 'Content-Type': 'application/json' });
-	res.end(JSON.stringify({"length": itemsInQueue, "items": queueItems}));
+	res.status(200).send({"length": itemsInQueue, "items": queueItems});
 });
 
 // Helper functions
