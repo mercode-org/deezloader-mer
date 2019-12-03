@@ -2293,6 +2293,7 @@ app.all('/api/download/', function (req, res) {
 	//accepts a deezer url or array of urls, and adds it to download
 	//expecting {"url": "https://www.deezer.com/playlist/xxxxxxxxxx" }
 	// or &url="https://www.deezer.com/playlist/xxxxxxxxxx"
+	//Optionally, also accepts "quality"="flac"
 	if (req.method != 'POST' && req.method != 'GET') {
 		res.status(400).send({"Error": `${req.url} only accepts GET and POST`});
 	} else {
@@ -2302,16 +2303,31 @@ app.all('/api/download/', function (req, res) {
 		} else if (req.method == 'GET') {
 			receivedData = req.query
 		}
+		let forceBitrate
+		switch(receivedData.quality.toLowerCase()) {
+			case 'flac':
+			case 'lossless':
+				forceBitrate = 9
+			  break;
+			case '320':
+			case 'mp3':
+				forceBitrate = 3
+			  break;
+			case '128':
+				forceBitrate = 1
+				break;
+		  }
+		let bitrate = forceBitrate ? forceBitrate : configFile.userDefined.maxBitrate
 		if (Object.keys(receivedData).length == 0) {
 			res.status(200).send({"Error": `Empty ${req.method} received`});	//returning 200 for "TEST" functions of other software
 		} else {
 			response = ""
 			if (Array.isArray(receivedData.url)) {
 				for (let x in receivedData.url) {
-					response += `${receivedData.url[x]}: ${clientaddToQueue(receivedData.url[x])}\n`
+					response += `${receivedData.url[x]}: ${clientaddToQueue(receivedData.url[x],bitrate)}\n`
 				}
 			} else {
-				response += clientaddToQueue(receivedData.url)
+				response += clientaddToQueue(receivedData.url,bitrate)
 			}
 
 			res.writeHead(200, { 'Content-Type': 'application/json' });
