@@ -2265,19 +2265,16 @@ app.all('/api/download/', function (req, res) {
 	//expecting {"url": "https://www.deezer.com/playlist/xxxxxxxxxx" }
 	// or &url="https://www.deezer.com/playlist/xxxxxxxxxx"
 	if (req.method != 'POST' && req.method != 'GET') {
-		res.status(400).send({"Error": req.url + " only accepts GET and POST"});
+		res.status(400).send({"Error": `${req.url} only accepts GET and POST`});
 	} else {
 		let receivedData
-		let length
 		if (req.method == 'POST') {
-			length = Object.keys(req.body).length
 			receivedData = req.body
 		} else if (req.method == 'GET') {
-			length = Object.keys(req.query).length
 			receivedData = req.query
 		}
-		if (length == 0) {
-			res.status(200).send({"Error": "Empty " + req.method + " received"});	//returning 200 for "TEST" functions of other software
+		if (Object.keys(receivedData).length == 0) {
+			res.status(200).send({"Error": `Empty ${req.method} received`});	//returning 200 for "TEST" functions of other software
 		} else {
 			response = ""
 			if (Array.isArray(receivedData.url)) {
@@ -2299,19 +2296,16 @@ app.all('/api/search/', function (req, res) {
 	//expecting {"album": "discovery - daft punk"}
 	// or &album=discovery - daft punk
 	if (req.method != 'POST' && req.method != 'GET') {
-		res.status(400).send({"Error": req.url + " only accepts GET and POST"});
+		res.status(400).send({"Error": `${req.url} only accepts GET and POST`});
 	} else {
 		let receivedData
-		let length
 		if (req.method == 'POST') {
-			length = Object.keys(req.body).length
 			receivedData = req.body
 		} else if (req.method == 'GET') {
-			length = Object.keys(req.query).length
 			receivedData = req.query
 		}
-		if (length == 0) {
-			res.status(200).send({"Error": "Empty " + req.method + " received"});	//returning 200 for "TEST" functions of other software
+		if (Object.keys(receivedData).length == 0) {
+			res.status(200).send({"Error": `Empty ${req.method} received`});	//returning 200 for "TEST" functions of other software
 		} else {
 			let mode = Object.keys(receivedData)[0] //"album", playlist, album, artist
 			let searchString = receivedData[mode]
@@ -2332,19 +2326,16 @@ app.all('/api/tracks/', function (req, res) {
 	//expecting "playlist" or "album" or "artist" or "spotifyplaylist"
 	// or &album=302127
 	if (req.method != 'POST' && req.method != 'GET') {
-		res.status(400).send({"Error": req.url + " only accepts GET and POST"});
+		res.status(400).send({"Error": `${req.url} only accepts GET and POST`});
 	} else {
 		let receivedData
-		let length
 		if (req.method == 'POST') {
-			length = Object.keys(req.body).length
 			receivedData = req.body
 		} else if (req.method == 'GET') {
-			length = Object.keys(req.query).length
 			receivedData = req.query
 		}
-		if (length == 0) {
-			res.status(400).send({"Error": "Empty " + req.method + " received"});
+		if (Object.keys(receivedData).length == 0) {
+			res.status(400).send({"Error": `Empty ${req.method} received`});
 		} else {
 			let type = Object.keys(receivedData)[0] //"album", playlist, album, artist
 			let id = receivedData[type]
