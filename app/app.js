@@ -2284,7 +2284,7 @@ app.all('/api/download/', function (req, res) {
 			} else {
 				response += clientaddToQueue(receivedData.url)
 			}
-		
+
 			res.writeHead(200, { 'Content-Type': 'application/json' });
 			res.end(JSON.stringify({'Message': response}));
 		}
@@ -2904,14 +2904,12 @@ function clientaddToQueue(url, forceBitrate=null) {
 }
 
 function alreadyInQueue(id, bitrate){
-	var alreadyInQueue = false
 	for (const [key, value] of Object.entries(downloadQueue)) {
 		if(value.id == `${id}:${bitrate}`){
-			alreadyInQueue = true
-			return false
+			return true
 		}
 	}
-	return alreadyInQueue
+	return false
 }
 
 function getIDFromLink(link, type) {
