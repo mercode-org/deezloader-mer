@@ -107,7 +107,7 @@ server.listen(configFile.serverPort)
 logger.info('Server is running @ localhost:' + configFile.serverPort)
 
 app.get('/', function(req, res) {
-  res.render('index.ejs');
+	res.render('index.ejs');
 });
 
 var dqueue = new stq.SequentialTaskQueue()
@@ -2342,6 +2342,16 @@ app.all('/api/download/', function (req, res) {
 		let forceBitrate
 		if (receivedData.quality) {
 			switch(receivedData.quality.toLowerCase()) {
+				case '360':
+				case '360_hq':
+					forceBitrate = 15
+				break;
+				case '360_mq':
+					forceBitrate = 14
+				break;
+				case '360_lq':
+					forceBitrate = 13
+				break;
 				case 'flac':
 				case 'lossless':
 					forceBitrate = 9
@@ -2352,7 +2362,7 @@ app.all('/api/download/', function (req, res) {
 				break;
 				case '128':
 					forceBitrate = 1
-					break;
+				break;
 			}
 		}
 		let bitrate = forceBitrate ? forceBitrate : configFile.userDefined.maxBitrate
@@ -2427,7 +2437,7 @@ app.all('/api/tracks/', function (req, res) {
 
 			clientsocket.on("getTrackList", function (data) {
 				//data.err			-> undefined/err
-				//data.id			  -> passed id
+				//data.id				-> passed id
 				//data.response -> API response
 				if (data.err){
 					if (!(res.headersSent)) {	//no clue why I need this check but without, 2nd+ request breaks
@@ -2593,6 +2603,15 @@ function settingsRegexAlbum(album, foldername) {
 			foldername = foldername.replace(/%genre%/g, fixName("Compilation"))
 		}else{
 			switch(album.bitrate){
+				case 15:
+					foldername = foldername.replace(/%bitrate%/g, "360 HQ")
+				break
+				case 14:
+					foldername = foldername.replace(/%bitrate%/g, "360 MQ")
+				break
+				case 13:
+					foldername = foldername.replace(/%bitrate%/g, "360 LQ")
+				break
 				case 9:
 					foldername = foldername.replace(/%bitrate%/g, "FLAC")
 				break
@@ -2956,9 +2975,9 @@ function extAsciiFilter(string){
 	string.split('').forEach((x)=>{
 		if (x.charCodeAt(0) > 255)
 			output += "?"
-  	else
-  		output += x
-  })
+		else
+			output += x
+	})
 	return output
 }
 
@@ -3084,7 +3103,7 @@ function getTypeFromLink(link) {
 		if (link.indexOf('playlist') > -1) type += "playlist"
 		else if (link.indexOf('track') > -1) type += "track"
 		else if (link.indexOf('album') > -1) type += "album"
-	} else	if (link.indexOf('/track') > -1) {
+	} else if (link.indexOf('/track') > -1) {
 		type = "track"
 	} else if (link.indexOf('/playlist') > -1) {
 		type = "playlist"
