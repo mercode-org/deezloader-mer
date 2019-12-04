@@ -1113,6 +1113,38 @@ io.sockets.on('connection', function (s) {
 					genres : downloading.obj.genres,
 					discTotal: downloading.obj.discTotal ? downloading.obj.discTotal : null
 				}
+				date = {
+					day: downloading.obj.release_date.slice(8,10),
+					month: downloading.obj.release_date.slice(5,7),
+					year: downloading.obj.release_date.slice(0, 4),
+					slicedYear: (downloading.settings.dateFormatYear == "2" ? downloading.obj.release_date.slice(2, 4) : downloading.obj.release_date.slice(0, 4))
+				}
+				switch (downloading.settings.dateFormat){
+					case "1": dateString = `${date.day}-${date.month}-${date.slicedYear}`; break;
+					case "2": dateString = `${date.month}-${date.day}-${date.slicedYear}`; break;
+					case "3": dateString = `${date.slicedYear}-${date.day}-${date.month}`; break;
+					case "0":default: dateString = `${date.slicedYear}-${date.month}-${date.day}`; break;
+				}
+				downloading.settings.album = {
+					title: downloading.name,
+					artist: {
+						name: downloading.artist
+					},
+					year: date.year,
+					date: dateString,
+					recordType: downloading.obj.record_type,
+					label: downloading.obj.label,
+					barcode: downloading.obj.upc,
+					id: downloading.id.split(":")[0],
+					explicit: downloading.obj.explicit_lyrics
+				}
+				if(downloading.obj.genres && downloading.obj.genres.data[0] && downloading.obj.genres.data[0].name){
+					downloading.settings.album.genre = []
+					downloading.obj.genres.data.forEach(function(genre){
+						if (downloading.settings.album.genre.indexOf(genre.name) == -1)
+							downloading.settings.album.genre.push(genre.name)
+					})
+				}
 				downloading.downloadPromise = new Promise((resolve,reject)=>{
 					downloading.obj.tracks.every(function (t, index) {
 						downloading.tracksData[index] = {
@@ -1187,7 +1219,7 @@ io.sockets.on('connection', function (s) {
 					if (downloading.settings.createM3UFile){
 						let path = ""
 						if (downloading.settings.changePlaylistName)
-							path = downloading.filePath + downloading.filePath.match(/([^\/]*)\/*$/)[1]+".m3u8"
+							path = downloading.filePath + antiDot(fixName(settingsRegexAlbum(downloading.settings.album, downloading.settings.albumNameTemplate)))+".m3u8"
 						else
 							path = downloading.filePath+"playlist.m3u8"
 						fs.writeFileSync(path, downloading.playlistArr.join("\r\n"));
@@ -1307,14 +1339,14 @@ io.sockets.on('connection', function (s) {
 					if (downloading.settings.createM3UFile){
 						let path = ""
 						if (downloading.settings.changePlaylistName)
-							path = downloading.filePath + antiDot(fixName(downloading.name))+".m3u8"
+							path = downloading.filePath + antiDot(fixName(settingsRegexPlaylist(downloading.settings.playlist, downloading.settings.playlistNameTemplate)))+".m3u8"
 						else
 							path = downloading.filePath+"playlist.m3u8"
 						fs.writeFileSync(path, downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
-						let imgPath = downloading.filePath + antiDot(settingsRegexAlbum(downloading.settings.playlist, downloading.settings.coverImageTemplate))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
+						let imgPath = downloading.filePath + antiDot(fixName(settingsRegexAlbum(downloading.settings.playlist, downloading.settings.coverImageTemplate)))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.obj.picture_small){
 							downloading.cover = downloading.obj.picture_small.replace("56x56",`${downloading.settings.localArtworkSize}x${downloading.settings.localArtworkSize}`)
 							request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
@@ -1473,16 +1505,16 @@ io.sockets.on('connection', function (s) {
 					if (downloading.settings.createM3UFile){
 						let path = ""
 						if (downloading.settings.changePlaylistName)
-							path = downloading.filePath + antiDot(fixName(downloading.name))+".m3u8"
+							path = downloading.filePath + antiDot(fixName(settingsRegexPlaylist(downloading.settings.playlist, downloading.settings.playlistNameTemplate)))+".m3u8"
 						else
 							path = downloading.filePath+"playlist.m3u8"
 						fs.writeFileSync(path, downloading.playlistArr.join("\r\n"));
 					}
 					if (downloading.settings.saveArtwork){
 						if (!fs.existsSync(downloading.filePath)) fs.mkdirpSync(downloading.filePath);
-						let imgPath = downloading.filePath + antiDot(settingsRegexAlbum(downloading.settings.playlist, downloading.settings.coverImageTemplate))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
+						let imgPath = downloading.filePath + antiDot(fixName(settingsRegexAlbum(downloading.settings.playlist, downloading.settings.coverImageTemplate)))+(downloading.settings.PNGcovers ? ".png" : ".jpg");
 						if (downloading.obj.images){
-							downloading.cover = downloading.obj.images[0].url.replace("56x56",`${downloading.settings.localArtworkSize}x${downloading.settings.localArtworkSize}`)
+							downloading.cover = downloading.obj.images[0].url
 							request.get(downloading.cover, {strictSSL: false,encoding: 'binary'}, function(error,response,body){
 								if(error){
 									logger.error(error.stack);
@@ -1751,6 +1783,7 @@ io.sockets.on('connection', function (s) {
 				}
 			}
 			track.album.bitrate = track.selectedFormat
+			if (settings.albName && !settings.album.bitrate) settings.album.bitrate = track.selectedFormat
 
 			// Acquiring bpm (only if necessary)
 			if (settings.tags.bpm){
@@ -1967,8 +2000,8 @@ io.sockets.on('connection', function (s) {
 			filepath += antiDot(fixName(settingsRegexAlbum(track.album, settings.albumNameTemplate))) + path.sep;
 			coverPath = filepath;
 		}
-
-		if(!(settings.plName && settings.createStructurePlaylist && !settings.savePlaylistAsCompilation)) downloadQueue[queueId].filePath = filepath
+		if (!(settings.plName && !settings.savePlaylistAsCompilation))
+			downloadQueue[queueId].filePath = filepath
 
 		if (
 			track.album.discTotal > 1 && (
@@ -2050,7 +2083,7 @@ io.sockets.on('connection', function (s) {
 			}
 
 			if (settings.saveArtwork && coverPath){
-				imgPath = coverPath + settingsRegexAlbum(track.album, settings.coverImageTemplate)+(settings.PNGcovers ? ".png" : ".jpg")
+				imgPath = coverPath + antiDot(fixName(settingsRegexAlbum(track.album, settings.coverImageTemplate)))+(settings.PNGcovers ? ".png" : ".jpg")
 				if (!fs.existsSync(coverPath)) fs.mkdirpSync(coverPath);
 				if(!fs.existsSync(imgPath)){
 					try{
@@ -2303,7 +2336,7 @@ app.all('/api/download/', function (req, res) {
 		} else if (req.method == 'GET') {
 			receivedData = req.query
 			if (receivedData.url.includes(',')) {	//if multiple urls
-				receivedData.url = receivedData.url.split(',') 
+				receivedData.url = receivedData.url.split(',')
 			}
 		}
 		let forceBitrate
