@@ -737,146 +737,44 @@
 					<div class="collapsible-header waves-effect"><i class="material-icons">history</i><%= __('Changelog')%></div>
 					<div class="collapsible-body">
 						<p>
-							<b>Version 4.2.2</b><br/>
-							- Re-added login with email / password with captcha popup (Doesn't work on Server Mode)<br/>
-							- Reorganized Settings<br/>
-							- ID3 default is now the only option for MP3 date format (If you had that selected you should change that or do a clean install)<br/>
-							- Added link analyzer<br/>
-							- Added support for spotify tracks and albums via urls and uri<br/>
-							- Added %bitrate% and %date% to album folder name<br/>
-							- Added %date% to tracknames<br/>
-							- Added %position% for playlist tracknames<br/>
-							- Added %isrc%, %upc% and %album_id%<br/>
-							- Added option to enable or disable search fallback<br/>
-							- Added option to create album/artist/cd folders for playlists as well<br/>
-							- Added option to save playlist as a compilation (it overwrites original tags with the playlist one)<br/>
-							- Added more UI elements to display errors<br/>
-							- Added error log when clicking on error sign in the Download Tab<br/>
-							- Added quality selection to remaining download buttons<br/>
-							- Fixed certificate error while looking for updates<br/>
-							- Fixed spotify playlist conversion problems<br/>
-							- Fixed tags problems<br/>
-							- Other Minor improvments<br/>
-							<br/>
-							<b>Version 4.2.1</b><br/>
-							- Downloads are binded to the server on server mode<br/>
-							- Downloading playlists wont create artist and album folders if options are selected<br/>
-							- Date tag is now enabled by default on new installations<br/>
-							- Now users without propic will have a default one in the settings<br/>
-							- Update message only nags once per client<br/>
-							- Added space after %explicit% if there is text after the tag<br/>
-							- Added label at the end of album viewin the modal<br/>
-							- Fixed forEach error when downloading tracks<br/>
-							- Fixed problem where %type% could be empty<br/>
-							- Fixed macOS copy-paste problem<br/>
-							- Fixed duplicate detection when downloading tracks<br/>
-							- Fixed null separator for multitags on FLACs<br/>
-							- Fixed problem where m3u file on multidisc albums was wrong<br/>
-							<br/>
-							<b>Version 4.2.0</b><br/>
-							- New login workflow<br/>
-							- Improved UI<br/>
-							- Revamped album, artists and playlist modals<br/>
-							- Added option to download the track in a different quality over the one selected (right click on d/l button)<br/>
-							- Added autologin by default to fix re-connection problems<br/>
-							- Re-added fallback on track errors<br/>
-							- Fixed Default Settings button<br/>
-							- Fixed links not working in server mode<br/>
-							- Fixed UI problems when on mobile view (responsive site)<br/>
-							- Fixed Settings menu not being populated on mobile view<br/>
-							- Fixed problem with the artist tag when downloading playlists and albums<br/>
-							- Fixed playlist numbering on files (now it doesn't override the trackNumber tag)<br/>
-							- Fixed aritst artwork not saving<br/>
-							<br/>
-							<b>Version 4.1.8</b><br/>
-							- Fix the issue where some people wasn't able to log in from the Netherlands<br/>
-							<br/>
-							<b>Version 4.1.7</b><br/>
-							- Partial rewrite of the app (4.2.0 will have the other half)<br/>
-							- Fixed login security issue<br/>
-							- Better Spotify integration (now conversion uses ISRC if found)<br/>
-							- Fixed France Charts not showing up<br/>
-							- Albums with only one track will download as a single track<br/>
-							- Added option %genre% for Track and Album names<br/>
-							- Added support for subfolders in Album name<br/>
-							- Minor changes to the UI<br/>
-							<br/>
-							<b>Version 4.1.6</b><br/>
-							- Fixed Spotify Playlist problem<br/>
-							- Fixed security issue where Client Secret is exposed in Compiled binaries<br/>
-							- Now to use Spotify Features you need to follow <a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Spotify+Features" target="_blank">this guide</a> first<br/>
-							- Minor bugfixes and improvments<br/>
-							<br/>
-							<b>Version 4.1.5</b><br/>
-							- Fixed %explicit% for album names<br/>
-							- Added Contributions page<br/>
-							- Fixed some spelling issues<br/>
-							<br/>
-							<b>Version 4.1.4</b><br/>
-							- Improved Privacy in Server Mode<br/>
-							- Cleaned up some files<br/>
-							- Fixed Day Month position in DATE tag<br/>
-							- Fixed %explicit% in name templates<br/>
-							- Fixed artist download<br/>
-							- Fixed FLAC Problems (not all of them)<br/>
-							- Fixed select folder cancel bug<br/>
-							- Added Update Notification<br/>
-							- Added default ID3 DATE tag format<br/>
-							- Added minimize to system tray<br/>
-							- Added multitag separator for FLACS<br/>
-							- Added hyperlinks to artist & album<br/>
-							- Added option to better remove duplicates in the artist tag (Still in BETA)<br/>
-							- Added option to save the track with the full list of artist in the filename<br/>
-							- Added option to overwrite padding size<br/>
-							- Added "Download All" button in modals<br/>
-							- Removed ReplayGain as default setting<br/>
-							<br/>
-							<b>Version 4.1.3</b><br/>
-							- Playlist and Album tracks now have fallback support<br/>
-							- M3U files now works correctly<br/>
-							- Fixed problems with tags<br/>
-							- Added option %explicit% for Track and Album names (Will add "(Explicit)" in that position if it's explicit)<br/>
-							- Added option to remove "(Album Version)" from track title<br/>
-							- Added options to select which format should the date tag have<br/>
-							- Added option to not fallback if desired bitrate is not available<br/>
-							- Logging enhancements<br/>
-							- Other minor bug-fixing<br/>
-							<br/>
-							<b>Version 4.1.2</b><br/>
-							- Fixed Login Problem (for real this time)<br/>
-							- Fixed Login after refresh<br/>
-							- Regionlock free download<br/>
-							- Added support for download of User Uploaded tracks<br/>
-							- Now you can select which tags your songs has<br/>
-							- Fixed selecting problem<br/>
-							- Tracks without preview will display a disabled play button<br/>
-							- Previews inside modal will stop with modal close<br/>
-							- New %label% field for tracks and albums<br/>
-							- Added option to create folder for CDs<br/>
-							- Added rename option for cover file<br/>
-							- Added option to download Artist artwork<br/>
-							- Added option do log downloaded alternative tracks<br/>
-							- Fixed some minor bugs<br/>
-							<br/>
-							<b>Version 4.1.1</b><br/>
-							- Fixed Login Problem (again)<br/>
-							- Added Dark Mode<br/>
-							- Added smaller cover option<br/>
-							- Added support for lower bitrates<br/>
-							- Added "Stop All Downloads" button<br/>
-							- Added support for Spotify Playlist preview<br/>
-							- Added support for PNG covers<br/>
-							- Re-Added Date Tag<br/>
-							- Fixed same cover for same track in different albums bug<br/>
-							- Fixed login issue from repository build<br/>
-							<br/>
-							<b>Version 4.1.0</b><br/>
-							- New UI (not completly optimized for small screens)<br/>
-							- Fixed login problems<br/>
-							- Fixed %type% parameter not working<br/>
-							- Fixed year tagging problem<br/>
-							- Fixed playlist file not containing tracks<br/>
-							- More precision in Spotify Playlist conversion<br/>
+							<h5>Version 4.3.0</h5>
+							<h6>Main changes:</h6>
+							&nbsp;&nbsp;+ Loginless download is back!<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ You can still login in the Settings to view your playlists<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Added option to export ARL<br>
+							&nbsp;&nbsp;+ Localization Support<br>
+							&nbsp;&nbsp;+ Merged Download from URL tab into Search tab<br>
+							&nbsp;&nbsp;+ Improved memory usage during downloads (Now you can download Continuous Mixes)<br>
+							&nbsp;&nbsp;+ Updated and improved UI<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Better feedback for errors and warnings<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Toast messages are forced to the bottom<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Made darkmode darker<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Charts are now alphabetically ordered<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Redesigned Download tab<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Made download bars more responsive<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Added PWA metadata for servermode<br>
+							&nbsp;&nbsp;+ Changed folder management structure<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Added create playlist folder option<br>
+							&nbsp;&nbsp;&nbsp;&nbsp;+ Added template names for playlist and artist folder<br>
+							<br>
+							<h6>New Features:</h6>
+							&nbsp;&nbsp;+ Added ID3v1 support<br>
+							&nbsp;&nbsp;+ Divided options for Local and Embedded cover size<br>
+							&nbsp;&nbsp;+ Added 2000x2000 cover option<br>
+							&nbsp;&nbsp;+ Added Case Settings for title and artists<br>
+							&nbsp;&nbsp;+ Added REST API<br>
+							&nbsp;&nbsp;+ Added Select song for Spotify Playlists<br>
+							&nbsp;&nbsp;+ Added support for 360 audio [No way to play them tho]<br>
+							&nbsp;&nbsp;+ Added option to rename the playlist file with the name of the folder<br>
+							<br>
+							<h6>Bugs fixes:</h6>
+							&nbsp;&nbsp;+ Finished implementing Save playlist as Compilation<br>
+							&nbsp;&nbsp;+ Fixed artwork caching<br>
+							&nbsp;&nbsp;+ Fixed issues with autologin not working properly<br>
+							&nbsp;&nbsp;+ Fixed the error 'ENOENT: no such file or directory, mkdir'<br>
+							&nbsp;&nbsp;+ Fixed artist tags being too excessive<br>
+							&nbsp;&nbsp;+ Fixed Explicit Variable on tracknames<br>
+							&nbsp;&nbsp;+ Fixed fallbacks not working properly<br/>
 							<br/>
 							<a href="https://notabug.org/RemixDevs/DeezloaderRemix/wiki/Changelog" target="_blank"><%= __('Full Changelog Here')%></a>
 						</p>
