@@ -2302,32 +2302,38 @@ app.all('/api/download/', function (req, res) {
 			receivedData = req.body
 		} else if (req.method == 'GET') {
 			receivedData = req.query
+			if (receivedData.url.includes(',')) {	//if multiple urls
+				receivedData.url = receivedData.url.split(',') 
+			}
 		}
 		let forceBitrate
-		switch(receivedData.quality.toLowerCase()) {
-			case 'flac':
-			case 'lossless':
-				forceBitrate = 9
-			  break;
-			case '320':
-			case 'mp3':
-				forceBitrate = 3
-			  break;
-			case '128':
-				forceBitrate = 1
+		if (receivedData.quality) {
+			switch(receivedData.quality.toLowerCase()) {
+				case 'flac':
+				case 'lossless':
+					forceBitrate = 9
 				break;
-		  }
+				case '320':
+				case 'mp3':
+					forceBitrate = 3
+				break;
+				case '128':
+					forceBitrate = 1
+					break;
+			}
+		}
 		let bitrate = forceBitrate ? forceBitrate : configFile.userDefined.maxBitrate
 		if (Object.keys(receivedData).length == 0) {
 			res.status(200).send({"Error": `Empty ${req.method} received`});	//returning 200 for "TEST" functions of other software
 		} else {
-			response = ""
+			let response = ""
 			if (Array.isArray(receivedData.url)) {
+				response = []
 				for (let x in receivedData.url) {
-					response += `${receivedData.url[x]}: ${clientaddToQueue(receivedData.url[x],bitrate)}\n`
+					response.push(`${receivedData.url[x]}: ${clientaddToQueue(receivedData.url[x],bitrate)}`)
 				}
 			} else {
-				response += clientaddToQueue(receivedData.url,bitrate)
+				response += `${receivedData.url}: ${clientaddToQueue(receivedData.url,bitrate)}`
 			}
 
 			res.writeHead(200, { 'Content-Type': 'application/json' });
