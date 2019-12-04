@@ -223,11 +223,11 @@
 	"Logged in successfully": "Oturum açma başarılı",
 	"Deezer is not available in your country": "Deezer ülkenizde mevcut değil",
 	"Search and Login functions won't work. You should use a VPN if you want them.": "Arama ve Oturum Açma fonksiyonları çalışmayacak. Çalışmasını istiyorsanız bir VPN kullanmalısınız.",
-	"Do not change": "Do not change",
-	"UPPER CASE": "UPPER CASE",
-	"lower case": "lower case",
-	"Start Case": "Start Case",
-	"Sentence case": "Sentence case",
-	"Case for Title": "Case for Title",
-	"Case for Artist": "Case for Artist"
+	"Do not change": "Değiştirme",
+	"UPPER CASE": "BÜYÜK HARF",
+	"lower case": "küçük harf",
+	"Start Case": "Her Sözcüğü Büyük Harfle Başlat",
+	"Sentence case": "Tümce düzeni",
+	"Case for Title": "Başlık için Harf Durumu",
+	"Case for Artist": "Sanatçı için Harf Durumu"
 }
