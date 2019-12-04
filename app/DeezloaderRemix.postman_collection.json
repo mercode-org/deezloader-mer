@@ -1,0 +1,1008 @@
+{
+	"info": {
+		"_postman_id": "44fa332e-c590-464c-9101-a5265361533e",
+		"name": "Deezloader Remix",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Search",
+			"item": [
+				{
+					"name": "Search Album",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"album\": \"discovery daft punk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/search/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"search",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Artist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"artist\": \"daft punk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/search/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"search",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Track",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"track\": \"one more time daft punk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/search/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"search",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Playlist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"playlist\": \"100% daft punk\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/search/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"search",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Album",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1730/api/search/?album=discovery daft punk",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"search",
+								""
+							],
+							"query": [
+								{
+									"key": "album",
+									"value": "discovery daft punk"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Artist",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1730/api/search/?artist=daft punk",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"search",
+								""
+							],
+							"query": [
+								{
+									"key": "artist",
+									"value": "daft punk"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Track",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1730/api/search/?track=one more time daft punk",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"search",
+								""
+							],
+							"query": [
+								{
+									"key": "track",
+									"value": "one more time daft punk"
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Search Playlist",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1730/api/search/?playlist=100% daft punk",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"search",
+								""
+							],
+							"query": [
+								{
+									"key": "playlist",
+									"value": "100% daft punk"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Tracklist",
+			"item": [
+				{
+					"name": "Retrieve Artist Tracklist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"artist\": \"27\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/tracks/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"tracks",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Album Tracklist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"album\": \"302127\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/tracks/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"tracks",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Playlist Tracklist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"playlist\": \"3133294742\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/tracks/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"tracks",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve SpotifyPlaylist Tracklist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"spotifyplaylist\": \"\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/tracks/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"tracks",
+								""
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Artist Tracklist",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json",
+								"disabled": true
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1730/api/tracks/?artist=27",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"tracks",
+								""
+							],
+							"query": [
+								{
+									"key": "artist",
+									"value": "27"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Album Tracklist",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1730/api/tracks/?album=302127",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"tracks",
+								""
+							],
+							"query": [
+								{
+									"key": "album",
+									"value": "302127"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve Playlist Tracklist",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1730/api/tracks/?playlist=3133294742",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"tracks",
+								""
+							],
+							"query": [
+								{
+									"key": "playlist",
+									"value": "3133294742"
+								},
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Retrieve SpotifyPlaylist Tracklist",
+					"request": {
+						"method": "GET",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"url": {
+							"raw": "http://localhost:1730/api/tracks/?spotifyplaylist=",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"tracks",
+								""
+							],
+							"query": [
+								{
+									"key": "spotifyplaylist",
+									"value": ""
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Download",
+			"item": [
+				{
+					"name": "Download Album",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1730/api/download/?url=https://www.deezer.com/album/302127",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							],
+							"query": [
+								{
+									"key": "url",
+									"value": "https://www.deezer.com/album/302127"
+								},
+								{
+									"key": "quality",
+									"value": "flac",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Artist",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1730/api/download/?url=https://www.deezer.com/artist/27",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							],
+							"query": [
+								{
+									"key": "url",
+									"value": "https://www.deezer.com/artist/27"
+								},
+								{
+									"key": "quality",
+									"value": "flac",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Track",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1730/api/download/?url=https://www.deezer.com/track/3135553",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							],
+							"query": [
+								{
+									"key": "url",
+									"value": "https://www.deezer.com/track/3135553"
+								},
+								{
+									"key": "quality",
+									"value": "flac",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Playlist",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1730/api/download/?url=https://www.deezer.com/playlist/3133294742",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							],
+							"query": [
+								{
+									"key": "url",
+									"value": "https://www.deezer.com/playlist/3133294742"
+								},
+								{
+									"key": "quality",
+									"value": "flac",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Array",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1730/api/download/?url=https://www.deezer.com/album/302127,https://www.deezer.com/artist/27,https://www.deezer.com/track/3135553,https://www.deezer.com/playlist/3133294742",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							],
+							"query": [
+								{
+									"key": "quality",
+									"value": "flac",
+									"disabled": true
+								},
+								{
+									"key": "url",
+									"value": "https://www.deezer.com/album/302127,https://www.deezer.com/artist/27,https://www.deezer.com/track/3135553,https://www.deezer.com/playlist/3133294742"
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Album",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"url\": \"https://www.deezer.com/album/302127\",\n\t\"quality\": \"flac\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/download/?",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Artist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"url\": \"https://www.deezer.com/artist/27\",\n\t\"quality\": \"flac\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/download/?",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Track",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"url\": \"https://www.deezer.com/track/3135553\",\n\t\"quality\": \"flac\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/download/?",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Playlist",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"value": "application/json",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"url\": \"https://www.deezer.com/playlist/3133294742\",\n\t\"quality\": \"flac\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/download/?",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							],
+							"query": [
+								{
+									"key": "",
+									"value": "",
+									"disabled": true
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Download Array",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"name": "Content-Type",
+								"type": "text",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"url\": [\"https://www.deezer.com/album/302127\",\"https://www.deezer.com/artist/27\",\"https://www.deezer.com/track/3135553\",\"https://www.deezer.com/playlist/3133294742\"],\n\t\"quality\": \"flac\"\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "http://localhost:1730/api/download/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"download",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		},
+		{
+			"name": "Queue",
+			"item": [
+				{
+					"name": "Get Queue",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "http://localhost:1730/api/queue/",
+							"protocol": "http",
+							"host": [
+								"localhost"
+							],
+							"port": "1730",
+							"path": [
+								"api",
+								"queue",
+								""
+							]
+						}
+					},
+					"response": []
+				}
+			],
+			"protocolProfileBehavior": {}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
