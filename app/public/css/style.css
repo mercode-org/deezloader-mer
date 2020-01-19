@@ -63,7 +63,7 @@ hr{
 	line-height: 36px;
 }
 *:focus{
-	outline-color: #3f51b5;
+	outline-color: #ff4d0d;
 }
 
 .resize-padding{
@@ -154,9 +154,9 @@ hr{
 }
 
 #slide-out .background{
-  background: rgb(184,53,106);
-  background: linear-gradient(150deg, rgba(240,161,0,1) 0%, rgba(184,53,106,1) 25%, rgba(91,43,137,1) 50%, rgba(46,85,206,1) 75%, rgba(68,188,103,1) 100%);
-  background: linear-gradient(150deg, rgba(240,161,0,0.80) 0%, rgba(184,53,106,0.80) 25%, rgba(91,43,137,0.80) 50%, rgba(46,85,206,0.80) 75%, rgba(68,188,103,0.80) 100%), url("../img/bg.jpg");
+  background: #ff4d0d;
+  background: linear-gradient(45deg, rgba(255, 29, 17, 1), rgba(255, 162, 6, 1));
+  background: linear-gradient(45deg, rgba(255, 29, 17, 0.9), rgba(255, 162, 6, 0.80)), url("../img/bg.jpg");
 	-webkit-background-size: cover;
 	background-size: cover;
 	overflow: hidden;
@@ -173,9 +173,9 @@ hr{
 }
 
 nav {
-  background: rgb(184,53,106);
-  background: linear-gradient(150deg, rgba(240,161,0,1) 0%, rgba(184,53,106,1) 25%, rgba(91,43,137,1) 50%, rgba(46,85,206,1) 75%, rgba(68,188,103,1) 100%);
-  background: linear-gradient(150deg, rgba(240,161,0,0.85) 0%, rgba(184,53,106,0.85) 25%, rgba(91,43,137,0.85) 50%, rgba(46,85,206,0.85) 75%, rgba(68,188,103,0.85) 100%), url("../img/bg.jpg");
+  background: #ff4d0d;
+  background: linear-gradient(45deg, rgba(255, 29, 17, 1), rgba(255, 162, 6, 1));
+  background: linear-gradient(45deg, rgba(255, 29, 17, 0.85), rgba(255, 162, 6, 0.85)), url("../img/bg.jpg");
 	-webkit-background-size: cover;
 	background-size: cover;
 	overflow: auto;
@@ -379,7 +379,7 @@ nav .brand-logo.left{
 ::-webkit-scrollbar-thumb {
 	-webkit-border-radius: 5px;
 	border-radius: 5px;
-	background: #4373E8;
+	background: #ff4d0d;
 }
 
 body::-webkit-scrollbar {
@@ -391,7 +391,7 @@ body::-webkit-scrollbar-track {
 }
 
 body::-webkit-scrollbar-thumb {
-	background: #4373E8;
+	background: #ff4d0d;
 }
 
 footer.page-footer{

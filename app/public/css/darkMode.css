@@ -50,14 +50,14 @@ table.striped>tbody>tr:nth-child(odd){
 }
 
 ::-webkit-scrollbar-thumb {
-	background: #4373E8;
+	background: #ff4d0d;
 }
 
 body::-webkit-scrollbar-track {
 	background: #1d1d1d;
 }
 body::-webkit-scrollbar-thumb {
-	background: #4373E8;
+	background: #ff4d0d;
 }
 
 
