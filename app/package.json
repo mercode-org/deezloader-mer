@@ -7,7 +7,7 @@
 	"author": "RemixDevs",
 	"license": "GPL-3.0",
 	"dependencies": {
-		"async": "^3.1.1",
+		"async": "^3.2.2",
 		"cookie-parser": "^1.4.4",
 		"dateformat": "^3.0.3",
 		"deezer-api": "https://github.com/mercode-org/deezloader-mer/releases/download/4.3.0/deezer-api-1.0.0.tgz",
